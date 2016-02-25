@@ -5,10 +5,11 @@
 	<parent>
 		<groupId>org.talend.daikon</groupId>
 		<artifactId>daikon-parent</artifactId>
-		<version>0.3.0.BUILD-SNAPSHOT</version>
+		<version>0.3.1.BUILD-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>daikon</artifactId>
+	<version>0.3.1.BUILD-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<name>Daikon main shared library</name>
@@ -16,17 +17,17 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <avro.version>1.8.0</avro.version>
+		<avro.version>1.8.0</avro.version>
 		<java.version>1.7</java.version>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 	<dependencies>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>${avro.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -85,14 +86,30 @@
 				<extensions>true</extensions>
 				<executions>
                     <execution>
-                        <id>bundle</id>
+                        <id>bundle-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>bundle</classifier>
+                            <instructions>
+                                <Service-Component>*</Service-Component>
+                                <Embed-Transitive>true</Embed-Transitive>
+                                <Embed-Dependency>*;inline=true</Embed-Dependency>
+                            </instructions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>lib-jar</id>
                         <phase>package</phase>
                         <goals>
                             <goal>bundle</goal>
                         </goals>
                         <configuration>
                             <instructions>
-                                <DynamicImport-Package>*</DynamicImport-Package>
+                                <Bundle-SymbolicName>org.talend.daikon.lib</Bundle-SymbolicName>
+                                <Bundle-Name>${project.name} lib</Bundle-Name>
                             </instructions>
                         </configuration>
                     </execution>
@@ -111,8 +128,8 @@
 								<Import-Package>org.talend*,org.junit*,org.hamcrest*</Import-Package> -->
 								<Bundle-SymbolicName>org.talend.daikon.test</Bundle-SymbolicName>
 								<Fragment-Host>org.talend.daikon</Fragment-Host>
-			                    <Embed-Transitive>true</Embed-Transitive>
-			                    <Embed-Dependency>*;scope=test;artifactId=!hamcrest-core|junit</Embed-Dependency>
+								<Embed-Transitive>true</Embed-Transitive>
+								<Embed-Dependency>*;scope=test;artifactId=!hamcrest-core|junit</Embed-Dependency>
 								<Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
 								<Export-Package>org.talend.daikon*</Export-Package>
 								<!-- include test classes -->
