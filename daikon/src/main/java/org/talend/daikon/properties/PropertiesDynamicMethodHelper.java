@@ -30,9 +30,9 @@ public class PropertiesDynamicMethodHelper {
     static boolean REQUIRED = true;
 
     static Method findMethod(Object obj, String type, String propertyName, boolean required) {
-        if (propertyName == null) {
+        if (propertyName == null || "".equals(propertyName)) {
             throw new IllegalArgumentException(
-                    "The ComponentService was used to access a property with a null property name. Type: " + type
+                    "The ComponentService was used to access a property with a null(or empty) property name. Type: " + type
                             + " Properties: " + obj);
         }
         String propName = propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
@@ -78,7 +78,7 @@ public class PropertiesDynamicMethodHelper {
     }
 
     static public void validateProperty(Properties props, String propName) throws Throwable {
-        Method m = findMethod(props, Properties.METHOD_VALIDATE, propName, PropertiesDynamicMethodHelper.REQUIRED);
+        Method m = findMethod(props, Properties.METHOD_VALIDATE, propName, REQUIRED);
         try {
             props.validationResult = (ValidationResult) m.invoke(props);
         } catch (InvocationTargetException e) {
@@ -87,49 +87,48 @@ public class PropertiesDynamicMethodHelper {
     }
 
     static public void beforePropertyActivate(Properties props, String propName) throws Throwable {
-        doInvoke(props, findMethod(props, Properties.METHOD_BEFORE, propName, PropertiesDynamicMethodHelper.REQUIRED));
+        doInvoke(props, findMethod(props, Properties.METHOD_BEFORE, propName, REQUIRED));
     }
 
     static public void beforePropertyPresent(Properties props, String propName) throws Throwable {
-        doInvoke(props, findMethod(props, Properties.METHOD_BEFORE, propName, PropertiesDynamicMethodHelper.REQUIRED));
+        doInvoke(props, findMethod(props, Properties.METHOD_BEFORE, propName, REQUIRED));
     }
 
     static public void afterProperty(Properties props, String propName) throws Throwable {
-        doInvoke(props, findMethod(props, Properties.METHOD_AFTER, propName, PropertiesDynamicMethodHelper.REQUIRED));
+        doInvoke(props, findMethod(props, Properties.METHOD_AFTER, propName, REQUIRED));
     }
 
     static public void beforeFormPresent(Properties props, String formName) throws Throwable {
-        doInvoke(props, findMethod(props, Properties.METHOD_BEFORE_FORM, formName, PropertiesDynamicMethodHelper.REQUIRED));
+        doInvoke(props, findMethod(props, Properties.METHOD_BEFORE_FORM, formName, REQUIRED));
     }
 
     static public void afterFormNext(Properties props, String formName) throws Throwable {
-        doInvoke(props, findMethod(props, Properties.METHOD_AFTER_FORM_NEXT, formName, PropertiesDynamicMethodHelper.REQUIRED));
+        doInvoke(props, findMethod(props, Properties.METHOD_AFTER_FORM_NEXT, formName, REQUIRED));
     }
 
     static public void afterFormBack(Properties props, String formName) throws Throwable {
-        doInvoke(props, findMethod(props, Properties.METHOD_AFTER_FORM_BACK, formName, PropertiesDynamicMethodHelper.REQUIRED));
+        doInvoke(props, findMethod(props, Properties.METHOD_AFTER_FORM_BACK, formName, REQUIRED));
     }
 
     static public void afterFormFinish(Properties props, String formName, Repository repostory) throws Throwable {
-        doInvoke(props, findMethod(props, Properties.METHOD_AFTER_FORM_FINISH, formName, PropertiesDynamicMethodHelper.REQUIRED),
-                repostory);
+        doInvoke(props, findMethod(props, Properties.METHOD_AFTER_FORM_FINISH, formName, REQUIRED), repostory);
     }
 
     static public void setFormLayoutMethods(Properties props, String property, Form form) {
         Method m;
-        m = findMethod(props, Properties.METHOD_BEFORE_FORM, property, !PropertiesDynamicMethodHelper.REQUIRED);
+        m = findMethod(props, Properties.METHOD_BEFORE_FORM, property, !REQUIRED);
         if (m != null) {
             form.setCallBeforeFormPresent(true);
         }
-        m = findMethod(props, Properties.METHOD_AFTER_FORM_BACK, property, !PropertiesDynamicMethodHelper.REQUIRED);
+        m = findMethod(props, Properties.METHOD_AFTER_FORM_BACK, property, !REQUIRED);
         if (m != null) {
             form.setCallAfterFormBack(true);
         }
-        m = findMethod(props, Properties.METHOD_AFTER_FORM_NEXT, property, !PropertiesDynamicMethodHelper.REQUIRED);
+        m = findMethod(props, Properties.METHOD_AFTER_FORM_NEXT, property, !REQUIRED);
         if (m != null) {
             form.setCallAfterFormNext(true);
         }
-        m = findMethod(props, Properties.METHOD_AFTER_FORM_FINISH, property, !PropertiesDynamicMethodHelper.REQUIRED);
+        m = findMethod(props, Properties.METHOD_AFTER_FORM_FINISH, property, !REQUIRED);
         if (m != null) {
             form.setCallAfterFormFinish(true);
         }
@@ -137,15 +136,15 @@ public class PropertiesDynamicMethodHelper {
 
     static public void setWidgetLayoutMethods(Properties props, String property, Widget widget) {
         Method m;
-        m = findMethod(props, Properties.METHOD_BEFORE, property, !PropertiesDynamicMethodHelper.REQUIRED);
+        m = findMethod(props, Properties.METHOD_BEFORE, property, !REQUIRED);
         if (m != null) {
             widget.setCallBefore(true);
         }
-        m = findMethod(props, Properties.METHOD_AFTER, property, !PropertiesDynamicMethodHelper.REQUIRED);
+        m = findMethod(props, Properties.METHOD_AFTER, property, !REQUIRED);
         if (m != null) {
             widget.setCallAfter(true);
         }
-        m = findMethod(props, Properties.METHOD_VALIDATE, property, !PropertiesDynamicMethodHelper.REQUIRED);
+        m = findMethod(props, Properties.METHOD_VALIDATE, property, !REQUIRED);
         if (m != null) {
             widget.setCallValidate(true);
         }

@@ -26,6 +26,8 @@ public class NestedProperties extends Properties {
 
     public Property anotherProp = newProperty("anotherProp");
 
+    public NestedNestedProperties nestedProp = new NestedNestedProperties("nestedProp");
+
     public NestedProperties(String name) {
         super(name);
     }

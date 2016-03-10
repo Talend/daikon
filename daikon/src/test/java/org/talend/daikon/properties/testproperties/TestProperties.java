@@ -31,7 +31,7 @@ import org.talend.daikon.properties.presentation.Widget.WidgetType;
 import org.talend.daikon.properties.service.Repository;
 import org.talend.daikon.properties.testproperties.nestedprop.NestedProperties;
 import org.talend.daikon.properties.testproperties.nestedprop.inherited.InheritedProperties;
-import org.talend.daikon.schema.SchemaElement.Type;
+import org.talend.daikon.properties.Property.Type;
 
 public class TestProperties extends Properties {
 

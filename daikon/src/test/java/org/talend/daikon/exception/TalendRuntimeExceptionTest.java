@@ -12,25 +12,22 @@
 // ============================================================================
 package org.talend.daikon.exception;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.Arrays;
 
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 
-/**
- * Unit test for the TDPException
- * 
- * @see TDPException
- */
 public class TalendRuntimeExceptionTest {
 
     @Test
@@ -40,9 +37,6 @@ public class TalendRuntimeExceptionTest {
         assertNotNull(talendRuntimeException);
     }
 
-    /**
-     * @see TDPException#writeTo(Writer)
-     */
     @Test
     public void shouldBeWrittenEntirely() throws Exception {
 
@@ -56,6 +50,30 @@ public class TalendRuntimeExceptionTest {
         StringWriter writer = new StringWriter();
         exception.writeTo(writer);
         JSONAssert.assertEquals(expected, writer.toString(), false);
+    }
+
+    @Test
+    public void unexpected1() throws Exception {
+        try {
+            TalendRuntimeException.unexpectedException("messsage");
+            fail("No exception");
+        } catch (Exception ex) {
+            assertTrue(ex instanceof TalendRuntimeException);
+            assertEquals(CommonErrorCodes.UNEXPECTED_EXCEPTION, ((TalendRuntimeException) ex).getCode());
+            assertEquals("UNEXPECTED_EXCEPTION:{message=messsage}", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void unexpected2() throws Exception {
+        try {
+            TalendRuntimeException.unexpectedException(new Exception("test exception"));
+            fail("No exception");
+        } catch (Exception ex) {
+            assertTrue(ex instanceof TalendRuntimeException);
+            assertEquals("test exception", ((TalendRuntimeException) ex).getCause().getMessage());
+            assertEquals(CommonErrorCodes.UNEXPECTED_EXCEPTION, ((TalendRuntimeException) ex).getCode());
+        }
     }
 
     /**

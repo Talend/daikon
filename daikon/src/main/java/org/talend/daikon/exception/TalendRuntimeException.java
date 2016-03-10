@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.daikon.exception.json.JsonErrorCode;
 
@@ -97,11 +98,26 @@ public class TalendRuntimeException extends RuntimeException {
     }
 
     /**
+     * Called when something unexpected happens.
+     * 
+     * @param cause the unexpected exception.
+     */
+    public static void unexpectedException(Throwable cause) {
+        // TODO - add some logging here
+        throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, cause);
+    }
+
+    public static void unexpectedException(String message) {
+        // TODO - add some logging here
+        throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
+                ExceptionContext.build().put(ExceptionContext.KEY_MESSAGE, message));
+    }
+
+    /**
      * Make sure that the context is filled with the expected context entries from the error code. If an entry is
      * missing, only a warning log is issued.
      */
     private void checkContext() {
-
         List<String> missingEntries = new ArrayList<>();
 
         for (String expectedEntry : code.getExpectedContextEntries()) {

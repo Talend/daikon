@@ -12,13 +12,11 @@
 // ============================================================================
 package org.talend.daikon.properties.error;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.talend.daikon.exception.error.DefaultErrorCode;
 import org.talend.daikon.exception.error.ErrorCode;
 
 /**
@@ -36,20 +34,24 @@ public enum PropertiesErrorCode implements ErrorCode {
                                                                            "class",
                                                                            "method");
 
-    /** The http status to use. */
-    private int httpStatus;
+    private DefaultErrorCode errorCodeDelegate;
 
-    /** Expected entries to be in the context. */
-    private List<String> expectedContextEntries;
-
+    /**
+     * default constructor.
+     * 
+     * @param httpStatus the http status to use.
+     */
     PropertiesErrorCode(int httpStatus) {
-        this.httpStatus = httpStatus;
-        this.expectedContextEntries = Collections.emptyList();
+        this.errorCodeDelegate = new DefaultErrorCode(httpStatus);
     }
 
+    /**
+     * default constructor.
+     *
+     * @param httpStatus the http status to use.
+     */
     PropertiesErrorCode(int httpStatus, String... contextEntries) {
-        this.httpStatus = httpStatus;
-        this.expectedContextEntries = Arrays.asList(contextEntries);
+        this.errorCodeDelegate = new DefaultErrorCode(httpStatus, contextEntries);
     }
 
     /**
@@ -57,7 +59,7 @@ public enum PropertiesErrorCode implements ErrorCode {
      */
     @Override
     public String getProduct() {
-        return "Talend"; //$NON-NLS-1$
+        return errorCodeDelegate.getProduct();
     }
 
     /**
@@ -65,7 +67,7 @@ public enum PropertiesErrorCode implements ErrorCode {
      */
     @Override
     public String getGroup() {
-        return "ALL"; //$NON-NLS-1$
+        return errorCodeDelegate.getGroup();
     }
 
     /**
@@ -73,7 +75,7 @@ public enum PropertiesErrorCode implements ErrorCode {
      */
     @Override
     public int getHttpStatus() {
-        return httpStatus;
+        return errorCodeDelegate.getHttpStatus();
     }
 
     /**
@@ -81,11 +83,11 @@ public enum PropertiesErrorCode implements ErrorCode {
      */
     @Override
     public Collection<String> getExpectedContextEntries() {
-        return expectedContextEntries;
+        return errorCodeDelegate.getExpectedContextEntries();
     }
 
     @Override
     public String getCode() {
-        return this.toString();
+        return toString();
     }
 }

@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,9 @@ import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
-import org.talend.daikon.i18n.I18nMessages;
 import org.talend.daikon.i18n.TranslatableImpl;
 import org.talend.daikon.properties.error.PropertiesErrorCode;
 import org.talend.daikon.properties.presentation.Form;
-import org.talend.daikon.properties.presentation.Widget;
-import org.talend.daikon.schema.SchemaElement;
 import org.talend.daikon.security.CryptoHelper;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
@@ -70,10 +68,12 @@ import com.cedarsoftware.util.io.JsonWriter;
  * anything required to display the property.</li>
  * <li>{@code after<PropertyName>} - Called after the property is presented and validated in the UI. This can be used to
  * update the properties state to consider the changed in this property.</li>
- * <li>{@code validate<PropertyName&>} - Called to validate the property value that has been entered in the UI. This
- * will return a {@link ValidationResult} object with any error information.</li>
+ * <li>{@code validate<PropertyName>} - Called to validate the property value that has been entered in the UI. This will
+ * return a {@link ValidationResult} object with any error information.</li>
  * <li>{@code beforeFormPresent<FormName>} - Called before the form is displayed.</li>
  * </ul>
+ * {@code<PropertyName>} and {@code<FormName>} are the property or form name with their first in letter uppercase.
+ * </p>
  * wizard lifecycle related form methods are :
  * <ul>
  * <li>{@code afterFormBack<FormName>} - Called when the current edited form is &lt;FormName&gt; and when the user has
@@ -93,6 +93,9 @@ import com.cedarsoftware.util.io.JsonWriter;
  * {@link SchemaElement#setI18nMessageFormater(I18nMessages)} manually.
  */
 
+/**
+ *
+ */
 public abstract class Properties extends TranslatableImpl implements AnyProperty, ToStringIndent {
 
     static final String METHOD_BEFORE = "before";
@@ -312,6 +315,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
      * WARNING : make sure to call super() first otherwise you may endup with NPE because of not initialised properties
      */
     public void setupProperties() {
+        // left empty for subclass to override
     }
 
     /**
@@ -319,12 +323,13 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
      * WARNING : make sure to call super() first otherwise you may endup with NPE because of not initialised layout
      */
     public void setupLayout() {
+        // left empty for subclass to override
     }
 
     /**
      * Returns a serialized version of this for storage in a repository.
      *
-     * @return the serialized {@code String}, use {@link #fromSerialized(String)} to materialize the object.
+     * @return the serialized {@code String}, use {@link #fromSerialized(String, Class)} to materialize the object.
      */
     public String toSerialized() {
         handlePropEncryption(ENCRYPT);
@@ -332,7 +337,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
         String ser = null;
         try {
             // The forms are recreated upon deserialization
-            forms = new ArrayList();
+            forms = new ArrayList<>();
             ser = JsonWriter.objectToJson(this);
         } finally {
             forms = currentForms;
@@ -406,11 +411,11 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
     public List<NamedThing> getProperties() {
         // TODO this should be changed to AnyProperty type but it as impact everywhere
         List<NamedThing> properties = new ArrayList<>();
-        Field[] fields = getClass().getFields();
-        for (Field f : fields) {
+        List<Field> propertyFields = getAnyPropertyFields();
+        for (Field f : propertyFields) {
             try {
-                Object fValue = f.get(this);
-                if (isAPropertyType(f.getType())) {
+                if (NamedThing.class.isAssignableFrom(f.getType())) {
+                    Object fValue = f.get(this);
                     if (fValue != null) {
                         NamedThing se = (NamedThing) fValue;
                         properties.add(se);
@@ -422,6 +427,20 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
             }
         }
         return properties;
+    }
+
+    /**
+     * @return a direct list of field assignable from AnyProperty
+     */
+    private List<Field> getAnyPropertyFields() {
+        List<Field> propertyFields = new ArrayList<>();
+        Field[] fields = getClass().getFields();
+        for (Field f : fields) {
+            if (isAPropertyType(f.getType())) {
+                propertyFields.add(f);
+            }
+        }
+        return propertyFields;
     }
 
     @Override
@@ -442,7 +461,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
      * @return true if the clazz inherites from Property or ComponenetProperties
      */
     protected boolean isAPropertyType(Class<?> clazz) {
-        return Properties.class.isAssignableFrom(clazz) || Property.class.isAssignableFrom(clazz);
+        return AnyProperty.class.isAssignableFrom(clazz);
     }
 
     /**
@@ -453,14 +472,9 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
      * "." are property names in the nested {@link Properties} objects.
      *
      * @param name a qualified property name, should never be null
-     * @return the Property or Componenent denoted with the name or null if the final field is not found
-     * @exception IllegalArgumentException is the path before the last does not point to a CompoenentProperties
+     * @return the Property or Componenent denoted with the name or null if not found
      */
     public NamedThing getProperty(String name) {
-        // TODO make the same behaviour if the nested Properties name is not found or the last properties is
-        // not found
-        // cause right now if the Properties is not foudnt an execpetion is thrown and if the last property is
-        // not found null is returned.
         String[] propComps = name.split("\\.");
         Properties currentProps = this;
         int i = 0;
@@ -470,8 +484,8 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
             }
             NamedThing se = currentProps.getLocalProperty(prop);
             if (!(se instanceof Properties)) {
-                throw new IllegalArgumentException(prop + " is not a nested Properties. Processing: " + name);
-            } // else se is a CompoenetProperties so use it
+                return null;
+            }
             currentProps = (Properties) se;
         }
         return null;
@@ -543,23 +557,97 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
     }
 
     /**
+     * This goes through all nested properties recusively and replace them with the newValueProperties given as
+     * parameters as long as they are assignable to the Properties type. <br/>
+     * Once the property is assigned it will not be recusively scanned. But if many nested Properties have the
+     * appropriate type they will all be assigned to the new value.
+     * 
+     * @param newValueProperties list of Properties to be assigned to this instance nested Properties
+     */
+    public void assignNestedProperties(Properties... newValueProperties) {
+        List<Field> propertyFields = getAnyPropertyFields();
+        for (Field propField : propertyFields) {
+            Class<?> propType = propField.getType();
+            if (Properties.class.isAssignableFrom(propType)) {
+                boolean isNewAssignment = false;
+                for (Properties newValue : newValueProperties) {
+                    if (propType.isAssignableFrom(newValue.getClass())) {
+                        try {
+                            propField.set(this, newValue);
+                        } catch (IllegalArgumentException | IllegalAccessException e) {
+                            throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                        }
+                        isNewAssignment = true;
+                    } // else not a compatible type so keep looking
+                }
+                if (!isNewAssignment) {// recurse
+                    Properties prop;
+                    try {
+                        prop = (Properties) propField.get(this);
+                        if (prop != null) {
+                            prop.assignNestedProperties(newValueProperties);
+                        } // else prop value is null so we can't recurse. this should never happend
+                    } catch (IllegalArgumentException | IllegalAccessException e) {
+                        throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                    } // cast is ok we check it was assignable before.
+                }
+            } // else not a nestedProperties so keep looking.
+        }
+    }
+
+    /**
      * Copy all of the values from the specified {@link Properties} object. This includes the values from any nested
-     * objects.
+     * objects. This can be used even if the {@code Properties} objects are not the same class. Fields that are not
+     * present in the this {@code Properties} object are ignored.
      * 
      * @param props
      */
     public void copyValuesFrom(Properties props) {
-        List<NamedThing> values = getProperties();
-        for (NamedThing se : values) {
-            NamedThing otherSe = props.getProperty(se.getName());
-            if (otherSe == null) {
-                continue;
+        for (NamedThing otherProp : props.getProperties()) {
+            NamedThing thisProp = getProperty(otherProp.getName());
+            if (thisProp == null) {
+                try {
+                    Class otherClass = otherProp.getClass();
+
+                    if (Property.class.isAssignableFrom(otherClass)) {
+                        Constructor c = otherClass.getConstructor(String.class);
+                        thisProp = (NamedThing) c.newInstance(otherProp.getName());
+                    } else if (Properties.class.isAssignableFrom(otherClass)) {
+                        // Look for single arg String, but an inner class will have a Properties as first arg
+                        Constructor constructors[] = otherClass.getConstructors();
+                        for (Constructor c : constructors) {
+                            Class pts[] = c.getParameterTypes();
+                            if (pts.length == 1 && String.class.isAssignableFrom(pts[0])) {
+                                thisProp = (NamedThing) c.newInstance(otherProp.getName());
+                                break;
+                            }
+                            if (pts.length == 2 && Properties.class.isAssignableFrom(pts[0])
+                                    && String.class.isAssignableFrom(pts[1])) {
+                                thisProp = (NamedThing) c.newInstance(this, otherProp.getName());
+                                break;
+                            }
+                        }
+                    } else {
+                        TalendRuntimeException.unexpectedException(
+                                "Unexpected property class: " + otherProp.getClass() + " prop: " + otherProp);
+                    }
+
+                    try {
+                        Field f = getClass().getField(otherProp.getName());
+                        f.set(this, thisProp);
+                    } catch (NoSuchFieldException e) {
+                        // A field exists in the other that's not in ours, just ignore it
+                        continue;
+                    }
+                } catch (Exception e) {
+                    TalendRuntimeException.unexpectedException(e);
+                }
             }
-            if (se instanceof Properties) {
-                ((Properties) se).copyValuesFrom((Properties) otherSe);
+            if (otherProp instanceof Properties) {
+                ((Properties) thisProp).copyValuesFrom((Properties) otherProp);
             } else {
-                Object value = ((Property) otherSe).getStoredValue();
-                ((Property) se).setValue(value);
+                Object value = ((Property) otherProp).getStoredValue();
+                ((Property) thisProp).setValue(value);
             }
         }
 

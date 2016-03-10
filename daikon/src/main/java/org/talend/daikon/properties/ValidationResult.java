@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
+import org.talend.daikon.exception.TalendRuntimeException;
+
 /**
  * Contains the result of the validation of a components property.
  * <p/>
@@ -31,6 +33,24 @@ public class ValidationResult {
 
     public int number;
 
+    /**
+     * default constructor with a default status to OK.
+     */
+    public ValidationResult() {
+
+    }
+
+    /**
+     * use the TalendRuntimeException to construct a Validation message. By default the status is set tot Error but this
+     * may be changed by the user after creation.
+     * 
+     * @param tre exception used to construct the message
+     */
+    public ValidationResult(TalendRuntimeException tre) {
+        status = Result.ERROR;
+        message = tre.getMessage();
+    }
+
     public Result getStatus() {
         return status;
     }
@@ -40,20 +60,13 @@ public class ValidationResult {
         return this;
     }
 
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public ValidationResult setMessage(String message) {
         this.message = message;
+        return this;
     }
 
     public String message;

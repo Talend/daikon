@@ -21,7 +21,7 @@ public interface PropertiesService<T extends Properties> extends Repository<T> {
 
     T makeFormCancelable(T properties, String formName);
 
-    T commitFormValues(T properties, String formName);
+    T cancelFormValues(T properties, String formName);
 
     T validateProperty(String propName, T properties) throws Throwable;
 

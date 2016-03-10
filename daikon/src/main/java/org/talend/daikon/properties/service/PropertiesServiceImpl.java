@@ -15,7 +15,6 @@ package org.talend.daikon.properties.service;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesDynamicMethodHelper;
 import org.talend.daikon.properties.presentation.Form;
-import org.talend.daikon.schema.Schema;
 
 /**
  * Main Component Service implementation that is not related to any framework (neither OSGI, nor Spring) it uses a
@@ -36,12 +35,12 @@ public class PropertiesServiceImpl<T extends Properties> implements PropertiesSe
     }
 
     @Override
-    public T commitFormValues(T properties, String formName) {
+    public T cancelFormValues(T properties, String formName) {
         Form form = properties.getForm(formName);
         if (form == null) {
             throw new IllegalArgumentException("Form: " + formName + " not found");
         }
-        form.commitValues();
+        form.cancelValues();
         return properties;
     }
 
@@ -94,9 +93,9 @@ public class PropertiesServiceImpl<T extends Properties> implements PropertiesSe
     }
 
     @Override
-    public String storeProperties(T properties, String name, String repositoryLocation, Schema schema) {
+    public String storeProperties(T properties, String name, String repositoryLocation, String schemaPropertyName) {
         if (repository != null) {
-            return repository.storeProperties(properties, name, repositoryLocation, schema);
+            return repository.storeProperties(properties, name, repositoryLocation, schemaPropertyName);
         }
         return null;
     }

@@ -10,43 +10,48 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.schema.internal;
+package org.talend.daikon.properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.talend.daikon.properties.Property;
-import org.talend.daikon.schema.AbstractSchemaElement;
-import org.talend.daikon.schema.SchemaElement;
-import org.talend.daikon.schema.SchemaElement.Type;
-import org.talend.daikon.schema.internal.DataSchemaElement;
 
 /**
- * created by pbailly on 16 Dec 2015 Detailled comment
+ * created by pbailly on 5 Nov 2015 Detailled comment
  *
  */
-public class DataSchemaElementTest {
+public class PropertyTest {
 
+    /**
+     * Simple test to be sure that no one will touch this list without thinking about consequences. If you remove/add a
+     * type here, be sure that it does not break everything.
+     */
     @Test
-    public void test() {
-        DataSchemaElement element = new DataSchemaElement();
-        assertNull(element.getDisplayName());
-        assertEquals("testName", element.setDisplayName("testName").getDisplayName());
-
+    public void testEnum() {
+        List<String> ref = Arrays.asList("STRING", "BOOLEAN", "INT", "DATE", "DATETIME", "DECIMAL", "FLOAT", "DOUBLE",
+                "BYTE_ARRAY", "ENUM", "DYNAMIC", "GROUP", "SCHEMA");
+        List<Property.Type> types = Arrays.asList(Property.Type.values());
+        assertEquals(ref.size(), types.size());
+        assertEquals(ref.toString(), types.toString());
     }
 
     @Test
-    public void testAbstractSchemaElement() {
-        AbstractSchemaElement element = new DataSchemaElement();
+    public void testProperty() {
+        Property element = new Property(null);
         assertNull(element.getName());
         assertEquals(element, element.setName("testName"));
         assertEquals("testName", element.getName());
 
         // displayName use the name
-        assertEquals("testName", element.getDisplayName());
+        assertEquals("property.testName.displayName", element.getDisplayName());
         assertEquals(element, element.setDisplayName("testDisplayName"));
         assertEquals("testDisplayName", element.getDisplayName());
 
@@ -54,12 +59,12 @@ public class DataSchemaElementTest {
         assertEquals(element, element.setTitle("testTitle"));
         assertEquals("testTitle", element.getTitle());
 
-        assertNull(element.getType());
-        assertEquals(element, element.setType(Type.BYTE_ARRAY));
-        assertEquals(Type.BYTE_ARRAY, element.getType());
+        assertEquals(Property.Type.STRING, element.getType());
+        assertEquals(element, element.setType(Property.Type.BYTE_ARRAY));
+        assertEquals(Property.Type.BYTE_ARRAY, element.getType());
 
-        assertEquals(0, element.getSize());
-        assertFalse(element.isSizeUnbounded());
+        assertEquals(-1, element.getSize());
+        assertTrue(element.isSizeUnbounded());
         assertEquals(element, element.setSize(28));
         assertEquals(28, element.getSize());
         assertFalse(element.isSizeUnbounded());
@@ -100,19 +105,19 @@ public class DataSchemaElementTest {
         assertEquals(element, element.setNullable(false));
         assertFalse(element.isNullable());
 
-        assertEquals("testDisplayName", element.toStringIndent(0));
-        assertEquals(" testDisplayName", element.toStringIndent(1));
-        assertEquals("    testDisplayName", element.toStringIndent(4));
+        assertEquals("testName", element.toStringIndent(0));
+        assertEquals(" testName", element.toStringIndent(1));
+        assertEquals("    testName", element.toStringIndent(4));
     }
 
     @Test
     public void testChildren() {
-        AbstractSchemaElement element = new DataSchemaElement();
-        SchemaElement child = new Property("myElement");
+        Property element = new Property("element");
+        Property child = new Property("myElement");
         assertNotNull(element.addChild(child).getChild("myElement"));
         assertEquals("myElement", element.getChild("myElement").getName());
 
-        List<SchemaElement> children = element.getChildren();
+        List<Property> children = element.getChildren();
         assertEquals(1, children.size());
         assertEquals("myElement", children.get(0).getName());
 
@@ -121,7 +126,7 @@ public class DataSchemaElementTest {
         assertEquals("myElement", element.getChild("myElement").getName());
         assertEquals("myElement2", element.getChild("myElement2").getName());
 
-        Map<String, SchemaElement> childrenMap = element.getChildMap();
+        Map<String, Property> childrenMap = element.getChildMap();
         assertEquals(2, childrenMap.size());
         assertEquals("myElement", childrenMap.get("myElement").getName());
         assertEquals("myElement2", childrenMap.get("myElement2").getName());

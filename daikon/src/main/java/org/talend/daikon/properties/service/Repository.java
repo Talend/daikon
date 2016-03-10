@@ -13,7 +13,6 @@
 package org.talend.daikon.properties.service;
 
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.schema.Schema;
 
 /**
  * A design-time interface to the repository to allow {@link Properties} to be stored.
@@ -29,9 +28,9 @@ public interface Repository<T extends Properties> {
      * @param name the name of the collection of properties
      * @param repositoryLocation the repositoryLocation under which this item should be stored (using the name
      * parameter).
-     * @param schema an optional schema to be added at this location.
+     * @param schemaPropertyName the qualified name of the schema property relative to the properties parameter.
      * @return repositoryLocation, a String containing the location where this object was stored.
      */
-    public String storeProperties(T properties, String name, String repositoryLocation, Schema schema);
+    public String storeProperties(T properties, String name, String repositoryLocation, String schemaPropertyName);
 
 }

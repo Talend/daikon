@@ -10,21 +10,14 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.schema;
+package org.talend.daikon.properties.testproperties.nestedprop;
 
-/**
- * A schema that can be used by the component service
- */
-public interface Schema {
+import org.talend.daikon.properties.Properties;
 
-    public SchemaElement getRoot();
+public class NestedNestedProperties extends Properties {
 
-    public SchemaElement setRoot(SchemaElement root);
-
-    /**
-     * Returns a string that is the serialized form of this Schema. Use {@link SchemaFactory#fromSerialized(String)} to
-     * materialize the object from the string.
-     */
-    public String toSerialized();
+    public NestedNestedProperties(String name) {
+        super(name);
+    }
 
 }

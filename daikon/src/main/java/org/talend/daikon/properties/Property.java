@@ -12,22 +12,43 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.avro.Schema;
 import org.talend.daikon.SimpleNamedThing;
-import org.talend.daikon.schema.AbstractSchemaElement;
-import org.talend.daikon.schema.Schema;
-import org.talend.daikon.schema.SchemaFactory;
+import org.talend.daikon.strings.ToStringIndentUtil;
 
 /**
  * A property that is part of a {@link Properties}.
  */
-public class Property extends AbstractSchemaElement implements AnyProperty {
+public class Property extends SimpleNamedThing implements AnyProperty {
 
     private static final String I18N_PROPERTY_PREFIX = "property."; //$NON-NLS-1$
+
+    public enum Type {
+        STRING,
+        BOOLEAN,
+        INT,
+        DATE,
+        DATETIME,
+        DECIMAL,
+        FLOAT,
+        DOUBLE,
+        BYTE_ARRAY,
+        ENUM,
+        DYNAMIC,
+        GROUP,
+        SCHEMA
+    }
+
+    public static int INFINITE = -1;
 
     protected EnumSet<Flags> flags;
 
@@ -38,19 +59,39 @@ public class Property extends AbstractSchemaElement implements AnyProperty {
     transient private PropertyValueEvaluator propertyValueEvaluator;
 
     public enum Flags {
-                       /**
-                        * Encrypt this when storing the {@link Properties} into a serializable form.
-                        */
+        /**
+         * Encrypt this when storing the {@link Properties} into a serializable form.
+         */
         ENCRYPT,
-                       /**
-                        * Don't log this value in any logs.
-                        */
+        /**
+         * Don't log this value in any logs.
+         */
         SUPPRESS_LOGGING;
     };
 
-    public Property(String name) {
-        this(name, null);
-    }
+    private Type type;
+
+    private int size;
+
+    private int occurMinTimes;
+
+    private int occurMaxTimes;
+
+    // Number of decimal places - DI
+    private int precision;
+
+    // Used for date conversion - DI
+    private String pattern;
+
+    private String defaultValue;
+
+    private boolean nullable;
+
+    private Class<?> enumClass;
+
+    private List<?> possibleValues;
+
+    protected List<Property> children = new ArrayList<>();;
 
     public Property(String name, String title) {
         this(null, name, title);
@@ -65,6 +106,184 @@ public class Property extends AbstractSchemaElement implements AnyProperty {
 
     public Property(Type type, String name) {
         this(type, name, null);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public Property setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public Property setDisplayName(String displayName) {
+        this.displayName = displayName;
+        return this;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    public Property setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Property setType(Type type) {
+        this.type = type;
+        return this;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public Property setSize(int size) {
+        this.size = size;
+        return this;
+    }
+
+    public boolean isSizeUnbounded() {
+        if (size == -1) {
+            return true;
+        }
+        return false;
+    }
+
+    public int getOccurMinTimes() {
+        return occurMinTimes;
+    }
+
+    public Property setOccurMinTimes(int times) {
+        this.occurMinTimes = times;
+        return this;
+    }
+
+    public int getOccurMaxTimes() {
+        return occurMaxTimes;
+    }
+
+    public Property setOccurMaxTimes(int times) {
+        this.occurMaxTimes = times;
+        return this;
+    }
+
+    public boolean isRequired() {
+        return occurMinTimes > 0;
+    }
+
+    public Property setRequired() {
+        return setRequired(true);
+    }
+
+    public Property setRequired(boolean required) {
+        setOccurMinTimes(1);
+        setOccurMaxTimes(1);
+        return this;
+    }
+
+    public int getPrecision() {
+        return precision;
+    }
+
+    public Property setPrecision(int precision) {
+        this.precision = precision;
+        return this;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public Property setPattern(String pattern) {
+        this.pattern = pattern;
+        return this;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public Property setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+        return this;
+    }
+
+    public boolean isNullable() {
+        return nullable;
+    }
+
+    public Property setNullable(boolean nullable) {
+        this.nullable = nullable;
+        return this;
+    }
+
+    public Class<?> getEnumClass() {
+        return enumClass;
+    }
+
+    public Property setEnumClass(Class<?> enumClass) {
+        this.enumClass = enumClass;
+        return this;
+    }
+
+    public List<?> getPossibleValues() {
+        return possibleValues;
+    }
+
+    public Property setPossibleValues(List<?> possibleValues) {
+        this.possibleValues = possibleValues;
+        return this;
+    }
+
+    public Property setPossibleValues(Object... values) {
+        this.possibleValues = Arrays.asList(values);
+        return this;
+    }
+
+    public List<Property> getChildren() {
+        return children;
+    }
+
+    public Property setChildren(List<Property> children) {
+        this.children = children;
+        return this;
+    }
+
+    public Property addChild(Property child) {
+        children.add(child);
+        return this;
+    }
+
+    public Property getChild(String name) {
+        if (children != null) {
+            for (Property child : children) {
+                if (child.getName().equals(name)) {
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Map<String, Property> getChildMap() {
+        Map<String, Property> map = new HashMap<>();
+        for (Property se : getChildren()) {
+            map.put(se.getName(), se);
+        }
+        return map;
+    }
+
+    public Property(String name) {
+        this(name, null);
     }
 
     public EnumSet<Flags> getFlags() {
@@ -85,8 +304,8 @@ public class Property extends AbstractSchemaElement implements AnyProperty {
 
     public void setValue(Object value) {
         Object valueToSet = value;
-        if (getType() == Type.SCHEMA && value instanceof String) {
-            valueToSet = SchemaFactory.fromSerialized((String) value);
+        if (value != null && getType() == Type.SCHEMA && value instanceof Schema) {
+            valueToSet = value.toString();
         }
         storedValue = valueToSet;
     }
@@ -116,15 +335,12 @@ public class Property extends AbstractSchemaElement implements AnyProperty {
     }
 
     /**
-     * @return cast the getValue() into a String. if the property is a Schema then it is serialized before being
-     * returned.
+     * @return cast the getValue() into a String.
      */
     public String getStringValue() {
         Object value = getValue();
         if (value != null) {
-            if (value instanceof Schema) {
-                return ((Schema) value).toSerialized();
-            }
+            // Schemas are serialized to JSON String via their built-in toString() method.
             return String.valueOf(value);
         }
         return null;
@@ -141,11 +357,17 @@ public class Property extends AbstractSchemaElement implements AnyProperty {
         return Integer.valueOf(String.valueOf(value));
     }
 
-    /**
-     * @return Cast the stored value to a Calendar.
-     */
     public Calendar getCalendarValue() {
-        return (Calendar) getValue();
+        Object value = getValue();
+        if (value instanceof Calendar) {
+            return (Calendar) value;
+        }
+        if (value instanceof Date) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime((Date) value);
+            return calendar;
+        }
+        throw new IllegalStateException(this + " is not instance of Date nor Calendar");
     }
 
     @Override
@@ -184,11 +406,6 @@ public class Property extends AbstractSchemaElement implements AnyProperty {
         return taggedValues.get(key);
     }
 
-    /**
-     * DOC sgandon Comment method "setValueEvaluator".
-     * 
-     * @param ve
-     */
     public void setValueEvaluator(PropertyValueEvaluator ve) {
         this.propertyValueEvaluator = ve;
     }
@@ -196,6 +413,10 @@ public class Property extends AbstractSchemaElement implements AnyProperty {
     @Override
     public void accept(AnyPropertyVisitor visitor, Properties parent) {
         visitor.visit(this, parent);
+    }
+
+    public String toStringIndent(int indent) {
+        return ToStringIndentUtil.indentString(indent) + getName();
     }
 
 }

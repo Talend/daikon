@@ -12,13 +12,13 @@
 // ============================================================================
 package org.talend.daikon.exception.error;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Common error code for a backend service application that also implents a REST API.
+ */
 public enum CommonErrorCodes implements ErrorCode {
                                                    UNEXPECTED_EXCEPTION(HttpServletResponse.SC_INTERNAL_SERVER_ERROR), // 500
                                                    MISSING_I18N_TRANSLATOR(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "key", "baseName"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -30,11 +30,7 @@ public enum CommonErrorCodes implements ErrorCode {
                                                                                                                 // e.g
                                                                                                                 // IllegalArgumentException
 
-    /** The http status to use. */
-    private int httpStatus;
-
-    /** Expected entries to be in the context. */
-    private List<String> expectedContextEntries;
+    private DefaultErrorCode errorCodeDelegate;
 
     /**
      * default constructor.
@@ -42,8 +38,7 @@ public enum CommonErrorCodes implements ErrorCode {
      * @param httpStatus the http status to use.
      */
     CommonErrorCodes(int httpStatus) {
-        this.httpStatus = httpStatus;
-        this.expectedContextEntries = Collections.emptyList();
+        this.errorCodeDelegate = new DefaultErrorCode(httpStatus);
     }
 
     /**
@@ -52,8 +47,7 @@ public enum CommonErrorCodes implements ErrorCode {
      * @param httpStatus the http status to use.
      */
     CommonErrorCodes(int httpStatus, String... contextEntries) {
-        this.httpStatus = httpStatus;
-        this.expectedContextEntries = Arrays.asList(contextEntries);
+        this.errorCodeDelegate = new DefaultErrorCode(httpStatus, contextEntries);
     }
 
     /**
@@ -61,7 +55,7 @@ public enum CommonErrorCodes implements ErrorCode {
      */
     @Override
     public String getProduct() {
-        return "Talend"; //$NON-NLS-1$
+        return errorCodeDelegate.getProduct();
     }
 
     /**
@@ -69,7 +63,7 @@ public enum CommonErrorCodes implements ErrorCode {
      */
     @Override
     public String getGroup() {
-        return "ALL"; //$NON-NLS-1$
+        return errorCodeDelegate.getGroup();
     }
 
     /**
@@ -77,7 +71,7 @@ public enum CommonErrorCodes implements ErrorCode {
      */
     @Override
     public int getHttpStatus() {
-        return httpStatus;
+        return errorCodeDelegate.getHttpStatus();
     }
 
     /**
@@ -85,11 +79,11 @@ public enum CommonErrorCodes implements ErrorCode {
      */
     @Override
     public Collection<String> getExpectedContextEntries() {
-        return expectedContextEntries;
+        return errorCodeDelegate.getExpectedContextEntries();
     }
 
     @Override
     public String getCode() {
-        return this.toString();
+        return toString();
     }
 }

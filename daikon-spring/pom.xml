@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.talend.daikon</groupId>
 		<artifactId>daikon-parent</artifactId>
-		<version>0.3.0.BUILD-SNAPSHOT</version>
+		<version>0.4.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>daikon-spring</artifactId>
 	<packaging>jar</packaging>

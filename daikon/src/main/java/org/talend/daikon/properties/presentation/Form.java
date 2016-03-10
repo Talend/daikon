@@ -24,14 +24,13 @@ import org.talend.daikon.i18n.I18nMessages;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesDynamicMethodHelper;
 import org.talend.daikon.properties.Property;
-import org.talend.daikon.schema.SchemaElement;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 /**
- * Represents a collection of components {@link SchemaElement} objects that are grouped into a form for display. This
+ * Represents a collection of components {@link Property} objects that are grouped into a form for display. This
  * form can be manifested for example as a tab in a view, a dialog, or a page in a wizard.
  */
 public class Form extends SimpleNamedThing implements ToStringIndent {
@@ -73,7 +72,6 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     @JsonBackReference
     protected Properties properties;
 
-
     protected Map<String, Widget> widgetMap;
 
     protected List<Widget> widgets;
@@ -84,7 +82,7 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
 
     private boolean cancelable;
 
-    private Map<String, Object> cancelableValues;// stores the value temporarily in case the are canceled
+    private Map<String, Object> originalValues;// stores the value temporarily in case the are canceled
 
     private boolean callBeforeFormPresent;
 
@@ -141,11 +139,9 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
         return GlobalI18N.getI18nMessageProvider().getI18nMessages(properties.getClass());
     }
 
-
     public List<Widget> getWidgets() {
         return widgets;
     }
-
 
     public Properties getProperties() {
         return properties;
@@ -219,22 +215,21 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     }
 
     private void fill(Widget widget) {
-        for (NamedThing child : widget.getProperties()) {
-            String name = child.getName();
-            /*
-             * We don't use the form name since that's not going to necessarily be unique within the form's list of
-             * properties. The Properties object associated with the form will have a unique name within the enclosing
-             * Properties (and therefore this Form).
-             */
-            if (child instanceof Form) {
-                name = ((Form) child).getProperties().getName();
-            }
-            if (name == null) {
-                throw new NullPointerException();
-            }
-            widgetMap.put(name, widget);
-            PropertiesDynamicMethodHelper.setWidgetLayoutMethods(properties, name, widget);
+        NamedThing child = widget.getContent();
+        String name = child.getName();
+        /*
+         * We don't use the form name since that's not going to necessarily be unique within the form's list of
+         * properties. The Properties object associated with the form will have a unique name within the enclosing
+         * Properties (and therefore this Form).
+         */
+        if (child instanceof Form) {
+            name = ((Form) child).getProperties().getName();
         }
+        if (name == null) {
+            throw new NullPointerException();
+        }
+        widgetMap.put(name, widget);
+        PropertiesDynamicMethodHelper.setWidgetLayoutMethods(properties, name, widget);
     }
 
     public Widget getWidget(String child) {
@@ -249,17 +244,21 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
      */
     public Widget getWidget(Class<?> childClass) {
         for (Widget w : widgets) {
-            for (NamedThing p : w.getProperties()) {
-                // See comment above in fill()
-                if (p instanceof Form) {
-                    p = ((Form) p).getProperties();
-                }
-                if (p.getClass() == childClass) {
-                    return w;
-                }
+            NamedThing p = w.getContent();
+            // See comment above in fill()
+            if (p instanceof Form) {
+                p = ((Form) p).getProperties();
+            }
+            if (p.getClass() == childClass) {
+                return w;
             }
         }
         return null;
+    }
+
+    public Form getChildForm(String child) {
+        Widget w = getWidget(child);
+        return (Form) w.getContent();
     }
 
     /**
@@ -267,8 +266,8 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
      *
      * If the form is cancelable (see
      * {@link org.talend.daikon.properties.service.PropertiesService#makeFormCancelable(Properties, String)}) the values
-     * are stored with the this object and not into the underlying properties until
-     * {@link org.talend.daikon.properties.service.PropertiesService#commitFormValues(Properties, String)} is called.
+     * can be reset to the original values when
+     * {@link org.talend.daikon.properties.service.PropertiesService#cancelFormValues(Properties, String)} is called.
      * <p/>
      * FIXME - note we need to work out how this happens with the REST API.
      *
@@ -276,40 +275,53 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
      * @param value
      */
     public void setValue(String property, Object value) {
-        // FIXME handle cases of qualified property names
+        if (property.contains(".")) {
+            throw new IllegalArgumentException(
+                    "Cannot setValue on a qualified property: '" + property + "', use the Form associated with the property.");
+        }
         NamedThing se = getProperties().getProperty(property);
         if (!(se instanceof Property)) {
             throw new IllegalArgumentException("Attempted to set value on " + se + " which is not a Property");
         }
         Property p = (Property) se;
         if (cancelable) {
-            if (cancelableValues == null) {
-                throw new IllegalStateException("Cannot setValue on " + property + " after commitValues() has been called");
+            if (originalValues == null) {
+                throw new IllegalStateException("Cannot setValue on " + property + " after cancelValues() has been called");
             }
-            cancelableValues.put(property, value);
-        } else {
-            p.setValue(value);
+            if (!originalValues.containsKey(property))
+                originalValues.put(property, p.getValue());
         }
+        p.setValue(value);
     }
 
     // Not API - to be called by ComponentService only
     public void setCancelable(boolean cancelable) {
         this.cancelable = cancelable;
-        cancelableValues = null;
+        originalValues = null;
         if (cancelable) {
-            cancelableValues = new HashMap<>();
+            originalValues = new HashMap<>();
+        }
+        for (Widget w : widgets) {
+            NamedThing p = w.getContent();
+            if (p instanceof Form)
+                ((Form) p).setCancelable(cancelable);
         }
     }
 
     // Not API - to be called by ComponentService only
-    public void commitValues() {
-        if (cancelableValues == null) {
+    public void cancelValues() {
+        if (originalValues == null) {
             return;
         }
-        for (String key : cancelableValues.keySet()) {
-            ((Property) getProperties().getProperty(key)).setValue(cancelableValues.get(key));
+        for (String key : originalValues.keySet()) {
+            ((Property) getProperties().getProperty(key)).setValue(originalValues.get(key));
         }
-        cancelableValues = null;
+        originalValues = null;
+        for (Widget w : widgets) {
+            NamedThing p = w.getContent();
+            if (p instanceof Form)
+                ((Form) p).cancelValues();
+        }
     }
 
     public boolean isRefreshUI() {

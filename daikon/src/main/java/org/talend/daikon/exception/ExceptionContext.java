@@ -42,6 +42,9 @@ public class ExceptionContext implements Serializable {
         context = builder.context;
     }
 
+
+    public static final String KEY_MESSAGE = "message";
+
     /**
      * Put the given key/value into this context.
      *
