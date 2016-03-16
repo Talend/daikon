@@ -25,6 +25,8 @@ import org.apache.avro.Schema;
 import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * A property that is part of a {@link Properties}.
  */
@@ -239,6 +241,7 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return possibleValues;
     }
 
+    @JsonIgnore // to avoid swagger to fail because of the 2 similar following methods.
     public Property setPossibleValues(List<?> possibleValues) {
         this.possibleValues = possibleValues;
         return this;

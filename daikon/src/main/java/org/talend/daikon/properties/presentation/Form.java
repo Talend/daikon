@@ -12,9 +12,9 @@
 // ============================================================================
 package org.talend.daikon.properties.presentation;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.talend.daikon.NamedThing;
@@ -72,9 +72,7 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     @JsonBackReference
     protected Properties properties;
 
-    protected Map<String, Widget> widgetMap;
-
-    protected List<Widget> widgets;
+    protected LinkedHashMap<String, Widget> widgetMap;
 
     private int currentRow;
 
@@ -109,8 +107,7 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
 
     public Form(Properties props, String name, String displayName, String title) {
         super(name, displayName, title);
-        widgetMap = new HashMap<String, Widget>();
-        widgets = new ArrayList<Widget>();
+        widgetMap = new LinkedHashMap<>();
         props.addForm(this);
         properties = props;
         PropertiesDynamicMethodHelper.setFormLayoutMethods(props, name, this);
@@ -139,8 +136,8 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
         return GlobalI18N.getI18nMessageProvider().getI18nMessages(properties.getClass());
     }
 
-    public List<Widget> getWidgets() {
-        return widgets;
+    public Collection<Widget> getWidgets() {
+        return widgetMap.values();
     }
 
     public Properties getProperties() {
@@ -197,8 +194,9 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
      */
     public Form addRow(Widget widget) {
         currentColumn = 1;
-        widgets.add(widget.setRow(++currentRow).setOrder(currentColumn));
-        fill(widget);
+        String widgetName = getWidgetContentName(widget);
+        widgetMap.put(widgetName, widget.setRow(++currentRow).setOrder(currentColumn));
+        PropertiesDynamicMethodHelper.setWidgetLayoutMethods(properties, widgetName, widget);
         return this;
     }
 
@@ -209,8 +207,9 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
      * @return
      */
     public Form addColumn(Widget widget) {
-        widgets.add(widget.setRow(currentRow).setOrder(++currentColumn));
-        fill(widget);
+        String widgetName = getWidgetContentName(widget);
+        widgetMap.put(widgetName, widget.setRow(currentRow).setOrder(++currentColumn));
+        PropertiesDynamicMethodHelper.setWidgetLayoutMethods(properties, widgetName, widget);
         return this;
     }
 
@@ -223,22 +222,27 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
         }
     }
 
-    private void fill(Widget widget) {
+    /**
+     * return widget name from it's contents
+     * 
+     * @param widget
+     * @return name of the widget content.
+     */
+    private String getWidgetContentName(Widget widget) {
         NamedThing child = widget.getContent();
-        String name = child.getName();
+        String widgetName = child.getName();
         /*
          * We don't use the form name since that's not going to necessarily be unique within the form's list of
          * properties. The Properties object associated with the form will have a unique name within the enclosing
          * Properties (and therefore this Form).
          */
         if (child instanceof Form) {
-            name = ((Form) child).getProperties().getName();
+            widgetName = ((Form) child).getProperties().getName();
         }
-        if (name == null) {
+        if (widgetName == null) {
             throw new NullPointerException();
         }
-        widgetMap.put(name, widget);
-        PropertiesDynamicMethodHelper.setWidgetLayoutMethods(properties, name, widget);
+        return widgetName;
     }
 
     public Widget getWidget(String child) {
@@ -252,7 +256,7 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
      * @return the {@code Widget} belonging to those properties.
      */
     public Widget getWidget(Class<?> childClass) {
-        for (Widget w : widgets) {
+        for (Widget w : widgetMap.values()) {
             NamedThing p = w.getContent();
             // See comment above in fill()
             if (p instanceof Form) {
@@ -297,8 +301,9 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
             if (originalValues == null) {
                 throw new IllegalStateException("Cannot setValue on " + property + " after cancelValues() has been called");
             }
-            if (!originalValues.containsKey(property))
+            if (!originalValues.containsKey(property)) {
                 originalValues.put(property, p.getValue());
+            }
         }
         p.setValue(value);
     }
@@ -310,10 +315,11 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
         if (cancelable) {
             originalValues = new HashMap<>();
         }
-        for (Widget w : widgets) {
+        for (Widget w : widgetMap.values()) {
             NamedThing p = w.getContent();
-            if (p instanceof Form)
+            if (p instanceof Form) {
                 ((Form) p).setCancelable(cancelable);
+            }
         }
     }
 
@@ -326,10 +332,11 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
             ((Property) getProperties().getProperty(key)).setValue(originalValues.get(key));
         }
         originalValues = null;
-        for (Widget w : widgets) {
+        for (Widget w : widgetMap.values()) {
             NamedThing p = w.getContent();
-            if (p instanceof Form)
+            if (p instanceof Form) {
                 ((Form) p).cancelValues();
+            }
         }
     }
 
