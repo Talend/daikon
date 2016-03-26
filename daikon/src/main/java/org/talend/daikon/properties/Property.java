@@ -90,7 +90,7 @@ public class Property extends SimpleNamedThing implements AnyProperty {
     // Used for date conversion - DI
     private String pattern;
 
-    private String defaultValue;
+    private Object defaultValue;
 
     private boolean nullable;
 
@@ -215,11 +215,11 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return this;
     }
 
-    public String getDefaultValue() {
+    public Object getDefaultValue() {
         return defaultValue;
     }
 
-    public Property setDefaultValue(String defaultValue) {
+    public Property setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
         return this;
     }
