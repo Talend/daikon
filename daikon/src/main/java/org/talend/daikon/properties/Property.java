@@ -12,20 +12,12 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.avro.Schema;
 import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.*;
 
 /**
  * A property that is part of a {@link Properties}.
@@ -72,8 +64,12 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         /**
          * Used only at design time, not necessary for runtime.
          */
-        DESIGN_TIME_ONLY;
+        DESIGN_TIME_ONLY,
 
+        /**
+         * Raw value
+         */
+        RAW;
     };
 
     private Type type;
