@@ -12,17 +12,13 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * created by pbailly on 5 Nov 2015 Detailled comment
@@ -95,9 +91,9 @@ public class PropertyTest {
         assertEquals(element, element.setPattern("mypattern"));
         assertEquals("mypattern", element.getPattern());
 
-        assertNull(element.getDefaultValue());
-        assertEquals(element, element.setDefaultValue("mypattern"));
-        assertEquals("mypattern", element.getDefaultValue());
+        assertNull(element.getValue());
+        element.setValue("mypattern");
+        assertEquals("mypattern", element.getValue());
 
         assertFalse(element.isNullable());
         assertEquals(element, element.setNullable(true));

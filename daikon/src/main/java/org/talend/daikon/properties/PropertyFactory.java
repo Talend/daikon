@@ -37,60 +37,70 @@ public class PropertyFactory {
         return new Property(Property.Type.STRING, name);
     }
 
+    public static Property newString(String name, String defaultValue) {
+        Property property = newString(name);
+        property.setValue(defaultValue);
+        return property;
+    }
+
     public static Property newInteger(String name) {
         return new Property(Property.Type.INT, name);
     }
 
+    @Deprecated
     public static Property newInteger(String name, String defaultValue) {
-        Property property = newInteger(name);
-        property.setDefaultValue(defaultValue);
-        return property;
+        return newInteger(name, Integer.valueOf(defaultValue));
     }
 
     public static Property newInteger(String name, Integer defaultValue) {
-        return newInteger(name, defaultValue.toString());
+        Property property = newInteger(name);
+        property.setValue(defaultValue);
+        return property;
     }
 
     public static Property newDouble(String name) {
         return new Property(Property.Type.DOUBLE, name);
     }
 
+    @Deprecated
     public static Property newDouble(String name, String defaultValue) {
-        Property property = newDouble(name);
-        property.setDefaultValue(defaultValue);
-        return property;
+        return newDouble(name, Double.valueOf(defaultValue));
     }
 
     public static Property newDouble(String name, Double defaultValue) {
-        return newDouble(name, defaultValue.toString());
+        Property property = newDouble(name);
+        property.setValue(defaultValue);
+        return property;
     }
 
     public static Property newFloat(String name) {
         return new Property(Property.Type.FLOAT, name);
     }
 
+    @Deprecated
     public static Property newFloat(String name, String defaultValue) {
-        Property property = newFloat(name);
-        property.setDefaultValue(defaultValue);
-        return property;
+        return newFloat(name, Float.valueOf(defaultValue));
     }
 
     public static Property newFloat(String name, Float defaultValue) {
-        return newFloat(name, defaultValue.toString());
+        Property property = newFloat(name);
+        property.setValue(defaultValue);
+        return property;
     }
 
     public static Property newBoolean(String name) {
         return new Property(Property.Type.BOOLEAN, name);
     }
 
+    @Deprecated
     public static Property newBoolean(String name, String defaultValue) {
-        Property property = newBoolean(name);
-        property.setDefaultValue(defaultValue);
-        return property;
+        return newBoolean(name, Boolean.valueOf(defaultValue));
     }
 
     public static Property newBoolean(String name, Boolean defaultValue) {
-        return newBoolean(name, defaultValue.toString());
+        Property property = newBoolean(name);
+        property.setValue(defaultValue);
+        return property;
     }
 
     public static Property newDate(String name) {

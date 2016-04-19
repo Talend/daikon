@@ -12,20 +12,12 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.avro.Schema;
 import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.*;
 
 /**
  * A property that is part of a {@link Properties}.
@@ -89,8 +81,6 @@ public class Property extends SimpleNamedThing implements AnyProperty {
 
     // Used for date conversion - DI
     private String pattern;
-
-    private String defaultValue;
 
     private boolean nullable;
 
@@ -212,15 +202,6 @@ public class Property extends SimpleNamedThing implements AnyProperty {
 
     public Property setPattern(String pattern) {
         this.pattern = pattern;
-        return this;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
-    public Property setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
         return this;
     }
 
