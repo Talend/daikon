@@ -37,9 +37,9 @@ public class PropertyFactory {
         return new Property(Property.Type.STRING, name);
     }
 
-    public static Property newString(String name, String defaultValue) {
+    public static Property newString(String name, String initialValue) {
         Property property = newString(name);
-        property.setValue(defaultValue);
+        property.setValue(initialValue);
         return property;
     }
 
@@ -47,14 +47,13 @@ public class PropertyFactory {
         return new Property(Property.Type.INT, name);
     }
 
-    @Deprecated
-    public static Property newInteger(String name, String defaultValue) {
-        return newInteger(name, Integer.valueOf(defaultValue));
+    public static Property newInteger(String name, String initialValue) {
+        return newInteger(name, Integer.valueOf(initialValue));
     }
 
-    public static Property newInteger(String name, Integer defaultValue) {
+    public static Property newInteger(String name, Integer initialValue) {
         Property property = newInteger(name);
-        property.setValue(defaultValue);
+        property.setValue(initialValue);
         return property;
     }
 
@@ -62,14 +61,13 @@ public class PropertyFactory {
         return new Property(Property.Type.DOUBLE, name);
     }
 
-    @Deprecated
-    public static Property newDouble(String name, String defaultValue) {
-        return newDouble(name, Double.valueOf(defaultValue));
+    public static Property newDouble(String name, String initialValue) {
+        return newDouble(name, Double.valueOf(initialValue));
     }
 
-    public static Property newDouble(String name, Double defaultValue) {
+    public static Property newDouble(String name, Double initialValue) {
         Property property = newDouble(name);
-        property.setValue(defaultValue);
+        property.setValue(initialValue);
         return property;
     }
 
@@ -77,14 +75,13 @@ public class PropertyFactory {
         return new Property(Property.Type.FLOAT, name);
     }
 
-    @Deprecated
-    public static Property newFloat(String name, String defaultValue) {
-        return newFloat(name, Float.valueOf(defaultValue));
+    public static Property newFloat(String name, String initialValue) {
+        return newFloat(name, Float.valueOf(initialValue));
     }
 
-    public static Property newFloat(String name, Float defaultValue) {
+    public static Property newFloat(String name, Float initialValue) {
         Property property = newFloat(name);
-        property.setValue(defaultValue);
+        property.setValue(initialValue);
         return property;
     }
 
@@ -92,14 +89,13 @@ public class PropertyFactory {
         return new Property(Property.Type.BOOLEAN, name);
     }
 
-    @Deprecated
-    public static Property newBoolean(String name, String defaultValue) {
-        return newBoolean(name, Boolean.valueOf(defaultValue));
+    public static Property newBoolean(String name, String initialValue) {
+        return newBoolean(name, Boolean.valueOf(initialValue));
     }
 
-    public static Property newBoolean(String name, Boolean defaultValue) {
+    public static Property newBoolean(String name, Boolean initialValue) {
         Property property = newBoolean(name);
-        property.setValue(defaultValue);
+        property.setValue(initialValue);
         return property;
     }
 
