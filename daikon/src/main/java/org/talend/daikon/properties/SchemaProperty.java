@@ -13,35 +13,31 @@
 package org.talend.daikon.properties;
 
 import org.apache.avro.Schema;
-import org.talend.daikon.exception.TalendRuntimeException;
-import org.talend.daikon.exception.error.CommonErrorCodes;
 
 /**
  * Schema Property that get and set an Avro Schema but store a String internally for serialization optimization. The set
  * Value accepts both Schema and json string for schema. The evaluator is also called with the Schema instance.
  */
-public class SchemaProperty extends Property implements AnyProperty {
+public class SchemaProperty extends Property<Schema> implements AnyProperty {
+
+    private String stringValue;
 
     public SchemaProperty(String name) {
-        super(Type.SCHEMA, name);
+        super(Schema.class, name);
     }
 
     public SchemaProperty(String name, String title) {
-        super(Type.SCHEMA, name, title);
+        super(Schema.class, name, title);
     }
 
     @Override
-    public void setValue(Object value) {
-        Object valueToSet = value;
-        if (value != null && value instanceof Schema) {
-            valueToSet = value.toString();
-        } else if (value instanceof String) {
-            valueToSet = value;
-        } else {
-            throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
-                    new IllegalArgumentException("value should be a String or a Schema."));
+    public Property<Schema> setValue(Object value) {
+        if (!(value instanceof Schema)) {
+            throw new IllegalArgumentException("value should be of type Schema");
         }
-        storedValue = valueToSet;
+        // convert to string to optimize serialization
+        stringValue = value.toString();
+        return this;
     }
 
     /**
@@ -51,10 +47,10 @@ public class SchemaProperty extends Property implements AnyProperty {
      * 
      */
     @Override
-    public Object getValue() {
-        Object returnValue = null;
-        if (storedValue != null) {
-            returnValue = new Schema.Parser().parse(storedValue.toString());
+    public Schema getValue() {
+        Schema returnValue = null;
+        if (stringValue != null) {
+            returnValue = new Schema.Parser().parse(stringValue);
             if (propertyValueEvaluator != null) {
                 returnValue = propertyValueEvaluator.evaluate(this, returnValue);
             } // else not evaluator so return the storedValue

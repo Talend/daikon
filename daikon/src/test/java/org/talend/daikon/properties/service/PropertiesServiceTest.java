@@ -86,21 +86,9 @@ public class PropertiesServiceTest {
         Properties savedProps = props;
         Properties savedNested = props.nestedProps;
 
-        Date dateNow = new Date();
-        dateNow.setTime(System.currentTimeMillis());
-        Date dateLater = new Date();
-        dateLater.setTime(dateLater.getTime() + 10000);
-
-        Calendar calNow = Calendar.getInstance();
-        calNow.setTime(dateNow);
-        Calendar calLater = Calendar.getInstance();
-        calLater.setTime(dateLater);
-
         props.userId.setValue("userId");
         props.integer.setValue(1);
         props.decimal.setValue(2);
-        props.date.setValue(dateNow);
-        props.dateTime.setValue(dateNow);
         props.nestedProps.aGreatProperty.setValue("propPrevious1");
         props.nestedProps.anotherProp.setValue("propPrevious2");
 
@@ -113,15 +101,11 @@ public class PropertiesServiceTest {
 
         form.setValue("integer", 10);
         form.setValue("decimal", 20);
-        form.setValue("date", dateLater);
-        form.setValue("dateTime", dateLater);
 
         assertEquals("userIdnew", props.userId.getValue());
         assertEquals("propPrevious1new", props.nestedProps.aGreatProperty.getValue());
-        assertEquals(10, props.integer.getIntValue());
-        assertEquals(20, props.decimal.getIntValue());
-        assertEquals(calLater, props.date.getCalendarValue());
-        assertEquals(calLater, props.dateTime.getCalendarValue());
+        assertEquals((Integer) 10, props.integer.getValue());
+        assertEquals((Integer) 20, props.decimal.getValue());
 
         assertTrue(props == savedProps);
         assertTrue(props.nestedProps == savedNested);
@@ -130,10 +114,8 @@ public class PropertiesServiceTest {
 
         assertEquals("userId", props.userId.getValue());
         assertEquals("propPrevious1", props.nestedProps.aGreatProperty.getValue());
-        assertEquals(1, props.integer.getIntValue());
-        assertEquals(2, props.decimal.getIntValue());
-        assertEquals(calNow, props.date.getCalendarValue());
-        assertEquals(calNow, props.dateTime.getCalendarValue());
+        assertEquals((Integer) 1, props.integer.getValue());
+        assertEquals((Integer) 2, props.decimal.getValue());
     }
 
     @Test

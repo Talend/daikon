@@ -22,9 +22,9 @@ public class NestedProperties extends Properties {
 
     public static final String A_GREAT_PROP_NAME = "aGreatProperty"; //$NON-NLS-1$
 
-    public Property aGreatProperty = newProperty(A_GREAT_PROP_NAME);
+    public Property<String> aGreatProperty = newProperty(A_GREAT_PROP_NAME);
 
-    public Property anotherProp = newBoolean("anotherProp");
+    public Property<Boolean> anotherProp = newBoolean("anotherProp");
 
     public NestedNestedProperties nestedProp = new NestedNestedProperties("nestedProp");
 
@@ -43,6 +43,6 @@ public class NestedProperties extends Properties {
     @Override
     public void refreshLayout(Form form) {
         // change visibility according to anotherProp value
-        form.getWidget(anotherProp.getName()).setHidden(anotherProp.getBooleanValue());
+        form.getWidget(anotherProp.getName()).setHidden(anotherProp.getValue());
     }
 }

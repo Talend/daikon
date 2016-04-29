@@ -14,8 +14,6 @@ package org.talend.daikon.properties;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -30,25 +28,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * A property that is part of a {@link Properties}.
  */
-public class Property extends SimpleNamedThing implements AnyProperty {
+public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     private static final String I18N_PROPERTY_PREFIX = "property."; //$NON-NLS-1$
 
-    public enum Type {
-        STRING,
-        BOOLEAN,
-        INT,
-        DATE,
-        DATETIME,
-        DECIMAL,
-        FLOAT,
-        DOUBLE,
-        BYTE_ARRAY,
-        ENUM,
-        DYNAMIC,
-        GROUP,
-        SCHEMA
-    }
+    // public enum Type {
+    // STRING,
+    // BOOLEAN,
+    // INT,
+    // DATE,
+    // DATETIME,
+    // DECIMAL,
+    // FLOAT,
+    // DOUBLE,
+    // BYTE_ARRAY,
+    // ENUM,
+    // DYNAMIC,
+    // GROUP,
+    // SCHEMA
+    // }
 
     public static final int INFINITE = -1;
 
@@ -83,8 +81,6 @@ public class Property extends SimpleNamedThing implements AnyProperty {
 
     }
 
-    private Type type;
-
     private int size;
 
     private int occurMinTimes;
@@ -103,20 +99,18 @@ public class Property extends SimpleNamedThing implements AnyProperty {
 
     private List<?> possibleValues;
 
-    protected List<Property> children = new ArrayList<>();
+    protected List<Property<?>> children = new ArrayList<>();
 
-    public Property(String name, String title) {
-        this(null, name, title);
-    }
+    private Class<T> currentType;;
 
-    public Property(Type type, String name, String title) {
+    public Property(Class<T> type, String name, String title) {
+        this.currentType = type;
         setName(name);
-        setType(type == null ? Type.STRING : type);
         setTitle(title);
         setSize(-1);
     }
 
-    public Property(Type type, String name) {
+    public Property(Class<T> type, String name) {
         this(type, name, null);
     }
 
@@ -125,12 +119,12 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return name;
     }
 
-    public Property setName(String name) {
+    public Property<T> setName(String name) {
         this.name = name;
         return this;
     }
 
-    public Property setDisplayName(String displayName) {
+    public Property<T> setDisplayName(String displayName) {
         this.displayName = displayName;
         return this;
     }
@@ -140,25 +134,20 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return title;
     }
 
-    public Property setTitle(String title) {
+    public Property<T> setTitle(String title) {
         this.title = title;
         return this;
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public Property setType(Type type) {
-        this.type = type;
-        return this;
+    public Class<T> getType() {
+        return currentType;
     }
 
     public int getSize() {
         return size;
     }
 
-    public Property setSize(int size) {
+    public Property<T> setSize(int size) {
         this.size = size;
         return this;
     }
@@ -174,7 +163,7 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return occurMinTimes;
     }
 
-    public Property setOccurMinTimes(int times) {
+    public Property<T> setOccurMinTimes(int times) {
         this.occurMinTimes = times;
         return this;
     }
@@ -183,7 +172,7 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return occurMaxTimes;
     }
 
-    public Property setOccurMaxTimes(int times) {
+    public Property<T> setOccurMaxTimes(int times) {
         this.occurMaxTimes = times;
         return this;
     }
@@ -192,11 +181,11 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return occurMinTimes > 0;
     }
 
-    public Property setRequired() {
+    public Property<T> setRequired() {
         return setRequired(true);
     }
 
-    public Property setRequired(boolean required) {
+    public Property<T> setRequired(boolean required) {
         setOccurMinTimes(1);
         setOccurMaxTimes(1);
         return this;
@@ -206,7 +195,7 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return precision;
     }
 
-    public Property setPrecision(int precision) {
+    public Property<T> setPrecision(int precision) {
         this.precision = precision;
         return this;
     }
@@ -215,7 +204,7 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return pattern;
     }
 
-    public Property setPattern(String pattern) {
+    public Property<T> setPattern(String pattern) {
         this.pattern = pattern;
         return this;
     }
@@ -224,7 +213,7 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return nullable;
     }
 
-    public Property setNullable(boolean nullable) {
+    public Property<T> setNullable(boolean nullable) {
         this.nullable = nullable;
         return this;
     }
@@ -233,7 +222,7 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return enumClass;
     }
 
-    public Property setEnumClass(Class<?> enumClass) {
+    public Property<T> setEnumClass(Class<?> enumClass) {
         this.enumClass = enumClass;
         return this;
     }
@@ -244,34 +233,34 @@ public class Property extends SimpleNamedThing implements AnyProperty {
 
     @JsonIgnore
     // to avoid swagger to fail because of the 2 similar following methods.
-    public Property setPossibleValues(List<?> possibleValues) {
+    public Property<T> setPossibleValues(List<?> possibleValues) {
         this.possibleValues = possibleValues;
         return this;
     }
 
-    public Property setPossibleValues(Object... values) {
+    public Property<T> setPossibleValues(Object... values) {
         this.possibleValues = Arrays.asList(values);
         return this;
     }
 
-    public List<Property> getChildren() {
+    public List<Property<?>> getChildren() {
         return children;
     }
 
-    public Property setChildren(List<Property> children) {
+    public Property<T> setChildren(List<Property<?>> children) {
         this.children = children;
         return this;
     }
 
-    public Property addChild(Property child) {
+    public Property<T> addChild(Property<?> child) {
         children.add(child);
         return this;
     }
 
-    public Property getChild(String name) {
+    public Property<?> getChild(String aName) {
         if (children != null) {
-            for (Property child : children) {
-                if (child.getName().equals(name)) {
+            for (Property<?> child : children) {
+                if (child.getName().equals(aName)) {
                     return child;
                 }
             }
@@ -279,23 +268,19 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         return null;
     }
 
-    public Map<String, Property> getChildMap() {
-        Map<String, Property> map = new HashMap<>();
-        for (Property se : getChildren()) {
+    public Map<String, Property<?>> getChildMap() {
+        Map<String, Property<?>> map = new HashMap<>();
+        for (Property<?> se : getChildren()) {
             map.put(se.getName(), se);
         }
         return map;
-    }
-
-    public Property(String name) {
-        this(name, null);
     }
 
     public EnumSet<Flags> getFlags() {
         return flags;
     }
 
-    public Property setFlags(EnumSet<Flags> flags) {
+    public Property<T> setFlags(EnumSet<Flags> flags) {
         this.flags = flags;
         return this;
     }
@@ -325,8 +310,9 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         }
     }
 
-    public void setValue(Object value) {
+    public Property<T> setValue(Object value) {
         storedValue = value;
+        return this;
     }
 
     public Object getStoredValue() {
@@ -334,23 +320,18 @@ public class Property extends SimpleNamedThing implements AnyProperty {
     }
 
     /**
+     * 
      * @return the value of the property. This value may not be the one Stored with setValue(), it may be evaluated with
      * {@link PropertyValueEvaluator}.
-     * 
-     * 
+     * @exception throw a ClassCastException is the stored value is not of the property type and no
+     * PropertyValueEvaluator has been set.
      */
-    public Object getValue() {
+    @SuppressWarnings("unchecked")
+    public T getValue() {
         if (propertyValueEvaluator != null) {
             return propertyValueEvaluator.evaluate(this, storedValue);
         } // else not evaluator so return the storedValue
-        return storedValue;
-    }
-
-    /**
-     * @return cast the getValue() into a boolean or return false if null.
-     */
-    public boolean getBooleanValue() {
-        return Boolean.valueOf(String.valueOf(getValue()));
+        return (T) storedValue;
     }
 
     /**
@@ -363,30 +344,6 @@ public class Property extends SimpleNamedThing implements AnyProperty {
             return String.valueOf(value);
         }
         return null;
-    }
-
-    /**
-     * @return convert the storedValue to an int, return 0 if values is null.
-     */
-    public int getIntValue() {
-        Object value = getValue();
-        if (value == null) {
-            return 0;
-        }
-        return Integer.valueOf(String.valueOf(value));
-    }
-
-    public Calendar getCalendarValue() {
-        Object value = getValue();
-        if (value instanceof Calendar) {
-            return (Calendar) value;
-        }
-        if (value instanceof Date) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime((Date) value);
-            return calendar;
-        }
-        throw new IllegalStateException(this + " is not instance of Date nor Calendar");
     }
 
     @Override

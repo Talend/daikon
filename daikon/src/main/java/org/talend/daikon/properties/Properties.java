@@ -16,9 +16,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
@@ -154,9 +152,10 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
      * @param serialized created by {@link #toSerialized()}.
      * @return a {@code Properties} object represented by the {@code serialized} value.
      */
+    @SuppressWarnings("unchecked")
     public static synchronized <T extends Properties> Deserialized<T> fromSerialized(String serialized,
             Class<T> propertiesclass) {
-        Deserialized<T> d = new Deserialized<T>();
+        Deserialized<T> d = new Deserialized<>();
         d.migration = new MigrationInformationImpl();
         // this set the proper classloader for the JsonReader especially for OSGI
         ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -342,46 +341,20 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
     }
 
     /**
-     * Used for serialization, this will backup all the forms of every properties / sub-properties, and clear them
-     */
-    private Map<Properties, List<Form>> createFormsBackupAndClear() {
-        Map<Properties, List<Form>> formsMap = new HashMap<>();
-        for (NamedThing nt : this.getProperties()) {
-            if (nt instanceof Properties) {
-                Properties currentProperties = (Properties) nt;
-                formsMap.putAll(currentProperties.createFormsBackupAndClear());
-            }
-        }
-        formsMap.put(this, getForms());
-        forms = new ArrayList<>();
-        return formsMap;
-    }
-
-    /**
-     * Used for serialization, to use after a backup, to restore all the forms
-     */
-    private void restoreFormsBackup(Map<Properties, List<Form>> formsMap) {
-        for (Properties properties : formsMap.keySet()) {
-            properties.forms = formsMap.get(properties);
-        }
-    }
-
-    /**
      * Returns a serialized version of this for storage in a repository.
      *
      * @return the serialized {@code String}, use {@link #fromSerialized(String, Class)} to materialize the object.
      */
     public String toSerialized() {
         handlePropEncryption(ENCRYPT);
-
-        // will clear and backup all forms / sub forms.
-        Map<Properties, List<Form>> formsMap = createFormsBackupAndClear();
+        List<Form> currentForms = forms;
         String ser = null;
         try {
+            // The forms are recreated upon deserialization
+            forms = new ArrayList<>();
             ser = JsonWriter.objectToJson(this);
         } finally {
-            // restore forms to the previous state
-            restoreFormsBackup(formsMap);
+            forms = currentForms;
         }
         handlePropEncryption(!ENCRYPT);
         return ser;
@@ -517,11 +490,11 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
      * The first component is the property name within this object. The optional subsequent components, separated by a
      * "." are property names in the nested {@link Properties} objects.
      *
-     * @param name a qualified property name, should never be null
+     * @param propName a qualified property name, should never be null
      * @return the Property or Componenent denoted with the name or null if not found
      */
-    public NamedThing getProperty(String name) {
-        String[] propComps = name.split("\\.");
+    public NamedThing getProperty(String propName) {
+        String[] propComps = propName.split("\\.");
         Properties currentProps = this;
         int i = 0;
         for (String prop : propComps) {
@@ -540,9 +513,9 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
     /**
      * same as {@link Properties#getProperty(String)} but returns null if the Property is not of type Property.
      */
-    public Property getValuedProperty(String propPath) {
+    public Property<?> getValuedProperty(String propPath) {
         NamedThing prop = getProperty(propPath);
-        return (prop instanceof Property) ? (Property) prop : null;
+        return (prop instanceof Property) ? (Property<?>) prop : null;
     }
 
     /**
@@ -556,12 +529,12 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
     /**
      * Returns the property in this object specified by a the simple (unqualified) property name.
      * 
-     * @param name a simple property name. Should never be null
+     * @param propName a simple property name. Should never be null
      */
-    protected NamedThing getLocalProperty(String name) {
+    protected NamedThing getLocalProperty(String propName) {
         List<NamedThing> properties = getProperties();
         for (NamedThing prop : properties) {
-            if (name.equals(prop.getName())) {
+            if (propName.equals(prop.getName())) {
                 return prop;
             }
         }
@@ -573,7 +546,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
         if (!(p instanceof Property)) {
             throw new IllegalArgumentException("setValue but property: " + property + " is not a Property");
         }
-        ((Property) p).setValue(value);
+        ((Property<?>) p).setValue(value);
     }
 
     /**
@@ -586,7 +559,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
         List<NamedThing> properties = getProperties();
         for (NamedThing prop : properties) {
             if (prop instanceof Property) {
-                ((Property) prop).setValueEvaluator(ve);
+                ((Property<?>) prop).setValueEvaluator(ve);
             } else if (prop instanceof Properties) {
                 ((Properties) prop).setValueEvaluator(ve);
             }
@@ -664,8 +637,9 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
                 try {
                     Class<? extends NamedThing> otherClass = otherProp.getClass();
                     if (Property.class.isAssignableFrom(otherClass)) {
-                        Constructor<? extends NamedThing> c = otherClass.getConstructor(String.class);
-                        thisProp = c.newInstance(otherProp.getName());
+                        Property<?> otherPy = (Property<?>) otherProp;
+                        Constructor<? extends NamedThing> c = otherClass.getConstructor(Class.class, String.class);
+                        thisProp = c.newInstance(otherPy.getType(), otherPy.getName());
                     } else if (Properties.class.isAssignableFrom(otherClass)) {
                         // Look for single arg String, but an inner class will have a Properties as first arg
                         Constructor<?> constructors[] = otherClass.getConstructors();
@@ -702,6 +676,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
                     TalendRuntimeException.unexpectedException(e);
                 }
             }
+
             // thisProp cannot be null here.
             // recurse if it is a Properties
             if (otherProp instanceof Properties) {
@@ -718,6 +693,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
                 TalendRuntimeException
                         .unexpectedException("The property " + otherProp.getClass().getName() + " is not of the expected type.");
             }
+
         }
 
     }
@@ -760,7 +736,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
             } else {
                 sb.append('\n' + prop.toString());
             }
-            String value = prop instanceof Property ? ((Property) prop).getStringValue() : null;
+            String value = prop instanceof Property ? ((Property<?>) prop).getStringValue() : null;
             if (value != null) {
                 sb.append(" [" + value + "]");
             }

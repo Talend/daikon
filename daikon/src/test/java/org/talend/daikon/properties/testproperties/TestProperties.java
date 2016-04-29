@@ -15,6 +15,7 @@ package org.talend.daikon.properties.testproperties;
 import static org.talend.daikon.properties.PropertyFactory.*;
 import static org.talend.daikon.properties.presentation.Widget.*;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -23,7 +24,6 @@ import java.util.List;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.Property;
-import org.talend.daikon.properties.Property.Type;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
@@ -43,27 +43,27 @@ public class TestProperties extends Properties {
 
     public PresentationItem testPI = new PresentationItem("testPI", "testPI display name");
 
-    public Property userId = newProperty(USER_ID_PROP_NAME).setRequired(true);
+    public Property<String> userId = newProperty(USER_ID_PROP_NAME).setRequired(true);
 
-    public Property password = newProperty("password").setRequired(true)
+    public Property<String> password = newProperty("password").setRequired(true)
             .setFlags(EnumSet.of(Property.Flags.ENCRYPT, Property.Flags.SUPPRESS_LOGGING));
 
-    public Property nameList = newProperty("nameList");
+    public Property<String> nameList = newProperty("nameList");
 
-    public Property nameListRef = newProperty("nameListRef");
+    public Property<String> nameListRef = newProperty("nameListRef");
 
-    public Property integer = newProperty(Type.INT, "integer");
+    public Property<Integer> integer = newInteger("integer");
 
-    public Property decimal = newProperty(Type.INT, "decimal");
+    public Property<Integer> decimal = newInteger("decimal");
 
-    public Property date = newProperty(Type.DATE, "date");
+    public Property<java.util.Date> date = newDate("date");
 
-    public Property dateTime = newProperty(Type.DATETIME, "dateTime");
+    public Property<Date> dateTime = newProperty(Date.class, "dateTime");
 
     // Used in testing refreshLayout
-    public Property suppressDate = newProperty(Type.BOOLEAN, "suppressDate");
+    public Property<Boolean> suppressDate = newBoolean("suppressDate");
 
-    public Property initLater = null;
+    public Property<String> initLater = null;
 
     public NestedProperties nestedInitLater = null;
 
@@ -80,14 +80,14 @@ public class TestProperties extends Properties {
     }
 
     public ValidationResult beforeNameList() {
-        List values = new ArrayList<>();
+        List<String> values = new ArrayList<>();
         Collections.addAll(values, new String[] { "name1", "name2", "name3" });
         nameList.setPossibleValues(values);
         return ValidationResult.OK;
     }
 
     public void beforeNameListRef() {
-        List values = new ArrayList<>();
+        List<String> values = new ArrayList<>();
         Collections.addAll(values, new String[] { "namer1", "namer2", "namer3" });
         nameListRef.setPossibleValues(values);
     }
@@ -133,7 +133,7 @@ public class TestProperties extends Properties {
     public void refreshLayout(Form form) {
         super.refreshLayout(form);
         if (form.getName().equals("restoreTest")) {
-            if (suppressDate.getBooleanValue()) {
+            if (suppressDate.getValue()) {
                 form.getWidget("date").setHidden(true);
             }
         }

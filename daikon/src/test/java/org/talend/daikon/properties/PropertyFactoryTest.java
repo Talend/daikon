@@ -12,207 +12,204 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Test;
-import org.talend.daikon.properties.Property.Type;
-
-import java.util.Arrays;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class PropertyFactoryTest {
 
     @Test
     public void testNewProperty() {
-        Property element = PropertyFactory.newProperty("testProperty");
+        Property<String> element = PropertyFactory.newProperty("testProperty");
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Property.Type.STRING, element.getType());
+        assertEquals(String.class, element.getType());
     }
 
     @Test
     public void testNewProperty_WithTtitle() {
-        Property element = PropertyFactory.newProperty("testProperty", "title");
+        Property<String> element = PropertyFactory.newProperty("testProperty", "title");
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertEquals("title", element.getTitle());
-        assertEquals(Property.Type.STRING, element.getType());
+        assertEquals(String.class, element.getType());
 
     }
 
     @Test
     public void testNewProperty_WithTypeAndTitle() {
-        Property element = PropertyFactory.newProperty(Property.Type.BOOLEAN, "testProperty", "title");
+        Property<Boolean> element = PropertyFactory.newProperty(Boolean.class, "testProperty", "title");
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertEquals("title", element.getTitle());
-        assertEquals(Type.BOOLEAN, element.getType());
+        assertEquals(Boolean.class, element.getType());
     }
 
     @Test
     public void testNewProperty_WithType() {
-        Property element = PropertyFactory.newProperty(Type.BOOLEAN, "testProperty");
+        Property<Boolean> element = PropertyFactory.newProperty(Boolean.class, "testProperty");
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.BOOLEAN, element.getType());
+        assertEquals(Boolean.class, element.getType());
     }
 
     @Test
     public void testNewString() {
-        Property element = PropertyFactory.newString("testProperty");
+        Property<String> element = PropertyFactory.newString("testProperty");
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.STRING, element.getType());
+        assertEquals(String.class, element.getType());
     }
 
     @Test
     public void testNewInteger() {
-        Property element = PropertyFactory.newInteger("testProperty");
+        Property<Integer> element = PropertyFactory.newInteger("testProperty");
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.INT, element.getType());
+        assertEquals(Integer.class, element.getType());
     }
 
     @Test
     public void testNewInteger_defaultvalueString() {
-        Property element = PropertyFactory.newInteger("testProperty", "10");
+        Property<Integer> element = PropertyFactory.newInteger("testProperty", "10");
         assertEquals("testProperty", element.getName());
-        assertEquals(10, element.getValue());
+        assertEquals((Integer) 10, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.INT, element.getType());
+        assertEquals(Integer.class, element.getType());
     }
 
     @Test
     public void testNewInteger_defaultvalueInteger() {
-        Property element = PropertyFactory.newInteger("testProperty", 10);
+        Property<Integer> element = PropertyFactory.newInteger("testProperty", 10);
         assertEquals("testProperty", element.getName());
-        assertEquals(10, element.getValue());
+        assertEquals((Integer) 10, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.INT, element.getType());
+        assertEquals(Integer.class, element.getType());
     }
 
     @Test
     public void testNewFloat() {
-        Property element = PropertyFactory.newFloat("testProperty");
+        Property<Float> element = PropertyFactory.newFloat("testProperty");
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.FLOAT, element.getType());
+        assertEquals(Float.class, element.getType());
     }
 
     @Test
     public void testNewFloat_defaultvalue() {
-        Property element = PropertyFactory.newFloat("testProperty", 5f);
+        Property<Float> element = PropertyFactory.newFloat("testProperty", 5f);
         assertEquals("testProperty", element.getName());
-        assertEquals(5f, element.getValue());
+        assertEquals((Float) 5f, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.FLOAT, element.getType());
+        assertEquals(Float.class, element.getType());
     }
 
     @Test
     public void testNewFloat_StringDefaultvalue() {
-        Property element = PropertyFactory.newFloat("testProperty", "5f");
+        Property<Float> element = PropertyFactory.newFloat("testProperty", "5f");
         assertEquals("testProperty", element.getName());
-        assertEquals(5f, element.getValue());
+        assertEquals((Float) 5f, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.FLOAT, element.getType());
+        assertEquals(Float.class, element.getType());
     }
 
     @Test
     public void testNewDouble() {
-        Property element = PropertyFactory.newDouble("testProperty");
+        Property<Double> element = PropertyFactory.newDouble("testProperty");
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.DOUBLE, element.getType());
+        assertEquals(Double.class, element.getType());
     }
 
     @Test
     public void testNewDouble_defaultvalue() {
-        Property element = PropertyFactory.newDouble("testProperty", 5d);
+        Property<Double> element = PropertyFactory.newDouble("testProperty", 5d);
         assertEquals("testProperty", element.getName());
-        assertEquals(5.0, element.getValue());
+        assertEquals((Double) 5.0, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.DOUBLE, element.getType());
+        assertEquals(Double.class, element.getType());
     }
 
     @Test
     public void testNewDouble_StringDefaultvalue() {
-        Property element = PropertyFactory.newDouble("testProperty", "5f");
+        Property<Double> element = PropertyFactory.newDouble("testProperty", "5f");
         assertEquals("testProperty", element.getName());
-        assertEquals(5.0, element.getValue());
+        assertEquals((Double) 5.0, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.DOUBLE, element.getType());
+        assertEquals(Double.class, element.getType());
     }
 
     @Test
     public void testNewBoolean() {
-        Property element = PropertyFactory.newBoolean("testProperty");
+        Property<Boolean> element = PropertyFactory.newBoolean("testProperty");
         assertEquals("testProperty", element.getName());
-        assertNull(element.getValue());
+        assertFalse(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.BOOLEAN, element.getType());
+        assertEquals(Boolean.class, element.getType());
     }
 
     @Test
     public void testNewBoolean_withDefault() {
-        Property element = PropertyFactory.newBoolean("testProperty", true);
+        Property<Boolean> element = PropertyFactory.newBoolean("testProperty", true);
         assertEquals("testProperty", element.getName());
         assertEquals(true, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.BOOLEAN, element.getType());
+        assertEquals(Boolean.class, element.getType());
         element = PropertyFactory.newBoolean("testProperty", false);
         assertEquals("testProperty", element.getName());
         assertEquals(false, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.BOOLEAN, element.getType());
+        assertEquals(Boolean.class, element.getType());
 
     }
 
     @Test
     public void testNewBoolean_withStringDefault() {
-        Property element = PropertyFactory.newBoolean("testProperty", "true");
+        Property<Boolean> element = PropertyFactory.newBoolean("testProperty", "true");
         assertEquals("testProperty", element.getName());
         assertEquals(true, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.BOOLEAN, element.getType());
+        assertEquals(Boolean.class, element.getType());
         element = PropertyFactory.newBoolean("testProperty", "false");
         assertEquals("testProperty", element.getName());
         assertEquals(false, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.BOOLEAN, element.getType());
+        assertEquals(Boolean.class, element.getType());
     }
 
     @Test
     public void testNewDate() {
-        Property element = PropertyFactory.newDate("testProperty");
+        Property<Date> element = PropertyFactory.newDate("testProperty");
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Type.DATE, element.getType());
+        assertEquals(Date.class, element.getType());
+    }
+
+    enum Foo {
+        foo,
+        bar,
+        foobar;
     }
 
     @Test
-    public void testNewEnumString() {
-        Property element = PropertyFactory.newEnum("testProperty");
+    public void testNewEnum() {
+        Property<Foo> element = PropertyFactory.newEnum("testProperty", Foo.class);
         assertEquals("testProperty", element.getName());
-        assertNull(element.getPossibleValues());
+        assertThat((List<Foo>) element.getPossibleValues(), contains(Foo.foo, Foo.bar, Foo.foobar));
         assertNull(element.getTitle());
-        assertEquals(Type.ENUM, element.getType());
-    }
-
-    @Test
-    public void testNewEnum_withvalue() {
-        Property element = PropertyFactory.newEnum("testProperty", "value1", "value2", "value3");
-        assertEquals("testProperty", element.getName());
-        assertNull(element.getValue());
-        assertEquals(Arrays.asList("value1", "value2", "value3"), element.getPossibleValues());
-        assertNull(element.getTitle());
-        assertEquals(Type.ENUM, element.getType());
+        assertEquals(Foo.class, element.getType());
     }
 
 }
