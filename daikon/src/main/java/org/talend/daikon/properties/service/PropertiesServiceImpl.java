@@ -22,8 +22,6 @@ import org.talend.daikon.properties.presentation.Form;
  */
 public class PropertiesServiceImpl<T extends Properties> implements PropertiesService<T> {
 
-    private Repository<T> repository;
-
     @Override
     public T makeFormCancelable(T properties, String formName) {
         Form form = properties.getForm(formName);
@@ -88,21 +86,9 @@ public class PropertiesServiceImpl<T extends Properties> implements PropertiesSe
 
     @Override
     public T afterFormFinish(String formName, T properties) throws Throwable {
-        PropertiesDynamicMethodHelper.afterFormFinish(properties, formName, repository);
+        // DesignService is not supported at this level - a subclass may provide it
+        PropertiesDynamicMethodHelper.afterFormFinish(properties, formName, null);
         return properties;
-    }
-
-    @Override
-    public String storeProperties(T properties, String name, String repositoryLocation, String schemaPropertyName) {
-        if (repository != null) {
-            return repository.storeProperties(properties, name, repositoryLocation, schemaPropertyName);
-        }
-        return null;
-    }
-
-    @Override
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
 }

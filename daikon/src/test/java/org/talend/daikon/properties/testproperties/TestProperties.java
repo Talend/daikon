@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.talend.daikon.properties.DesignerService;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.Property;
@@ -29,7 +30,6 @@ import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.presentation.Widget.WidgetType;
-import org.talend.daikon.properties.service.Repository;
 import org.talend.daikon.properties.testproperties.nestedprop.NestedProperties;
 import org.talend.daikon.properties.testproperties.nestedprop.inherited.InheritedProperties;
 
@@ -92,7 +92,7 @@ public class TestProperties extends Properties {
         nameListRef.setPossibleValues(values);
     }
 
-    public ValidationResult afterFormFinishMain(Repository<Properties> repo) {
+    public ValidationResult afterFormFinishMain(DesignerService designerService) {
         return new ValidationResult().setStatus(Result.ERROR);
     }
 

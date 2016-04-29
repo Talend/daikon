@@ -17,7 +17,7 @@ import org.talend.daikon.properties.Properties;
 /**
  * The Main service provided by this project to get access to all registered components and their properties.
  */
-public interface PropertiesService<T extends Properties> extends Repository<T> {
+public interface PropertiesService<T extends Properties>  {
 
     T makeFormCancelable(T properties, String formName);
 
@@ -38,12 +38,5 @@ public interface PropertiesService<T extends Properties> extends Repository<T> {
     T afterFormBack(String formName, T properties) throws Throwable;
 
     T afterFormFinish(String formName, T properties) throws Throwable;
-
-    /**
-     * Allows for a local implementation to setup a repository store used to store {@link T}.
-     * 
-     * @param repository
-     */
-    void setRepository(Repository repository);
 
 }
