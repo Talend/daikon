@@ -33,8 +33,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Property extends SimpleNamedThing implements AnyProperty {
 
     /**
-     * tagged value used by the widget that may be associated with the property is able to set to true or false if the
-     * widget was last visible or not.
+     * Tagged value set by the Widget this property may be associated with. The Widget will set this TaggedValue to true
+     * or false according to the widget visibility.
      */
     public static final String IS_VISIBLE_TAGGED_VALUE = "IS_VISIBLE"; //$NON-NLS-1$ ;
 

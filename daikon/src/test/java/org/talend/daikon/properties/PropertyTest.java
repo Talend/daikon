@@ -12,14 +12,16 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.talend.daikon.properties.presentation.Widget;
+import org.talend.daikon.properties.testproperties.TestProperties;
+import org.talend.daikon.properties.testproperties.nestedprop.NestedNestedProperties;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.talend.daikon.properties.presentation.Widget;
+import static org.junit.Assert.*;
 
 /**
  * created by pbailly on 5 Nov 2015 Detailled comment
@@ -137,9 +139,12 @@ public class PropertyTest {
         Widget widget = new Widget(element);
         assertNull(element.getTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE));
         widget.setVisible(false);
-        assertEquals(false, element.getTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE));
+        assertEquals(false,element.getTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE));
         widget.setVisible(true);
-        assertEquals(true, element.getTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE));
+        assertEquals(true,element.getTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE));
     }
 
+    
+    
+    
 }
