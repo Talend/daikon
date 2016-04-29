@@ -32,6 +32,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Property extends SimpleNamedThing implements AnyProperty {
 
+    /**
+     * tagged value used by the widget that may be associated with the property is able to set to true or false if the
+     * widget was last visible or not.
+     */
+    public static final String IS_VISIBLE_TAGGED_VALUE = "IS_VISIBLE"; //$NON-NLS-1$ ;
+
     private static final String I18N_PROPERTY_PREFIX = "property."; //$NON-NLS-1$
 
     public enum Type {
@@ -96,7 +102,7 @@ public class Property extends SimpleNamedThing implements AnyProperty {
 
     private List<?> possibleValues;
 
-    protected List<Property> children = new ArrayList<>();;
+    protected List<Property> children = new ArrayList<>();
 
     public Property(String name, String title) {
         this(null, name, title);
@@ -374,7 +380,8 @@ public class Property extends SimpleNamedThing implements AnyProperty {
      */
     @Override
     public String getDisplayName() {
-        return displayName != null ? displayName : getI18nMessage(I18N_PROPERTY_PREFIX + name + NamedThing.I18N_DISPLAY_NAME_SUFFIX);
+        return displayName != null ? displayName
+                : getI18nMessage(I18N_PROPERTY_PREFIX + name + NamedThing.I18N_DISPLAY_NAME_SUFFIX);
     }
 
     /**

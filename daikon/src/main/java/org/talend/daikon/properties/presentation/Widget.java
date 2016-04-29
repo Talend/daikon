@@ -171,7 +171,13 @@ public class Widget implements ToStringIndent {
         // recurse to change visibility to nested Forms
         if (content != null && content instanceof Form) {
             ((Form) content).setVisible(visible);
-        } // else not need to recurse
+        } else
+            // also update the content tagged value to let the some runtime usage
+            // know about the property visibility. This may be used by the Studio
+            // generated code to not generate the property.
+            if (content != null && content instanceof Property) {
+            ((Property) content).setTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE, visible);
+        } // else nothing else to be done.
         return this;
     }
 
