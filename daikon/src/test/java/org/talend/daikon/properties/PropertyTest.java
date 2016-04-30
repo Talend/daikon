@@ -25,10 +25,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.talend.daikon.properties.presentation.Widget;
 
-/**
- * created by pbailly on 5 Nov 2015 Detailled comment
- *
- */
 public class PropertyTest {
 
     /**
@@ -135,7 +131,7 @@ public class PropertyTest {
     }
 
     @Test
-    public void testVisibleTaggedValueForProperties() {
+    public void testHiddenForProperties() {
         Property element = new Property("element");
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
         Widget widget = new Widget(element);
@@ -143,6 +139,25 @@ public class PropertyTest {
         widget.setHidden(true);
         assertTrue(element.isFlag(Property.Flags.HIDDEN));
         widget.setHidden(false);
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
+    }
+
+    @Test
+    public void testFlags() {
+        Property element = new Property("element");
+        assertFalse(element.isFlag(Property.Flags.ENCRYPT));
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
+        element.addFlag(Property.Flags.ENCRYPT);
+        assertTrue(element.isFlag(Property.Flags.ENCRYPT));
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
+        element.addFlag(Property.Flags.HIDDEN);
+        assertTrue(element.isFlag(Property.Flags.ENCRYPT));
+        assertTrue(element.isFlag(Property.Flags.HIDDEN));
+        element.removeFlag(Property.Flags.HIDDEN);
+        assertTrue(element.isFlag(Property.Flags.ENCRYPT));
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
+        element.removeFlag(Property.Flags.ENCRYPT);
+        assertFalse(element.isFlag(Property.Flags.ENCRYPT));
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
     }
 

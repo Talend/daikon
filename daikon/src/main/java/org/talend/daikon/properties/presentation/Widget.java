@@ -177,7 +177,7 @@ public class Widget implements ToStringIndent {
             if (hidden)
                 prop.addFlag(Property.Flags.HIDDEN);
             else
-                prop.getFlags().remove(Property.Flags.HIDDEN);
+                prop.removeFlag(Property.Flags.HIDDEN);
         }
         return this;
     }

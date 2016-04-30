@@ -314,6 +314,12 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         }
     }
 
+    public void removeFlag(Flags flag) {
+        if (flags != null) {
+            flags.remove(flag);
+        }
+    }
+
     public void setValue(Object value) {
         storedValue = value;
     }
