@@ -121,6 +121,8 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
 
     transient private boolean propsAlreadyInitialized;
 
+
+
     /**
      * Holder class for the results of a deserialization.
      */

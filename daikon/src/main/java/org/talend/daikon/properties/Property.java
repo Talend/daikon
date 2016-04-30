@@ -32,12 +32,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Property extends SimpleNamedThing implements AnyProperty {
 
-    /**
-     * Tagged value set by the Widget this property may be associated with. The Widget will set this TaggedValue to true
-     * or false according to the widget visibility.
-     */
-    public static final String IS_VISIBLE_TAGGED_VALUE = "IS_VISIBLE"; //$NON-NLS-1$ ;
-
     private static final String I18N_PROPERTY_PREFIX = "property."; //$NON-NLS-1$
 
     public enum Type {
@@ -78,7 +72,14 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         /**
          * Used only at design time, not necessary for runtime.
          */
-        DESIGN_TIME_ONLY;
+        DESIGN_TIME_ONLY,
+        /**
+         * Hidden at runtime. Normally automatically set by
+         * {@link org.talend.daikon.properties.presentation.Widget#setHidden(boolean)} However, this can also be set or
+         * cleared independently. This is used to cause properties to not be visible and processed at runtime if
+         * necessary.
+         */
+        HIDDEN;
 
     };
 
@@ -303,6 +304,14 @@ public class Property extends SimpleNamedThing implements AnyProperty {
             return false;
         }
         return flags.contains(flag);
+    }
+
+    public void addFlag(Flags flag) {
+        if (flags == null) {
+            flags = EnumSet.of(flag);
+        } else {
+            flags.add(flag);
+        }
     }
 
     public void setValue(Object value) {

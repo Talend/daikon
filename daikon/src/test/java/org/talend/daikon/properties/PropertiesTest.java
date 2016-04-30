@@ -222,7 +222,7 @@ public class PropertiesTest {
     public void testGetProps() {
         TestProperties componentProperties = (TestProperties) new TestProperties("test").init();
         Form f = componentProperties.getForm(Form.MAIN);
-        assertTrue(f.getWidget("userId").isVisible());
+        assertFalse(f.getWidget("userId").isHidden());
     }
 
     @Test
@@ -253,7 +253,7 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test").init();
         props.suppressDate.setValue(Boolean.TRUE);
         props = (TestProperties) PropertiesTestUtils.checkSerialize(props, errorCollector);
-        assertFalse(props.getForm("restoreTest").getWidget("date").isVisible());
+        assertTrue(props.getForm("restoreTest").getWidget("date").isHidden());
     }
 
     @Test

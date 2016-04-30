@@ -12,16 +12,18 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import org.junit.Test;
-import org.talend.daikon.properties.presentation.Widget;
-import org.talend.daikon.properties.testproperties.TestProperties;
-import org.talend.daikon.properties.testproperties.nestedprop.NestedNestedProperties;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.talend.daikon.properties.presentation.Widget;
 
 /**
  * created by pbailly on 5 Nov 2015 Detailled comment
@@ -135,16 +137,13 @@ public class PropertyTest {
     @Test
     public void testVisibleTaggedValueForProperties() {
         Property element = new Property("element");
-        assertNull(element.getTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE));
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
         Widget widget = new Widget(element);
-        assertNull(element.getTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE));
-        widget.setVisible(false);
-        assertEquals(false,element.getTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE));
-        widget.setVisible(true);
-        assertEquals(true,element.getTaggedValue(Property.IS_VISIBLE_TAGGED_VALUE));
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
+        widget.setHidden(true);
+        assertTrue(element.isFlag(Property.Flags.HIDDEN));
+        widget.setHidden(false);
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
     }
 
-    
-    
-    
 }
