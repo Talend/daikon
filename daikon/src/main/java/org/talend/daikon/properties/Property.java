@@ -56,7 +56,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     protected Object storedValue;
 
-    transient protected PropertyValueEvaluator<T> propertyValueEvaluator;
+    transient protected PropertyValueEvaluator propertyValueEvaluator;
 
     public enum Flags {
         /**
@@ -383,7 +383,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
         return taggedValues.get(key);
     }
 
-    public void setValueEvaluator(PropertyValueEvaluator<T> ve) {
+    public void setValueEvaluator(PropertyValueEvaluator ve) {
         this.propertyValueEvaluator = ve;
     }
 

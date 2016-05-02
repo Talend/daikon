@@ -34,7 +34,7 @@ public class PropertiesServiceTest {
 
     @Before
     public void init() {
-        propService = new PropertiesServiceImpl();
+        propService = new PropertiesServiceImpl<>();
     }
 
     @Test
@@ -42,12 +42,12 @@ public class PropertiesServiceTest {
         Properties props = new TestProperties(null).init();
 
         PropertiesTestUtils.checkAndBeforePresent(propService, props.getForm(Form.MAIN), "nameList", props);
-        assertEquals(3, ((Property) props.getProperty("nameList")).getPossibleValues().size());
-        assertEquals("name1", ((Property) props.getProperty("nameList")).getPossibleValues().get(0));
+        assertEquals(3, ((Property<?>) props.getProperty("nameList")).getPossibleValues().size());
+        assertEquals("name1", ((Property<?>) props.getProperty("nameList")).getPossibleValues().get(0));
 
         PropertiesTestUtils.checkAndBeforeActivate(propService, props.getForm(Form.MAIN), "nameListRef", props);
-        assertEquals(3, ((Property) props.getProperty("nameListRef")).getPossibleValues().size());
-        assertEquals("namer1", ((Property) props.getProperty("nameListRef")).getPossibleValues().get(0));
+        assertEquals(3, ((Property<?>) props.getProperty("nameListRef")).getPossibleValues().size());
+        assertEquals("namer1", ((Property<?>) props.getProperty("nameListRef")).getPossibleValues().get(0));
 
         assertFalse(props.getForm(Form.MAIN).getWidget("nameList").isCallBeforeActivate());
         assertFalse(props.getForm(Form.MAIN).getWidget("nameListRef").isCallBeforePresent());

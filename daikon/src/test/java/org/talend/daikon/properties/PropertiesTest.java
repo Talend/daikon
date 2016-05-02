@@ -347,11 +347,12 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test").initForRuntime();
         props.userId.setValue("java.io.tmpdir");
         assertEquals("java.io.tmpdir", props.userId.getValue());
-        props.setValueEvaluator(new PropertyValueEvaluator<String>() {
+        props.setValueEvaluator(new PropertyValueEvaluator() {
 
+            @SuppressWarnings("unchecked")
             @Override
-            public String evaluate(Property<String> property, Object storedValue) {
-                return storedValue != null ? System.getProperty((String) storedValue) : null;
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                return (T) (storedValue != null ? System.getProperty((String) storedValue) : null);
             }
 
         });
@@ -373,14 +374,15 @@ public class PropertiesTest {
         assertEquals("java.io.tmpdir", props.userId.getValue());
         props.setValueEvaluator(new PropertyValueEvaluator() {
 
+            @SuppressWarnings("unchecked")
             @Override
-            public Object evaluate(Property property, Object storedValue) {
+            public <T> T evaluate(Property<T> property, Object storedValue) {
                 // if the prop is a system property then evaluate it.
                 Object taggedValue = property.getTaggedValue("value.language");
                 if (taggedValue != null && ((String) taggedValue).equals("sys.prop")) {
-                    return System.getProperty((String) storedValue);
+                    return (T) System.getProperty((String) storedValue);
                 } else {// otherwise just return the value.
-                    return storedValue;
+                    return (T) storedValue;
                 }
             }
         });
@@ -422,6 +424,7 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test").init();
         // use a sub class to check is assignement also works with sub classes
         NestedNestedProperties nestedNestedProperties = new NestedNestedProperties("foo") {
+            // enpty on purpose
         };
         props.assignNestedProperties(nestedNestedProperties);
         assertEquals(nestedNestedProperties, props.nestedProps.nestedProp);

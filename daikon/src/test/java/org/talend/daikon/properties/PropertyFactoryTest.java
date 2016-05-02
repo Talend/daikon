@@ -203,6 +203,7 @@ public class PropertyFactoryTest {
         foobar;
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testNewEnum() {
         Property<Foo> element = PropertyFactory.newEnum("testProperty", Foo.class);

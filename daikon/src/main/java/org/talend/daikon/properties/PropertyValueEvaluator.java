@@ -16,7 +16,7 @@ package org.talend.daikon.properties;
  * This shall be implemented in order to have Properties value interpreted to the actual value if they hold some king of
  * language descriptor such as a context string, or system property value.
  */
-public interface PropertyValueEvaluator<T> {
+public interface PropertyValueEvaluator {
 
     /**
      * compute the actual value of the given property according to the storedValue
@@ -27,5 +27,5 @@ public interface PropertyValueEvaluator<T> {
      * @param storedValue value stored for this property that may be transformed.
      * @return
      */
-    public T evaluate(Property<T> property, Object storedValue);
+    public <T> T evaluate(Property<T> property, Object storedValue);
 }
