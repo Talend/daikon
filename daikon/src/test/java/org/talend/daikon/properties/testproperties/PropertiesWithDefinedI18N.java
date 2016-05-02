@@ -23,7 +23,7 @@ public class PropertiesWithDefinedI18N extends Properties {
 
     public static final String A_GREAT_PROP_NAME2 = "aGreatProp2"; //$NON-NLS-1$
 
-    public Property aGreatProp2 = newProperty(A_GREAT_PROP_NAME2);
+    public Property<String> aGreatProp2 = newProperty(A_GREAT_PROP_NAME2);
 
     public PropertiesWithDefinedI18N(String name) {
         super(name);

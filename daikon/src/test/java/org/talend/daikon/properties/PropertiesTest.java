@@ -129,16 +129,16 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.integer.setValue(1);
         props.userId.setValue("User1");
-        ((Property) props.getProperty("nestedProps.aGreatProperty")).setValue("great1");
+        ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).setValue("great1");
 
         TestProperties props2 = (TestProperties) new TestProperties("test2").init();
         assertNotEquals(1, ((Property) props2.getProperty("integer")).getValue());
         assertNotEquals("User1", ((Property) props2.getProperty("userId")).getStringValue());
         assertNotEquals("great1", ((Property) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
         props2.copyValuesFrom(props);
-        assertEquals(1, ((Property) props2.getProperty("integer")).getValue());
-        assertEquals("User1", ((Property) props2.getProperty("userId")).getStringValue());
-        assertEquals("great1", ((Property) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
+        assertEquals(1, ((Property<?>) props2.getProperty("integer")).getValue());
+        assertEquals("User1", ((Property<?>) props2.getProperty("userId")).getStringValue());
+        assertEquals("great1", ((Property<?>) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
     }
 
     @Test
@@ -147,15 +147,15 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.integer.setValue(1);
         props.userId.setValue("User1");
-        ((Property) props.getProperty("nestedProps.aGreatProperty")).setValue("great1");
+        ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).setValue("great1");
 
         TestProperties props2 = (TestProperties) new TestProperties("test2").init();
         props2.integer = null;
         props2.userId = null;
         props2.copyValuesFrom(props);
-        assertEquals(1, ((Property) props2.getProperty("integer")).getValue());
-        assertEquals("User1", ((Property) props2.getProperty("userId")).getStringValue());
-        assertEquals("great1", ((Property) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
+        assertEquals(1, ((Property<?>) props2.getProperty("integer")).getValue());
+        assertEquals("User1", ((Property<?>) props2.getProperty("userId")).getStringValue());
+        assertEquals("great1", ((Property<?>) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
     }
 
     @Test
@@ -188,7 +188,7 @@ public class PropertiesTest {
     public void testWrongFieldAndPropertyName() {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.setValue("nestedProps.aGreatProperty", "great1");
-        assertEquals("great1", ((Property) props.getProperty("nestedProps.aGreatProperty")).getStringValue());
+        assertEquals("great1", ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).getStringValue());
         try {
             props.setValue("nestedProps", "bad");
             fail("did not get expected exception");
@@ -201,7 +201,7 @@ public class PropertiesTest {
     public void testSetValueQualified() {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.setValue("nestedProps.aGreatProperty", "great1");
-        assertEquals("great1", ((Property) props.getProperty("nestedProps.aGreatProperty")).getStringValue());
+        assertEquals("great1", ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).getStringValue());
         try {
             props.setValue("nestedProps", "bad");
             fail("did not get expected exception");
@@ -320,7 +320,7 @@ public class PropertiesTest {
 
     @Test
     public void testTaggedValue() {
-        Property property = PropertyFactory.newString("haha"); //$NON-NLS-1$
+        Property<String> property = PropertyFactory.newString("haha"); //$NON-NLS-1$
         assertNull(property.getTaggedValue("foo"));
         assertNull(property.getTaggedValue("bar"));
         property.setTaggedValue("foo", "fooValue");
@@ -338,8 +338,8 @@ public class PropertiesTest {
         props.initLater.setTaggedValue("bar", "barValue");
         String s = props.toSerialized();
         Properties desProp = Properties.fromSerialized(s, Properties.class).properties;
-        assertEquals("fooValue", ((Property) desProp.getProperty("initLater")).getTaggedValue("foo"));
-        assertEquals("barValue", ((Property) desProp.getProperty("initLater")).getTaggedValue("bar"));
+        assertEquals("fooValue", ((Property<?>) desProp.getProperty("initLater")).getTaggedValue("foo"));
+        assertEquals("barValue", ((Property<?>) desProp.getProperty("initLater")).getTaggedValue("bar"));
     }
 
     @Test
@@ -347,12 +347,13 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test").initForRuntime();
         props.userId.setValue("java.io.tmpdir");
         assertEquals("java.io.tmpdir", props.userId.getValue());
-        props.setValueEvaluator(new PropertyValueEvaluator() {
+        props.setValueEvaluator(new PropertyValueEvaluator<String>() {
 
             @Override
-            public Object evaluate(Property property, Object storedValue) {
+            public String evaluate(Property<String> property, Object storedValue) {
                 return storedValue != null ? System.getProperty((String) storedValue) : null;
             }
+
         });
         assertEquals(System.getProperty("java.io.tmpdir"), props.userId.getValue());
         String s = props.toSerialized();

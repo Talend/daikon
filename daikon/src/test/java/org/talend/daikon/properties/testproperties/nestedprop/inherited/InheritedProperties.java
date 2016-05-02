@@ -21,7 +21,7 @@ public class InheritedProperties extends NestedProperties {
 
     public static final String A_GREAT_PROP_NAME3 = "aGreatProp3"; //$NON-NLS-1$
 
-    public Property aGreatProp3 = newProperty(A_GREAT_PROP_NAME3);
+    public Property<String> aGreatProp3 = newProperty(A_GREAT_PROP_NAME3);
 
     public InheritedProperties(String name) {
         super(name);
