@@ -32,11 +32,11 @@ public class SchemaProperty extends Property<Schema> implements AnyProperty {
 
     @Override
     public Property<Schema> setValue(Object value) {
-        if (!(value instanceof Schema)) {
+        if (value != null && !(value instanceof Schema)) {
             throw new IllegalArgumentException("value should be of type Schema");
         }
         // convert to string to optimize serialization
-        stringValue = value.toString();
+        stringValue = (value == null ? null : value.toString());
         return this;
     }
 
