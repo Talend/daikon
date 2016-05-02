@@ -310,7 +310,15 @@ public class Property extends SimpleNamedThing implements AnyProperty {
         if (flags == null) {
             flags = EnumSet.of(flag);
         } else {
-            flags.add(flag);
+            if (true) {
+                // Work around https://github.com/jdereg/json-io/issues/72
+                EnumSet<Flags> newFlags = EnumSet.of(flag);
+                newFlags.addAll(flags);
+                flags = newFlags;
+            } else {
+                // Preferred code:
+                flags.add(flag);
+            }
         }
     }
 

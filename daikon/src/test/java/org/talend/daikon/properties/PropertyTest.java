@@ -22,6 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.cedarsoftware.util.io.JsonReader;
+import com.cedarsoftware.util.io.JsonWriter;
+import org.json.JSONWriter;
 import org.junit.Test;
 import org.talend.daikon.properties.presentation.Widget;
 
@@ -159,6 +162,14 @@ public class PropertyTest {
         element.removeFlag(Property.Flags.ENCRYPT);
         assertFalse(element.isFlag(Property.Flags.ENCRYPT));
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
+
+        String elementStr = JsonWriter.objectToJson(element);
+        element = (Property) JsonReader.jsonToJava(elementStr);
+        element.addFlag(Property.Flags.HIDDEN);
+
+        element.addFlag(Property.Flags.ENCRYPT);
+        assertTrue(element.isFlag(Property.Flags.ENCRYPT));
+
     }
 
 }
