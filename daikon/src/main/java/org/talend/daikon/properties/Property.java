@@ -95,8 +95,6 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     private boolean nullable;
 
-    private Class<?> enumClass;
-
     private List<?> possibleValues;
 
     protected List<Property<?>> children = new ArrayList<>();
@@ -215,15 +213,6 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     public Property<T> setNullable(boolean nullable) {
         this.nullable = nullable;
-        return this;
-    }
-
-    public Class<?> getEnumClass() {
-        return enumClass;
-    }
-
-    public Property<T> setEnumClass(Class<?> enumClass) {
-        this.enumClass = enumClass;
         return this;
     }
 
