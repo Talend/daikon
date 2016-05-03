@@ -20,8 +20,6 @@ import org.apache.avro.Schema;
  */
 public class SchemaProperty extends Property<Schema> implements AnyProperty {
 
-    private String stringValue;
-
     public SchemaProperty(String name) {
         super(Schema.class, name);
     }
@@ -36,7 +34,7 @@ public class SchemaProperty extends Property<Schema> implements AnyProperty {
             throw new IllegalArgumentException("value should be of type Schema");
         }
         // convert to string to optimize serialization
-        stringValue = (value == null ? null : value.toString());
+        storedValue = (value == null ? null : value.toString());
         return this;
     }
 
@@ -49,8 +47,8 @@ public class SchemaProperty extends Property<Schema> implements AnyProperty {
     @Override
     public Schema getValue() {
         Schema returnValue = null;
-        if (stringValue != null) {
-            returnValue = new Schema.Parser().parse(stringValue);
+        if (storedValue != null) {
+            returnValue = new Schema.Parser().parse(storedValue.toString());
             if (propertyValueEvaluator != null) {
                 returnValue = propertyValueEvaluator.evaluate(this, returnValue);
             } // else not evaluator so return the storedValue
