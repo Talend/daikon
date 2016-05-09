@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.strings.ToStringIndentUtil;
@@ -99,17 +100,33 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     protected List<Property<?>> children = new ArrayList<>();
 
-    private Class<T> currentType;;
+    private String currentType;
 
-    public Property(Class<T> type, String name, String title) {
-        this.currentType = type;
+    public Property(TypeLiteral<T> type, String name, String title) {
+        this(type.getType().toString(), name, title);
+    }
+
+    public Property(TypeLiteral<T> type, String name) {
+        this(type, name, null);
+    }
+
+    public Property(String type, String name, String title) {
+        currentType = type;
         setName(name);
         setTitle(title);
         setSize(-1);
     }
 
-    public Property(Class<T> type, String name) {
+    public Property(String type, String name) {
         this(type, name, null);
+    }
+
+    public Property(Class<T> type, String name) {
+        this(type.toString(), name, null);
+    }
+
+    public Property(Class<T> type, String name, String title) {
+        this(type.toString(), name, title);
     }
 
     @Override
@@ -137,7 +154,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
         return this;
     }
 
-    public Class<T> getType() {
+    public String getType() {
         return currentType;
     }
 
@@ -299,7 +316,12 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
         }
     }
 
-    public Property<T> setValue(Object value) {
+    public Property<T> setValue(T value) {
+        storedValue = value;
+        return this;
+    }
+
+    public Property<T> setStoredValue(Object value) {
         storedValue = value;
         return this;
     }

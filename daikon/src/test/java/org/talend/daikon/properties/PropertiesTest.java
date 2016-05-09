@@ -14,8 +14,10 @@ package org.talend.daikon.properties;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -31,6 +33,20 @@ import org.talend.daikon.properties.testproperties.references.MultipleRefPropert
 
 public class PropertiesTest {
 
+    private final class StringListProperties extends Properties {
+
+        public Property<List<String>> listString = new Property(new TypeLiteral<List<String>>() {
+        }, "listString");
+
+        /**
+         * 
+         * @param name
+         */
+        private StringListProperties(String name) {
+            super(name);
+        }
+    }
+
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
 
@@ -38,6 +54,18 @@ public class PropertiesTest {
     public void testSerializeProp() {
         Properties props = new TestProperties("test").init();
         PropertiesTestUtils.checkSerialize(props, errorCollector);
+    }
+
+    @Test
+    public void testSerializeListStringProp() {
+        StringListProperties props = (StringListProperties) new StringListProperties("test").init();
+        ArrayList<String> value = new ArrayList<String>();
+        props.listString.setValue(value);
+        assertEquals(value, props.listString.getValue());
+        props = (StringListProperties) PropertiesTestUtils.checkSerialize(props, errorCollector);
+        assertNotSame(value, props.listString.getValue());
+        assertNotNull(props.listString.getValue());
+
     }
 
     @Test
@@ -129,7 +157,7 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.integer.setValue(1);
         props.userId.setValue("User1");
-        ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).setValue("great1");
+        ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).setStoredValue("great1");
 
         TestProperties props2 = (TestProperties) new TestProperties("test2").init();
         assertNotEquals(1, ((Property) props2.getProperty("integer")).getValue());
@@ -147,7 +175,7 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.integer.setValue(1);
         props.userId.setValue("User1");
-        ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).setValue("great1");
+        ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).setStoredValue("great1");
 
         TestProperties props2 = (TestProperties) new TestProperties("test2").init();
         props2.integer = null;
@@ -253,7 +281,7 @@ public class PropertiesTest {
         TestProperties componentProperties = (TestProperties) new TestProperties("test").init();
         List<NamedThing> pList = componentProperties.getProperties();
         assertTrue(pList.get(0) != null);
-        assertEquals(14, pList.size());
+        assertEquals(15, pList.size());
     }
 
     @Test

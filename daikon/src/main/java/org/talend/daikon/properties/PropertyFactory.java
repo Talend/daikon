@@ -15,6 +15,7 @@ package org.talend.daikon.properties;
 import java.util.Date;
 
 import org.apache.avro.Schema;
+import org.apache.commons.lang3.reflect.TypeLiteral;
 
 /**
  * Make new {@link Property} objects.
@@ -22,7 +23,7 @@ import org.apache.avro.Schema;
 public class PropertyFactory {
 
     public static Property<String> newProperty(String name) {
-        return new Property<>(String.class, name);
+        return newProperty(name, null);
     }
 
     public static Property<String> newProperty(String name, String title) {
@@ -52,7 +53,8 @@ public class PropertyFactory {
     }
 
     public static Property<Double> newDouble(String name) {
-        return new Property<>(Double.class, name);
+        return new Property<>(new TypeLiteral<Double>() {// left empty on purpose
+        }, name);
     }
 
     public static Property<Double> newDouble(String name, String initialValue) {
@@ -64,7 +66,8 @@ public class PropertyFactory {
     }
 
     public static Property<Float> newFloat(String name) {
-        return new Property<>(Float.class, name);
+        return new Property<>(new TypeLiteral<Float>() {// left empty on purpose
+        }, name);
     }
 
     public static Property<Float> newFloat(String name, String initialValue) {
@@ -76,7 +79,8 @@ public class PropertyFactory {
     }
 
     public static Property<Boolean> newBoolean(String name) {
-        return new Property<>(Boolean.class, name).setValue(Boolean.FALSE);
+        return new Property<>(new TypeLiteral<Boolean>() {// left empty on purpose
+        }, name).setValue(Boolean.FALSE);
     }
 
     public static Property<Boolean> newBoolean(String name, String initialValue) {
@@ -88,23 +92,19 @@ public class PropertyFactory {
     }
 
     public static Property<Date> newDate(String name) {
-        return new Property<>(Date.class, name);
+        return new Property<>(new TypeLiteral<Date>() {// left empty on purpose
+        }, name);
     }
 
-    public static <T extends Enum<T>> Property<T> newEnum(String name, Class<T> zeEnumType) {
+    @SuppressWarnings("unchecked")
+    public static <T extends Enum<?>> Property<T> newEnum(String name, Class<T> zeEnumType) {
         Property<T> enumProperty = new Property<>(zeEnumType, name);
         // set the possible values accoording with all the enum types.
         // I don't think it is necessary though.
-        Enum<T>[] enumConstants = zeEnumType.getEnumConstants();
+        Enum<?>[] enumConstants = zeEnumType.getEnumConstants();
         enumProperty.setPossibleValues(enumConstants);
         return enumProperty;
     }
-
-    // public static Property newEnum(String name, Object... values) {
-    // Property property = new Property(Property.Type.ENUM, name);
-    // property.setPossibleValues(values);
-    // return property;
-    // }
 
     public static Property<Schema> newSchema(String name) {
         return new SchemaProperty(name);
@@ -115,6 +115,14 @@ public class PropertyFactory {
     }
 
     public static <T> Property<T> newProperty(Class<T> type, String name, String title) {
+        return new Property<>(type, name).setTitle(title);
+    }
+
+    public static <T> Property<T> newProperty(TypeLiteral<T> type, String name) {
+        return new Property<>(type, name);
+    }
+
+    public static <T> Property<T> newProperty(TypeLiteral<T> type, String name, String title) {
         return new Property<>(type, name).setTitle(title);
     }
 

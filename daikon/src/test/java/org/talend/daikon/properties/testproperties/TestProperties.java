@@ -15,7 +15,6 @@ package org.talend.daikon.properties.testproperties;
 import static org.talend.daikon.properties.PropertyFactory.*;
 import static org.talend.daikon.properties.presentation.Widget.*;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -58,7 +57,7 @@ public class TestProperties extends Properties {
 
     public Property<java.util.Date> date = newDate("date");
 
-    public Property<Date> dateTime = newProperty(Date.class, "dateTime");
+    public Property<java.util.Date> dateTime = newDate("dateTime");
 
     // Used in testing refreshLayout
     public Property<Boolean> suppressDate = newBoolean("suppressDate");
@@ -72,6 +71,14 @@ public class TestProperties extends Properties {
     public PropertiesWithDefinedI18N nestedProp2 = new PropertiesWithDefinedI18N("nestedProp2");
 
     public InheritedProperties nestedProp3 = new InheritedProperties("nestedProp3");
+
+    enum Foo {
+        FOO,
+        BAR,
+        FOOBAR;
+    }
+
+    public Property<Foo> enumFoo = newEnum("enumFoo", Foo.class);
 
     public static final String TESTCOMPONENT = "TestComponent";
 
