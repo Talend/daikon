@@ -638,7 +638,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
                     Class<? extends NamedThing> otherClass = otherProp.getClass();
                     if (Property.class.isAssignableFrom(otherClass)) {
                         Property<?> otherPy = (Property<?>) otherProp;
-                        Constructor<? extends NamedThing> c = otherClass.getConstructor(String.class, String.class);
+                        Constructor<? extends NamedThing> c = otherClass.getDeclaredConstructor(String.class, String.class);
                         thisProp = c.newInstance(otherPy.getType(), otherPy.getName());
                     } else if (Properties.class.isAssignableFrom(otherClass)) {
                         // Look for single arg String, but an inner class will have a Properties as first arg

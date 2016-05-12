@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.reflect.TypeLiteral;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.strings.ToStringIndentUtil;
@@ -103,30 +105,45 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
     private String currentType;
 
     public Property(TypeLiteral<T> type, String name, String title) {
-        this(type.getType().toString(), name, title);
+        this(type.getType(), name, title);
     }
 
     public Property(TypeLiteral<T> type, String name) {
         this(type, name, null);
     }
 
-    public Property(String type, String name, String title) {
+    public Property(Type type, String name, String title) {
+        // we cannot store the type as is because of a serialization issue that will serialised
+        // sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl and will fail with jsonio
+        // and also is not portable accros different jvm vendors.
+        this(TypeUtils.toString(type), name, title);
+    }
+
+    /**
+     * this is package protected because this constructor should only be used when copying a Property at runtime, so it
+     * does not need to be typed.
+     */
+    Property(String type, String name) {
+        this(type, name, null);
+    }
+
+    /**
+     * this is package protected because this constructor should only be used when copying a Property at runtime, so it
+     * does not need to be typed.
+     */
+    Property(String type, String name, String title) {
         currentType = type;
         setName(name);
         setTitle(title);
         setSize(-1);
     }
 
-    public Property(String type, String name) {
+    public Property(Class<T> type, String name) {
         this(type, name, null);
     }
 
-    public Property(Class<T> type, String name) {
-        this(type.toString(), name, null);
-    }
-
     public Property(Class<T> type, String name, String title) {
-        this(type.toString(), name, title);
+        this((Type) type, name, title);
     }
 
     @Override
@@ -154,6 +171,10 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
         return this;
     }
 
+    /**
+     * return the String representing the current type of the object. this string is the same value as
+     * {@link TypeUtils#toString(Type)}
+     */
     public String getType() {
         return currentType;
     }

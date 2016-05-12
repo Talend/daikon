@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.reflect.TypeLiteral;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 
 public class PropertyFactoryTest {
@@ -30,7 +31,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(String.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(String.class), element.getType());
     }
 
     @Test
@@ -39,7 +40,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertEquals("title", element.getTitle());
-        assertEquals(String.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(String.class), element.getType());
 
     }
 
@@ -50,7 +51,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertEquals("title", element.getTitle());
-        assertEquals(Boolean.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Boolean.class), element.getType());
     }
 
     @Test
@@ -60,7 +61,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Boolean.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Boolean.class), element.getType());
     }
 
     @Test
@@ -69,7 +70,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(String.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(String.class), element.getType());
     }
 
     @Test
@@ -78,7 +79,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Integer.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Integer.class), element.getType());
     }
 
     @Test
@@ -87,7 +88,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertEquals((Integer) 10, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Integer.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Integer.class), element.getType());
     }
 
     @Test
@@ -96,7 +97,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertEquals((Integer) 10, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Integer.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Integer.class), element.getType());
     }
 
     @Test
@@ -105,7 +106,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Float.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Float.class), element.getType());
     }
 
     @Test
@@ -114,7 +115,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertEquals((Float) 5f, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Float.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Float.class), element.getType());
     }
 
     @Test
@@ -123,7 +124,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertEquals((Float) 5f, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Float.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Float.class), element.getType());
     }
 
     @Test
@@ -132,7 +133,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Double.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Double.class), element.getType());
     }
 
     @Test
@@ -141,7 +142,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertEquals((Double) 5.0, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Double.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Double.class), element.getType());
     }
 
     @Test
@@ -150,7 +151,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertEquals((Double) 5.0, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Double.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Double.class), element.getType());
     }
 
     @Test
@@ -159,7 +160,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertFalse(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Boolean.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Boolean.class), element.getType());
     }
 
     @Test
@@ -168,12 +169,12 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertEquals(true, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Boolean.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Boolean.class), element.getType());
         element = PropertyFactory.newBoolean("testProperty", false);
         assertEquals("testProperty", element.getName());
         assertEquals(false, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Boolean.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Boolean.class), element.getType());
 
     }
 
@@ -183,12 +184,12 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertEquals(true, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Boolean.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Boolean.class), element.getType());
         element = PropertyFactory.newBoolean("testProperty", "false");
         assertEquals("testProperty", element.getName());
         assertEquals(false, element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Boolean.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Boolean.class), element.getType());
     }
 
     @Test
@@ -197,7 +198,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertNull(element.getValue());
         assertNull(element.getTitle());
-        assertEquals(Date.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Date.class), element.getType());
     }
 
     enum Foo {
@@ -212,7 +213,7 @@ public class PropertyFactoryTest {
         assertEquals("testProperty", element.getName());
         assertThat((List<Foo>) element.getPossibleValues(), contains(Foo.foo, Foo.bar, Foo.foobar));
         assertNull(element.getTitle());
-        assertEquals(Foo.class.toString(), element.getType());
+        assertEquals(TypeUtils.toString(Foo.class), element.getType());
         element.setValue(Foo.foo);
         assertEquals(Foo.foo, element.getValue());
     }

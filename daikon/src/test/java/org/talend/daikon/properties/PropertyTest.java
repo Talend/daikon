@@ -27,7 +27,7 @@ public class PropertyTest {
 
     @Test
     public void testProperty() {
-        Property<String> element = new Property<>(String.class, null);
+        Property<String> element = newProperty(null);
         assertNull(element.getName());
         assertEquals(element, element.setName("testName"));
         assertEquals("testName", element.getName());
@@ -41,7 +41,7 @@ public class PropertyTest {
         assertEquals(element, element.setTitle("testTitle"));
         assertEquals("testTitle", element.getTitle());
 
-        assertEquals(String.class, element.getType());
+        assertEquals(TypeUtils.toString(String.class), element.getType());
 
         assertEquals(-1, element.getSize());
         assertTrue(element.isSizeUnbounded());
@@ -92,8 +92,8 @@ public class PropertyTest {
 
     @Test
     public void testChildren() {
-        Property<String> element = new Property<>(String.class, "element");
-        Property<String> child = new Property<>(String.class, "myElement");
+        Property<String> element = newProperty("element");
+        Property<String> child = newProperty("myElement");
         assertNotNull(element.addChild(child).getChild("myElement"));
         assertEquals("myElement", element.getChild("myElement").getName());
 
@@ -101,7 +101,7 @@ public class PropertyTest {
         assertEquals(1, children.size());
         assertEquals("myElement", children.get(0).getName());
 
-        children.add(new Property<>(String.class, "myElement2"));
+        children.add(newProperty("myElement2"));
         element.setChildren(children);
         assertEquals("myElement", element.getChild("myElement").getName());
         assertEquals("myElement2", element.getChild("myElement2").getName());
@@ -110,12 +110,12 @@ public class PropertyTest {
         assertEquals(2, childrenMap.size());
         assertEquals("myElement", childrenMap.get("myElement").getName());
         assertEquals("myElement2", childrenMap.get("myElement2").getName());
-        childrenMap.put("myElement3", new Property<>(String.class, "myElement3"));
-    }
+        childrenMap.put("myElement3", newProperty("myElement3"));
+            }
 
     @Test
     public void testHiddenForProperties() {
-        Property<String> element = new Property<>(String.class, "element");
+        Property<String> element = newProperty("element");
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
         Widget widget = new Widget(element);
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
@@ -127,7 +127,7 @@ public class PropertyTest {
 
     @Test
     public void testFlags() {
-        Property<String> element = new Property<>(String.class, "element");
+        Property<String> element = newProperty("element");
         assertFalse(element.isFlag(Property.Flags.ENCRYPT));
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
         element.addFlag(Property.Flags.ENCRYPT);
@@ -166,4 +166,11 @@ public class PropertyTest {
         assertEquals("bar1", element.getTaggedValue("bar"));
     }
 
+    @Test
+    public void testType() {
+        Property foo = new Property<Integer>(Integer.class, "foo");
+        foo.setValue("bar");
+        assertEquals("bar", foo.getValue());
+    }
+    
 }
