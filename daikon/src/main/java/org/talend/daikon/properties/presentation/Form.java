@@ -124,8 +124,13 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
         this(props, name, name);
     }
 
+    //TODO delete it
     public static Form create(Properties props, String name) {
         return new Form(props, name, name);
+    }
+    
+    public static Form createFromAndRegisterProperties(Properties props, String name) {
+        return create(props, name);
     }
 
     /*
