@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.apache.avro.Schema;
+import org.apache.avro.SchemaBuilder;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.Property;
@@ -58,6 +60,9 @@ public class TestProperties extends Properties {
     public Property<java.util.Date> date = newDate("date");
 
     public Property<java.util.Date> dateTime = newDate("dateTime");
+
+    public Property<Schema> schema = newSchema("schema")
+            .setValue(SchemaBuilder.builder().record("EmptyRecord").fields().endRecord());
 
     // Used in testing refreshLayout
     public Property<Boolean> suppressDate = newBoolean("suppressDate");

@@ -713,7 +713,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
             } else if (otherProp instanceof Property) {
                 // copy the value
                 Object value = ((Property) otherProp).getStoredValue();
-                ((Property) thisProp).setValue(value);
+                ((Property) thisProp).setStoredValue(value);
                 if (copyTaggedValues) {
                     ((Property) thisProp).copyTaggedValues((Property) otherProp);
                 }
