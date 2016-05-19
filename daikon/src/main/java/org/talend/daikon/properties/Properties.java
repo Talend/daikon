@@ -16,7 +16,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
@@ -341,20 +343,46 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
     }
 
     /**
+     * Used for serialization, this will backup all the forms of every properties / sub-properties, and clear them
+     */
+    private Map<Properties, List<Form>> createFormsBackupAndClear() {
+        Map<Properties, List<Form>> formsMap = new HashMap<>();
+        for (NamedThing nt : this.getProperties()) {
+            if (nt instanceof Properties) {
+                Properties currentProperties = (Properties) nt;
+                formsMap.putAll(currentProperties.createFormsBackupAndClear());
+            }
+        }
+        formsMap.put(this, getForms());
+        forms = new ArrayList<>();
+        return formsMap;
+    }
+
+    /**
+     * Used for serialization, to use after a backup, to restore all the forms
+     */
+    private void restoreFormsBackup(Map<Properties, List<Form>> formsMap) {
+        for (Properties properties : formsMap.keySet()) {
+            properties.forms = formsMap.get(properties);
+        }
+    }
+
+    /**
      * Returns a serialized version of this for storage in a repository.
      *
      * @return the serialized {@code String}, use {@link #fromSerialized(String, Class)} to materialize the object.
      */
     public String toSerialized() {
         handlePropEncryption(ENCRYPT);
-        List<Form> currentForms = forms;
+
+        // will clear and backup all forms / sub forms.
+        Map<Properties, List<Form>> formsMap = createFormsBackupAndClear();
         String ser = null;
         try {
-            // The forms are recreated upon deserialization
-            forms = new ArrayList<>();
             ser = JsonWriter.objectToJson(this);
         } finally {
-            forms = currentForms;
+            // restore forms to the previous state
+            restoreFormsBackup(formsMap);
         }
         handlePropEncryption(!ENCRYPT);
         return ser;

@@ -192,7 +192,7 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("props").init();
         assertFalse(props.nestedProps.getForm(Form.MAIN).getWidget(props.nestedProps.anotherProp.getName()).isHidden());
         TestProperties props2 = (TestProperties) new TestProperties("props2").init();
-        props2.nestedProps.anotherProp.setValue(true);
+        props2.nestedProps.booleanProp.setValue(true);
         props.copyValuesFrom(props2);
         assertTrue(props.nestedProps.getForm(Form.MAIN).getWidget(props.nestedProps.anotherProp.getName()).isHidden());
     }
@@ -290,7 +290,7 @@ public class PropertiesTest {
         List<NamedThing> pList = componentProperties.getProperties();
         System.out.println(pList);
         assertTrue(pList.get(0) != null);
-        assertEquals(4, pList.size());
+        assertEquals(5, pList.size());
     }
 
     @Test

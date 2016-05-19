@@ -14,8 +14,6 @@ package org.talend.daikon.properties.service;
 
 import static org.junit.Assert.*;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
@@ -90,7 +88,7 @@ public class PropertiesServiceTest {
         props.integer.setValue(1);
         props.decimal.setValue(2);
         props.nestedProps.aGreatProperty.setValue("propPrevious1");
-        props.nestedProps.anotherProp.setValue("propPrevious2");
+        props.nestedProps.anotherProp.setValue("foo");
 
         props = (TestProperties) propService.makeFormCancelable(props, "restoreTest");
 

@@ -13,10 +13,12 @@
 package org.talend.daikon.properties;
 
 import static org.junit.Assert.*;
+import static org.talend.daikon.properties.PropertyFactory.*;
 
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.talend.daikon.properties.presentation.Widget;
 
@@ -111,7 +113,7 @@ public class PropertyTest {
         assertEquals("myElement", childrenMap.get("myElement").getName());
         assertEquals("myElement2", childrenMap.get("myElement2").getName());
         childrenMap.put("myElement3", newProperty("myElement3"));
-            }
+    }
 
     @Test
     public void testHiddenForProperties() {
@@ -172,5 +174,5 @@ public class PropertyTest {
         foo.setValue("bar");
         assertEquals("bar", foo.getValue());
     }
-    
+
 }
