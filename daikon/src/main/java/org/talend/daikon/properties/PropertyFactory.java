@@ -96,14 +96,8 @@ public class PropertyFactory {
         }, name);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Enum<?>> Property<T> newEnum(String name, Class<T> zeEnumType) {
-        Property<T> enumProperty = new Property<>(zeEnumType, name);
-        // set the possible values accoording with all the enum types.
-        // I don't think it is necessary though.
-        Enum<?>[] enumConstants = zeEnumType.getEnumConstants();
-        enumProperty.setPossibleValues(enumConstants);
-        return enumProperty;
+    public static <T extends Enum<?>> EnumProperty<T> newEnum(String name, Class<T> zeEnumType) {
+        return new EnumProperty<>(zeEnumType, name);
     }
 
     public static Property<Schema> newSchema(String name) {
