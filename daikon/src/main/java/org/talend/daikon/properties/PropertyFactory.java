@@ -96,7 +96,7 @@ public class PropertyFactory {
         }, name);
     }
 
-    public static <T extends Enum<?>> EnumProperty<T> newEnum(String name, Class<T> zeEnumType) {
+    public static <T extends Enum<T>> EnumProperty<T> newEnum(String name, Class<T> zeEnumType) {
         return new EnumProperty<>(zeEnumType, name);
     }
 
