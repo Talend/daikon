@@ -50,7 +50,7 @@ public class EnumProperty<T extends Enum<T>> extends Property<T> implements AnyP
                 TalendRuntimeException.unexpectedException(e);
             }
         }
-        return (T) storedValue;
+        return (T) value;
     }
 
     /**

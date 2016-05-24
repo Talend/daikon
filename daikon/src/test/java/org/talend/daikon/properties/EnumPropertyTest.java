@@ -39,4 +39,21 @@ public class EnumPropertyTest {
         assertEquals(TestEnum.FOO, enumProperty.getValue());
     }
 
+    /**
+     * Test method for {@link org.talend.daikon.properties.EnumProperty#getValue()}.
+     */
+    @Test
+    public void testGetValueWithEvaluator() {
+        EnumProperty<TestEnum> enumProperty = PropertyFactory.newEnum("prop", TestEnum.class);
+        enumProperty.setValueEvaluator(new PropertyValueEvaluator() {
+
+            @Override
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                return (T) TestEnum.valueOf((String) storedValue);
+            }
+        });
+        enumProperty.setStoredValue("FOO");
+        assertEquals(TestEnum.FOO, enumProperty.getValue());
+    }
+
 }
