@@ -14,7 +14,6 @@ package org.talend.daikon.properties;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -670,10 +669,10 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
     }
 
     /**
-     * same as {@link #copyValuesFrom(Properties, boolean)} with copyTaggedValues set to true.
+     * same as {@link #copyValuesFrom(Properties, boolean)} with copyTaggedValues set to true and copyEvaluator set to true.
      */
     public void copyValuesFrom(Properties props) {
-        copyValuesFrom(props, true);
+        copyValuesFrom(props, true, true);
     }
 
     /**
@@ -683,41 +682,15 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
      * 
      * @param props pros to copy into this Properties
      * @param copyTaggedValues if true all tagged values are copied
+     * @param copyEvaluators if true all evaluators are copied
      */
-    public void copyValuesFrom(Properties props, boolean copyTaggedValues) {
+    public void copyValuesFrom(Properties props, boolean copyTaggedValues, boolean copyEvaluators) {
         for (NamedThing otherProp : props.getProperties()) {
             NamedThing thisProp = getProperty(otherProp.getName());
             if (thisProp == null) {
                 // the current Property or Properties is null so we need to create a new instance
                 try {
-                    Class<? extends NamedThing> otherClass = otherProp.getClass();
-                    if (Property.class.isAssignableFrom(otherClass)) {
-                        Property<?> otherPy = (Property<?>) otherProp;
-                        Constructor<? extends NamedThing> c = otherClass.getDeclaredConstructor(String.class, String.class);
-                        thisProp = c.newInstance(otherPy.getType(), otherPy.getName());
-                    } else if (Properties.class.isAssignableFrom(otherClass)) {
-                        // Look for single arg String, but an inner class will have a Properties as first arg
-                        Constructor<?> constructors[] = otherClass.getConstructors();
-                        for (Constructor<?> c : constructors) {
-                            Class<?> pts[] = c.getParameterTypes();
-                            if (pts.length == 1 && String.class.isAssignableFrom(pts[0])) {
-                                thisProp = (NamedThing) c.newInstance(otherProp.getName());
-                                break;
-                            }
-                            if (pts.length == 2 && Properties.class.isAssignableFrom(pts[0])
-                                    && String.class.isAssignableFrom(pts[1])) {
-                                thisProp = (NamedThing) c.newInstance(this, otherProp.getName());
-                                break;
-                            }
-                        }
-                        if (thisProp == null) {
-                            TalendRuntimeException.unexpectedException(
-                                    "Failed to find a proper constructor in Properties : " + otherClass.getName());
-                        }
-                    } else {
-                        TalendRuntimeException.unexpectedException(
-                                "Unexpected property class: " + otherProp.getClass() + " prop: " + otherProp);
-                    }
+                    thisProp = createPropertyInstance(otherProp);
                     // assign the newly created instance to the field.
                     try {
                         Field f = getClass().getField(otherProp.getName());
@@ -726,8 +699,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
                         // A field exists in the other that's not in ours, just ignore it
                         continue;
                     }
-                } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-                        | IllegalArgumentException | InvocationTargetException e) {
+                } catch (ReflectiveOperationException | SecurityException e) {
                     TalendRuntimeException.unexpectedException(e);
                 }
             }
@@ -744,6 +716,9 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
                 if (copyTaggedValues) {
                     ((Property) thisProp).copyTaggedValues((Property) otherProp);
                 }
+                if (copyEvaluators) {
+                    ((Property) thisProp).setValueEvaluator(((Property) otherProp).getValueEvaluator());
+                }
             } else {
                 TalendRuntimeException
                         .unexpectedException("The property " + otherProp.getClass().getName() + " is not of the expected type.");
@@ -751,6 +726,38 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
 
         }
 
+    }
+
+    public NamedThing createPropertyInstance(NamedThing otherProp) throws ReflectiveOperationException {
+        NamedThing thisProp = null;
+        Class<? extends NamedThing> otherClass = otherProp.getClass();
+        if (Property.class.isAssignableFrom(otherClass)) {
+            Property<?> otherPy = (Property<?>) otherProp;
+            Constructor<? extends NamedThing> c = otherClass.getDeclaredConstructor(String.class, String.class);
+            thisProp = c.newInstance(otherPy.getType(), otherPy.getName());
+        } else if (Properties.class.isAssignableFrom(otherClass)) {
+            // Look for single arg String, but an inner class will have a Properties as first arg
+            Constructor<?>[] constructors = otherClass.getConstructors();
+            for (Constructor<?> c : constructors) {
+                Class<?> pts[] = c.getParameterTypes();
+                if (pts.length == 1 && String.class.isAssignableFrom(pts[0])) {
+                    thisProp = (NamedThing) c.newInstance(otherProp.getName());
+                    break;
+                }
+                if (pts.length == 2 && Properties.class.isAssignableFrom(pts[0]) && String.class.isAssignableFrom(pts[1])) {
+                    thisProp = (NamedThing) c.newInstance(this, otherProp.getName());
+                    break;
+                }
+            }
+            if (thisProp == null) {
+                TalendRuntimeException
+                        .unexpectedException("Failed to find a proper constructor in Properties : " + otherClass.getName());
+            }
+        } else {
+            TalendRuntimeException
+                    .unexpectedException("Unexpected property class: " + otherProp.getClass() + " prop: " + otherProp);
+        }
+        return thisProp;
     }
 
     @Override

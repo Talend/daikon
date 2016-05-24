@@ -35,22 +35,6 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     private static final String I18N_PROPERTY_PREFIX = "property."; //$NON-NLS-1$
 
-    // public enum Type {
-    // STRING,
-    // BOOLEAN,
-    // INT,
-    // DATE,
-    // DATETIME,
-    // DECIMAL,
-    // FLOAT,
-    // DOUBLE,
-    // BYTE_ARRAY,
-    // ENUM,
-    // DYNAMIC,
-    // GROUP,
-    // SCHEMA
-    // }
-
     public static final int INFINITE = -1;
 
     protected EnumSet<Flags> flags;
@@ -354,9 +338,9 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
     /**
      * 
      * @return the value of the property. This value may not be the one Stored with setValue(), it may be evaluated with
-     * {@link PropertyValueEvaluator}.
+     *         {@link PropertyValueEvaluator}.
      * @exception throw a ClassCastException is the stored value is not of the property type and no
-     * PropertyValueEvaluator has been set.
+     *                PropertyValueEvaluator has been set.
      */
     @SuppressWarnings("unchecked")
     public T getValue() {
@@ -417,6 +401,10 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     public void setValueEvaluator(PropertyValueEvaluator ve) {
         this.propertyValueEvaluator = ve;
+    }
+
+    public PropertyValueEvaluator getValueEvaluator() {
+        return this.propertyValueEvaluator;
     }
 
     @Override

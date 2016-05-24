@@ -214,6 +214,26 @@ public class PropertiesTest {
     }
 
     @Test
+    public void testCopyValuesCopyEvaluators() {
+        TestProperties props = (TestProperties) new TestProperties("props").init();
+        TestProperties props2 = (TestProperties) new TestProperties("props2").init();
+        PropertyValueEvaluator evaluator = new PropertyValueEvaluator() {
+
+            @Override
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                return null;
+            }
+        };
+        props2.date.setValueEvaluator(evaluator);
+
+        assertEquals(evaluator, props2.date.getValueEvaluator());
+        assertNotEquals(evaluator, props.date.getValueEvaluator());
+        props.copyValuesFrom(props2);
+        assertEquals(evaluator, props2.date.getValueEvaluator());
+        assertEquals(evaluator, props.date.getValueEvaluator());
+    }
+
+    @Test
     public void testWrongFieldAndPropertyName() {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.setValue("nestedProps.aGreatProperty", "great1");
