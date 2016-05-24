@@ -99,6 +99,19 @@ import com.cedarsoftware.util.io.JsonWriter;
  */
 public abstract class Properties extends TranslatableImpl implements AnyProperty, ToStringIndent {
 
+    /**
+     * used for seting up a callback after deserialization. Usually used to setup
+     * Property evaluator.
+     */
+    public static interface PostSerializationSetup<T extends Properties> {
+
+        /**
+         * This method will be called right after the deserialization and after the ecrypted field have been decrypted.
+         * This will be called before any layout initialization.
+         */
+        void setup(T properties);
+    }
+
     static final String METHOD_BEFORE = "before";
 
     static final String METHOD_AFTER = "after";
@@ -149,14 +162,25 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
     }
 
     /**
+     * same as {@code fromSerialized(String, Class, null)}
+     */
+    public static synchronized <T extends Properties> Deserialized<T> fromSerialized(String serialized,
+            Class<T> propertiesclass) {
+        return fromSerialized(serialized, propertiesclass, null);
+    }
+
+    /**
      * Returns the Properties object previously serialized.
      *
      * @param serialized created by {@link #toSerialized()}.
+     * @param propertiesclass, class type to deserialized
+     * @param postSerializationSetup callback to setup the Properties class after deserialization and before layout and i18N
+     *            setup.
      * @return a {@code Properties} object represented by the {@code serialized} value.
      */
     @SuppressWarnings("unchecked")
-    public static synchronized <T extends Properties> Deserialized<T> fromSerialized(String serialized,
-            Class<T> propertiesclass) {
+    public static synchronized <T extends Properties> Deserialized<T> fromSerialized(String serialized, Class<T> propertiesclass,
+            PostSerializationSetup<T> postSerializationSetup) {
         Deserialized<T> d = new Deserialized<>();
         d.migration = new MigrationInformationImpl();
         // this set the proper classloader for the JsonReader especially for OSGI
@@ -165,6 +189,9 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
             Thread.currentThread().setContextClassLoader(Properties.class.getClassLoader());
             d.properties = (T) JsonReader.jsonToJava(serialized);
             d.properties.handlePropEncryption(!ENCRYPT);
+            if (postSerializationSetup != null) {
+                postSerializationSetup.setup(d.properties);
+            } // else no setup callback to call so ignor.
             d.properties.setupPropertiesPostDeserialization();
         } finally {
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);

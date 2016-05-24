@@ -16,6 +16,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.junit.Rule;
@@ -355,6 +356,26 @@ public class PropertiesTest {
         property.setTaggedValue("bar", "barValue");
         assertEquals("fooValue", property.getTaggedValue("foo"));
         assertEquals("barValue", property.getTaggedValue("bar"));
+    }
+
+    @Test
+    public void testfromSerialized() {
+        TestProperties props = (TestProperties) new TestProperties("test").init();
+        String s = props.toSerialized();
+        final AtomicBoolean setupCalled = new AtomicBoolean(false);
+        assertFalse(setupCalled.get());
+        assertNotEquals("bar", props.date.getTaggedValue("foo"));
+        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class,
+                new Properties.PostSerializationSetup<TestProperties>() {
+
+                    @Override
+                    public void setup(TestProperties properties) {
+                        setupCalled.set(true);
+                        properties.date.setTaggedValue("foo", "bar");
+                    }
+                }).properties;
+        assertTrue(setupCalled.get());
+        assertEquals("bar", desProp.date.getTaggedValue("foo"));
     }
 
     @Test
