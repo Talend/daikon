@@ -39,7 +39,7 @@ import org.talend.daikon.properties.testproperties.references.MultipleRefPropert
 
 public class PropertiesTest {
 
-    private final class StringListProperties extends Properties {
+    private final class StringListProperties extends PropertiesImpl {
 
         public Property<List<String>> listString = new Property(new TypeLiteral<List<String>>() {
         }, "listString");
@@ -53,7 +53,7 @@ public class PropertiesTest {
         }
     }
 
-    private final class AnotherNestedProperties extends Properties {
+    private final class AnotherNestedProperties extends PropertiesImpl {
 
         public StringProperty stringProp = PropertyFactory.newProperty("stringProp");
 
@@ -69,21 +69,6 @@ public class PropertiesTest {
         public void setupLayout() {
             super.setupLayout();
             new Form(this, Form.MAIN);
-        }
-    }
-
-    private final class With2NestedProperties extends Properties {
-
-        public final AnotherNestedProperties nestProp1 = new AnotherNestedProperties("nestProp1");
-
-        public final AnotherNestedProperties nestProp2 = new AnotherNestedProperties("nestProp2");
-
-        /**
-         * 
-         * @param name
-         */
-        private With2NestedProperties(String name) {
-            super(name);
         }
     }
 
@@ -141,7 +126,7 @@ public class PropertiesTest {
         assertEquals(1, props.nestedProps.getForms().size());
         assertEquals(2, props.getForms().size());
 
-        TestProperties desProp = Properties.fromSerialized(serialized, TestProperties.class).properties;
+        TestProperties desProp = Properties.Helper.fromSerialized(serialized, TestProperties.class).properties;
         assertEquals(1, desProp.nestedProps.getForms().size());
         assertEquals(2, desProp.getForms().size());
 
@@ -398,7 +383,7 @@ public class PropertiesTest {
         final AtomicBoolean setupCalled = new AtomicBoolean(false);
         assertFalse(setupCalled.get());
         assertNotEquals("bar", props.date.getTaggedValue("foo"));
-        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class,
+        TestProperties desProp = Properties.Helper.fromSerialized(s, TestProperties.class,
                 new Properties.PostSerializationSetup<TestProperties>() {
 
                     @Override
@@ -419,7 +404,7 @@ public class PropertiesTest {
         props.initLater.setTaggedValue("foo", "fooValue");
         props.initLater.setTaggedValue("bar", "barValue");
         String s = props.toSerialized();
-        Properties desProp = Properties.fromSerialized(s, Properties.class).properties;
+        Properties desProp = Properties.Helper.fromSerialized(s, Properties.class).properties;
         assertEquals("fooValue", ((Property<?>) desProp.getProperty("initLater")).getTaggedValue("foo"));
         assertEquals("barValue", ((Property<?>) desProp.getProperty("initLater")).getTaggedValue("bar"));
     }
@@ -440,7 +425,7 @@ public class PropertiesTest {
         });
         assertEquals(System.getProperty("java.io.tmpdir"), props.userId.getValue());
         String s = props.toSerialized();
-        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class).properties;
+        TestProperties desProp = Properties.Helper.fromSerialized(s, TestProperties.class).properties;
         assertEquals("java.io.tmpdir", desProp.userId.getValue());
         // check that nested properties has also the evaluator set
         props.nestedInitLater.aGreatProperty.setValue("java.home");
@@ -470,7 +455,7 @@ public class PropertiesTest {
         });
         assertEquals(System.getProperty("java.io.tmpdir"), props.userId.getValue());
         String s = props.toSerialized();
-        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class).properties;
+        TestProperties desProp = Properties.Helper.fromSerialized(s, TestProperties.class).properties;
         assertEquals("java.io.tmpdir", desProp.userId.getValue());
 
     }
@@ -527,7 +512,7 @@ public class PropertiesTest {
         String serialized = props.toSerialized();
         assertNotNull(props.getForm(Form.MAIN));
         // check that form are setup after Serialization
-        Deserialized<AnotherNestedProperties> fromSerialized = Properties.fromSerialized(serialized,
+        Deserialized<AnotherNestedProperties> fromSerialized = Properties.Helper.fromSerialized(serialized,
                 AnotherNestedProperties.class);
         assertNotNull(fromSerialized.properties.getForm(Form.MAIN));
 

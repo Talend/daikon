@@ -336,16 +336,28 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
         }
     }
 
+    /**
+     * Set this property value with the proper type as oppose to the {@link #setStoredValue(Object)}.
+     */
     public Property<T> setValue(T value) {
         storedValue = value;
         return this;
     }
 
+    /**
+     * set the value that will be stored and serialized into this
+     * Property. This does not have to be of the type of the Property
+     * but if that is so you shall provide a {@link PropertyValueEvaluator} to this property so that when the (@link
+     * {@link Property#getValue()} is called, it can convert it to the proper type.
+     */
     public Property<T> setStoredValue(Object value) {
         storedValue = value;
         return this;
     }
 
+    /**
+     * return the internal value used for serialization.
+     */
     public Object getStoredValue() {
         return storedValue;
     }
@@ -398,7 +410,8 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
      * {@value NamedThing#I18N_DISPLAY_NAME_SUFFIX}. if the key is not found it returns the possibleValue.toString().
      * 
      * @return a I18n value or possibleValue.toString if the value is not found.
-     * @exception TalendRuntimeException with {@link CommonErrorCodes#UNEXPECTED_ARGUMENT} if the possible value does not belong to
+     * @exception TalendRuntimeException with {@link CommonErrorCodes#UNEXPECTED_ARGUMENT} if the possible value does not belong
+     *                to
      *                possible values
      */
     public String getPossibleValuesDisplayName(Object possibleValue) {

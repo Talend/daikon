@@ -39,7 +39,7 @@ public class PropertiesTestUtils {
 
     public static Properties checkSerialize(Properties props, ErrorCollector errorCollector) {
         String s = props.toSerialized();
-        Deserialized<Properties> d = Properties.fromSerialized(s, Properties.class);
+        Deserialized<Properties> d = Properties.Helper.fromSerialized(s, Properties.class);
         Properties deserProps = d.properties;
         checkAllI18N(deserProps, errorCollector);
         assertFalse(d.migration.isMigrated());

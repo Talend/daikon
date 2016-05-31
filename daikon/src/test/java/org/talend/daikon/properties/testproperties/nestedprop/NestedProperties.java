@@ -14,11 +14,11 @@ package org.talend.daikon.properties.testproperties.nestedprop;
 
 import static org.talend.daikon.properties.property.PropertyFactory.*;
 
-import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 
-public class NestedProperties extends Properties {
+public class NestedProperties extends PropertiesImpl {
 
     public static final String A_GREAT_PROP_NAME = "aGreatProperty"; //$NON-NLS-1$
 

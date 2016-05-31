@@ -16,10 +16,10 @@ import static org.talend.daikon.properties.property.PropertyFactory.*;
 
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
-import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.property.Property;
 
-public class PropertiesWithDefinedI18N extends Properties {
+public class PropertiesWithDefinedI18N extends PropertiesImpl {
 
     public static final String A_GREAT_PROP_NAME2 = "aGreatProp2"; //$NON-NLS-1$
 

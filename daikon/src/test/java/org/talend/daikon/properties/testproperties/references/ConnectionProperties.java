@@ -13,10 +13,10 @@
 package org.talend.daikon.properties.testproperties.references;
 
 import org.talend.daikon.properties.PresentationItem;
-import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.presentation.Form;
 
-public class ConnectionProperties extends Properties {
+public class ConnectionProperties extends PropertiesImpl {
 
     public PresentationItem presItem = new PresentationItem("foo", "bar");
 

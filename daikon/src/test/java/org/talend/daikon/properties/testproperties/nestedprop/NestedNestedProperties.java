@@ -12,9 +12,9 @@
 // ============================================================================
 package org.talend.daikon.properties.testproperties.nestedprop;
 
-import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesImpl;
 
-public class NestedNestedProperties extends Properties {
+public class NestedNestedProperties extends PropertiesImpl {
 
     public NestedNestedProperties(String name) {
         super(name);

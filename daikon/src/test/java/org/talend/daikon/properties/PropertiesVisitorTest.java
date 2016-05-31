@@ -23,15 +23,15 @@ import org.talend.daikon.properties.property.PropertyVisitor;
 
 public class PropertiesVisitorTest {
 
-    Properties foo = new Properties("foo") {
+    Properties foo = new PropertiesImpl("foo") {
 
         public Property one = PropertyFactory.newString("one");
 
-        public Properties two = new Properties("two") {
+        public Properties two = new PropertiesImpl("two") {
 
             public Property three = PropertyFactory.newString("three");
 
-            public Properties four = new Properties("four") {
+            public Properties four = new PropertiesImpl("four") {
                 //
             };
 
