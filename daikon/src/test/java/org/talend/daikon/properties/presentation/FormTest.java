@@ -13,8 +13,8 @@
 package org.talend.daikon.properties.presentation;
 
 import static org.junit.Assert.*;
-import static org.talend.daikon.properties.PropertyFactory.*;
 import static org.talend.daikon.properties.presentation.Widget.*;
+import static org.talend.daikon.properties.property.PropertyFactory.*;
 
 import org.junit.Test;
 import org.talend.daikon.properties.Properties;

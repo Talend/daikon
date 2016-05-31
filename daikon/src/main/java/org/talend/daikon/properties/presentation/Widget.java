@@ -16,7 +16,7 @@ import java.util.Collection;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.Property;
+import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
 

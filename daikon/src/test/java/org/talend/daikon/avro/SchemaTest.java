@@ -6,8 +6,8 @@ import org.apache.avro.SchemaBuilder;
 import org.junit.Test;
 
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.Property;
-import org.talend.daikon.properties.PropertyFactory;
+import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.PropertyFactory;
 
 public class SchemaTest {
 

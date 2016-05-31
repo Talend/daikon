@@ -13,7 +13,7 @@
 package org.talend.daikon.properties;
 
 import static org.junit.Assert.*;
-import static org.talend.daikon.properties.PropertyFactory.*;
+import static org.talend.daikon.properties.property.PropertyFactory.*;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,8 @@ import java.util.Map;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.talend.daikon.properties.presentation.Widget;
+import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.StringProperty;
 
 import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;

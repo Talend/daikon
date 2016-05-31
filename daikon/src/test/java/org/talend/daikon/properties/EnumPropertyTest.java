@@ -20,6 +20,10 @@ import java.util.List;
 import org.junit.Test;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
+import org.talend.daikon.properties.property.EnumProperty;
+import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.PropertyFactory;
+import org.talend.daikon.properties.property.PropertyValueEvaluator;
 
 public class EnumPropertyTest {
 
@@ -41,7 +45,7 @@ public class EnumPropertyTest {
     }
 
     /**
-     * Test method for {@link org.talend.daikon.properties.EnumProperty#getValue()}.
+     * Test method for {@link org.talend.daikon.properties.property.EnumProperty#getValue()}.
      */
     @Test
     public void testGetValue() {
@@ -53,7 +57,7 @@ public class EnumPropertyTest {
     }
 
     /**
-     * Test method for {@link org.talend.daikon.properties.EnumProperty#getValue()}.
+     * Test method for {@link org.talend.daikon.properties.property.EnumProperty#getValue()}.
      */
     @Test
     public void testGetValueWithEvaluator() {

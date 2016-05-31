@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
+import org.talend.daikon.properties.property.Property;
+
 /**
  * Provides a default Properties visitor implementation for visiting only Properties typed values
  */

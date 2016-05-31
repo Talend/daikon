@@ -23,7 +23,7 @@ import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesDynamicMethodHelper;
-import org.talend.daikon.properties.Property;
+import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
 

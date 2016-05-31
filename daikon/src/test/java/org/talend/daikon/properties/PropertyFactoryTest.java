@@ -22,6 +22,8 @@ import java.util.List;
 import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
+import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.PropertyFactory;
 
 public class PropertyFactoryTest {
 

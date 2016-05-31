@@ -28,6 +28,9 @@ import org.talend.daikon.i18n.TranslatableImpl;
 import org.talend.daikon.properties.error.PropertiesErrorCode;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
+import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.PropertyFactory;
+import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.security.CryptoHelper;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
@@ -734,12 +737,14 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
         if (Property.class.isAssignableFrom(otherClass)) {
             Property<?> otherPy = (Property<?>) otherProp;
             Constructor<? extends NamedThing> c = otherClass.getDeclaredConstructor(String.class, String.class);
+            c.setAccessible(true);
             thisProp = c.newInstance(otherPy.getType(), otherPy.getName());
         } else if (Properties.class.isAssignableFrom(otherClass)) {
             // Look for single arg String, but an inner class will have a Properties as first arg
             Constructor<?>[] constructors = otherClass.getConstructors();
             for (Constructor<?> c : constructors) {
                 Class<?> pts[] = c.getParameterTypes();
+                c.setAccessible(true);
                 if (pts.length == 1 && String.class.isAssignableFrom(pts[0])) {
                     thisProp = (NamedThing) c.newInstance(otherProp.getName());
                     break;
