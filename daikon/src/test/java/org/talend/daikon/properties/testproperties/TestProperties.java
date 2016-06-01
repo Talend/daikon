@@ -29,7 +29,6 @@ import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
-import org.talend.daikon.properties.presentation.Widget.WidgetType;
 import org.talend.daikon.properties.service.Repository;
 import org.talend.daikon.properties.testproperties.nestedprop.NestedProperties;
 import org.talend.daikon.properties.testproperties.nestedprop.inherited.InheritedProperties;
@@ -125,10 +124,10 @@ public class TestProperties extends Properties {
         Form form = Form.create(this, Form.MAIN);
         mainForm = form;
         form.addRow(userId);
-        form.addRow(widget(password).setWidgetType(WidgetType.HIDDEN_TEXT));
+        form.addRow(widget(password).setWidgetType(HIDDEN_TEXT_WIDGET_TYPE));
         form.addRow(testPI);
-        form.addRow(widget(nameList).setWidgetType(Widget.WidgetType.NAME_SELECTION_AREA));
-        form.addRow(widget(nameListRef).setWidgetType(Widget.WidgetType.NAME_SELECTION_REFERENCE));
+        form.addRow(widget(nameList).setWidgetType(Widget.NAME_SELECTION_AREA_WIDGET_TYPE));
+        form.addRow(widget(nameListRef).setWidgetType(Widget.NAME_SELECTION_REFERENCE_WIDGET_TYPE));
 
         form = Form.create(this, "restoreTest");
         restoreForm = form;
