@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.properties;
+package org.talend.daikon.properties.property;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -28,6 +28,9 @@ import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
+import org.talend.daikon.properties.AnyProperty;
+import org.talend.daikon.properties.AnyPropertyVisitor;
+import org.talend.daikon.properties.Properties;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

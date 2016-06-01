@@ -23,11 +23,12 @@ import org.talend.daikon.NamedThing;
 import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
+import org.talend.daikon.properties.property.StringProperty;
 
 public class StringPropertyTest {
 
     /**
-     * Test method for {@link org.talend.daikon.properties.StringProperty#setPossibleNamedThingValues(java.util.List)}.
+     * Test method for {@link org.talend.daikon.properties.property.StringProperty#setPossibleNamedThingValues(java.util.List)}.
      */
     @Test
     public void testSetPossibleValuesWithNamedThing() {

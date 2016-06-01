@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.properties;
+package org.talend.daikon.properties.property;
 
 /**
  * This shall be implemented in order to have Properties value interpreted to the actual value if they hold some king of

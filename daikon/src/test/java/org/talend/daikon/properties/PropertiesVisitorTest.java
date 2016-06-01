@@ -17,6 +17,9 @@ import static org.junit.Assert.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.PropertyFactory;
+import org.talend.daikon.properties.property.PropertyVisitor;
 
 public class PropertiesVisitorTest {
 

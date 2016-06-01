@@ -10,7 +10,10 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.properties;
+package org.talend.daikon.properties.property;
+
+import org.talend.daikon.properties.AnyPropertyVisitor;
+import org.talend.daikon.properties.Properties;
 
 /**
  * Provides a default Properties visitor implementation for visiting only Property typed values
