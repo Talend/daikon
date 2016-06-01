@@ -39,7 +39,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     private static final String I18N_PROPERTY_PREFIX = "property."; //$NON-NLS-1$
 
-    public static final String I18N_PROPERTY_POSSBILE_VALUE_PREFIX = "property.possiblevalue."; //$NON-NLS-1$
+    public static final String I18N_PROPERTY_POSSIBLE_VALUE_PREFIX = "property.possiblevalue."; //$NON-NLS-1$
 
     public static final int INFINITE = -1;
 
@@ -406,7 +406,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
         }
         if (possibleValue != null) {
             String i18nMessage = getI18nMessage(
-                    I18N_PROPERTY_POSSBILE_VALUE_PREFIX + possibleValue.toString() + NamedThing.I18N_DISPLAY_NAME_SUFFIX);
+                    I18N_PROPERTY_POSSIBLE_VALUE_PREFIX + possibleValue.toString() + NamedThing.I18N_DISPLAY_NAME_SUFFIX);
             if (i18nMessage.endsWith(NamedThing.I18N_DISPLAY_NAME_SUFFIX)) {
                 return possibleValue.toString();
             } else {
