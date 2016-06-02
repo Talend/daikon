@@ -32,7 +32,7 @@ public class PropertiesServiceTest {
 
     @Before
     public void init() {
-        propService = new PropertiesServiceImpl<>();
+        propService = new PropertiesServiceImpl();
     }
 
     @Test

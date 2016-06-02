@@ -20,12 +20,12 @@ import org.talend.daikon.properties.presentation.Form;
  * Main Component Service implementation that is not related to any framework (neither OSGI, nor Spring) it uses a
  * ComponentRegistry implementation that will be provided by framework specific Service classes
  */
-public class PropertiesServiceImpl<T extends Properties> implements PropertiesService<T> {
+public class PropertiesServiceImpl implements PropertiesService<Properties> {
 
-    private Repository<T> repository;
+    private Repository<Properties> repository;
 
     @Override
-    public T makeFormCancelable(T properties, String formName) {
+    public Properties makeFormCancelable(Properties properties, String formName) {
         Form form = properties.getForm(formName);
         if (form == null) {
             throw new IllegalArgumentException("Form: " + formName + " not found");
@@ -35,7 +35,7 @@ public class PropertiesServiceImpl<T extends Properties> implements PropertiesSe
     }
 
     @Override
-    public T cancelFormValues(T properties, String formName) {
+    public Properties cancelFormValues(Properties properties, String formName) {
         Form form = properties.getForm(formName);
         if (form == null) {
             throw new IllegalArgumentException("Form: " + formName + " not found");
@@ -45,55 +45,55 @@ public class PropertiesServiceImpl<T extends Properties> implements PropertiesSe
     }
 
     @Override
-    public T validateProperty(String propName, T properties) throws Throwable {
+    public Properties validateProperty(String propName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.validateProperty(properties, propName);
         return properties;
     }
 
     @Override
-    public T beforePropertyActivate(String propName, T properties) throws Throwable {
+    public Properties beforePropertyActivate(String propName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.beforePropertyActivate(properties, propName);
         return properties;
     }
 
     @Override
-    public T beforePropertyPresent(String propName, T properties) throws Throwable {
+    public Properties beforePropertyPresent(String propName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.beforePropertyPresent(properties, propName);
         return properties;
     }
 
     @Override
-    public T afterProperty(String propName, T properties) throws Throwable {
+    public Properties afterProperty(String propName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.afterProperty(properties, propName);
         return properties;
     }
 
     @Override
-    public T beforeFormPresent(String formName, T properties) throws Throwable {
+    public Properties beforeFormPresent(String formName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.beforeFormPresent(properties, formName);
         return properties;
     }
 
     @Override
-    public T afterFormNext(String formName, T properties) throws Throwable {
+    public Properties afterFormNext(String formName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.afterFormNext(properties, formName);
         return properties;
     }
 
     @Override
-    public T afterFormBack(String formName, T properties) throws Throwable {
+    public Properties afterFormBack(String formName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.afterFormBack(properties, formName);
         return properties;
     }
 
     @Override
-    public T afterFormFinish(String formName, T properties) throws Throwable {
+    public Properties afterFormFinish(String formName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.afterFormFinish(properties, formName, repository);
         return properties;
     }
 
     @Override
-    public String storeProperties(T properties, String name, String repositoryLocation, String schemaPropertyName) {
+    public String storeProperties(Properties properties, String name, String repositoryLocation, String schemaPropertyName) {
         if (repository != null) {
             return repository.storeProperties(properties, name, repositoryLocation, schemaPropertyName);
         }
