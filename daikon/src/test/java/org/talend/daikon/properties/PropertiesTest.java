@@ -70,10 +70,9 @@ public class PropertiesTest {
         assertEquals(1, props.nestedProps.getForms().size());
         assertEquals(2, props.getForms().size());
 
-        TestProperties desProp = (TestProperties) Properties.fromSerialized(serialized, Properties.class).properties;
+        TestProperties desProp = (TestProperties) Properties.fromSerialized(serialized, Properties.class).object;
         assertEquals(1, desProp.nestedProps.getForms().size());
         assertEquals(2, desProp.getForms().size());
-
     }
 
     @Test
@@ -334,7 +333,7 @@ public class PropertiesTest {
         props.initLater.setTaggedValue("foo", "fooValue");
         props.initLater.setTaggedValue("bar", "barValue");
         String s = props.toSerialized();
-        Properties desProp = Properties.fromSerialized(s, Properties.class).properties;
+        Properties desProp = Properties.fromSerialized(s, Properties.class).object;
         assertEquals("fooValue", ((Property) desProp.getProperty("initLater")).getTaggedValue("foo"));
         assertEquals("barValue", ((Property) desProp.getProperty("initLater")).getTaggedValue("bar"));
     }
@@ -353,7 +352,7 @@ public class PropertiesTest {
         });
         assertEquals(System.getProperty("java.io.tmpdir"), props.userId.getValue());
         String s = props.toSerialized();
-        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class).properties;
+        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class).object;
         assertEquals("java.io.tmpdir", desProp.userId.getValue());
         // check that nested properties has also the evaluator set
         props.nestedInitLater.aGreatProperty.setValue("java.home");
@@ -373,7 +372,7 @@ public class PropertiesTest {
             public Object evaluate(Property property, Object storedValue) {
                 // if the prop is a system property then evaluate it.
                 Object taggedValue = property.getTaggedValue("value.language");
-                if (taggedValue != null && ((String) taggedValue).equals("sys.prop")) {
+                if (taggedValue != null && taggedValue.equals("sys.prop")) {
                     return System.getProperty((String) storedValue);
                 } else {// otherwise just return the value.
                     return storedValue;
@@ -382,7 +381,7 @@ public class PropertiesTest {
         });
         assertEquals(System.getProperty("java.io.tmpdir"), props.userId.getValue());
         String s = props.toSerialized();
-        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class).properties;
+        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class).object;
         assertEquals("java.io.tmpdir", desProp.userId.getValue());
 
     }

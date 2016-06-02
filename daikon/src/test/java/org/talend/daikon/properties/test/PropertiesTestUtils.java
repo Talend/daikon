@@ -25,9 +25,9 @@ import org.junit.rules.ErrorCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.persistence.Persister;
 import org.talend.daikon.properties.AnyPropertyVisitor;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.Properties.Deserialized;
 import org.talend.daikon.properties.Property;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
@@ -39,8 +39,8 @@ public class PropertiesTestUtils {
 
     public static Properties checkSerialize(Properties props, ErrorCollector errorCollector) {
         String s = props.toSerialized();
-        Deserialized<Properties> d = Properties.fromSerialized(s, Properties.class);
-        Properties deserProps = d.properties;
+        Persister.Deserialized<Properties> d = Properties.fromSerialized(s, Properties.class);
+        Properties deserProps = d.object;
         checkAllI18N(deserProps, errorCollector);
         assertFalse(d.migration.isMigrated());
         List<NamedThing> newProps = deserProps.getProperties();

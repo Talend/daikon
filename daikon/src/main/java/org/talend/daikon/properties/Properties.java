@@ -26,15 +26,13 @@ import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.i18n.I18nMessages;
 import org.talend.daikon.i18n.TranslatableImpl;
+import org.talend.daikon.persistence.Persister;
 import org.talend.daikon.properties.error.PropertiesErrorCode;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.security.CryptoHelper;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
-
-import com.cedarsoftware.util.io.JsonReader;
-import com.cedarsoftware.util.io.JsonWriter;
 
 /**
  * The {@code Properties} class contains the definitions of the properties associated with a component. These
@@ -125,49 +123,16 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
     transient private boolean propsAlreadyInitialized;
 
     /**
-     * Holder class for the results of a deserialization.
-     */
-    public static class Deserialized<T extends Properties> {
-
-        public T properties;
-
-        public MigrationInformation migration;
-    }
-
-    // FIXME - will be moved
-    public static class MigrationInformationImpl implements MigrationInformation {
-
-        @Override
-        public boolean isMigrated() {
-            return false;
-        }
-
-        @Override
-        public String getVersion() {
-            return null;
-        }
-    }
-
-    /**
      * Returns the Properties object previously serialized.
      *
      * @param serialized created by {@link #toSerialized()}.
      * @return a {@code Properties} object represented by the {@code serialized} value.
      */
-    public static synchronized <T extends Properties> Deserialized<T> fromSerialized(String serialized,
-            Class<T> propertiesclass) {
-        Deserialized<T> d = new Deserialized<T>();
-        d.migration = new MigrationInformationImpl();
-        // this set the proper classloader for the JsonReader especially for OSGI
-        ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(Properties.class.getClassLoader());
-            d.properties = (T) JsonReader.jsonToJava(serialized);
-            d.properties.handlePropEncryption(!ENCRYPT);
-            d.properties.setupPropertiesPostDeserialization();
-        } finally {
-            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
-        }
+    public static synchronized <T extends Properties> Persister.Deserialized<T> fromSerialized(String serialized,
+                                                                                               Class<T> propertiesclass) {
+        Persister.Deserialized<T> d = Persister.fromSerialized(serialized, propertiesclass);
+        d.object.handlePropEncryption(!ENCRYPT);
+        d.object.setupPropertiesPostDeserialization();
         return d;
     }
 
@@ -378,7 +343,7 @@ public abstract class Properties extends TranslatableImpl implements AnyProperty
         Map<Properties, List<Form>> formsMap = createFormsBackupAndClear();
         String ser = null;
         try {
-            ser = JsonWriter.objectToJson(this);
+            ser = Persister.toSerialized(this);
         } finally {
             // restore forms to the previous state
             restoreFormsBackup(formsMap);
