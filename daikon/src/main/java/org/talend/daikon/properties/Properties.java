@@ -25,7 +25,7 @@ import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.strings.ToStringIndent;
 
 /**
- * The {@code Properties} class contains the definitions of the properties associated with a component. These
+ * An implementation of the {@code Properties} interface contains the definitions of a set of properties. These
  * definitions contain enough information to automatically construct a nice looking user interface (UI) to populate and
  * validate the properties. The objective is that no actual (graphical) UI code is included in the component's
  * definition and as well no custom graphical UI is required for most components. The types of UIs that can be defined
@@ -83,7 +83,7 @@ import org.talend.daikon.strings.ToStringIndent;
  * <p/>
  * <b>WARNING</b> - It is not recommanded to instanciate a Property field after {@link Properties#setupProperties()} is
  * called. If you want to create the property later you'll have to call
- * {@link SchemaElement#setI18nMessageFormater(I18nMessages)} manually.
+ * {@link Property#setI18nMessageFormater(I18nMessages)} manually.
  */
 public interface Properties extends AnyProperty, ToStringIndent {
 
@@ -94,9 +94,6 @@ public interface Properties extends AnyProperty, ToStringIndent {
             return PropertiesImpl.fromSerialized(serialized, propertiesclass, postSerializationSetup);
         }
 
-        /**
-         * same as {@code fromSerialized(String, Class, null)}
-         */
         public static synchronized <T extends Properties> Deserialized<T> fromSerialized(String serialized,
                 Class<T> propertiesclass) {
             return fromSerialized(serialized, propertiesclass, null);
@@ -104,7 +101,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
     }
 
     /**
-     * used for seting up a callback after deserialization. Usually used to setup
+     * Used for setting up a callback after deserialization. Usually used to setup
      * Property evaluator.
      */
     public static interface PostSerializationSetup<T extends Properties> {
@@ -158,14 +155,14 @@ public interface Properties extends AnyProperty, ToStringIndent {
     }
 
     /**
-     * Must be called once the class is instanciated to setup the properties and the layout
+     * Must be called once the class is instantiated to setup the properties and the layout
      * 
      * @return this instance
      */
     public Properties init();
 
     /**
-     * only initilize the properties but not the layout.
+     * Initialize the properties without any layout initialization.
      * 
      * @return this instance
      */
@@ -196,7 +193,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
     /**
      * Returns a serialized version of this for storage in a repository.
      *
-     * @return the serialized {@code String}, use {@link #fromSerialized(String, Class)} to materialize the object.
+     * @return the serialized {@code String}, use {@link Helper#fromSerialized(String, Class)} to materialize the object.
      */
     public String toSerialized();
 
@@ -225,24 +222,24 @@ public interface Properties extends AnyProperty, ToStringIndent {
     public List<NamedThing> getProperties();
 
     /**
-     * Returns Property or a CompoentProperties as specified by a qualifed property name string representing the field
+     * Returns {@link Property} or a {@link Properties} as specified by a qualifed property name string representing the field
      * name.
      * <p/>
      * The first component is the property name within this object. The optional subsequent components, separated by a
      * "." are property names in the nested {@link Properties} objects.
      *
      * @param propName a qualified property name, should never be null
-     * @return the Property or Componenent denoted with the name or null if not found
+     * @return the object denoted with the name or null if not found
      */
     public NamedThing getProperty(String propName);
 
     /**
-     * same as {@link Properties#getProperty(String)} but returns null if the Property is not of type Property.
+     * same as {@link Properties#getProperty(String)} but returns null if the property is not of type {@link Property}.
      */
     public Property<?> getValuedProperty(String propPath);
 
     /**
-     * same as {@link Properties#getProperty(String)} but returns null if the Property is not of type ComponentProperty.
+     * same as {@link Properties#getProperty(String)} but returns null if the property is not of type {@link Properties}.
      */
     public Properties getProperties(String propPath);
 
@@ -252,7 +249,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
      * Helper method to set the evaluator to all properties handled by this instance and all the nested Properties
      * instances.
      * 
-     * @param ve value evalurator to be used for evaluation.
+     * @param ve value evaluator to be used for evaluation.
      */
     public void setValueEvaluator(PropertyValueEvaluator ve);
 
@@ -262,11 +259,6 @@ public interface Properties extends AnyProperty, ToStringIndent {
      * @return a ValidationResult
      */
     public ValidationResult getValidationResult();
-
-    /**
-     * should only be called internally
-     */
-    void setValidationResult(ValidationResult vr);
 
     /**
      * This goes through all nested properties recusively and replace them with the newValueProperties given as
@@ -279,7 +271,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
     public void assignNestedProperties(Properties... newValueProperties);
 
     /**
-     * same as {@link #copyValuesFrom(Properties, boolean)} with copyTaggedValues set to true and copyEvaluator set to true.
+     * same as {@link #copyValuesFrom(Properties, boolean, boolean)} with copyTaggedValues set to true and copyEvaluator set to true.
      */
     public void copyValuesFrom(Properties props);
 
