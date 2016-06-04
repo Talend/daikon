@@ -1,4 +1,4 @@
-package org.talend.daikon.persistence;
+package org.talend.daikon.serialize;
 
 /**
  * Used to specify a version number when required for serialization.
@@ -6,7 +6,7 @@ package org.talend.daikon.persistence;
  * A version number is required only in rare special cases where it is necessary to distinguish different content for a
  * given field. Implement this interface only when the version number is required.
  */
-public interface MigrationSetVersion {
+public interface SerializeSetVersion {
 
     /**
      * Return the version number to be kept with the persisted version of this object.

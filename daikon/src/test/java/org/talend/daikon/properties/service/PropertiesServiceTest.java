@@ -14,17 +14,15 @@ package org.talend.daikon.properties.service;
 
 import static org.junit.Assert.*;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.Property;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.test.PropertiesTestUtils;
 import org.talend.daikon.properties.testproperties.TestProperties;
 
@@ -42,12 +40,12 @@ public class PropertiesServiceTest {
         Properties props = new TestProperties(null).init();
 
         PropertiesTestUtils.checkAndBeforePresent(propService, props.getForm(Form.MAIN), "nameList", props);
-        assertEquals(3, ((Property) props.getProperty("nameList")).getPossibleValues().size());
-        assertEquals("name1", ((Property) props.getProperty("nameList")).getPossibleValues().get(0));
+        assertEquals(3, ((Property<?>) props.getProperty("nameList")).getPossibleValues().size());
+        assertEquals("name1", ((Property<?>) props.getProperty("nameList")).getPossibleValues().get(0));
 
         PropertiesTestUtils.checkAndBeforeActivate(propService, props.getForm(Form.MAIN), "nameListRef", props);
-        assertEquals(3, ((Property) props.getProperty("nameListRef")).getPossibleValues().size());
-        assertEquals("namer1", ((Property) props.getProperty("nameListRef")).getPossibleValues().get(0));
+        assertEquals(3, ((Property<?>) props.getProperty("nameListRef")).getPossibleValues().size());
+        assertEquals("namer1", ((Property<?>) props.getProperty("nameListRef")).getPossibleValues().get(0));
 
         assertFalse(props.getForm(Form.MAIN).getWidget("nameList").isCallBeforeActivate());
         assertFalse(props.getForm(Form.MAIN).getWidget("nameListRef").isCallBeforePresent());
@@ -86,23 +84,11 @@ public class PropertiesServiceTest {
         Properties savedProps = props;
         Properties savedNested = props.nestedProps;
 
-        Date dateNow = new Date();
-        dateNow.setTime(System.currentTimeMillis());
-        Date dateLater = new Date();
-        dateLater.setTime(dateLater.getTime() + 10000);
-
-        Calendar calNow = Calendar.getInstance();
-        calNow.setTime(dateNow);
-        Calendar calLater = Calendar.getInstance();
-        calLater.setTime(dateLater);
-
         props.userId.setValue("userId");
         props.integer.setValue(1);
         props.decimal.setValue(2);
-        props.date.setValue(dateNow);
-        props.dateTime.setValue(dateNow);
         props.nestedProps.aGreatProperty.setValue("propPrevious1");
-        props.nestedProps.anotherProp.setValue("propPrevious2");
+        props.nestedProps.anotherProp.setValue("foo");
 
         props = (TestProperties) propService.makeFormCancelable(props, "restoreTest");
 
@@ -113,15 +99,11 @@ public class PropertiesServiceTest {
 
         form.setValue("integer", 10);
         form.setValue("decimal", 20);
-        form.setValue("date", dateLater);
-        form.setValue("dateTime", dateLater);
 
         assertEquals("userIdnew", props.userId.getValue());
         assertEquals("propPrevious1new", props.nestedProps.aGreatProperty.getValue());
-        assertEquals(10, props.integer.getIntValue());
-        assertEquals(20, props.decimal.getIntValue());
-        assertEquals(calLater, props.date.getCalendarValue());
-        assertEquals(calLater, props.dateTime.getCalendarValue());
+        assertEquals((Integer) 10, props.integer.getValue());
+        assertEquals((Integer) 20, props.decimal.getValue());
 
         assertTrue(props == savedProps);
         assertTrue(props.nestedProps == savedNested);
@@ -130,10 +112,8 @@ public class PropertiesServiceTest {
 
         assertEquals("userId", props.userId.getValue());
         assertEquals("propPrevious1", props.nestedProps.aGreatProperty.getValue());
-        assertEquals(1, props.integer.getIntValue());
-        assertEquals(2, props.decimal.getIntValue());
-        assertEquals(calNow, props.date.getCalendarValue());
-        assertEquals(calNow, props.dateTime.getCalendarValue());
+        assertEquals((Integer) 1, props.integer.getValue());
+        assertEquals((Integer) 2, props.decimal.getValue());
     }
 
     @Test

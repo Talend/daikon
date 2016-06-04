@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.rules.ErrorCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +111,7 @@ public class PropertiesTestUtils {
 
                 @Override
                 public void visit(Property prop, Properties parent) {
+                    // check that property.getDisplay name has been translated.
                     errorCollector.checkThat(
                             "property [" + parent.getClass().getCanonicalName() + "#" + prop.getName()
                                     + "] should have a translated message key [property." + prop.getName()

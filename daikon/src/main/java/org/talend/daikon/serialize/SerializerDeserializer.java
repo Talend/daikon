@@ -1,10 +1,8 @@
-package org.talend.daikon.persistence;
+package org.talend.daikon.serialize;
 
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.cedarsoftware.util.io.JsonObject;
 import com.cedarsoftware.util.io.JsonReader;
@@ -12,10 +10,10 @@ import com.cedarsoftware.util.io.JsonWriter;
 import com.cedarsoftware.util.io.ObjectResolver;
 
 /**
- * Handles persistent serialization and deserialization to/from a String and supports migration of serialized data to
+ * Handles serialization and deserialization to/from a String and supports migration of serialized data to
  * newer versions of classes.
  */
-public class Persister {
+public class SerializerDeserializer {
 
     /**
      * Holder class for the results of a deserialization.
@@ -63,7 +61,7 @@ public class Persister {
                 args.put(JsonReader.FIELD_REPLACER_MAP, replacerMap);
             }
 
-            final Map<MigrationPostDeserializeHandler, Integer> postDeserializeHandlers = new HashMap<>();
+            final Map<PostDeserializeHandler, Integer> postDeserializeHandlers = new HashMap<>();
 
             Map<Class, JsonReader.JsonClassReaderEx> readerMap = new HashMap<>();
             JsonReader.JsonClassReaderEx reader = new JsonReader.JsonClassReaderEx() {
@@ -74,17 +72,17 @@ public class Persister {
                     int version = 0;
                     resolver.traverseFields(stack, (JsonObject<String, Object>) jOb);
                     Object target = ((JsonObject<String, Object>) jOb).getTarget();
-                    if (target instanceof MigrationPostDeserializeHandler)
-                        postDeserializeHandlers.put((MigrationPostDeserializeHandler) target, version);
+                    if (target instanceof PostDeserializeHandler)
+                        postDeserializeHandlers.put((PostDeserializeHandler) target, version);
                     return target;
                 }
             };
             if (reader != null) {
-                readerMap.put(MigrationDeserializeMarker.class, reader);
+                readerMap.put(DeserializeMarker.class, reader);
                 args.put(JsonReader.CUSTOM_READER_MAP, readerMap);
             }
             d.object = (T) JsonReader.jsonToJava(serialized, args);
-            for (MigrationPostDeserializeHandler obj : postDeserializeHandlers.keySet()) {
+            for (PostDeserializeHandler obj : postDeserializeHandlers.keySet()) {
                 obj.postDeserialize(postDeserializeHandlers.get(obj));
             }
         } finally {

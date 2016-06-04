@@ -57,4 +57,4 @@
  * <li>Change datatype - Same as above.
  * </ol>
  */
-package org.talend.daikon.persistence;
+package org.talend.daikon.serialize;

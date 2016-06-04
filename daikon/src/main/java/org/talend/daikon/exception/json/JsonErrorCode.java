@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.exception.error.ErrorCode;
 
@@ -49,7 +49,7 @@ public class JsonErrorCode implements ErrorCode {
      */
     @Override
     public String getProduct() {
-        return StringUtils.substringBefore(code, "_"); //$NON-NLS-1$
+        return org.apache.commons.lang3.StringUtils.substringBefore(code, "_"); //$NON-NLS-1$
     }
 
     /**

@@ -12,10 +12,10 @@
 // ============================================================================
 package org.talend.daikon.properties.testproperties.references;
 
-import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.presentation.Form;
 
-public class MultipleRefProperties extends Properties {
+public class MultipleRefProperties extends PropertiesImpl {
 
     public ConnectionProperties connection = new ConnectionProperties("connection");
 

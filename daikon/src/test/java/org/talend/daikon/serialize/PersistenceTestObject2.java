@@ -1,9 +1,9 @@
-package org.talend.daikon.persistence;
+package org.talend.daikon.serialize;
 
 import static org.junit.Assert.assertEquals;
 
 public class PersistenceTestObject2
-        implements MigrationDeletedFieldHandler, MigrationPostDeserializeHandler, MigrationSetVersion {
+        implements PersistenceDeletedFieldHandler, PersistencePostDeserializeHandler, PersistenceSetVersion {
 
     public String string1;
 

@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
+import org.talend.daikon.properties.property.Property;
+
 /**
  * this vitor helps visiting the tree of ComponentProperties
  */

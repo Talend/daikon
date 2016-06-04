@@ -1,4 +1,4 @@
-package org.talend.daikon.persistence;
+package org.talend.daikon.serialize;
 
 /**
  * Used to provide code to translate from an older persisted version of an object into the current version of the the
@@ -7,7 +7,7 @@ package org.talend.daikon.persistence;
  * The methods in this interface contain the name of the field to be processed, using the pattern: {@code fieldDeleted_
  * <fieldName>}. They are discovered using reflection. See the comment below for the signature information of the method.
  */
-public interface MigrationDeletedFieldHandler extends MigrationDeserializeMarker {
+public interface DeserializeDeletedFieldHandler extends DeserializeMarker {
 
     /*
      * Called when a field is present in the serialized data, but is not present in the object being deserialized.

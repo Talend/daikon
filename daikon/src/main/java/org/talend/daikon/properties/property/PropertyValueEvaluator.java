@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.properties;
+package org.talend.daikon.properties.property;
 
 /**
  * This shall be implemented in order to have Properties value interpreted to the actual value if they hold some king of
@@ -21,9 +21,11 @@ public interface PropertyValueEvaluator {
     /**
      * compute the actual value of the given property according to the storedValue
      * 
+     * @param <T>
+     * 
      * @param property
      * @param storedValue value stored for this property that may be transformed.
      * @return
      */
-    public Object evaluate(Property property, Object storedValue);
+    public <T> T evaluate(Property<T> property, Object storedValue);
 }

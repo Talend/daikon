@@ -14,13 +14,21 @@ package org.talend.daikon.properties;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.properties.Properties.Deserialized;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.PropertyFactory;
+import org.talend.daikon.properties.property.PropertyValueEvaluator;
+import org.talend.daikon.properties.property.StringProperty;
 import org.talend.daikon.properties.test.PropertiesTestUtils;
 import org.talend.daikon.properties.testproperties.PropertiesWithDefinedI18N;
 import org.talend.daikon.properties.testproperties.TestProperties;
@@ -30,6 +38,39 @@ import org.talend.daikon.properties.testproperties.nestedprop.inherited.Inherite
 import org.talend.daikon.properties.testproperties.references.MultipleRefProperties;
 
 public class PropertiesTest {
+
+    private final class StringListProperties extends PropertiesImpl {
+
+        public Property<List<String>> listString = new Property(new TypeLiteral<List<String>>() {
+        }, "listString");
+
+        /**
+         * 
+         * @param name
+         */
+        private StringListProperties(String name) {
+            super(name);
+        }
+    }
+
+    private final class AnotherNestedProperties extends PropertiesImpl {
+
+        public StringProperty stringProp = PropertyFactory.newProperty("stringProp");
+
+        /**
+         * 
+         * @param name
+         */
+        private AnotherNestedProperties(String name) {
+            super(name);
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            new Form(this, Form.MAIN);
+        }
+    }
 
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
@@ -41,12 +82,26 @@ public class PropertiesTest {
     }
 
     @Test
+    public void testSerializeListStringProp() {
+        StringListProperties props = (StringListProperties) new StringListProperties("test").init();
+        ArrayList<String> value = new ArrayList<String>();
+        props.listString.setValue(value);
+        assertEquals(value, props.listString.getValue());
+        props = (StringListProperties) PropertiesTestUtils.checkSerialize(props, errorCollector);
+        assertNotSame(value, props.listString.getValue());
+        assertNotNull(props.listString.getValue());
+
+    }
+
+    @Test
     public void testSerializeValues() {
         TestProperties props = (TestProperties) new TestProperties("test").init();
         props.userId.setValue("testUser");
         props.password.setValue("testPassword");
+        props.suppressDate.setValue(true);
         assertTrue(props.password.getFlags().contains(Property.Flags.ENCRYPT));
         assertTrue(props.password.getFlags().contains(Property.Flags.SUPPRESS_LOGGING));
+        assertTrue(props.suppressDate.getValue());
         NestedProperties nestedProp = (NestedProperties) props.getProperty("nestedProps");
         nestedProp.aGreatProperty.setValue("greatness");
         assertNotNull(nestedProp);
@@ -58,6 +113,7 @@ public class PropertiesTest {
         assertEquals("testUser", props.userId.getStringValue());
         assertEquals("testPassword", props.password.getValue());
         assertEquals("greatness", props.nestedProps.aGreatProperty.getValue());
+        assertTrue(props.suppressDate.getValue());
 
     }
 
@@ -70,9 +126,10 @@ public class PropertiesTest {
         assertEquals(1, props.nestedProps.getForms().size());
         assertEquals(2, props.getForms().size());
 
-        TestProperties desProp = (TestProperties) Properties.fromSerialized(serialized, Properties.class).object;
+        TestProperties desProp = Properties.Helper.fromSerialized(serialized, TestProperties.class).properties;
         assertEquals(1, desProp.nestedProps.getForms().size());
         assertEquals(2, desProp.getForms().size());
+
     }
 
     @Test
@@ -81,32 +138,6 @@ public class PropertiesTest {
         assertEquals("userId", props.getProperty("userId").getName());
         assertEquals("integer", props.getProperty("integer").getName());
         assertEquals("aGreatProperty", props.getProperty("nestedProps.aGreatProperty").getName());
-    }
-
-    @Test
-    public void testGetValues() {
-        Property prop = new Property("");
-        // integer
-        prop.setValue(1000);
-        assertEquals(1000, prop.getIntValue());
-        prop.setValue("1000");
-        assertEquals(1000, prop.getIntValue());
-        prop.setValue(null);
-        assertEquals(0, prop.getIntValue());
-        // String
-        prop.setValue("a String");
-        assertEquals("a String", prop.getStringValue());
-        prop.setValue(null);
-        assertEquals(null, prop.getStringValue());
-        // Boolean
-        prop.setValue(true);
-        assertEquals(true, prop.getBooleanValue());
-        prop.setValue(false);
-        assertEquals(false, prop.getBooleanValue());
-        prop.setValue(null);
-        assertEquals(false, prop.getBooleanValue());
-        prop.setValue("Any Obj");
-        assertEquals(false, prop.getBooleanValue());
     }
 
     @Test
@@ -125,16 +156,16 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.integer.setValue(1);
         props.userId.setValue("User1");
-        ((Property) props.getProperty("nestedProps.aGreatProperty")).setValue("great1");
+        ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).setStoredValue("great1");
 
         TestProperties props2 = (TestProperties) new TestProperties("test2").init();
-        assertNotEquals(1, ((Property) props2.getProperty("integer")).getIntValue());
+        assertNotEquals(1, ((Property) props2.getProperty("integer")).getValue());
         assertNotEquals("User1", ((Property) props2.getProperty("userId")).getStringValue());
         assertNotEquals("great1", ((Property) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
         props2.copyValuesFrom(props);
-        assertEquals(1, ((Property) props2.getProperty("integer")).getIntValue());
-        assertEquals("User1", ((Property) props2.getProperty("userId")).getStringValue());
-        assertEquals("great1", ((Property) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
+        assertEquals(1, ((Property<?>) props2.getProperty("integer")).getValue());
+        assertEquals("User1", ((Property<?>) props2.getProperty("userId")).getStringValue());
+        assertEquals("great1", ((Property<?>) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
     }
 
     @Test
@@ -143,15 +174,15 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.integer.setValue(1);
         props.userId.setValue("User1");
-        ((Property) props.getProperty("nestedProps.aGreatProperty")).setValue("great1");
+        ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).setStoredValue("great1");
 
         TestProperties props2 = (TestProperties) new TestProperties("test2").init();
         props2.integer = null;
         props2.userId = null;
         props2.copyValuesFrom(props);
-        assertEquals(1, ((Property) props2.getProperty("integer")).getIntValue());
-        assertEquals("User1", ((Property) props2.getProperty("userId")).getStringValue());
-        assertEquals("great1", ((Property) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
+        assertEquals(1, ((Property<?>) props2.getProperty("integer")).getValue());
+        assertEquals("User1", ((Property<?>) props2.getProperty("userId")).getStringValue());
+        assertEquals("great1", ((Property<?>) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
     }
 
     @Test
@@ -160,7 +191,7 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("props").init();
         assertFalse(props.nestedProps.getForm(Form.MAIN).getWidget(props.nestedProps.anotherProp.getName()).isHidden());
         TestProperties props2 = (TestProperties) new TestProperties("props2").init();
-        props2.nestedProps.anotherProp.setValue(true);
+        props2.nestedProps.booleanProp.setValue(true);
         props.copyValuesFrom(props2);
         assertTrue(props.nestedProps.getForm(Form.MAIN).getWidget(props.nestedProps.anotherProp.getName()).isHidden());
     }
@@ -181,10 +212,30 @@ public class PropertiesTest {
     }
 
     @Test
+    public void testCopyValuesCopyEvaluators() {
+        TestProperties props = (TestProperties) new TestProperties("props").init();
+        TestProperties props2 = (TestProperties) new TestProperties("props2").init();
+        PropertyValueEvaluator evaluator = new PropertyValueEvaluator() {
+
+            @Override
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                return null;
+            }
+        };
+        props2.date.setValueEvaluator(evaluator);
+
+        assertEquals(evaluator, props2.date.getValueEvaluator());
+        assertNotEquals(evaluator, props.date.getValueEvaluator());
+        props.copyValuesFrom(props2);
+        assertEquals(evaluator, props2.date.getValueEvaluator());
+        assertEquals(evaluator, props.date.getValueEvaluator());
+    }
+
+    @Test
     public void testWrongFieldAndPropertyName() {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.setValue("nestedProps.aGreatProperty", "great1");
-        assertEquals("great1", ((Property) props.getProperty("nestedProps.aGreatProperty")).getStringValue());
+        assertEquals("great1", ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).getStringValue());
         try {
             props.setValue("nestedProps", "bad");
             fail("did not get expected exception");
@@ -197,7 +248,7 @@ public class PropertiesTest {
     public void testSetValueQualified() {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.setValue("nestedProps.aGreatProperty", "great1");
-        assertEquals("great1", ((Property) props.getProperty("nestedProps.aGreatProperty")).getStringValue());
+        assertEquals("great1", ((Property<?>) props.getProperty("nestedProps.aGreatProperty")).getStringValue());
         try {
             props.setValue("nestedProps", "bad");
             fail("did not get expected exception");
@@ -249,7 +300,7 @@ public class PropertiesTest {
         TestProperties componentProperties = (TestProperties) new TestProperties("test").init();
         List<NamedThing> pList = componentProperties.getProperties();
         assertTrue(pList.get(0) != null);
-        assertEquals(14, pList.size());
+        assertEquals(16, pList.size());
     }
 
     @Test
@@ -258,7 +309,7 @@ public class PropertiesTest {
         List<NamedThing> pList = componentProperties.getProperties();
         System.out.println(pList);
         assertTrue(pList.get(0) != null);
-        assertEquals(4, pList.size());
+        assertEquals(5, pList.size());
     }
 
     @Test
@@ -316,13 +367,33 @@ public class PropertiesTest {
 
     @Test
     public void testTaggedValue() {
-        Property property = new Property("haha"); //$NON-NLS-1$
+        Property<String> property = PropertyFactory.newString("haha"); //$NON-NLS-1$
         assertNull(property.getTaggedValue("foo"));
         assertNull(property.getTaggedValue("bar"));
         property.setTaggedValue("foo", "fooValue");
         property.setTaggedValue("bar", "barValue");
         assertEquals("fooValue", property.getTaggedValue("foo"));
         assertEquals("barValue", property.getTaggedValue("bar"));
+    }
+
+    @Test
+    public void testfromSerialized() {
+        TestProperties props = (TestProperties) new TestProperties("test").init();
+        String s = props.toSerialized();
+        final AtomicBoolean setupCalled = new AtomicBoolean(false);
+        assertFalse(setupCalled.get());
+        assertNotEquals("bar", props.date.getTaggedValue("foo"));
+        TestProperties desProp = Properties.Helper.fromSerialized(s, TestProperties.class,
+                new Properties.PostSerializationSetup<TestProperties>() {
+
+                    @Override
+                    public void setup(TestProperties properties) {
+                        setupCalled.set(true);
+                        properties.date.setTaggedValue("foo", "bar");
+                    }
+                }).properties;
+        assertTrue(setupCalled.get());
+        assertEquals("bar", desProp.date.getTaggedValue("foo"));
     }
 
     @Test
@@ -333,9 +404,9 @@ public class PropertiesTest {
         props.initLater.setTaggedValue("foo", "fooValue");
         props.initLater.setTaggedValue("bar", "barValue");
         String s = props.toSerialized();
-        Properties desProp = Properties.fromSerialized(s, Properties.class).object;
-        assertEquals("fooValue", ((Property) desProp.getProperty("initLater")).getTaggedValue("foo"));
-        assertEquals("barValue", ((Property) desProp.getProperty("initLater")).getTaggedValue("bar"));
+        Properties desProp = Properties.Helper.fromSerialized(s, Properties.class).properties;
+        assertEquals("fooValue", ((Property<?>) desProp.getProperty("initLater")).getTaggedValue("foo"));
+        assertEquals("barValue", ((Property<?>) desProp.getProperty("initLater")).getTaggedValue("bar"));
     }
 
     @Test
@@ -345,14 +416,16 @@ public class PropertiesTest {
         assertEquals("java.io.tmpdir", props.userId.getValue());
         props.setValueEvaluator(new PropertyValueEvaluator() {
 
+            @SuppressWarnings("unchecked")
             @Override
-            public Object evaluate(Property property, Object storedValue) {
-                return storedValue != null ? System.getProperty((String) storedValue) : null;
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                return (T) (storedValue != null ? System.getProperty((String) storedValue) : null);
             }
+
         });
         assertEquals(System.getProperty("java.io.tmpdir"), props.userId.getValue());
         String s = props.toSerialized();
-        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class).object;
+        TestProperties desProp = Properties.Helper.fromSerialized(s, TestProperties.class).properties;
         assertEquals("java.io.tmpdir", desProp.userId.getValue());
         // check that nested properties has also the evaluator set
         props.nestedInitLater.aGreatProperty.setValue("java.home");
@@ -368,20 +441,21 @@ public class PropertiesTest {
         assertEquals("java.io.tmpdir", props.userId.getValue());
         props.setValueEvaluator(new PropertyValueEvaluator() {
 
+            @SuppressWarnings("unchecked")
             @Override
-            public Object evaluate(Property property, Object storedValue) {
+            public <T> T evaluate(Property<T> property, Object storedValue) {
                 // if the prop is a system property then evaluate it.
                 Object taggedValue = property.getTaggedValue("value.language");
-                if (taggedValue != null && taggedValue.equals("sys.prop")) {
-                    return System.getProperty((String) storedValue);
+                if (taggedValue != null && ((String) taggedValue).equals("sys.prop")) {
+                    return (T) System.getProperty((String) storedValue);
                 } else {// otherwise just return the value.
-                    return storedValue;
+                    return (T) storedValue;
                 }
             }
         });
         assertEquals(System.getProperty("java.io.tmpdir"), props.userId.getValue());
         String s = props.toSerialized();
-        TestProperties desProp = Properties.fromSerialized(s, TestProperties.class).object;
+        TestProperties desProp = Properties.Helper.fromSerialized(s, TestProperties.class).properties;
         assertEquals("java.io.tmpdir", desProp.userId.getValue());
 
     }
@@ -417,6 +491,7 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test").init();
         // use a sub class to check is assignement also works with sub classes
         NestedNestedProperties nestedNestedProperties = new NestedNestedProperties("foo") {
+            // enpty on purpose
         };
         props.assignNestedProperties(nestedNestedProperties);
         assertEquals(nestedNestedProperties, props.nestedProps.nestedProp);
@@ -428,6 +503,19 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test").init();
         String javaCode = PropertiesTestUtils.generatedNestedComponentCompatibilitiesJavaCode(props);
         System.out.println(javaCode);
+    }
+
+    @Test
+    public void testFormNotNullAfterSerialized() {
+        AnotherNestedProperties props = (AnotherNestedProperties) new AnotherNestedProperties("test").init();
+        assertNotNull(props.getForm(Form.MAIN));
+        String serialized = props.toSerialized();
+        assertNotNull(props.getForm(Form.MAIN));
+        // check that form are setup after Serialization
+        Deserialized<AnotherNestedProperties> fromSerialized = Properties.Helper.fromSerialized(serialized,
+                AnotherNestedProperties.class);
+        assertNotNull(fromSerialized.properties.getForm(Form.MAIN));
+
     }
 
 }

@@ -13,35 +13,25 @@
 package org.talend.daikon.properties;
 
 import static org.junit.Assert.*;
+import static org.talend.daikon.properties.property.PropertyFactory.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.talend.daikon.properties.presentation.Widget;
+import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.StringProperty;
 
 import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
 
 public class PropertyTest {
 
-    /**
-     * Simple test to be sure that no one will touch this list without thinking about consequences. If you remove/add a
-     * type here, be sure that it does not break everything.
-     */
-    @Test
-    public void testEnum() {
-        List<String> ref = Arrays.asList("STRING", "BOOLEAN", "INT", "DATE", "DATETIME", "DECIMAL", "FLOAT", "DOUBLE",
-                "BYTE_ARRAY", "ENUM", "DYNAMIC", "GROUP", "SCHEMA");
-        List<Property.Type> types = Arrays.asList(Property.Type.values());
-        assertEquals(ref.size(), types.size());
-        assertEquals(ref.toString(), types.toString());
-    }
-
     @Test
     public void testProperty() {
-        Property element = new Property(null);
+        Property<String> element = newProperty(null);
         assertNull(element.getName());
         assertEquals(element, element.setName("testName"));
         assertEquals("testName", element.getName());
@@ -55,9 +45,7 @@ public class PropertyTest {
         assertEquals(element, element.setTitle("testTitle"));
         assertEquals("testTitle", element.getTitle());
 
-        assertEquals(Property.Type.STRING, element.getType());
-        assertEquals(element, element.setType(Property.Type.BYTE_ARRAY));
-        assertEquals(Property.Type.BYTE_ARRAY, element.getType());
+        assertEquals(TypeUtils.toString(String.class), element.getType());
 
         assertEquals(-1, element.getSize());
         assertTrue(element.isSizeUnbounded());
@@ -108,30 +96,30 @@ public class PropertyTest {
 
     @Test
     public void testChildren() {
-        Property element = new Property("element");
-        Property child = new Property("myElement");
+        Property<String> element = newProperty("element");
+        Property<String> child = newProperty("myElement");
         assertNotNull(element.addChild(child).getChild("myElement"));
         assertEquals("myElement", element.getChild("myElement").getName());
 
-        List<Property> children = element.getChildren();
+        List<Property<?>> children = element.getChildren();
         assertEquals(1, children.size());
         assertEquals("myElement", children.get(0).getName());
 
-        children.add(new Property("myElement2"));
+        children.add(newProperty("myElement2"));
         element.setChildren(children);
         assertEquals("myElement", element.getChild("myElement").getName());
         assertEquals("myElement2", element.getChild("myElement2").getName());
 
-        Map<String, Property> childrenMap = element.getChildMap();
+        Map<String, Property<?>> childrenMap = element.getChildMap();
         assertEquals(2, childrenMap.size());
         assertEquals("myElement", childrenMap.get("myElement").getName());
         assertEquals("myElement2", childrenMap.get("myElement2").getName());
-        childrenMap.put("myElement3", new Property("myElement3"));
+        childrenMap.put("myElement3", newProperty("myElement3"));
     }
 
     @Test
     public void testHiddenForProperties() {
-        Property element = new Property("element");
+        Property<String> element = newProperty("element");
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
         Widget widget = new Widget(element);
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
@@ -143,7 +131,7 @@ public class PropertyTest {
 
     @Test
     public void testFlags() {
-        Property element = new Property("element");
+        Property<String> element = newProperty("element");
         assertFalse(element.isFlag(Property.Flags.ENCRYPT));
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
         element.addFlag(Property.Flags.ENCRYPT);
@@ -170,9 +158,9 @@ public class PropertyTest {
 
     @Test
     public void testCopyTaggedValues() {
-        Property element = new Property("element");
+        Property<String> element = new Property<>(String.class, "element");
         element.setTaggedValue("foo", "foo1");
-        Property element2 = new Property("element2");
+        Property<String> element2 = new Property<>(String.class, "element2");
         element2.setTaggedValue("bar", "bar1");
 
         assertEquals("foo1", element.getTaggedValue("foo"));
@@ -180,6 +168,24 @@ public class PropertyTest {
         element.copyTaggedValues(element2);
         assertEquals("foo1", element.getTaggedValue("foo"));
         assertEquals("bar1", element.getTaggedValue("bar"));
+    }
+
+    @Test
+    public void testSetPossibleValuesNotNamedNamedThing() {
+        StringProperty stringProperty = new StringProperty("foo") {// in order to have i18n related to this class
+        };
+        stringProperty.setPossibleValues("possible.value");
+        assertEquals("possible.value", stringProperty.getPossibleValuesDisplayName("possible.value"));
+        stringProperty.setPossibleValues("possible.value.3");
+        assertEquals("possible value 3 i18n", stringProperty.getPossibleValuesDisplayName("possible.value.3"));
+
+    }
+
+    @Test
+    public void testType() {
+        Property foo = new Property<Integer>(Integer.class, "foo");
+        foo.setValue("bar");
+        assertEquals("bar", foo.getValue());
     }
 
 }

@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.persistence;
+package org.talend.daikon.serialize;
 
 /**
  * Returns information about a migration that was done when converting an object from its serialized form into an

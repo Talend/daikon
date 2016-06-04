@@ -1,4 +1,4 @@
-package org.talend.daikon.persistence;
+package org.talend.daikon.serialize;
 
 /**
  * Marker interface for any objects being deserialized.
@@ -6,5 +6,5 @@ package org.talend.daikon.persistence;
  * Used to quickly see if a class needs special support.
  * 
  */
-public interface MigrationDeserializeMarker {
+public interface DeserializeMarker {
 }

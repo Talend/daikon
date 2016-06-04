@@ -12,19 +12,21 @@
 // ============================================================================
 package org.talend.daikon.properties.testproperties.nestedprop;
 
-import static org.talend.daikon.properties.PropertyFactory.*;
+import static org.talend.daikon.properties.property.PropertyFactory.*;
 
-import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.Property;
+import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.property.Property;
 
-public class NestedProperties extends Properties {
+public class NestedProperties extends PropertiesImpl {
 
     public static final String A_GREAT_PROP_NAME = "aGreatProperty"; //$NON-NLS-1$
 
-    public Property aGreatProperty = newProperty(A_GREAT_PROP_NAME);
+    public Property<String> aGreatProperty = newProperty(A_GREAT_PROP_NAME);
 
-    public Property anotherProp = newBoolean("anotherProp");
+    public Property<String> anotherProp = newString("anotherProp");
+
+    public Property<Boolean> booleanProp = newBoolean("booleanProp");
 
     public NestedNestedProperties nestedProp = new NestedNestedProperties("nestedProp");
 
@@ -43,6 +45,6 @@ public class NestedProperties extends Properties {
     @Override
     public void refreshLayout(Form form) {
         // change visibility according to anotherProp value
-        form.getWidget(anotherProp.getName()).setHidden(anotherProp.getBooleanValue());
+        form.getWidget(anotherProp.getName()).setHidden(booleanProp.getValue());
     }
 }

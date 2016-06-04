@@ -186,7 +186,7 @@ public class Talend6OutgoingSchemaEnforcer implements IndexedRecord, Talend6Sche
      */
     private Object transformValue(Object value, Field wrappedField, Field outField) {
         String talendType = outField.getProp(TALEND6_COLUMN_TALEND_TYPE);
-        String javaClass = outField.schema().getProp(SchemaConstants.JAVA_CLASS_FLAG);
+        String javaClass = AvroUtils.unwrapIfNullable(outField.schema()).getProp(SchemaConstants.JAVA_CLASS_FLAG);
 
         if (null == value) {
             return value;
