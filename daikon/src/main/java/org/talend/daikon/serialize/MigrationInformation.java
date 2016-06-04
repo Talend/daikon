@@ -29,6 +29,6 @@ public interface MigrationInformation {
      * 
      * @return true if the object was migrated
      */
-    public boolean isMigrated();
+    boolean isMigrated();
 
 }

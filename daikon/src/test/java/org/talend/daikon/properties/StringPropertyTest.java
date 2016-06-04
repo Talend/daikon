@@ -12,8 +12,10 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,8 @@ import org.talend.daikon.properties.property.StringProperty;
 public class StringPropertyTest {
 
     /**
-     * Test method for {@link org.talend.daikon.properties.property.StringProperty#setPossibleNamedThingValues(java.util.List)}.
+     * Test method for
+     * {@link org.talend.daikon.properties.property.StringProperty#setPossibleNamedThingValues(java.util.List)}.
      */
     @Test
     public void testSetPossibleValuesWithNamedThing() {

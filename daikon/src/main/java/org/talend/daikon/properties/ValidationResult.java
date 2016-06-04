@@ -17,8 +17,8 @@ import org.talend.daikon.exception.TalendRuntimeException;
 /**
  * Contains the result of the validation of a components property.
  * <p/>
- * This is to be returned from the {@code validate} methods in {@link Properties}.
- * The ValidationResult with the status {@link ValidationResult.Result#OK} will be shown to the user if a message is set.
+ * This is to be returned from the {@code validate} methods in {@link Properties}. The ValidationResult with the status
+ * {@link ValidationResult.Result#OK} will be shown to the user if a message is set.
  * </p>
  * The ValidationResult with the {@link ValidationResult.Result#ERROR} must have a message set to explain the error.
  * </p>
@@ -72,8 +72,8 @@ public class ValidationResult {
     }
 
     /**
-     * set the message related to this validation result. This method must be called with a non null value when the status is
-     * {@link Result#ERROR}.
+     * set the message related to this validation result. This method must be called with a non null value when the
+     * status is {@link Result#ERROR}.
      */
     public ValidationResult setMessage(String message) {
         this.message = message;

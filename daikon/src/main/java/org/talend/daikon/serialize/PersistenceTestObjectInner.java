@@ -3,6 +3,7 @@ package org.talend.daikon.serialize;
 public class PersistenceTestObjectInner {
 
     public String inner1;
+
     public String inner2;
 
     public PersistenceTestObjectInner() {

@@ -25,12 +25,12 @@ import org.junit.rules.ErrorCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.NamedThing;
-import org.talend.daikon.persistence.Persister;
+import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.daikon.properties.AnyPropertyVisitor;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.Property;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
+import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.service.PropertiesService;
 
 public class PropertiesTestUtils {
@@ -39,7 +39,7 @@ public class PropertiesTestUtils {
 
     public static Properties checkSerialize(Properties props, ErrorCollector errorCollector) {
         String s = props.toSerialized();
-        Persister.Deserialized<Properties> d = Properties.fromSerialized(s, Properties.class);
+        SerializerDeserializer.Deserialized<Properties> d = Properties.Helper.fromSerialized(s, Properties.class);
         Properties deserProps = d.object;
         checkAllI18N(deserProps, errorCollector);
         assertFalse(d.migration.isMigrated());
@@ -77,11 +77,7 @@ public class PropertiesTestUtils {
     }
 
     /**
-     * check that all Components have theirs internationnalisation properties setup correctly.
-     * 
-     * @param errorCollector
-     * 
-     * @param componentService service to get the components to be checked.
+     * check that all Components have theirs internationalisation properties setup correctly.
      */
     static public void checkAllI18N(Properties checkedProps, final ErrorCollector errorCollector) {
         if (checkedProps == null) {

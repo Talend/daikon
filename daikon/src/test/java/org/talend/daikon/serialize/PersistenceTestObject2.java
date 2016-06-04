@@ -2,8 +2,7 @@ package org.talend.daikon.serialize;
 
 import static org.junit.Assert.assertEquals;
 
-public class PersistenceTestObject2
-        implements PersistenceDeletedFieldHandler, PersistencePostDeserializeHandler, PersistenceSetVersion {
+public class PersistenceTestObject2 implements DeserializeDeletedFieldHandler, PostDeserializeHandler, SerializeSetVersion {
 
     public String string1;
 
@@ -31,9 +30,10 @@ public class PersistenceTestObject2
     }
 
     // In place change to string3
-    public boolean postDeserialize(int version) {
+    @Override
+    public boolean postDeserialize(int version, boolean persistent) {
         if (version < 1) {
-            string3 = "XXX" + (String) string3;
+            string3 = "XXX" + string3;
             return true;
         }
         return false;

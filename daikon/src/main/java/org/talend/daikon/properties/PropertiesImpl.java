@@ -21,25 +21,23 @@ import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
-import org.talend.daikon.i18n.I18nMessages;
 import org.talend.daikon.i18n.TranslatableImpl;
 import org.talend.daikon.properties.error.PropertiesErrorCode;
 import org.talend.daikon.properties.presentation.Form;
-import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
-import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.security.CryptoHelper;
+import org.talend.daikon.serialize.PostDeserializeHandler;
+import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
-import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
 
 /**
  * Implementation of {@link Properties} which must be subclassed to define your properties.
  */
-public class PropertiesImpl extends TranslatableImpl implements Properties, AnyProperty, ToStringIndent {
+public class PropertiesImpl extends TranslatableImpl implements Properties, AnyProperty, PostDeserializeHandler, ToStringIndent {
 
     private String name;
 
@@ -56,49 +54,37 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
      *
      * @param serialized created by {@link #toSerialized()}.
      * @param propertiesclass, class type to deserialized
-     * @param postSerializationSetup callback to setup the Properties class after deserialization and before layout and i18N
-     *            setup.
      * @return a {@code Properties} object represented by the {@code serialized} value.
      */
     @SuppressWarnings("unchecked")
-    public static synchronized <T extends Properties> Deserialized<T> fromSerialized(String serialized, Class<T> propertiesclass,
-            PostSerializationSetup<T> postSerializationSetup) {
-        Deserialized<T> d = new Deserialized<>();
-        d.migration = new MigrationInformationImpl();
-        // this set the proper classloader for the JsonReader especially for OSGI
-        ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(Properties.class.getClassLoader());
-            d.properties = (T) JsonReader.jsonToJava(serialized);
-            if (d.properties instanceof PropertiesImpl) {
-                ((PropertiesImpl) d.properties).handlePropEncryption(!ENCRYPT);
-            } // else we nothing to be done
-            if (postSerializationSetup != null) {
-                postSerializationSetup.setup(d.properties);
-            } // else no setup callback to call so ignore
-            if (d.properties instanceof PropertiesImpl) {
-                ((PropertiesImpl) d.properties).setupPropertiesPostDeserialization();
-            } // else we nothing to be done
-        } finally {
-            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
-        }
+    public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerialized(String serialized,
+            Class<T> propertiesclass) {
+
+        // FIXME - probably move PERSISTENT here to a higher level
+        SerializerDeserializer.Deserialized<T> d = SerializerDeserializer.fromSerialized(serialized, propertiesclass,
+                SerializerDeserializer.PERSISTENT);
         return d;
     }
 
     /**
-     * This will setup all Properties after the deserialization process. For now it will just setup i18N
+     * Handle post deserialization.
+     *
+     * If you need to do additional things to react to a specific version, you can subclass this (and call the
+     * superclass first).
      */
-    void setupPropertiesPostDeserialization() {
+    @Override
+    public boolean postDeserialize(int version, boolean persistent) {
         initLayout();
         List<NamedThing> properties = getProperties();
         for (NamedThing prop : properties) {
-            if (prop instanceof PropertiesImpl) {
-                ((PropertiesImpl) prop).setupPropertiesPostDeserialization();
-            } else {
+            if (prop instanceof Property) {
                 prop.setI18nMessageFormater(getI18nMessageFormater());
             }
         }
-
+        if (persistent) {
+            handlePropEncryption(!ENCRYPT);
+        }
+        return false;
     }
 
     /**

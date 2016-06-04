@@ -22,6 +22,7 @@ import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
+import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.daikon.strings.ToStringIndent;
 
 /**
@@ -89,28 +90,10 @@ public interface Properties extends AnyProperty, ToStringIndent {
 
     public static class Helper {
 
-        public static synchronized <T extends Properties> Deserialized<T> fromSerialized(String serialized,
-                Class<T> propertiesclass, PostSerializationSetup<T> postSerializationSetup) {
-            return PropertiesImpl.fromSerialized(serialized, propertiesclass, postSerializationSetup);
-        }
-
-        public static synchronized <T extends Properties> Deserialized<T> fromSerialized(String serialized,
+        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerialized(String serialized,
                 Class<T> propertiesclass) {
-            return fromSerialized(serialized, propertiesclass, null);
+            return PropertiesImpl.fromSerialized(serialized, propertiesclass);
         }
-    }
-
-    /**
-     * Used for setting up a callback after deserialization. Usually used to setup
-     * Property evaluator.
-     */
-    public static interface PostSerializationSetup<T extends Properties> {
-
-        /**
-         * This method will be called right after the deserialization and after the ecrypted field have been decrypted.
-         * This will be called before any layout initialization.
-         */
-        void setup(T properties);
     }
 
     static final String METHOD_BEFORE = "before";
@@ -169,7 +152,8 @@ public interface Properties extends AnyProperty, ToStringIndent {
     /**
      * Returns a serialized version of this for storage in a repository.
      *
-     * @return the serialized {@code String}, use {@link Helper#fromSerialized(String, Class)} to materialize the object.
+     * @return the serialized {@code String}, use {@link Helper#fromSerialized(String, Class)} to materialize the
+     * object.
      */
     public String toSerialized();
 
@@ -198,8 +182,8 @@ public interface Properties extends AnyProperty, ToStringIndent {
     public List<NamedThing> getProperties();
 
     /**
-     * Returns {@link Property} or a {@link Properties} as specified by a qualifed property name string representing the field
-     * name.
+     * Returns {@link Property} or a {@link Properties} as specified by a qualifed property name string representing the
+     * field name.
      * <p/>
      * The first component is the property name within this object. The optional subsequent components, separated by a
      * "." are property names in the nested {@link Properties} objects.
@@ -215,7 +199,8 @@ public interface Properties extends AnyProperty, ToStringIndent {
     public Property<?> getValuedProperty(String propPath);
 
     /**
-     * same as {@link Properties#getProperty(String)} but returns null if the property is not of type {@link Properties}.
+     * same as {@link Properties#getProperty(String)} but returns null if the property is not of type {@link Properties}
+     * .
      */
     public Properties getProperties(String propPath);
 
@@ -247,7 +232,8 @@ public interface Properties extends AnyProperty, ToStringIndent {
     public void assignNestedProperties(Properties... newValueProperties);
 
     /**
-     * same as {@link #copyValuesFrom(Properties, boolean, boolean)} with copyTaggedValues set to true and copyEvaluator set to true.
+     * same as {@link #copyValuesFrom(Properties, boolean, boolean)} with copyTaggedValues set to true and copyEvaluator
+     * set to true.
      */
     public void copyValuesFrom(Properties props);
 
