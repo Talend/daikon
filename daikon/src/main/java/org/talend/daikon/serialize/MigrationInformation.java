@@ -14,8 +14,8 @@ package org.talend.daikon.serialize;
 
 /**
  * Returns information about a migration that was done when converting an object from its serialized form into an
- * object. If the serialized form was created from a previous version of the implementation, the {@link #isMigrated()}
- * property will be set, which can be used to trigger actions on the part of the client.
+ * object. If the serialized form was created from a previous version of the implementation, the {@link #isMigrated()} property
+ * will be set, which can be used to trigger actions on the part of the client.
  */
 public interface MigrationInformation {
 

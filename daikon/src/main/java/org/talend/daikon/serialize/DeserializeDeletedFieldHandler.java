@@ -1,7 +1,7 @@
 package org.talend.daikon.serialize;
 
 /**
- * Used to provide code to translate from an older persisted version of an object into the current version of the the
+ * Used to provide code to translate from an older persisted version of an object into the current version of the
  * object.
  * 
  * The methods in this interface contain the name of the field to be processed, using the pattern: {@code fieldDeleted_
@@ -9,6 +9,8 @@ package org.talend.daikon.serialize;
  * method.
  */
 public interface DeserializeDeletedFieldHandler extends DeserializeMarker {
+
+    public static final String FIELD_DELETED_PREFIX = "fieldDeleted_";
 
     /*
      * Called when a field is present in the serialized data, but is not present in the object being deserialized.

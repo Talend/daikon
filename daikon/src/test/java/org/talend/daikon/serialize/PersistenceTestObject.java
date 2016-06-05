@@ -2,11 +2,15 @@ package org.talend.daikon.serialize;
 
 import static org.junit.Assert.assertEquals;
 
-public class PersistenceTestObject2 implements DeserializeDeletedFieldHandler, PostDeserializeHandler, SerializeSetVersion {
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
+public class PersistenceTestObject implements DeserializeDeletedFieldHandler, PostDeserializeHandler, SerializeSetVersion {
 
     public String string1;
 
     // string2 removed
+    // public String string2;
+
     // Replaces string2
     public String string2a;
 
@@ -16,7 +20,25 @@ public class PersistenceTestObject2 implements DeserializeDeletedFieldHandler, P
     // New
     public String string4;
 
-    public PersistenceTestObject2() {
+    public PersistenceTestObjectInner inner;
+
+    public PersistenceTestObject() {
+        inner = new PersistenceTestObjectInner();
+    }
+
+    public void setup() {
+        // Original values
+        string1 = "string1";
+        // string2 = "string2";
+        string3 = "string3";
+        inner = new PersistenceTestObjectInner();
+        inner.setup();
+    }
+
+    public boolean checkEqual(PersistenceTestObject other) {
+        return EqualsBuilder.reflectionEquals(this, other, "inner")
+                | EqualsBuilder.reflectionEquals(inner, other.inner, "inner2")
+                | EqualsBuilder.reflectionEquals(inner.innerObject2, other.inner.innerObject2);
     }
 
     //
@@ -49,6 +71,7 @@ public class PersistenceTestObject2 implements DeserializeDeletedFieldHandler, P
         assertEquals("string2", string2a);
         assertEquals("XXXstring3", string3);
         assertEquals(null, string4);
+        inner.checkMigrate();
     }
 
 }

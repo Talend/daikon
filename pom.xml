@@ -68,7 +68,7 @@
 			<dependency>
 				<groupId>com.cedarsoftware</groupId>
 				<artifactId>json-io</artifactId>
-				<version>4.4.1-SNAPSHOT</version>
+				<version>4.4.1-TALEND</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -153,6 +153,7 @@
 			</activation>
 			<build>
 				<plugins>
+					<!--
 					<plugin>
 						<groupId>net.revelc.code.formatter</groupId>
 						<artifactId>formatter-maven-plugin</artifactId>
@@ -164,6 +165,7 @@
 							</execution>
 						</executions>
 					</plugin>
+					-->
 				</plugins>
 			</build>
 		</profile>
