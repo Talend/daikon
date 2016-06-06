@@ -66,7 +66,6 @@ public class SerializerDeserializer {
 
                 @Override
                 public Object read(Object jOb, Deque<JsonObject<String, Object>> stack, Map<String, Object> args) {
-                    JsonReader reader = Support.getReader(args);
                     ObjectResolver resolver = (ObjectResolver) args.get(JsonReader.OBJECT_RESOLVER);
                     JsonObject<String, Object> jsonObject = (JsonObject<String, Object>) jOb;
                     Object versionObj = jsonObject.get(VERSION_FIELD);

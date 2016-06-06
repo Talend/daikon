@@ -33,7 +33,6 @@ public class PersistenceTestObject implements DeserializeDeletedFieldHandler, Po
         string1 = "string1";
         // string2 = "string2";
         string3 = "string3";
-        inner = new PersistenceTestObjectInner();
         inner.setup();
     }
 
