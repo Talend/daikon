@@ -18,7 +18,7 @@ import org.apache.avro.Schema;
  * Schema Property that get and set an Avro Schema but store a String internally for serialization optimization. The set
  * Value accepts both Schema and json string for schema. The evaluator is also called with the Schema instance.
  * this is not only for optimization, because json-io fails to deserialize the avro schema here is the explanation.
- * 1. Properties.fromSerialized() tries to deserialize component properties instance from JSON string.
+ * 1. Properties.fromSerializedPersistent() tries to deserialize component properties instance from JSON string.
  * It uses Json-io library.<br>
  * 2. During deserialization Json-io library tries to create instance of Schema$RecordSchema.<br>
  * 3. Schema$RecordSchema has 2 constructors<br>

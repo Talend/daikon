@@ -37,8 +37,7 @@ public class PersistenceTestObject implements DeserializeDeletedFieldHandler, Po
     }
 
     public boolean checkEqual(PersistenceTestObject other) {
-        return EqualsBuilder.reflectionEquals(this, other, "inner")
-                | EqualsBuilder.reflectionEquals(inner, other.inner, "inner2")
+        return EqualsBuilder.reflectionEquals(this, other, "inner") | EqualsBuilder.reflectionEquals(inner, other.inner, "inner2")
                 | EqualsBuilder.reflectionEquals(inner.innerObject2, other.inner.innerObject2);
     }
 
@@ -68,10 +67,12 @@ public class PersistenceTestObject implements DeserializeDeletedFieldHandler, Po
     }
 
     // Migrate to new string2a which replaces string2
-    public boolean fieldDeleted_string2(Object value) {
+    public boolean deletedField(String fieldName, Object value) {
         if (testMigrate) {
-            string2a = (String) value;
-            return true;
+            if (fieldName.equals("string2")) {
+                string2a = (String) value;
+                return true;
+            }
         }
         return false;
     }

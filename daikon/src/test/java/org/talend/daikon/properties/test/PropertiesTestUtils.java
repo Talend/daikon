@@ -12,26 +12,29 @@
 // ============================================================================
 package org.talend.daikon.properties.test;
 
-import static org.hamcrest.CoreMatchers.*;
-// import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.rules.ErrorCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.NamedThing;
-import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.daikon.properties.AnyPropertyVisitor;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.service.PropertiesService;
+import org.talend.daikon.serialize.SerializerDeserializer;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+// import static org.hamcrest.Matchers.*;
 
 public class PropertiesTestUtils {
 
@@ -39,10 +42,10 @@ public class PropertiesTestUtils {
 
     public static Properties checkSerialize(Properties props, ErrorCollector errorCollector) {
         String s = props.toSerialized();
-        SerializerDeserializer.Deserialized<Properties> d = Properties.Helper.fromSerialized(s, Properties.class);
+        SerializerDeserializer.Deserialized<Properties> d = Properties.Helper.fromSerializedPersistent(s, Properties.class);
         Properties deserProps = d.object;
         checkAllI18N(deserProps, errorCollector);
-        assertFalse(d.migration.isMigrated());
+        assertFalse(d.migrated);
         List<NamedThing> newProps = deserProps.getProperties();
         List<Form> newForms = deserProps.getForms();
         int i = 0;

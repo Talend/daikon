@@ -4,12 +4,9 @@ import com.cedarsoftware.util.io.JsonObject;
 import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
 import com.cedarsoftware.util.io.ObjectResolver;
-import org.talend.daikon.exception.TalendRuntimeException;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +24,15 @@ public class SerializerDeserializer {
 
         public T object;
 
-        public MigrationInformation migration;
+        /**
+         * Set by deserialization to indicate the deserialized object has been changed because it was deserialized from
+         * an earlier version.
+         *
+         * This can be used by the caller to notify the user that the object has been migrated and also, if desired, it can
+         * be re-saved in its current serialized form (which would be different than the serialized form provided
+         * initially).
+         */
+        public boolean migrated;
     }
 
     /**
@@ -44,6 +49,49 @@ public class SerializerDeserializer {
 
     private static final String VERSION_FIELD = "__version";
 
+    private static class CustomReader implements JsonReader.JsonClassReaderEx {
+
+        Map<PostDeserializeHandler, Integer> postDeserializeHandlers = new HashMap<>();
+
+        CustomReader(Map<PostDeserializeHandler, Integer> handlers) {
+            postDeserializeHandlers = handlers;
+        }
+
+        @Override
+        public Object read(Object jOb, Deque<JsonObject<String, Object>> stack, Map<String, Object> args) {
+            ObjectResolver resolver = (ObjectResolver) args.get(JsonReader.OBJECT_RESOLVER);
+            JsonObject<String, Object> jsonObject = (JsonObject<String, Object>) jOb;
+            Object versionObj = jsonObject.get(VERSION_FIELD);
+            long version = 0;
+            if (versionObj != null)
+                version = ((Long) versionObj).longValue();
+            resolver.traverseFields(stack, (JsonObject<String, Object>) jOb);
+            Object target = ((JsonObject<String, Object>) jOb).getTarget();
+            if (target instanceof PostDeserializeHandler)
+                postDeserializeHandlers.put((PostDeserializeHandler) target, (int) version);
+            return target;
+        }
+    }
+
+    private static class MissingFieldHandler implements JsonReader.MissingFieldHandler {
+
+        boolean[] migratedDeleted;
+
+        MissingFieldHandler(boolean[] md) {
+            migratedDeleted = md;
+        }
+
+        @Override
+        public void fieldMissing(Object object, String fieldName, Object value) {
+            if (!DeserializeDeletedFieldHandler.class.isAssignableFrom(object.getClass()))
+                return;
+            Boolean migrated = ((DeserializeDeletedFieldHandler) object).deletedField(fieldName, value);
+            if (migrated) {
+                migratedDeleted[0] = true;
+            }
+        }
+    }
+
     /**
      * Returns a materialized object from a previously serialized JSON String.
      *
@@ -54,70 +102,28 @@ public class SerializerDeserializer {
      */
     public static <T> Deserialized<T> fromSerialized(String serialized, Class<T> serializedClass, boolean persistent) {
         Deserialized<T> d = new Deserialized<T>();
-        d.migration = new MigrationInformationImpl();
         ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             // OSGi requires the the classloader for the target class
             Thread.currentThread().setContextClassLoader(serializedClass.getClassLoader());
 
-            final Map<PostDeserializeHandler, Integer> postDeserializeHandlers = new HashMap<>();
-
-            JsonReader.JsonClassReaderEx reader = new JsonReader.JsonClassReaderEx() {
-
-                @Override
-                public Object read(Object jOb, Deque<JsonObject<String, Object>> stack, Map<String, Object> args) {
-                    ObjectResolver resolver = (ObjectResolver) args.get(JsonReader.OBJECT_RESOLVER);
-                    JsonObject<String, Object> jsonObject = (JsonObject<String, Object>) jOb;
-                    Object versionObj = jsonObject.get(VERSION_FIELD);
-                    long version = 0;
-                    if (versionObj != null)
-                        version = ((Long) versionObj).longValue();
-                    resolver.traverseFields(stack, (JsonObject<String, Object>) jOb);
-                    Object target = ((JsonObject<String, Object>) jOb).getTarget();
-                    if (target instanceof PostDeserializeHandler)
-                        postDeserializeHandlers.put((PostDeserializeHandler) target, (int) version);
-                    return target;
-                }
-            };
+            Map<PostDeserializeHandler, Integer> postDeserializeHandlers = new HashMap<>();
 
             Map<Class, JsonReader.JsonClassReaderEx> readerMap = new HashMap<>();
-            readerMap.put(DeserializeMarker.class, reader);
+            readerMap.put(DeserializeMarker.class, new CustomReader(postDeserializeHandlers));
 
             final boolean[] migratedDeleted = new boolean[1];
 
-            JsonReader.MissingFieldHandler missingHandler = new JsonReader.MissingFieldHandler() {
-
-                @Override
-                public void fieldMissing(Object object, String fieldName, Object value) {
-                    if (!DeserializeDeletedFieldHandler.class.isAssignableFrom(object.getClass()))
-                        return;
-                    try {
-                        Method m = object.getClass().getMethod(DeserializeDeletedFieldHandler.FIELD_DELETED_PREFIX + fieldName,
-                                new Class[] { Object.class });
-                        Boolean migrated = (Boolean) m.invoke(object, new Object[] { value });
-                        if (migrated) {
-                            migratedDeleted[0] = true;
-                        }
-                    } catch (NoSuchMethodException e) {
-                        // This is OK, just ignore
-                    } catch (InvocationTargetException e) {
-                        TalendRuntimeException.unexpectedException(e.getCause());
-                    } catch (IllegalAccessException e) {
-                        TalendRuntimeException.unexpectedException(e.getCause());
-                    }
-                }
-            };
-
             Map<String, Object> args = new HashMap<>();
             args.put(JsonReader.CUSTOM_READER_MAP, readerMap);
-            args.put(JsonReader.MISSING_FIELD_HANDLER, missingHandler);
+            args.put(JsonReader.MISSING_FIELD_HANDLER, new MissingFieldHandler(migratedDeleted));
 
             d.object = (T) JsonReader.jsonToJava(serialized, args);
             boolean migrated = false;
             for (PostDeserializeHandler obj : postDeserializeHandlers.keySet()) {
                 migrated |= obj.postDeserialize(postDeserializeHandlers.get(obj), persistent);
             }
-            ((MigrationInformationImpl)d.migration).migrated = migrated || migratedDeleted[0];
+            d.migrated = migrated || migratedDeleted[0];
         } finally {
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }

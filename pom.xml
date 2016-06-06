@@ -165,7 +165,6 @@
 			</activation>
 			<build>
 				<plugins>
-					<!--
 					<plugin>
 						<groupId>net.revelc.code.formatter</groupId>
 						<artifactId>formatter-maven-plugin</artifactId>
@@ -177,7 +176,6 @@
 							</execution>
 						</executions>
 					</plugin>
-					-->
 				</plugins>
 			</build>
 		</profile>

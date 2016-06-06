@@ -12,11 +12,7 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.cedarsoftware.util.io.JsonWriter;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
@@ -28,11 +24,13 @@ import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.security.CryptoHelper;
 import org.talend.daikon.serialize.PostDeserializeHandler;
-import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
-import com.cedarsoftware.util.io.JsonWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of {@link Properties} which must be subclassed to define your properties.
@@ -50,23 +48,6 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
     transient private boolean propsAlreadyInitialized;
 
     /**
-     * Returns the Properties object previously serialized.
-     *
-     * @param serialized created by {@link #toSerialized()}.
-     * @param propertiesclass, class type to deserialized
-     * @return a {@code Properties} object represented by the {@code serialized} value.
-     */
-    @SuppressWarnings("unchecked")
-    public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerialized(String serialized,
-            Class<T> propertiesclass) {
-
-        // FIXME - probably move PERSISTENT here to a higher level
-        SerializerDeserializer.Deserialized<T> d = SerializerDeserializer.fromSerialized(serialized, propertiesclass,
-                SerializerDeserializer.PERSISTENT);
-        return d;
-    }
-
-    /**
      * Handle post deserialization.
      *
      * If you need to do additional things to react to a specific version, you can subclass this (and call the
@@ -74,16 +55,17 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
      */
     @Override
     public boolean postDeserialize(int version, boolean persistent) {
-        initLayout();
+        if (persistent)
+            initLayout();
+
         List<NamedThing> properties = getProperties();
         for (NamedThing prop : properties) {
             if (prop instanceof Property) {
                 prop.setI18nMessageFormater(getI18nMessageFormater());
             }
         }
-        if (persistent) {
+        if (persistent)
             handlePropEncryption(!ENCRYPT);
-        }
         return false;
     }
 

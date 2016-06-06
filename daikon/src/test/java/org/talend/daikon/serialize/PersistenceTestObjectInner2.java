@@ -3,6 +3,7 @@ package org.talend.daikon.serialize;
 public class PersistenceTestObjectInner2 implements DeserializeDeletedFieldHandler, PostDeserializeHandler, SerializeSetVersion {
 
     public static boolean deserializeMigration;
+
     public static boolean deleteMigration;
 
     // Changed
@@ -45,8 +46,10 @@ public class PersistenceTestObjectInner2 implements DeserializeDeletedFieldHandl
     }
 
     // Migrate to new string2a which replaces string2
-    public boolean fieldDeleted_string2(Object value) {
-        string2a = (String) value;
+    public boolean deletedField(String fieldName, Object value) {
+        if (fieldName.equals("string2")) {
+            string2a = (String) value;
+        }
         return deleteMigration;
     }
 
