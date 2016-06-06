@@ -29,6 +29,7 @@ import org.talend.daikon.properties.testproperties.nestedprop.NestedNestedProper
 import org.talend.daikon.properties.testproperties.nestedprop.NestedProperties;
 import org.talend.daikon.properties.testproperties.nestedprop.inherited.InheritedProperties;
 import org.talend.daikon.properties.testproperties.references.MultipleRefProperties;
+import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.serialize.SerializerDeserializer;
 
 import java.util.ArrayList;
@@ -387,9 +388,9 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test") {
 
             @Override
-            public boolean postDeserialize(int version, boolean persistent) {
+            public boolean postDeserialize(int version, PostDeserializeSetup setup, boolean persistent) {
                 date.setTaggedValue("foo", "bar" + version);
-                return false;
+                return super.postDeserialize(version, setup, persistent);
             }
         };
         props.init();
@@ -397,6 +398,29 @@ public class PropertiesTest {
         assertNull(props.date.getTaggedValue("foo"));
         TestProperties desProp = Properties.Helper.fromSerializedPersistent(s, TestProperties.class).object;
         assertEquals("bar0", desProp.date.getTaggedValue("foo"));
+    }
+
+    @Test
+    public void testfromSerializedSetup() {
+        TestProperties props = (TestProperties) new TestProperties("test").init();
+        props.userId.setValue("foo");
+        String s = props.toSerialized();
+        TestProperties desProp = Properties.Helper.fromSerializedPersistent(s, TestProperties.class, new PostDeserializeSetup() {
+
+            @Override
+            public void setup(Object deserializingObject) {
+                ((Properties) deserializingObject).setValueEvaluator(new PropertyValueEvaluator() {
+
+                    @Override
+                    public <T> T evaluate(Property<T> property, Object storedValue) {
+                        if (property.getName().equals("userId"))
+                            return (T) (storedValue != null ? storedValue + "XXX" : null);
+                        return (T) storedValue;
+                    }
+                });
+            }
+        }).object;
+        assertEquals("fooXXX", desProp.userId.getValue());
     }
 
     @Test
@@ -460,7 +484,6 @@ public class PropertiesTest {
         String s = props.toSerialized();
         TestProperties desProp = Properties.Helper.fromSerializedPersistent(s, TestProperties.class).object;
         assertEquals("java.io.tmpdir", desProp.userId.getValue());
-
     }
 
     @Test
@@ -469,7 +492,6 @@ public class PropertiesTest {
         assertNull(props.getValidationResult());
         PropertiesDynamicMethodHelper.afterFormFinish(props, Form.MAIN, null);
         assertEquals(ValidationResult.Result.ERROR, props.getValidationResult().getStatus());
-
     }
 
     @Test
@@ -518,7 +540,6 @@ public class PropertiesTest {
         SerializerDeserializer.Deserialized<AnotherNestedProperties> fromSerialized = Properties.Helper
                 .fromSerializedPersistent(serialized, AnotherNestedProperties.class);
         assertNotNull(fromSerialized.object.getForm(Form.MAIN));
-
     }
 
 }

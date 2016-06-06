@@ -93,6 +93,21 @@ public class SerializerDeserializer {
     }
 
     /**
+     * See {@link #fromSerialized(String, Class, PostDeserializeSetup, boolean)}
+     */
+    public static <T> Deserialized<T> fromSerializedPersistent(String serialized, Class<T> serializedClass) {
+        return fromSerialized(serialized, serializedClass, null, PERSISTENT);
+    }
+
+    /**
+     * See {@link #fromSerialized(String, Class, PostDeserializeSetup, boolean)}
+     */
+    public static <T> Deserialized<T> fromSerializedPersistent(String serialized, Class<T> serializedClass,
+            PostDeserializeSetup setup) {
+        return fromSerialized(serialized, serializedClass, setup, PERSISTENT);
+    }
+
+    /**
      * Returns a materialized object from a previously serialized JSON String.
      *
      * @param serialized created by {@link #toSerialized(Object object, boolean persistent)}.
@@ -100,7 +115,8 @@ public class SerializerDeserializer {
      * @param persistent see {@link #PERSISTENT} and {@link #TRANSIENT}.
      * @return a {@code Properties} object represented by the {@code serialized} value.
      */
-    public static <T> Deserialized<T> fromSerialized(String serialized, Class<T> serializedClass, boolean persistent) {
+    public static <T> Deserialized<T> fromSerialized(String serialized, Class<T> serializedClass, PostDeserializeSetup setup,
+            boolean persistent) {
         Deserialized<T> d = new Deserialized<T>();
         ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
@@ -121,7 +137,7 @@ public class SerializerDeserializer {
             d.object = (T) JsonReader.jsonToJava(serialized, args);
             boolean migrated = false;
             for (PostDeserializeHandler obj : postDeserializeHandlers.keySet()) {
-                migrated |= obj.postDeserialize(postDeserializeHandlers.get(obj), persistent);
+                migrated |= obj.postDeserialize(postDeserializeHandlers.get(obj), setup, persistent);
             }
             d.migrated = migrated || migratedDeleted[0];
         } finally {
@@ -131,9 +147,17 @@ public class SerializerDeserializer {
     }
 
     /**
+     * See {@link #toSerialized(Object, boolean)}
+     */
+    public static <T> String toSerializedPersistent(T object) {
+        return toSerializedPersistent(object);
+    }
+
+    /**
      * Returns a serialized version of the specified object.
      *
-     * @return the serialized {@code String}, use {@link #fromSerialized(String, Class, boolean)} to materialize the
+     * @return the serialized {@code String}, use {@link #fromSerialized(String, Class, PostDeserializeSetup, boolean)} to
+     * materialize the
      * object.
      */
     public static <T> String toSerialized(T object, boolean persistent) {

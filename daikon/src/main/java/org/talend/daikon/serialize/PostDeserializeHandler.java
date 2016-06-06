@@ -14,11 +14,13 @@ public interface PostDeserializeHandler extends DeserializeMarker {
      *
      * @param version the version number of the object being deserialized (set using
      * {@link SerializeSetVersion#getVersionNumber()}).
+     * @param setup an option implementation of {@link PostDeserializeSetup} which is used to inject post-deserialization setup
+     * code.
      * @param persistent see {@link SerializerDeserializer#PERSISTENT} and {@link SerializerDeserializer#PERSISTENT}.
      * @return true if the object was changed, false if not. This is used to indicate something changed in the object
      * (because it was deserialized from an older version) so that the environment can take an appropriate action, just
      * as notifying the user of the change, or saving the object in the new format.
      */
-    boolean postDeserialize(int version, boolean persistent);
+    boolean postDeserialize(int version, PostDeserializeSetup setup, boolean persistent);
 
 }

@@ -22,6 +22,7 @@ import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
+import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.daikon.strings.ToStringIndent;
 
@@ -87,13 +88,19 @@ public interface Properties extends AnyProperty, ToStringIndent {
     public static class Helper {
 
         public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedPersistent(
-                String serialized, Class<T> propertiesclass) {
-            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, SerializerDeserializer.PERSISTENT);
+                String serialized, Class<T> propertiesclass, PostDeserializeSetup postSetup) {
+            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, postSetup,
+                    SerializerDeserializer.PERSISTENT);
         }
 
-        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromserializedtransient(
+        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedPersistent(
                 String serialized, Class<T> propertiesclass) {
-            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, SerializerDeserializer.TRANSIENT);
+            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, null, SerializerDeserializer.PERSISTENT);
+        }
+
+        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedTransient(
+                String serialized, Class<T> propertiesclass) {
+            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, null, SerializerDeserializer.TRANSIENT);
         }
     }
 

@@ -24,7 +24,7 @@ public class SerializeDeserializeTest {
         LOGGER.info(ser);
 
         SerializerDeserializer.Deserialized<PersistenceTestObject> deser;
-        deser = SerializerDeserializer.fromSerialized(ser, PersistenceTestObject.class, SerializerDeserializer.PERSISTENT);
+        deser = SerializerDeserializer.fromSerializedPersistent(ser, PersistenceTestObject.class);
         pt.checkEqual(deser.object);
         assertFalse(deser.migrated);
     }
@@ -37,7 +37,7 @@ public class SerializeDeserializeTest {
         LOGGER.info(ser);
 
         SerializerDeserializer.Deserialized<PersistenceTestObject> deser;
-        deser = SerializerDeserializer.fromSerialized(ser, PersistenceTestObject.class, SerializerDeserializer.PERSISTENT);
+        deser = SerializerDeserializer.fromSerializedPersistent(ser, PersistenceTestObject.class);
         assertFalse(deser.migrated);
         pt.checkEqual(deser.object);
     }
@@ -48,7 +48,7 @@ public class SerializeDeserializeTest {
         PersistenceTestObjectInner2.deserializeMigration = false;
         PersistenceTestObjectInner2.deleteMigration = false;
         SerializerDeserializer.Deserialized<PersistenceTestObject> deser;
-        deser = SerializerDeserializer.fromSerialized(oldSer1, PersistenceTestObject.class, SerializerDeserializer.PERSISTENT);
+        deser = SerializerDeserializer.fromSerializedPersistent(oldSer1, PersistenceTestObject.class);
         assertTrue(deser.migrated);
         deser.object.checkMigrate();
 
@@ -63,7 +63,7 @@ public class SerializeDeserializeTest {
         PersistenceTestObjectInner2.deserializeMigration = true;
         PersistenceTestObjectInner2.deleteMigration = false;
         SerializerDeserializer.Deserialized<PersistenceTestObject> deser;
-        deser = SerializerDeserializer.fromSerialized(oldSer1, PersistenceTestObject.class, SerializerDeserializer.PERSISTENT);
+        deser = SerializerDeserializer.fromSerializedPersistent(oldSer1, PersistenceTestObject.class);
         assertTrue(deser.migrated);
         deser.object.checkMigrate();
     }
@@ -74,7 +74,7 @@ public class SerializeDeserializeTest {
         PersistenceTestObjectInner2.deserializeMigration = false;
         PersistenceTestObjectInner2.deleteMigration = true;
         SerializerDeserializer.Deserialized<PersistenceTestObject> deser;
-        deser = SerializerDeserializer.fromSerialized(oldSer1, PersistenceTestObject.class, SerializerDeserializer.PERSISTENT);
+        deser = SerializerDeserializer.fromSerializedPersistent(oldSer1, PersistenceTestObject.class);
         assertTrue(deser.migrated);
         deser.object.checkMigrate();
     }
@@ -85,7 +85,7 @@ public class SerializeDeserializeTest {
         PersistenceTestObjectInner2.deserializeMigration = false;
         PersistenceTestObjectInner2.deleteMigration = false;
         SerializerDeserializer.Deserialized<PersistenceTestObject> deser;
-        deser = SerializerDeserializer.fromSerialized(oldSer1, PersistenceTestObject.class, SerializerDeserializer.PERSISTENT);
+        deser = SerializerDeserializer.fromSerializedPersistent(oldSer1, PersistenceTestObject.class);
         assertFalse(deser.migrated);
         deser.object.checkMigrate();
     }

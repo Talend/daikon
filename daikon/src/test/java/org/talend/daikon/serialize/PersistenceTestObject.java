@@ -56,7 +56,7 @@ public class PersistenceTestObject implements DeserializeDeletedFieldHandler, Po
 
     // In place change to string3
     @Override
-    public boolean postDeserialize(int version, boolean persistent) {
+    public boolean postDeserialize(int version, PostDeserializeSetup setup, boolean persistent) {
         if (testMigrate) {
             if (version < 1) {
                 string3 = "XXX" + string3;

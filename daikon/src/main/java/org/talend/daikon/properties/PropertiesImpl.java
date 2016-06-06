@@ -24,6 +24,7 @@ import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.security.CryptoHelper;
 import org.talend.daikon.serialize.PostDeserializeHandler;
+import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
@@ -51,10 +52,16 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
      * Handle post deserialization.
      *
      * If you need to do additional things to react to a specific version, you can subclass this (and call the
-     * superclass first).
+     * superclass <strong>last</strong>).
      */
     @Override
-    public boolean postDeserialize(int version, boolean persistent) {
+    public boolean postDeserialize(int version, PostDeserializeSetup setup, boolean persistent) {
+        if (persistent)
+            handlePropEncryption(!ENCRYPT);
+
+        if (setup != null)
+            setup.setup(this);
+
         if (persistent)
             initLayout();
 
@@ -64,8 +71,6 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                 prop.setI18nMessageFormater(getI18nMessageFormater());
             }
         }
-        if (persistent)
-            handlePropEncryption(!ENCRYPT);
         return false;
     }
 
