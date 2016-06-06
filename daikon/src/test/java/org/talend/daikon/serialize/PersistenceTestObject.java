@@ -1,10 +1,12 @@
 package org.talend.daikon.serialize;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import static org.junit.Assert.assertEquals;
+
 public class PersistenceTestObject implements DeserializeDeletedFieldHandler, PostDeserializeHandler, SerializeSetVersion {
+
+    public static boolean testMigrate;
 
     public String string1;
 
@@ -47,30 +49,44 @@ public class PersistenceTestObject implements DeserializeDeletedFieldHandler, Po
 
     @Override
     public int getVersionNumber() {
-        // Version 1 has modified string3
-        return 1;
+        if (testMigrate) {
+            // Version 1 has modified string3
+            return 1;
+        }
+        return 0;
     }
 
     // In place change to string3
     @Override
     public boolean postDeserialize(int version, boolean persistent) {
-        if (version < 1) {
-            string3 = "XXX" + string3;
-            return true;
+        if (testMigrate) {
+            if (version < 1) {
+                string3 = "XXX" + string3;
+                return true;
+            }
         }
         return false;
     }
 
     // Migrate to new string2a which replaces string2
-    public void fieldDeleted_string2(int version, Object value) {
-        string2a = (String) value;
+    public boolean fieldDeleted_string2(Object value) {
+        if (testMigrate) {
+            string2a = (String) value;
+            return true;
+        }
+        return false;
     }
 
     public void checkMigrate() {
         assertEquals("string1", string1);
-        assertEquals("string2", string2a);
-        assertEquals("XXXstring3", string3);
         assertEquals(null, string4);
+        if (testMigrate) {
+            assertEquals("string2", string2a);
+            assertEquals("XXXstring3", string3);
+        } else {
+            assertEquals(null, string2a);
+            assertEquals("string3", string3);
+        }
         inner.checkMigrate();
     }
 

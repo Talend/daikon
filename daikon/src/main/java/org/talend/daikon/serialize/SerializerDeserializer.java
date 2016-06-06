@@ -1,5 +1,11 @@
 package org.talend.daikon.serialize;
 
+import com.cedarsoftware.util.io.JsonObject;
+import com.cedarsoftware.util.io.JsonReader;
+import com.cedarsoftware.util.io.JsonWriter;
+import com.cedarsoftware.util.io.ObjectResolver;
+import org.talend.daikon.exception.TalendRuntimeException;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
@@ -7,13 +13,6 @@ import java.lang.reflect.Method;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.talend.daikon.exception.TalendRuntimeException;
-
-import com.cedarsoftware.util.io.JsonObject;
-import com.cedarsoftware.util.io.JsonReader;
-import com.cedarsoftware.util.io.JsonWriter;
-import com.cedarsoftware.util.io.ObjectResolver;
 
 /**
  * Handles serialization and deserialization to/from a String and supports migration of serialized data to newer
@@ -85,6 +84,8 @@ public class SerializerDeserializer {
             Map<Class, JsonReader.JsonClassReaderEx> readerMap = new HashMap<>();
             readerMap.put(DeserializeMarker.class, reader);
 
+            final boolean[] migratedDeleted = new boolean[1];
+
             JsonReader.MissingFieldHandler missingHandler = new JsonReader.MissingFieldHandler() {
 
                 @Override
@@ -93,8 +94,11 @@ public class SerializerDeserializer {
                         return;
                     try {
                         Method m = object.getClass().getMethod(DeserializeDeletedFieldHandler.FIELD_DELETED_PREFIX + fieldName,
-                                new Class[] { int.class, Object.class });
-                        m.invoke(object, new Object[] { 0, value });
+                                new Class[] { Object.class });
+                        Boolean migrated = (Boolean) m.invoke(object, new Object[] { value });
+                        if (migrated) {
+                            migratedDeleted[0] = true;
+                        }
                     } catch (NoSuchMethodException e) {
                         // This is OK, just ignore
                     } catch (InvocationTargetException e) {
@@ -110,9 +114,11 @@ public class SerializerDeserializer {
             args.put(JsonReader.MISSING_FIELD_HANDLER, missingHandler);
 
             d.object = (T) JsonReader.jsonToJava(serialized, args);
+            boolean migrated = false;
             for (PostDeserializeHandler obj : postDeserializeHandlers.keySet()) {
-                obj.postDeserialize(postDeserializeHandlers.get(obj), persistent);
+                migrated |= obj.postDeserialize(postDeserializeHandlers.get(obj), persistent);
             }
+            ((MigrationInformationImpl)d.migration).migrated = migrated || migratedDeleted[0];
         } finally {
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }

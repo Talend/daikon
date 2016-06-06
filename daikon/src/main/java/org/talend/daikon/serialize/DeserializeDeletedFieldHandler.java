@@ -15,13 +15,11 @@ public interface DeserializeDeletedFieldHandler extends DeserializeMarker {
     /*
      * Called when a field is present in the serialized data, but is not present in the object being deserialized.
      * 
-     * @param version the version number of the object being deserialized (set using {@link
-     * MigrationSetVersion#getVersionNumber()}).
-     * 
      * @param value the value of the deleted field in the old object
+     * @return true if the object is considered to have migrated (it was modified from the serialized version)
      */
 
     // Example method name:
     //
-    // void fieldDeleted_field1(int version, Object value);
+    // boolean fieldDeleted_field1(Object value);
 }
