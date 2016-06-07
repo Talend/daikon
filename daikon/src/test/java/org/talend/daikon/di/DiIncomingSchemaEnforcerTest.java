@@ -1,4 +1,4 @@
-package org.talend.daikon.talend6;
+package org.talend.daikon.di;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -16,13 +16,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.talend.daikon.avro.util.AvroUtils;
+import org.talend.daikon.avro.converter.AvroUtils;
 
 /**
- * Unit tests for {Talend6SchemaOutputEnforcer}.
+ * Unit tests for {DiIncomingSchemaEnforcer}.
  */
 @SuppressWarnings("nls")
-public class Talend6IncomingSchemaEnforcerTest {
+public class DiIncomingSchemaEnforcerTest {
 
     /**
      * An actual record that a component would like to be emitted, which may or may not contain enriched schema
@@ -52,7 +52,7 @@ public class Talend6IncomingSchemaEnforcerTest {
         componentRecord.put(5, "This is a record with six columns.");
     }
 
-    private void checkEnforcerWithComponentRecordData(Talend6IncomingSchemaEnforcer enforcer) {
+    private void checkEnforcerWithComponentRecordData(DiIncomingSchemaEnforcer enforcer) {
         // The enforcer must be ready to receive values.
         assertThat(enforcer.needsInitDynamicColumns(), is(false));
 
@@ -92,7 +92,7 @@ public class Talend6IncomingSchemaEnforcerTest {
     public void testNonDynamic() {
         // The design time schema should be the same as the runtime schema.
         Schema talend6Schema = componentRecord.getSchema();
-        Talend6IncomingSchemaEnforcer enforcer = new Talend6IncomingSchemaEnforcer(talend6Schema);
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
 
         // The enforcer is immediately usable
         assertThat(enforcer.getDesignSchema(), is(talend6Schema));
@@ -108,9 +108,9 @@ public class Talend6IncomingSchemaEnforcerTest {
                 .name("comment").type().stringType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
 
-        Talend6IncomingSchemaEnforcer enforcer = new Talend6IncomingSchemaEnforcer(talend6Schema);
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
 
         // The enforcer isn't usable yet.
         assertThat(enforcer.getDesignSchema(), is(talend6Schema));
@@ -140,9 +140,9 @@ public class Talend6IncomingSchemaEnforcerTest {
                 .name("comment").type().stringType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
 
-        Talend6IncomingSchemaEnforcer enforcer = new Talend6IncomingSchemaEnforcer(talend6Schema);
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
 
         // The enforcer isn't usable yet.
         assertThat(enforcer.getDesignSchema(), is(talend6Schema));
@@ -173,9 +173,9 @@ public class Talend6IncomingSchemaEnforcerTest {
                 .name("age").type().intType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
 
-        Talend6IncomingSchemaEnforcer enforcer = new Talend6IncomingSchemaEnforcer(talend6Schema);
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
 
         // The enforcer isn't usable yet.
         assertThat(enforcer.getDesignSchema(), is(talend6Schema));
@@ -205,16 +205,16 @@ public class Talend6IncomingSchemaEnforcerTest {
                 .name("field")
                 //
                 // properties
-                .prop(Talend6SchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date")
-                .prop(Talend6SchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'")
+                .prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date")
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'")
                 // type
                 .type().longType().noDefault() //
                 // Add java-class to longType? Add union to output?
                 .endRecord();
 
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
 
-        Talend6IncomingSchemaEnforcer enforcer = new Talend6IncomingSchemaEnforcer(talend6Schema);
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
 
         // No dynamic columns, the schema is available.
         assertThat(enforcer.getDesignSchema(), is(talend6Schema));

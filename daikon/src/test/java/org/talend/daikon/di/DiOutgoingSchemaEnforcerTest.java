@@ -1,4 +1,4 @@
-package org.talend.daikon.talend6;
+package org.talend.daikon.di;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasEntry;
@@ -19,14 +19,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.talend.daikon.avro.SchemaConstants;
-import org.talend.daikon.avro.util.AvroUtils;
-import org.talend.daikon.avro.util.SingleColumnIndexedRecordAdapterFactory;
+import org.talend.daikon.avro.converter.AvroUtils;
+import org.talend.daikon.avro.converter.SingleColumnIndexedRecordConverter;
 
 /**
- * Unit tests for {Talend6SchemaOutputEnforcer}.
+ * Unit tests for {DiOutgoingSchemaEnforcer}.
  */
 @SuppressWarnings("nls")
-public class Talend6OutgoingSchemaEnforcerTest {
+public class DiOutgoingSchemaEnforcerTest {
 
     /**
      * An actual record that a component would like to be emitted, which may or may not contain enriched schema
@@ -65,9 +65,9 @@ public class Talend6OutgoingSchemaEnforcerTest {
                 .name("out3").type().intType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
 
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, true);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, true);
 
         enforcer.setWrapped(componentRecord);
 
@@ -106,9 +106,9 @@ public class Talend6OutgoingSchemaEnforcerTest {
                 .name("out3").type().intType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
 
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, true);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, true);
 
         enforcer.setWrapped(componentRecord);
 
@@ -147,9 +147,9 @@ public class Talend6OutgoingSchemaEnforcerTest {
                 .name("out3").type().intType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
 
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, true);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, true);
 
         enforcer.setWrapped(componentRecord);
 
@@ -188,9 +188,9 @@ public class Talend6OutgoingSchemaEnforcerTest {
                 .name("age").type().intType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
 
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, false);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
 
         enforcer.setWrapped(componentRecord);
 
@@ -229,9 +229,9 @@ public class Talend6OutgoingSchemaEnforcerTest {
                 .name("age").type().intType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
 
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, false);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
 
         enforcer.setWrapped(componentRecord);
 
@@ -270,9 +270,9 @@ public class Talend6OutgoingSchemaEnforcerTest {
                 .name("age").type().intType().noDefault() //
                 .endRecord();
         talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, Talend6SchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
 
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, false);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
 
         enforcer.setWrapped(componentRecord);
 
@@ -307,7 +307,7 @@ public class Talend6OutgoingSchemaEnforcerTest {
         Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
                 .name("id").type().intType().noDefault() //
                 .endRecord();
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, false);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
         enforcer.setWrapped(componentRecord);
 
         assertThat(enforcer.get(0), is((Object) 1));
@@ -323,9 +323,9 @@ public class Talend6OutgoingSchemaEnforcerTest {
                 .name("name").type().stringType().noDefault() //
                 .endRecord();
 
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, false);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
 
-        SingleColumnIndexedRecordAdapterFactory<String> factory = new SingleColumnIndexedRecordAdapterFactory<>(String.class,
+        SingleColumnIndexedRecordConverter<String> factory = new SingleColumnIndexedRecordConverter<>(String.class,
                 Schema.create(Schema.Type.STRING));
 
         enforcer.setWrapped(factory.convertToAvro("one"));
@@ -338,16 +338,16 @@ public class Talend6OutgoingSchemaEnforcerTest {
         // The expected schema after enforcement.
         Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
                 .name("d")
-                .prop(Talend6SchemaConstants.TALEND6_COLUMN_TALEND_TYPE, //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, //
                         "id_Date")
                 .type().longType().noDefault() //
                 .endRecord();
 
         // The enforcer to test.
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, false);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
 
         // Use this factory to create a one-column indexed record.
-        SingleColumnIndexedRecordAdapterFactory<Long> factory = new SingleColumnIndexedRecordAdapterFactory<>(Long.class,
+        SingleColumnIndexedRecordConverter<Long> factory = new SingleColumnIndexedRecordConverter<>(Long.class,
                 Schema.create(Schema.Type.LONG));
         IndexedRecord testData = factory.convertToAvro(1L);
 
@@ -367,10 +367,10 @@ public class Talend6OutgoingSchemaEnforcerTest {
         talend6Schema.getFields().get(0).schema().addProp(SchemaConstants.JAVA_CLASS_FLAG, "java.util.Date");
 
         // The enforcer to test.
-        Talend6OutgoingSchemaEnforcer enforcer = new Talend6OutgoingSchemaEnforcer(talend6Schema, false);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
 
         // Use this factory to create a one-column indexed record.
-        SingleColumnIndexedRecordAdapterFactory<Long> factory = new SingleColumnIndexedRecordAdapterFactory<>(Long.class,
+        SingleColumnIndexedRecordConverter<Long> factory = new SingleColumnIndexedRecordConverter<>(Long.class,
                 Schema.create(Schema.Type.LONG));
         IndexedRecord testData = factory.convertToAvro(1L);
 
