@@ -150,7 +150,7 @@ public class SerializerDeserializer {
      * See {@link #toSerialized(Object, boolean)}
      */
     public static <T> String toSerializedPersistent(T object) {
-        return toSerializedPersistent(object);
+        return toSerialized(object, PERSISTENT);
     }
 
     /**

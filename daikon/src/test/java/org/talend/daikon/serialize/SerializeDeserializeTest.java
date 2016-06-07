@@ -33,7 +33,7 @@ public class SerializeDeserializeTest {
     public void testVersion() {
         PersistenceTestObject.testMigrate = false;
         PersistenceTestObject pt = new PersistenceTestObject();
-        String ser = SerializerDeserializer.toSerialized(pt, SerializerDeserializer.PERSISTENT);
+        String ser = SerializerDeserializer.toSerializedPersistent(pt);
         LOGGER.info(ser);
 
         SerializerDeserializer.Deserialized<PersistenceTestObject> deser;
@@ -48,11 +48,12 @@ public class SerializeDeserializeTest {
         PersistenceTestObjectInner2.deserializeMigration = false;
         PersistenceTestObjectInner2.deleteMigration = false;
         SerializerDeserializer.Deserialized<PersistenceTestObject> deser;
-        deser = SerializerDeserializer.fromSerializedPersistent(oldSer1, PersistenceTestObject.class);
+        deser = SerializerDeserializer.fromSerialized(oldSer1, PersistenceTestObject.class, null,
+                SerializerDeserializer.PERSISTENT);
         assertTrue(deser.migrated);
         deser.object.checkMigrate();
 
-        String ser = SerializerDeserializer.toSerialized(deser.object, SerializerDeserializer.PERSISTENT);
+        String ser = SerializerDeserializer.toSerializedPersistent(deser.object);
         LOGGER.info(ser);
         assertTrue(ser.contains("__version\":1"));
     }
