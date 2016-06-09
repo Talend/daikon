@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.exception.error.ErrorCode;
 
@@ -24,7 +26,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Class used to ease ErrorCode json manipulation.
+ * It can be used to deserialise json string encoded with {@link TalendRuntimeException#writeTo(java.io.Writer)}
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JsonErrorCode implements ErrorCode {
 
     private static final long serialVersionUID = 2244078854888080512L;

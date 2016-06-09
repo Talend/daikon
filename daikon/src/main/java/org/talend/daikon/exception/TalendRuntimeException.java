@@ -135,6 +135,7 @@ public class TalendRuntimeException extends RuntimeException {
 
     /**
      * Describe this error in json into the given writer.
+     * The json format can then be used to deserialize it into {@link JsonErrorCode}.
      * 
      * @param writer where to write this error.
      */
