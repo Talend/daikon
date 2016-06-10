@@ -13,14 +13,6 @@
 package org.talend.daikon.properties;
 
 import com.cedarsoftware.util.io.JsonWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
@@ -39,7 +31,10 @@ import org.talend.daikon.strings.ToStringIndentUtil;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of {@link Properties} which must be subclassed to define your properties.
@@ -216,6 +211,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
     public String toSerialized() {
         handlePropEncryption(ENCRYPT);
         // remove form from serialization for storing the properties
+        // FIXME - move this to use the SerializeFieldOmitter
         Map<Class<?>, List<String>> fieldBlackLists = new HashMap<>();
         List<String> fields = new ArrayList<>();
         fields.add("forms");
