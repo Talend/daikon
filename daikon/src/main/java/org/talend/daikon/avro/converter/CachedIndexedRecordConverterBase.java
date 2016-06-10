@@ -8,11 +8,12 @@ import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.avro.reflect.ReflectData;
 import org.apache.avro.specific.SpecificData;
+import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.container.ContainerReaderByIndex;
 import org.talend.daikon.avro.container.ContainerWriterByIndex;
 
 /**
- * This abstract base class provides an implementation of an {@link IndexedRecordAdapterFactory} that caches the maximum
+ * This abstract base class provides an implementation of an {@link IndexedRecordConverter} that caches the maximum
  * information possible for reading and writing data.
  * 
  * When wrapping a technology-specific container, subclasses should implement the missing methods to automatically

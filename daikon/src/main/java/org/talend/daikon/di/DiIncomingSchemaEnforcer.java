@@ -26,7 +26,7 @@ import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.SchemaConstants;
-import org.talend.daikon.avro.util.AvroUtils;
+import org.talend.daikon.avro.AvroUtils;
 
 /**
  * <b>You should almost certainly not be using this class.</b>

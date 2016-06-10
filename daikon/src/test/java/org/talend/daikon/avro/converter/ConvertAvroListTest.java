@@ -1,7 +1,8 @@
-package org.talend.daikon.avro.util;
+package org.talend.daikon.avro.converter;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.UUID;
 
 import org.apache.avro.SchemaBuilder;
 import org.junit.Test;
-import org.talend.daikon.avro.AvroConverter;
 
 /**
  * Unit tests for {ConvertAvroList}.

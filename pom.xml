@@ -27,6 +27,18 @@
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
     </scm>
+    <repositories>
+        <repository>
+            <id>talend-opensource-snapshot</id>
+            <name>talend-opensource-snapshot</name>
+            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+        </repository>
+	    <repository>
+            <id>talend-opensource-release</id>
+            <name>talend-opensource-release</name>
+            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceRelease/</url>
+	    </repository>
+    </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>talend-opensource-snapshot</id>
@@ -72,6 +84,7 @@
                 <groupId>com.cedarsoftware</groupId>
                 <artifactId>json-io</artifactId>
                 <version>4.4.1-TALEND</version>
+				<version>4.4.1-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

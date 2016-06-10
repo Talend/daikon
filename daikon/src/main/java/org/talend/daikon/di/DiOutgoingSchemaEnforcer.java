@@ -21,9 +21,9 @@ import java.util.Map;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
-import org.talend.daikon.avro.IndexedRecordAdapterFactory.UnmodifiableAdapterException;
+import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
-import org.talend.daikon.avro.converter.AvroUtils;
+import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapterException;
 import org.talend.daikon.avro.converter.SingleColumnIndexedRecordConverter;
 
 /**

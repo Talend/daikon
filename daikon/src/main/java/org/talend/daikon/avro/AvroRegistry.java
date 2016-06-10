@@ -1,13 +1,5 @@
 package org.talend.daikon.avro;
 
-import org.apache.avro.Schema;
-import org.apache.avro.Schema.Type;
-import org.apache.avro.generic.IndexedRecord;
-import org.talend.daikon.avro.util.*;
-import org.talend.daikon.java8.SerializableFunction;
-import org.talend.daikon.java8.SerializableSupplier;
-import org.talend.daikon.java8.Supplier;
-
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -17,6 +9,24 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import org.apache.avro.Schema;
+import org.apache.avro.Schema.Type;
+import org.apache.avro.generic.IndexedRecord;
+import org.talend.daikon.avro.converter.AvroConverter;
+import org.talend.daikon.avro.converter.ConvertBigDecimal;
+import org.talend.daikon.avro.converter.ConvertBigInteger;
+import org.talend.daikon.avro.converter.ConvertByte;
+import org.talend.daikon.avro.converter.ConvertCharacter;
+import org.talend.daikon.avro.converter.ConvertDate;
+import org.talend.daikon.avro.converter.ConvertInetAddress;
+import org.talend.daikon.avro.converter.ConvertShort;
+import org.talend.daikon.avro.converter.ConvertUUID;
+import org.talend.daikon.avro.converter.IndexedRecordConverter;
+import org.talend.daikon.avro.converter.SingleColumnIndexedRecordConverter;
+import org.talend.daikon.java8.SerializableFunction;
+import org.talend.daikon.java8.SerializableSupplier;
+import org.talend.daikon.java8.Supplier;
 
 /**
  * An AvroRegistry is used to convert specific datum objects and classes into {@link IndexedRecord}s with {@link Schema}
@@ -43,7 +53,7 @@ public class AvroRegistry {
     /**
      * Registry of ways to create an IndexedRecord from an object based on its class.
      */
-    private static Map<Class<?>, SerializableSupplier<? extends IndexedRecordAdapterFactory<?, ?>>> mapSharedAdapterFactory = new HashMap<>();
+    private static Map<Class<?>, SerializableSupplier<? extends IndexedRecordConverter<?, ?>>> mapSharedIndexedRecordConverter = new HashMap<>();
 
     /**
      * Registers a reusable mechanism to obtain a {@link Schema} from a specific class of object and makes it available
@@ -88,18 +98,18 @@ public class AvroRegistry {
      */
     private static <DatumT> void registerSharedPrimitiveClass(Class<DatumT> primitiveClass, Schema schema) {
         mapSharedConverter.put(primitiveClass, new Unconverted<>(primitiveClass, schema));
-        mapSharedAdapterFactory.put(primitiveClass,
-                new LambdaSingleColumnIndexedRecordAdapterFactorySupplier<>(primitiveClass, schema));
+        mapSharedIndexedRecordConverter.put(primitiveClass,
+                new LambdaSingleColumnIndexedRecordConverterSupplier<>(primitiveClass, schema));
     }
 
     /**
-     * Internal utility method to add the primitive class to the shared converters and
-     * {@link IndexedRecordAdapterFactory} to be reused by all components.
+     * Internal utility method to add the primitive class to the shared converters and {@link IndexedRecordConverter} to
+     * be reused by all components.
      */
     private static <DatumT> void registerSharedPrimitiveClass(Class<DatumT> primitiveClass, AvroConverter<DatumT, ?> converter) {
         mapSharedConverter.put(primitiveClass, converter);
-        mapSharedAdapterFactory.put(primitiveClass,
-                new LambdaSingleColumnIndexedRecordAdapterFactorySupplier<>(primitiveClass, converter.getSchema()));
+        mapSharedIndexedRecordConverter.put(primitiveClass,
+                new LambdaSingleColumnIndexedRecordConverterSupplier<>(primitiveClass, converter.getSchema()));
     }
 
     /**
@@ -172,54 +182,53 @@ public class AvroRegistry {
     }
 
     /**
-     * Registers a reusable mechanism to obtain a {@link IndexedRecordAdapterFactory} for a specific class of object and
-     * makes it available to the {@link #createAdapterFactory(Class)} method.
+     * Registers a reusable mechanism to obtain a {@link IndexedRecordConverter} for a specific class of object and
+     * makes it available to the {@link #createIndexedRecordConverter(Class)} method.
      *
-     * @param datumClass The class of the object that the {@link IndexedRecordAdapterFactory} knows how to wrap.
-     * @param adapterFactoryClass A class that can take a datum and wrap it into a valid IndexedRecord.
+     * @param datumClass The class of the object that the {@link IndexedRecordConverter} knows how to wrap.
+     * @param converterClass A class that can take a datum and wrap it into a valid IndexedRecord.
      */
-    protected <DatumT, AdapterFactoryT extends IndexedRecordAdapterFactory<? super DatumT, ?>> void registerAdapterFactory(
-            Class<DatumT> datumClass, Class<AdapterFactoryT> adapterFactoryClass) {
-        mapSharedAdapterFactory.put(datumClass, new LambdaCreateANewInstanceSupplier<>(datumClass, adapterFactoryClass));
+    protected <DatumT, ConverterT extends IndexedRecordConverter<? super DatumT, ?>> void registerIndexedRecordConverter(
+            Class<DatumT> datumClass, Class<ConverterT> converterClass) {
+        mapSharedIndexedRecordConverter.put(datumClass, new LambdaCreateANewInstanceSupplier<>(datumClass, converterClass));
     }
 
     /**
-     * Registers a reusable mechanism to obtain a {@link IndexedRecordAdapterFactory} for a specific class of object and
-     * makes it available to the {@link #createAdapterFactory(Class)} method.
+     * Registers a reusable mechanism to obtain a {@link IndexedRecordConverter} for a specific class of object and
+     * makes it available to the {@link #createConverter(Class)} method.
      *
-     * @param datumClass The class of the object that the {@link IndexedRecordAdapterFactory} knows how to wrap.
-     * @param adapterFactoryFactory A supplier that will return a new {@link IndexedRecordAdapterFactory} for that
-     * object.
+     * @param datumClass The class of the object that the {@link IndexedRecordConverter} knows how to wrap.
+     * @param converterFactory A supplier that will return a new {@link IndexedRecordConverter} for that object.
      */
-    protected <T> void registerAdapterFactory(Class<T> datumClass,
-            SerializableSupplier<? extends IndexedRecordAdapterFactory<? super T, ?>> adapterFactoryFactory) {
-        mapSharedAdapterFactory.put(datumClass, adapterFactoryFactory);
+    protected <T> void registerIndexedRecordConverter(Class<T> datumClass,
+            SerializableSupplier<? extends IndexedRecordConverter<? super T, ?>> converterFactory) {
+        mapSharedIndexedRecordConverter.put(datumClass, converterFactory);
     }
 
     /**
-     * Creates a new instance of an {@link IndexedRecordAdapterFactory} that can be used to wrap or convert objects of
-     * the specified class into {@link IndexedRecord}.
+     * Creates a new instance of an {@link IndexedRecordConverter} that can be used to wrap or convert objects of the
+     * specified class into {@link IndexedRecord}.
      * <p>
      * As a general rule, when the expected output {@link Schema} of the generated {@link IndexedRecord} is the same for
      * all incoming data, the factory should be cached and reused to optimize its performance.
      *
-     * @param datumClass The class of the object that the {@link IndexedRecordAdapterFactory} knows how to wrap.
-     * @return A new {@link IndexedRecordAdapterFactory} that can process instances of the datumClass, or null if none
+     * @param datumClass The class of the object that the {@link IndexedRecordConverter} knows how to wrap.
+     * @return A new {@link IndexedRecordConverter} that can process instances of the datumClass, or null if none
      * exists.
      */
-    public <DatumT> IndexedRecordAdapterFactory<? super DatumT, ?> createAdapterFactory(Class<DatumT> datumClass) {
+    public <DatumT> IndexedRecordConverter<? super DatumT, ?> createIndexedRecordConverter(Class<DatumT> datumClass) {
         // This is guaranteed to be correctly typed if it exists, because of the register methods.
         @SuppressWarnings({ "rawtypes", "unchecked" })
-        Supplier<? extends IndexedRecordAdapterFactory<DatumT, ?>> adapterFactory = (Supplier) getFromClassRegistry(
-                mapSharedAdapterFactory, datumClass);
+        Supplier<? extends IndexedRecordConverter<DatumT, ?>> converter = (Supplier) getFromClassRegistry(
+                mapSharedIndexedRecordConverter, datumClass);
 
-        if (adapterFactory == null && IndexedRecord.class.isAssignableFrom(datumClass)) {
+        if (converter == null && IndexedRecord.class.isAssignableFrom(datumClass)) {
             @SuppressWarnings("unchecked")
-            IndexedRecordAdapterFactory<DatumT, ?> unconverted = (IndexedRecordAdapterFactory<DatumT, ?>) new UnconvertedIndexedRecordAdapterFactory<>();
+            IndexedRecordConverter<DatumT, ?> unconverted = (IndexedRecordConverter<DatumT, ?>) new UnconvertedIndexedRecordConverter<>();
             return unconverted;
         }
 
-        return adapterFactory == null ? null : adapterFactory.get();
+        return converter == null ? null : converter.get();
     }
 
     /**
@@ -327,12 +336,12 @@ public class AvroRegistry {
     /**
      * Passes through an indexed record without modification.
      */
-    public static class UnconvertedIndexedRecordAdapterFactory<T extends IndexedRecord>
-            implements IndexedRecordAdapterFactory<T, IndexedRecord> {
+    public static class UnconvertedIndexedRecordConverter<T extends IndexedRecord>
+            implements IndexedRecordConverter<T, IndexedRecord> {
 
         private Schema mSchema;
 
-        public UnconvertedIndexedRecordAdapterFactory() {
+        public UnconvertedIndexedRecordConverter() {
         }
 
         @Override
@@ -387,8 +396,8 @@ public class AvroRegistry {
     /**
      * Java 7 implementation for a lambda SerializableSupplier.
      */
-    private static class LambdaSingleColumnIndexedRecordAdapterFactorySupplier<DatumT>
-            implements SerializableSupplier<SingleColumnIndexedRecordAdapterFactory<DatumT>> {
+    private static class LambdaSingleColumnIndexedRecordConverterSupplier<DatumT>
+            implements SerializableSupplier<SingleColumnIndexedRecordConverter<DatumT>> {
 
         /**
          * Default serial version UID.
@@ -399,14 +408,14 @@ public class AvroRegistry {
 
         private final Schema schema;
 
-        public LambdaSingleColumnIndexedRecordAdapterFactorySupplier(Class<DatumT> primitiveClass, Schema schema) {
+        public LambdaSingleColumnIndexedRecordConverterSupplier(Class<DatumT> primitiveClass, Schema schema) {
             this.primitiveClass = primitiveClass;
             this.schema = schema;
         }
 
         @Override
-        public SingleColumnIndexedRecordAdapterFactory<DatumT> get() {
-            return new SingleColumnIndexedRecordAdapterFactory<>(primitiveClass, schema);
+        public SingleColumnIndexedRecordConverter<DatumT> get() {
+            return new SingleColumnIndexedRecordConverter<>(primitiveClass, schema);
         }
 
     }
@@ -414,8 +423,8 @@ public class AvroRegistry {
     /**
      * Java 7 implementation for a lambda SerializableSupplier.
      */
-    private static class LambdaCreateANewInstanceSupplier<DatumT, AdapterFactoryT extends IndexedRecordAdapterFactory<? super DatumT, ?>>
-            implements SerializableSupplier<AdapterFactoryT> {
+    private static class LambdaCreateANewInstanceSupplier<DatumT, ConverterT extends IndexedRecordConverter<? super DatumT, ?>>
+            implements SerializableSupplier<ConverterT> {
 
         /**
          * Default serial version UID.
@@ -424,16 +433,16 @@ public class AvroRegistry {
 
         private final Class<DatumT> datumClass;
 
-        private final Class<AdapterFactoryT> adapterFactoryClass;
+        private final Class<ConverterT> converterClass;
 
-        public LambdaCreateANewInstanceSupplier(Class<DatumT> datumClass, Class<AdapterFactoryT> adapterFactoryClass) {
+        public LambdaCreateANewInstanceSupplier(Class<DatumT> datumClass, Class<ConverterT> converterClass) {
             this.datumClass = datumClass;
-            this.adapterFactoryClass = adapterFactoryClass;
+            this.converterClass = converterClass;
         }
 
         @Override
-        public AdapterFactoryT get() {
-            return createANew(adapterFactoryClass, datumClass);
+        public ConverterT get() {
+            return createANew(converterClass, datumClass);
         }
 
     }

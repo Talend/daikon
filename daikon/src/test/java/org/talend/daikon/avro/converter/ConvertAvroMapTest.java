@@ -1,4 +1,4 @@
-package org.talend.daikon.avro.util;
+package org.talend.daikon.avro.converter;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasEntry;
@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import org.apache.avro.SchemaBuilder;
 import org.junit.Test;
-import org.talend.daikon.avro.AvroConverter;
 
 /**
  * Unit tests for {ConvertAvroMap}.

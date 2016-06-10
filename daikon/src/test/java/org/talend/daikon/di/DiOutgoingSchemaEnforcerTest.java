@@ -18,8 +18,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
-import org.talend.daikon.avro.converter.AvroUtils;
 import org.talend.daikon.avro.converter.SingleColumnIndexedRecordConverter;
 
 /**

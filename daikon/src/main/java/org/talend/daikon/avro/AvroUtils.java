@@ -1,14 +1,18 @@
-package org.talend.daikon.avro.converter;
-
-import org.apache.avro.Schema;
-import org.apache.avro.Schema.Type;
-import org.apache.avro.SchemaBuilder;
-import org.talend.daikon.avro.SchemaConstants;
+package org.talend.daikon.avro;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.avro.Schema;
+import org.apache.avro.Schema.Type;
+import org.apache.avro.SchemaBuilder;
+import org.talend.daikon.avro.converter.ConvertBigDecimal;
+import org.talend.daikon.avro.converter.ConvertByte;
+import org.talend.daikon.avro.converter.ConvertCharacter;
+import org.talend.daikon.avro.converter.ConvertDate;
+import org.talend.daikon.avro.converter.ConvertShort;
 
 /**
  * Helper methods for accessing Avro {@link Schema} and Avro-compatible objects.
@@ -57,7 +61,7 @@ public class AvroUtils {
         return Schema.create(Schema.Type.LONG);
     }
 
-    private static final ConvertDate SHORT_TYPE = new ConvertDate();
+    private static final ConvertShort SHORT_TYPE = new ConvertShort();
 
     public static Schema _short() {
         return SHORT_TYPE.getSchema();
