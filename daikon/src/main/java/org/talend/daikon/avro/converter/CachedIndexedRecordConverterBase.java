@@ -1,8 +1,5 @@
 package org.talend.daikon.avro.converter;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
@@ -11,6 +8,9 @@ import org.apache.avro.specific.SpecificData;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.container.ContainerReaderByIndex;
 import org.talend.daikon.avro.container.ContainerWriterByIndex;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 /**
  * This abstract base class provides an implementation of an {@link IndexedRecordConverter} that caches the maximum
