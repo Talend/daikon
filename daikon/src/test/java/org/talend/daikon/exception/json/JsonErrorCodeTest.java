@@ -42,6 +42,8 @@ public class JsonErrorCodeTest {
         assertEquals(expectedCode.getProduct(), deserializedCode.getProduct());
         assertThat(expectedCode.getExpectedContextEntries(),
                 containsInAnyOrder(deserializedCode.getExpectedContextEntries().toArray()));
+        assertThat(talendRuntimeException.getContext().entries(),
+                containsInAnyOrder(deserializedCode.getContext().entrySet().toArray()));
     }
 
 }

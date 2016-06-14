@@ -12,10 +12,7 @@
 // ============================================================================
 package org.talend.daikon.exception;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,10 +37,9 @@ public class TalendRuntimeExceptionTest {
     @Test
     public void shouldBeWrittenEntirely() throws Exception {
 
-        TalendRuntimeException exception = new TalendRuntimeException(
-                org.talend.daikon.exception.error.CommonErrorCodes.UNEXPECTED_EXCEPTION, new NullPointerException("root cause"),
-                ExceptionContext.build().put("key 1", "Value 1").put("key 2", 123).put("key 3",
-                        Arrays.asList(true, false, true)));
+        TalendRuntimeException exception = new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
+                new NullPointerException("root cause"), ExceptionContext.build().put("key 1", "Value 1").put("key 2", 123)
+                        .put("key 3", Arrays.asList(true, false, true)));
 
         String expected = read(TalendRuntimeExceptionTest.class.getResourceAsStream("expected-exception.json"));
 
@@ -56,7 +52,7 @@ public class TalendRuntimeExceptionTest {
     public void unexpected1() throws Exception {
         try {
             TalendRuntimeException.unexpectedException("messsage");
-            fail("No exception");
+            fail("exception should be thrown");
         } catch (Exception ex) {
             assertTrue(ex instanceof TalendRuntimeException);
             assertEquals(CommonErrorCodes.UNEXPECTED_EXCEPTION, ((TalendRuntimeException) ex).getCode());
@@ -68,11 +64,115 @@ public class TalendRuntimeExceptionTest {
     public void unexpected2() throws Exception {
         try {
             TalendRuntimeException.unexpectedException(new Exception("test exception"));
-            fail("No exception");
+            fail("exception should have been thrown in the previous line");
         } catch (Exception ex) {
             assertTrue(ex instanceof TalendRuntimeException);
             assertEquals("test exception", ex.getCause().getMessage());
             assertEquals(CommonErrorCodes.UNEXPECTED_EXCEPTION, ((TalendRuntimeException) ex).getCode());
+        }
+    }
+
+    @Test
+    public void testExceptionBuilder() {
+        TalendRuntimeException talendRuntimeException = TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_EXCEPTION)
+                .create();
+        assertEquals(CommonErrorCodes.UNEXPECTED_EXCEPTION, talendRuntimeException.getCode());
+    }
+
+    @Test
+    public void testExceptionBuilderWithSetParams() {
+        TalendRuntimeException talendRuntimeException = TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT)
+                .set("foo", "bar");
+        assertEquals(CommonErrorCodes.UNEXPECTED_ARGUMENT, talendRuntimeException.getCode());
+        assertEquals("foo", talendRuntimeException.getContext().get("argument"));
+        assertEquals("bar", talendRuntimeException.getContext().get("value"));
+    }
+
+    @Test
+    public void testExceptionBuilderWithSetWrongParams() {
+        // fewer param
+        try {
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT).set("foo");
+            fail("exception should have been thrown in the previous line");
+        } catch (IllegalArgumentException iae) {
+            // this is expected so do nothing
+        }
+        // more param
+        try {
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT).set("foo", "bar", "xx");
+            fail("exception should have been thrown in the previous line");
+        } catch (IllegalArgumentException iae) {
+            // this is expected so do nothing
+        }
+    }
+
+    @Test
+    public void testExceptionBuilderWithPutParams() {
+        TalendRuntimeException talendRuntimeException = TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT)
+                .put("argument", "foo").put("value", "bar").create();
+        assertEquals(CommonErrorCodes.UNEXPECTED_ARGUMENT, talendRuntimeException.getCode());
+        assertEquals("foo", talendRuntimeException.getContext().get("argument"));
+        assertEquals("bar", talendRuntimeException.getContext().get("value"));
+    }
+
+    @Test
+    public void testExceptionBuilderWithPutWrongParams() {
+        // fewer param
+        try {
+            TalendRuntimeException talendRuntimeException = TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT)
+                    .put("argument", "foo").create();
+        } catch (IllegalArgumentException iae) {
+            // this is expected so do nothing
+        }
+        // more params
+        try {
+            TalendRuntimeException talendRuntimeException = TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT)
+                    .put("argument", "foo").put("value", "bar").put("unknow", "xx").create();
+        } catch (IllegalArgumentException iae) {
+            // this is expected so do nothing
+        }
+    }
+
+    @Test
+    public void testExceptionBuilderThrow() {
+        try {
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT).put("argument", "foo").put("value", null)
+                    .throwIt();
+            fail("exception should have been thrown in the previous line");
+        } catch (TalendRuntimeException e) {
+            // fine we have caught it
+            assertEquals(CommonErrorCodes.UNEXPECTED_ARGUMENT, e.getCode());
+            assertEquals("foo", e.getContext().get("argument"));
+        }
+        try {
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT).setAndThrow("foo", "bar");
+            fail("exception should have been thrown in the previous line");
+        } catch (TalendRuntimeException e) {
+            // fine we have caught it
+            assertEquals(CommonErrorCodes.UNEXPECTED_ARGUMENT, e.getCode());
+            assertEquals("foo", e.getContext().get("argument"));
+            assertEquals("bar", e.getContext().get("value"));
+        }
+    }
+
+    @Test
+    public void testExceptionBuilderWithCauseException() {
+        try {
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_EXCEPTION, new NullPointerException()).throwIt();
+            fail("exception should have been thrown in the previous line");
+        } catch (TalendRuntimeException e) {
+            // fine we have caught it
+            assertEquals(CommonErrorCodes.UNEXPECTED_EXCEPTION, e.getCode());
+            assertTrue(e.getCause() instanceof NullPointerException);
+        }
+        // test with null cause
+        try {
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT, null).setAndThrow("foo", "bar");
+            fail("exception should have been thrown in the previous line");
+        } catch (TalendRuntimeException e) {
+            // fine we have caught it
+            assertEquals(CommonErrorCodes.UNEXPECTED_ARGUMENT, e.getCode());
+            assertNull(e.getCause());
         }
     }
 
