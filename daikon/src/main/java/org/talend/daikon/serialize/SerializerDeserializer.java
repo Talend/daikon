@@ -117,32 +117,28 @@ public class SerializerDeserializer {
      */
     public static <T> Deserialized<T> fromSerialized(String serialized, Class<T> serializedClass, PostDeserializeSetup setup,
             boolean persistent) {
+
+        // serializedClass is not used, but we have it only for the generic type support so the caller
+        // can avoid casting.
         Deserialized<T> d = new Deserialized<T>();
-        ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            // OSGi requires the the classloader for the target class
-            Thread.currentThread().setContextClassLoader(serializedClass.getClassLoader());
 
-            Map<PostDeserializeHandler, Integer> postDeserializeHandlers = new HashMap<>();
+        Map<PostDeserializeHandler, Integer> postDeserializeHandlers = new HashMap<>();
 
-            Map<Class, JsonReader.JsonClassReaderEx> readerMap = new HashMap<>();
-            readerMap.put(DeserializeMarker.class, new CustomReader(postDeserializeHandlers));
+        Map<Class, JsonReader.JsonClassReaderEx> readerMap = new HashMap<>();
+        readerMap.put(DeserializeMarker.class, new CustomReader(postDeserializeHandlers));
 
-            final boolean[] migratedDeleted = new boolean[1];
+        final boolean[] migratedDeleted = new boolean[1];
 
-            Map<String, Object> args = new HashMap<>();
-            args.put(JsonReader.CUSTOM_READER_MAP, readerMap);
-            args.put(JsonReader.MISSING_FIELD_HANDLER, new MissingFieldHandler(migratedDeleted));
+        Map<String, Object> args = new HashMap<>();
+        args.put(JsonReader.CUSTOM_READER_MAP, readerMap);
+        args.put(JsonReader.MISSING_FIELD_HANDLER, new MissingFieldHandler(migratedDeleted));
 
-            d.object = (T) JsonReader.jsonToJava(serialized, args);
-            boolean migrated = false;
-            for (PostDeserializeHandler obj : postDeserializeHandlers.keySet()) {
-                migrated |= obj.postDeserialize(postDeserializeHandlers.get(obj), setup, persistent);
-            }
-            d.migrated = migrated || migratedDeleted[0];
-        } finally {
-            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
+        d.object = (T) JsonReader.jsonToJava(serialized, args);
+        boolean migrated = false;
+        for (PostDeserializeHandler obj : postDeserializeHandlers.keySet()) {
+            migrated |= obj.postDeserialize(postDeserializeHandlers.get(obj), setup, persistent);
         }
+        d.migrated = migrated || migratedDeleted[0];
         return d;
     }
 
