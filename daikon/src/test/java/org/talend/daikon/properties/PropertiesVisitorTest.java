@@ -15,6 +15,8 @@ package org.talend.daikon.properties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -28,6 +30,8 @@ public class PropertiesVisitorTest {
 
         public Property one = PropertyFactory.newString("one");
 
+        public Properties onea = new PropertiesImpl("onea");
+
         public Properties two = new PropertiesImpl("two") {
 
             public Property three = PropertyFactory.newString("three");
@@ -35,6 +39,8 @@ public class PropertiesVisitorTest {
             public Properties four = new PropertiesImpl("four") {
                 //
             };
+
+            public Properties nested = onea;
 
         };
     };
@@ -49,7 +55,7 @@ public class PropertiesVisitorTest {
             public void visit(Properties properties, Properties parent) {
                 propertiesCount.incrementAndGet();
                 String name = properties.getName();
-                if (!name.equals("foo") && !name.equals("two") && !name.equals("four")) {
+                if (!name.equals("foo") && !name.equals("onea") && !name.equals("two") && !name.equals("four")) {
                     fail("visitor should not visit this :" + properties);
                 }
             }
@@ -63,7 +69,7 @@ public class PropertiesVisitorTest {
                 }
             }
         }, null);
-        assertEquals(3, propertiesCount.get());
+        assertEquals(4, propertiesCount.get());
         assertEquals(2, propertyCount.get());
     }
 
@@ -86,6 +92,7 @@ public class PropertiesVisitorTest {
 
     @Test
     public void testPropertiesVisitor() {
+        final Set<Properties> visited = new HashSet();
         final AtomicInteger propertiesCount = new AtomicInteger();
         foo.accept(new PropertiesVisitor() {
 
@@ -93,12 +100,15 @@ public class PropertiesVisitorTest {
             public void visit(Properties properties, Properties parent) {
                 propertiesCount.incrementAndGet();
                 String name = properties.getName();
-                if (!name.equals("foo") && !name.equals("two") && !name.equals("four")) {
+                if (!name.equals("foo") && !name.equals("onea") && !name.equals("two") && !name.equals("four")) {
                     fail("visitor should not visit this :" + properties);
                 }
+                if (visited.contains(properties))
+                    fail("Multiple visits: " + properties);
+                visited.add(properties);
             }
         }, null);
-        assertEquals(3, propertiesCount.get());
+        assertEquals(4, propertiesCount.get());
     }
 
 }

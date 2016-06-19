@@ -17,8 +17,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
@@ -328,9 +330,19 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     @Override
     public void accept(AnyPropertyVisitor visitor, Properties parent) {
+        Set<Properties> visited = new HashSet();
+        acceptInternal(visitor, parent, visited);
+    }
+
+    private void acceptInternal(AnyPropertyVisitor visitor, Properties parent, Set<Properties> visited) {
+        if (visited.contains(this))
+            return;
+        visited.add(this);
         List<NamedThing> properties = getProperties();
         for (NamedThing nt : properties) {
-            if (nt instanceof AnyProperty) {
+            if (nt instanceof PropertiesImpl) {
+                ((PropertiesImpl) nt).acceptInternal(visitor, this, visited);
+            } else if (nt instanceof AnyProperty) {
                 ((AnyProperty) nt).accept(visitor, this);
             }
         }

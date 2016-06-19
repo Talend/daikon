@@ -12,8 +12,8 @@
 // ============================================================================
 package org.talend.daikon.serialize;
 
-import static org.junit.Assert.*;
-import static org.talend.daikon.properties.property.PropertyFactory.*;
+import static org.junit.Assert.assertEquals;
+import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
 
 import java.util.EnumSet;
 
@@ -21,11 +21,21 @@ import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.property.Property;
 
-/**
- * created by nrousseau on Jun 19, 2016 Detailled comment
- *
- */
 public class PasswordSerializeTest {
+
+    @Test
+    public void testPasswordSerialized() {
+        BasicProperties basicProp = new BasicProperties("test");
+        basicProp.init();
+        basicProp.userPassword.userId.setValue("myUser");
+        basicProp.userPassword.password.setValue("myPassword");
+
+        String serialized = basicProp.toSerialized();
+        BasicProperties deserializedProp = SerializerDeserializer.fromSerializedPersistent(serialized,
+                BasicProperties.class).object;
+        assertEquals("myUser", deserializedProp.userPassword.userId.getValue());
+        assertEquals("myPassword", deserializedProp.userPassword.password.getValue());
+    }
 
     class BasicProperties extends PropertiesImpl {
 
@@ -33,38 +43,22 @@ public class PasswordSerializeTest {
 
         public NestedProperties nested;
 
-        /**
-         * DOC nrousseau BasicProperties constructor comment.
-         * 
-         * @param name
-         */
         public BasicProperties(String name) {
             super(name);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.talend.daikon.properties.PropertiesImpl#setupProperties()
-         */
         @Override
         public void setupProperties() {
             super.setupProperties();
             nested = new NestedProperties("nested");
             nested.userPassword = userPassword;
         }
-
     }
 
     class NestedProperties extends PropertiesImpl {
 
         public UserPasswordProperties userPassword = new UserPasswordProperties("userPassword");
 
-        /**
-         * DOC nrousseau BasicProperties constructor comment.
-         * 
-         * @param name
-         */
         public NestedProperties(String name) {
             super(name);
         }
@@ -75,31 +69,13 @@ public class PasswordSerializeTest {
 
         public Property<String> userId = newProperty("userId").setRequired(); //$NON-NLS-1$
 
-        public Property<String> password = newProperty("password").setRequired().setFlags(
-                EnumSet.of(Property.Flags.ENCRYPT, Property.Flags.SUPPRESS_LOGGING));
+        public Property<String> password = newProperty("password").setRequired()
+                .setFlags(EnumSet.of(Property.Flags.ENCRYPT, Property.Flags.SUPPRESS_LOGGING));
 
-        /**
-         * DOC nrousseau PasswordProperties constructor comment.
-         * 
-         * @param name
-         */
         public UserPasswordProperties(String name) {
             super(name);
         }
 
-    }
-
-    @Test
-    public void testPasswordSerialized() {
-        BasicProperties basicProp = new BasicProperties("test");
-        basicProp.init();
-        basicProp.userPassword.userId.setValue("myUser");
-        basicProp.userPassword.password.setValue("myPassword");
-        
-        String serialized = basicProp.toSerialized();
-        BasicProperties deserializedProp = SerializerDeserializer.fromSerializedPersistent(serialized, BasicProperties.class).object;
-        assertEquals("myUser", deserializedProp.userPassword.userId.getValue());
-        assertEquals("myPassword", deserializedProp.userPassword.password.getValue());
     }
 
 }
