@@ -73,6 +73,10 @@ public class PropertyTest {
         assertEquals(1, element.getOccurMinTimes());
         assertEquals(1, element.getOccurMaxTimes());
 
+        element.setRequired(false);
+        assertEquals(0, element.getOccurMinTimes());
+        assertEquals(1, element.getOccurMaxTimes());
+
         assertEquals(0, element.getPrecision());
         assertEquals(element, element.setPrecision(222));
         assertEquals(222, element.getPrecision());
