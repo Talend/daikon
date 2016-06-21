@@ -28,6 +28,13 @@ public class SchemaConstants {
      */
     public final static String TALEND_IS_LOCKED = "talend.isLocked"; //$NON-NLS-1$
 
+    /**
+     * It denotes a field, which is generated and filled by component itself.
+     * Such field has no meaning for user, but is required by component for some purpose.
+     * One of usages is to mark additional field passed to reject flow.
+     */
+    public final static String TALEND_FIELD_GENERATED = "talend.field.generated"; //$NON-NLS-1$
+
     public final static String TALEND_COLUMN_DB_COLUMN_NAME = "talend.field.dbColumnName"; //$NON-NLS-1$
 
     public final static String TALEND_COLUMN_DB_TYPE = "talend.field.dbType"; //$NON-NLS-1$
