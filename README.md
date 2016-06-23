@@ -1,5 +1,4 @@
 # Talend Daikon
-
 [![Join the chat at https://gitter.im/Talend/daikon](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Talend/daikon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![alt](http://rawgit.com/sunix/99c0da57ec96147bfd73/raw/e3eb038a56f7b9ed635eb06f551ccb225bbf50a9/codenvy-contribute-2.svg)](http://beta.codenvy.com/f?name=daikon-factory&user=sgandon)
 
 http://www.talend.com
