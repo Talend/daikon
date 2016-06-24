@@ -12,11 +12,7 @@
 // ============================================================================
 package org.talend.daikon.di;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -195,7 +191,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
         if ("id_Short".equals(talendType)) { //$NON-NLS-1$
             return value instanceof Number ? ((Number) value).shortValue() : Short.parseShort(String.valueOf(value));
         } else if ("id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) { //$NON-NLS-1$
-            return new Date((Long) value);
+            return value instanceof Date ? value : new Date((Long) value);
         } else if ("id_Byte".equals(talendType)) { //$NON-NLS-1$
             return value instanceof Number ? ((Number) value).byteValue() : Byte.parseByte(String.valueOf(value));
         }
