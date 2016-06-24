@@ -378,5 +378,16 @@ public class DiOutgoingSchemaEnforcerTest {
 
         assertThat(enforcer.get(0), instanceOf(Date.class));
         assertThat(enforcer.get(0), is((Object) new Date(1L)));
+
+        // Enforcer record date column value with date type
+        SingleColumnIndexedRecordConverter<Date> dateFactory = new SingleColumnIndexedRecordConverter<>(Date.class,
+                AvroUtils._date());
+        Date currentDate = new Date();
+        IndexedRecord dateRecord = dateFactory.convertToAvro(currentDate);
+
+        enforcer.setWrapped(dateRecord);
+
+        assertThat(enforcer.get(0), instanceOf(Date.class));
+        assertThat(enforcer.get(0), is((Object) currentDate));
     }
 }
