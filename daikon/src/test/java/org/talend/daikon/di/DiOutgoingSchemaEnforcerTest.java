@@ -45,7 +45,7 @@ public class DiOutgoingSchemaEnforcerTest {
                 .name("age").type().intType().noDefault() //
                 .name("valid").type().booleanType().noDefault() //
                 .name("address").type().stringType().noDefault() //
-                .name("comment").type().stringType().noDefault() //
+                .name("comment").prop(DiSchemaConstants.TALEND6_COLUMN_LENGTH, "255").type().stringType().noDefault() //
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date")
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType()
                 .noDefault() //
@@ -166,6 +166,8 @@ public class DiOutgoingSchemaEnforcerTest {
         assertThat(outgoingDynamicRuntimeSchema.getField("valid").schema().getType(), is(Schema.Type.BOOLEAN));
         assertThat(outgoingDynamicRuntimeSchema.getField("address").schema().getType(), is(Schema.Type.STRING));
         assertThat(outgoingDynamicRuntimeSchema.getField("comment").schema().getType(), is(Schema.Type.STRING));
+        assertThat(outgoingDynamicRuntimeSchema.getField("comment").getProp(DiSchemaConstants.TALEND6_COLUMN_LENGTH),
+                is((Object) "255"));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getType(), is(Schema.Type.UNION));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().size(), is(2));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().get(0).getType(),
@@ -214,6 +216,8 @@ public class DiOutgoingSchemaEnforcerTest {
         assertThat(outgoingDynamicRuntimeSchema.getField("valid").schema().getType(), is(Schema.Type.BOOLEAN));
         assertThat(outgoingDynamicRuntimeSchema.getField("address").schema().getType(), is(Schema.Type.STRING));
         assertThat(outgoingDynamicRuntimeSchema.getField("comment").schema().getType(), is(Schema.Type.STRING));
+        assertThat(outgoingDynamicRuntimeSchema.getField("comment").getProp(DiSchemaConstants.TALEND6_COLUMN_LENGTH),
+                is((Object) "255"));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getType(), is(Schema.Type.UNION));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().size(), is(2));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().get(0).getType(),
@@ -262,6 +266,8 @@ public class DiOutgoingSchemaEnforcerTest {
         assertThat(outgoingDynamicRuntimeSchema.getField("valid").schema().getType(), is(Schema.Type.BOOLEAN));
         assertThat(outgoingDynamicRuntimeSchema.getField("address").schema().getType(), is(Schema.Type.STRING));
         assertThat(outgoingDynamicRuntimeSchema.getField("comment").schema().getType(), is(Schema.Type.STRING));
+        assertThat(outgoingDynamicRuntimeSchema.getField("comment").getProp(DiSchemaConstants.TALEND6_COLUMN_LENGTH),
+                is((Object) "255"));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getType(), is(Schema.Type.UNION));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().size(), is(2));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().get(0).getType(),
@@ -310,6 +316,8 @@ public class DiOutgoingSchemaEnforcerTest {
         assertThat(outgoingDynamicRuntimeSchema.getField("valid").schema().getType(), is(Schema.Type.BOOLEAN));
         assertThat(outgoingDynamicRuntimeSchema.getField("address").schema().getType(), is(Schema.Type.STRING));
         assertThat(outgoingDynamicRuntimeSchema.getField("comment").schema().getType(), is(Schema.Type.STRING));
+        assertThat(outgoingDynamicRuntimeSchema.getField("comment").getProp(DiSchemaConstants.TALEND6_COLUMN_LENGTH),
+                is((Object) "255"));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getType(), is(Schema.Type.UNION));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().size(), is(2));
         assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().get(0).getType(),

@@ -234,9 +234,12 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
         for (int j = 0; j < dynColN; j++) {
             Schema.Field se = wrapped.getSchema().getFields().get(outgoingDynamicColumn + j);
             Schema.Field field = new Schema.Field(se.name(), se.schema(), se.doc(), se.defaultVal());
-            String pattern = se.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
-            if (pattern != null && !pattern.trim().isEmpty()) {
-                field.addProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN, pattern);
+            Map<String, Object> fieldProperties = se.getObjectProps();
+            for (String propName : fieldProperties.keySet()) {
+                Object propValue = fieldProperties.get(propName);
+                if (propValue != null) {
+                    field.addProp(propName, propValue);
+                }
             }
             fields.add(field);
         }
@@ -282,9 +285,12 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
                 continue;
             }
             Schema.Field field = new Schema.Field(se.name(), se.schema(), se.doc(), se.defaultVal());
-            String pattern = se.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
-            if (pattern != null && !pattern.trim().isEmpty()) {
-                field.addProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN, pattern);
+            Map<String, Object> fieldProperties = se.getObjectProps();
+            for (String propName : fieldProperties.keySet()) {
+                Object propValue = fieldProperties.get(propName);
+                if (propValue != null) {
+                    field.addProp(propName, propValue);
+                }
             }
             fields.add(field);
         }
