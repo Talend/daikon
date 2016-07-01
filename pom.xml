@@ -19,6 +19,7 @@
         <java.version>1.7</java.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <talend_snapshots>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
     </properties>
     <modules>
         <module>daikon</module>
@@ -29,15 +30,15 @@
     </scm>
     <repositories>
         <repository>
-            <id>talend-opensource-snapshot</id>
+            <id>talend_nexus</id>
             <name>talend-opensource-snapshot</name>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+            <url>${talend_snapshots}</url>
         </repository>
-	    <repository>
+        <repository>
             <id>talend-opensource-release</id>
             <name>talend-opensource-release</name>
             <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceRelease/</url>
-	    </repository>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -54,7 +55,7 @@
     <distributionManagement>
         <snapshotRepository>
             <id>talend_nexus_deployment</id>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+            <url>${talend_snapshots}</url>
         </snapshotRepository>
         <repository>
             <id>talend_nexus_deployment</id>
@@ -83,7 +84,7 @@
             <dependency>
                 <groupId>com.cedarsoftware</groupId>
                 <artifactId>json-io</artifactId>
-				<version>4.4.1-SNAPSHOT</version>
+                <version>4.4.1-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
