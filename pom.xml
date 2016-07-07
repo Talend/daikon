@@ -24,6 +24,7 @@
     <modules>
         <module>daikon</module>
         <module>daikon-spring</module>
+        <module>daikon-service</module>
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
