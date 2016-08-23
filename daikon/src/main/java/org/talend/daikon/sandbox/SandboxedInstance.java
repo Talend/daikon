@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.sandbox;
 
+import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
 import org.talend.daikon.sandbox.properties.StandardPropertiesStrategyFactory;
 
@@ -58,14 +60,18 @@ public class SandboxedInstance implements AutoCloseable {
      * 
      */
     @Override
-    public void close() throws Exception {
+    public void close() {
         if (isolatedThread != null) {// in case getInstance was not called.
             isolatedThread.setContextClassLoader(previousContextClassLoader);
         }
         ClassLoader instanceClassLoader = instance.getClass().getClassLoader();
         isoSystemProp.disconnectClassLoader(instanceClassLoader);
         if (instanceClassLoader instanceof AutoCloseable) {
-            ((AutoCloseable) instanceClassLoader).close();
+            try {
+                ((AutoCloseable) instanceClassLoader).close();
+            } catch (Exception e) {
+                new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+            }
         }
     }
 

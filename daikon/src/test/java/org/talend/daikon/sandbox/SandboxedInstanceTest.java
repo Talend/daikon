@@ -28,10 +28,14 @@ public class SandboxedInstanceTest {
     /**
      * Test method for {@link org.talend.daikon.sandbox.SandboxedInstance#close()}.
      * 
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws ClassNotFoundException
+     * 
      * @throws Exception
      */
     @Test
-    public void testClose() throws Exception {
+    public void testClose() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         Object initialInstance = createNewInstanceWithNewClassLoader();
         SandboxedInstance sandboxedInstance = new SandboxedInstance(initialInstance,
                 ClassLoaderIsolatedSystemProperties.getInstance());
@@ -46,10 +50,14 @@ public class SandboxedInstanceTest {
     /**
      * Test method for {@link org.talend.daikon.sandbox.SandboxedInstance#getInstance()}.
      * 
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws ClassNotFoundException
+     * 
      * @throws Exception
      */
     @Test
-    public void testGetInstance() throws Exception {
+    public void testGetInstance() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         Object initialInstance = createNewInstanceWithNewClassLoader();
         ClassLoader classLoader = initialInstance.getClass().getClassLoader();
         try (SandboxedInstance sandboxedInstance = new SandboxedInstance(initialInstance,
