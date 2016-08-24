@@ -53,9 +53,9 @@ public class SandboxInstanceFactoryTest {
         };
         URL libUrl = this.getClass().getResource("zeLib-0.0.1-SNAPSHOT.jar");
         try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(TEST_CLASS_NAME,
-                Collections.singletonList(libUrl), parent)) {
+                Collections.singletonList(libUrl), parent, true)) {
             assertNotNull(sandboxedInstance);
-            Object instance = sandboxedInstance.getInstance(true);
+            Object instance = sandboxedInstance.getInstance();
             assertNotNull(instance);
             assertEquals(TEST_CLASS_NAME, instance.getClass().getCanonicalName());
             ClassLoader instanceClassLoader = instance.getClass().getClassLoader();
@@ -66,4 +66,25 @@ public class SandboxInstanceFactoryTest {
         }
     }
 
+    /**
+     * Test method for
+     * {@link org.talend.daikon.sandbox.SandboxInstanceFactory#createSandboxedInstance(java.lang.String, java.util.Set, java.lang.ClassLoader)}
+     * .
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testCreateSandboxedInstanceWithNullParenClassLoader() throws Exception {
+        URL libUrl = this.getClass().getResource("zeLib-0.0.1-SNAPSHOT.jar");
+        try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(TEST_CLASS_NAME,
+                Collections.singletonList(libUrl), null, true)) {
+            assertNotNull(sandboxedInstance);
+            Object instance = sandboxedInstance.getInstance();
+            assertNotNull(instance);
+            assertEquals(TEST_CLASS_NAME, instance.getClass().getCanonicalName());
+            ClassLoader instanceClassLoader = instance.getClass().getClassLoader();
+            assertNotEquals(this.getClass().getClassLoader(), instanceClassLoader);
+
+        }
+    }
 }

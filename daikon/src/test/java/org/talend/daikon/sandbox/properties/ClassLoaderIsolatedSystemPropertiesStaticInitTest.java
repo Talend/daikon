@@ -44,7 +44,7 @@ public class ClassLoaderIsolatedSystemPropertiesStaticInitTest {
         assertFalse(System.getProperties() instanceof ClassLoaderIsolatedSystemProperties);
         // just do the call to have the static initializer called
         SandboxInstanceFactory.createSandboxedInstance(this.getClass().getCanonicalName(), Collections.EMPTY_LIST,
-                this.getClass().getClassLoader());
+                this.getClass().getClassLoader(), true);
         assertTrue(System.getProperties() instanceof ClassLoaderIsolatedSystemProperties);
     }
 

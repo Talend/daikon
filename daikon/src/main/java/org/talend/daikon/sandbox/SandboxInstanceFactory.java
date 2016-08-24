@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
+import org.talend.daikon.sandbox.properties.StandardPropertiesStrategyFactory;
 
 /**
  * this will create class instances from specifc classloader that should not interact with global system properties.
@@ -46,11 +47,14 @@ public class SandboxInstanceFactory {
      * 
      * @param classToInstanciated name of the class to instantiate
      * @param classPathUrls set of URLs to be used for creating a new {@link ClassLoader}.
-     * @param parentClassLoader used a parent ClassLoader for the newly created classloader.
+     * @param parentClassLoader used a parent ClassLoader for the newly created classloader, may be null.
+     * @param useCurrentJvmProperties if true, a copy of the current jvm system properties will be used, if false then a default
+     *            jvm set of properties (see {@link StandardPropertiesStrategyFactory} will be used
+     * 
      * @return a SandboxedInstance object ready for System Properties isolation
      */
     public static SandboxedInstance createSandboxedInstance(String classToInstanciated, List<URL> classPathUrls,
-            ClassLoader parentClassLoader) {
+            ClassLoader parentClassLoader, boolean useCurrentJvmProperties) {
         if (classToInstanciated == null) {
             throw new IllegalArgumentException("classToInstanciate should not be null");
         }
@@ -66,7 +70,7 @@ public class SandboxInstanceFactory {
                     parentClassLoader);
 
             Class<?> clazz = sandboxClassLoader.loadClass(classToInstanciated);
-            return new SandboxedInstance(clazz.newInstance());
+            return new SandboxedInstance(clazz.newInstance(), useCurrentJvmProperties);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

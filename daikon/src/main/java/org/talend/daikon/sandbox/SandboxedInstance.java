@@ -34,9 +34,11 @@ public class SandboxedInstance implements AutoCloseable {
 
     Thread isolatedThread;
 
-    SandboxedInstance(Object instance) {
-        this.instance = instance;
+    boolean useCurrentJvmProperties;
 
+    SandboxedInstance(Object instance, boolean useCurrentJvmProperties) {
+        this.instance = instance;
+        this.useCurrentJvmProperties = useCurrentJvmProperties;
     }
 
     /**
@@ -74,11 +76,9 @@ public class SandboxedInstance implements AutoCloseable {
      * Also make sure that the instance returned is used in the current thread used to call this method or in one of it's child
      * threads (assuming they use the same contextClassLoader).
      *
-     * @param useCurrentJvmProperties if true, a copy of the current jvm system properties will be used, if false then a default
-     *            jvm set of properties (see {@link StandardPropertiesStrategyFactory} will be used
      * @return the instance
      */
-    public Object getInstance(boolean useCurrentJvmProperties) {
+    public Object getInstance() {
         if (isolatedThread == null) {
             isolatedThread = Thread.currentThread();
             previousContextClassLoader = isolatedThread.getContextClassLoader();
