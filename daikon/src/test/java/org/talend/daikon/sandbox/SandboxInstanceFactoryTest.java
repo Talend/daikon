@@ -16,12 +16,27 @@ import static org.junit.Assert.*;
 
 import java.net.URL;
 import java.util.Collections;
+import java.util.Properties;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class SandboxInstanceFactoryTest {
 
     private static final String TEST_CLASS_NAME = "org.talend.test.MyClass1";
+
+    private Properties previous;
+
+    @Before
+    public void setUp() throws Exception {
+        previous = System.getProperties();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        System.setProperties(previous);
+    }
 
     /**
      * Test method for
@@ -38,9 +53,9 @@ public class SandboxInstanceFactoryTest {
         };
         URL libUrl = this.getClass().getResource("zeLib-0.0.1-SNAPSHOT.jar");
         try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(TEST_CLASS_NAME,
-                Collections.singleton(libUrl), parent)) {
+                Collections.singletonList(libUrl), parent)) {
             assertNotNull(sandboxedInstance);
-            Object instance = sandboxedInstance.getInstance();
+            Object instance = sandboxedInstance.getInstance(true);
             assertNotNull(instance);
             assertEquals(TEST_CLASS_NAME, instance.getClass().getCanonicalName());
             ClassLoader instanceClassLoader = instance.getClass().getClassLoader();

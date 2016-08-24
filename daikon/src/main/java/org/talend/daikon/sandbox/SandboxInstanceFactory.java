@@ -14,7 +14,7 @@ package org.talend.daikon.sandbox;
 
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Set;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,19 +27,29 @@ import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
  */
 public class SandboxInstanceFactory {
 
+    // this swith the current JVM System Properties with our own so that it can handle Thread/ClassLoader isolation
+    static {
+        ClassLoaderIsolatedSystemProperties isolatedSystemProperties = ClassLoaderIsolatedSystemProperties.getInstance();
+        if (!(System.getProperties() instanceof ClassLoaderIsolatedSystemProperties)) {
+            System.setProperties(isolatedSystemProperties);
+        }
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SandboxInstanceFactory.class);
 
     /**
      * This will create a new class instance base on an URLClassLoader using the <code>classPathUrls</code> and the
      * <code>parentClassLoader</code>.
-     * This instance will be embed in a {@link SandboxedInstance} so that it provides a SystemProperty isolation.
+     * This instance will be embed in a {@link SandboxedInstance} so that it provides a SystemProperty isolation.<brW
+     * All the isolation constraints are to be found in the {@link SandboxedInstance} javadoc, please make sure you read it
+     * carefully.
      * 
-     * @param classToInstanciated name of the class to instanciate
+     * @param classToInstanciated name of the class to instantiate
      * @param classPathUrls set of URLs to be used for creating a new {@link ClassLoader}.
      * @param parentClassLoader used a parent ClassLoader for the newly created classloader.
      * @return a SandboxedInstance object ready for System Properties isolation
      */
-    public static SandboxedInstance createSandboxedInstance(String classToInstanciated, Set<URL> classPathUrls,
+    public static SandboxedInstance createSandboxedInstance(String classToInstanciated, List<URL> classPathUrls,
             ClassLoader parentClassLoader) {
         if (classToInstanciated == null) {
             throw new IllegalArgumentException("classToInstanciate should not be null");
@@ -56,7 +66,7 @@ public class SandboxInstanceFactory {
                     parentClassLoader);
 
             Class<?> clazz = sandboxClassLoader.loadClass(classToInstanciated);
-            return new SandboxedInstance(clazz.newInstance(), isolatedSystemProperties);
+            return new SandboxedInstance(clazz.newInstance());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

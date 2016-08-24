@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * Note: implementation is designed to be thread safe.
  * </p>
  *
- * @see #isolateClassLoader(Thread, java.util.Properties)
+ * @see #startIsolateClassLoader(Thread, java.util.Properties)
  * @see #integrateThread(Thread)
  */
 public class ClassLoaderIsolatedSystemProperties extends Properties {
@@ -76,7 +76,7 @@ public class ClassLoaderIsolatedSystemProperties extends Properties {
      * @param classLoaderProperties Default properties for the <code>classLoader</code>. Please note registered ClassLoader will
      *            work on <b>a copy</b> of the <code>theClassLoaderProperties</code> parameter.
      */
-    public void isolateClassLoader(ClassLoader classloader, Properties theClassLoaderProperties) {
+    public void startIsolateClassLoader(ClassLoader classloader, Properties theClassLoaderProperties) {
         synchronized (classLoaderProperties) {
             if (theClassLoaderProperties == this) {
                 // Prevents infinite loops for system property lookup.
@@ -87,7 +87,9 @@ public class ClassLoaderIsolatedSystemProperties extends Properties {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Isolating classLoader '" + classloader.toString() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
             }
-            classLoaderProperties.put(classloader, theClassLoaderProperties);
+            // we are cloning here cause the new Properties(Properties default) is using default as a backup when a key is not
+            // found and does not have any key/values in it's properties
+            classLoaderProperties.put(classloader, (Properties) theClassLoaderProperties.clone());
         }
     }
 
@@ -96,7 +98,7 @@ public class ClassLoaderIsolatedSystemProperties extends Properties {
      *
      * @param classLoader The {@link ClassLoader} to disconnect.
      */
-    public void disconnectClassLoader(ClassLoader classLoader) {
+    public void stopIsolateClassLoader(ClassLoader classLoader) {
         synchronized (classLoaderProperties) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Integrating thread '" + classLoader.toString() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -143,6 +145,13 @@ public class ClassLoaderIsolatedSystemProperties extends Properties {
                 return currentThreadProperties;
             }
         }
+    }
+
+    /**
+     * this will return the system properties instance that was used before starting the first isolation
+     */
+    public Properties getDefaultSystemProperties() {
+        return defaultSystemProperties;
     }
 
     /**

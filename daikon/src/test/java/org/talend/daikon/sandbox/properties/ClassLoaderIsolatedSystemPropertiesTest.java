@@ -55,7 +55,7 @@ public class ClassLoaderIsolatedSystemPropertiesTest {
             Thread newThread = new Thread(run);
             URLClassLoader cl = new URLClassLoader(new URL[0], ClassLoader.getSystemClassLoader());
             newThread.setContextClassLoader(cl);
-            ClassLoaderIsolatedSystemProperties.getInstance().isolateClassLoader(cl, new Properties());
+            ClassLoaderIsolatedSystemProperties.getInstance().startIsolateClassLoader(cl, new Properties());
             threads.add(newThread);
         }
         for (Thread thread : threads) {
@@ -110,7 +110,7 @@ public class ClassLoaderIsolatedSystemPropertiesTest {
             Thread newThread = new Thread(run);
             URLClassLoader cl = new URLClassLoader(new URL[0], ClassLoader.getSystemClassLoader());
             newThread.setContextClassLoader(cl);
-            ClassLoaderIsolatedSystemProperties.getInstance().isolateClassLoader(cl, new Properties());
+            ClassLoaderIsolatedSystemProperties.getInstance().startIsolateClassLoader(cl, new Properties());
             threads.add(newThread);
         }
         for (SystemModifierRunnable nonIsolatedRun : nonIsolatedRuns) {
@@ -145,7 +145,7 @@ public class ClassLoaderIsolatedSystemPropertiesTest {
             Thread newThread = new Thread(run);
             URLClassLoader cl = new URLClassLoader(new URL[0], ClassLoader.getSystemClassLoader());
             newThread.setContextClassLoader(cl);
-            ClassLoaderIsolatedSystemProperties.getInstance().isolateClassLoader(cl, new Properties());
+            ClassLoaderIsolatedSystemProperties.getInstance().startIsolateClassLoader(cl, new Properties());
             threads.add(newThread);
         }
 
@@ -162,7 +162,7 @@ public class ClassLoaderIsolatedSystemPropertiesTest {
         Thread threadToIntegrate = threads.get(0);
         Properties properties = ClassLoaderIsolatedSystemProperties.getInstance().getThreadProperties(threadToIntegrate);
         assertFalse(Boolean.valueOf(String.valueOf(properties.get("test.reintegration"))));
-        ClassLoaderIsolatedSystemProperties.getInstance().disconnectClassLoader(threadToIntegrate.getContextClassLoader());
+        ClassLoaderIsolatedSystemProperties.getInstance().stopIsolateClassLoader(threadToIntegrate.getContextClassLoader());
         properties = ClassLoaderIsolatedSystemProperties.getInstance().getThreadProperties(threadToIntegrate);
         assertTrue(Boolean.valueOf(String.valueOf(properties.get("test.reintegration"))));
     }
@@ -171,7 +171,7 @@ public class ClassLoaderIsolatedSystemPropertiesTest {
     public void testIsIsolatedMethod() {
         URLClassLoader cl = new URLClassLoader(new URL[0], ClassLoader.getSystemClassLoader());
         assertFalse(ClassLoaderIsolatedSystemProperties.getInstance().isIsolated(cl));
-        ClassLoaderIsolatedSystemProperties.getInstance().isolateClassLoader(cl, new Properties());
+        ClassLoaderIsolatedSystemProperties.getInstance().startIsolateClassLoader(cl, new Properties());
         assertTrue(ClassLoaderIsolatedSystemProperties.getInstance().isIsolated(cl));
     }
 
@@ -235,6 +235,19 @@ public class ClassLoaderIsolatedSystemPropertiesTest {
 
         public void reset() {
             isSuccess = true;
+        }
+    }
+
+    @Test
+    public void testStartIsolateCopyProperties() {
+        try {
+            Properties theClassLoaderProperties = new Properties();
+            ClassLoaderIsolatedSystemProperties.getInstance()
+                    .startIsolateClassLoader(Thread.currentThread().getContextClassLoader(), theClassLoaderProperties);
+            assertFalse(theClassLoaderProperties == ClassLoaderIsolatedSystemProperties.getInstance().getThreadProperties());
+        } finally {
+            ClassLoaderIsolatedSystemProperties.getInstance()
+                    .stopIsolateClassLoader(Thread.currentThread().getContextClassLoader());
         }
     }
 

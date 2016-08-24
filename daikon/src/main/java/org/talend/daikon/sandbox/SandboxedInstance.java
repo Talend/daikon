@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.sandbox;
 
+import java.util.Properties;
+
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
@@ -26,26 +28,14 @@ import org.talend.daikon.sandbox.properties.StandardPropertiesStrategyFactory;
  */
 public class SandboxedInstance implements AutoCloseable {
 
-    // this swith the current JVM System Properties with our own so that it can handle Thread/ClassLoader isolation
-    static {
-        ClassLoaderIsolatedSystemProperties isolatedSystemProperties = ClassLoaderIsolatedSystemProperties.getInstance();
-        if (System.getProperties() instanceof ClassLoaderIsolatedSystemProperties) {
-            System.setProperties(isolatedSystemProperties);
-        }
-
-    }
-
     private Object instance;
 
     ClassLoader previousContextClassLoader;
 
-    private ClassLoaderIsolatedSystemProperties isoSystemProp;
-
     Thread isolatedThread;
 
-    SandboxedInstance(Object instance, ClassLoaderIsolatedSystemProperties isoSystemProp) {
+    SandboxedInstance(Object instance) {
         this.instance = instance;
-        this.isoSystemProp = isoSystemProp;
 
     }
 
@@ -65,7 +55,7 @@ public class SandboxedInstance implements AutoCloseable {
             isolatedThread.setContextClassLoader(previousContextClassLoader);
         }
         ClassLoader instanceClassLoader = instance.getClass().getClassLoader();
-        isoSystemProp.disconnectClassLoader(instanceClassLoader);
+        ClassLoaderIsolatedSystemProperties.getInstance().stopIsolateClassLoader(instanceClassLoader);
         if (instanceClassLoader instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) instanceClassLoader).close();
@@ -78,19 +68,27 @@ public class SandboxedInstance implements AutoCloseable {
     /**
      * Return the instance created by the {@link SandboxInstanceFactory} that now isolates the System Properties.
      * <b>WARNING</b> : this also changes the current thread contextClassloader with the classloader used to create the instance,
-     * this
-     * will enable the isoltion to work. The contextClassLoader will be reset upon the class {@link #close()} call.<br>
+     * this will enable the isoltion to work. The contextClassLoader will be reset upon the class {@link #close()} call.<br>
      * {@link #close()} must always be called.<br>
      * <b>Please</b> read carefully the {@link #close()} javadoc.
-     * 
+     * Also make sure that the instance returned is used in the current thread used to call this method or in one of it's child
+     * threads (assuming they use the same contextClassLoader).
+     *
+     * @param useCurrentJvmProperties if true, a copy of the current jvm system properties will be used, if false then a default
+     *            jvm set of properties (see {@link StandardPropertiesStrategyFactory} will be used
      * @return the instance
      */
-    public Object getInstance() {
-        isolatedThread = Thread.currentThread();
-        previousContextClassLoader = isolatedThread.getContextClassLoader();
-        ClassLoaderIsolatedSystemProperties.getInstance().isolateClassLoader(instance.getClass().getClassLoader(),
-                StandardPropertiesStrategyFactory.create().getStandardProperties());
-        isolatedThread.setContextClassLoader(instance.getClass().getClassLoader());
+    public Object getInstance(boolean useCurrentJvmProperties) {
+        if (isolatedThread == null) {
+            isolatedThread = Thread.currentThread();
+            previousContextClassLoader = isolatedThread.getContextClassLoader();
+            Properties isolatedProperties = useCurrentJvmProperties
+                    ? ClassLoaderIsolatedSystemProperties.getInstance().getDefaultSystemProperties()
+                    : StandardPropertiesStrategyFactory.create().getStandardProperties();
+            ClassLoaderIsolatedSystemProperties.getInstance().startIsolateClassLoader(instance.getClass().getClassLoader(),
+                    isolatedProperties);
+            isolatedThread.setContextClassLoader(instance.getClass().getClassLoader());
+        }
         return this.instance;
     }
 
