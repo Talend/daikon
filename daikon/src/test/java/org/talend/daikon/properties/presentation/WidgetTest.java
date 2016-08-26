@@ -51,6 +51,7 @@ public class WidgetTest {
         public WidgetTestProperties(String name) {
             super(name);
         }
+
         @Override
         public void setupLayout() {
             super.setupLayout();

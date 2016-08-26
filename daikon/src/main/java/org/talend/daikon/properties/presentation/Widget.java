@@ -30,7 +30,7 @@ import org.talend.daikon.strings.ToStringIndentUtil;
 public class Widget implements ToStringIndent {
 
     /*
-    Widget types
+     * Widget types
      */
 
     /**
