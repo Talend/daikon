@@ -13,6 +13,8 @@
 package org.talend.daikon.properties.presentation;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
@@ -26,6 +28,10 @@ import org.talend.daikon.strings.ToStringIndentUtil;
  * A {@code Widget} may also refer to a {@link Form}.
  */
 public class Widget implements ToStringIndent {
+
+    /*
+    Widget types
+     */
 
     /**
      * No special widget is requested, the default for the property's type is to be used.
@@ -99,6 +105,15 @@ public class Widget implements ToStringIndent {
      **/
     public static final String ENUMERATION_WIDGET_TYPE = "widget.type.enumeration";
 
+    /*
+    Widget configurations
+     */
+
+    /**
+     * Tell the client whether the widget is readonly or not.
+     */
+    public static final String READ_ONLY = "widget.conf.readonly";
+
     /**
      * The row in the form where this property is to be presented. Starting with 1.
      */
@@ -142,6 +157,8 @@ public class Widget implements ToStringIndent {
     private boolean callAfter;
 
     private NamedThing content;
+
+    private Map<String, Object> configurationValues = new HashMap<>();
 
     public static Widget widget(NamedThing content) {
         return new Widget(content);
@@ -277,6 +294,36 @@ public class Widget implements ToStringIndent {
      */
     public void setCallAfter(boolean callAfter) {
         this.callAfter = callAfter;
+    }
+
+    public boolean isReadonly() {
+        return Boolean.valueOf(String.valueOf(getConfigurationValue(READ_ONLY)));
+    }
+
+    public void setReadonly(boolean readonly) {
+        setConfigurationValue(READ_ONLY, readonly);
+    }
+
+    /**
+     * Return the previously stored value using {@link Widget#setConfigurationValue(String, Object)} with the given key.
+     *
+     * @param key, identify the value to be fetched
+     * @return the object stored along with the key or null if none found.
+     */
+    public Object getConfigurationValue(String key) {
+        return configurationValues.get(key);
+    }
+
+    /**
+     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because it may not be serialized.
+     *
+     * @param key, key to store the object with
+     * @param value, any object.
+     * @return this widget.
+     */
+    public Widget setConfigurationValue(String key, Object value) {
+        configurationValues.put(key, value);
+        return this;
     }
 
     @Override
