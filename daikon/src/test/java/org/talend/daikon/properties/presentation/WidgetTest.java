@@ -10,9 +10,6 @@ import static org.talend.daikon.properties.presentation.Widget.widget;
 import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
 import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
-/**
- * Created by ycbai on 2016/8/26.
- */
 public class WidgetTest {
 
     @Test
