@@ -105,6 +105,8 @@ public class Widget implements ToStringIndent {
      **/
     public static final String ENUMERATION_WIDGET_TYPE = "widget.type.enumeration";
 
+    public static final String TEXT_AREA_WIDGET_TYPE = "widget.type.textArea";
+
     /*
     Widget configurations
      */
