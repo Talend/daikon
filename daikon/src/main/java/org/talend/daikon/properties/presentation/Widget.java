@@ -107,6 +107,39 @@ public class Widget implements ToStringIndent {
 
     public static final String TEXT_AREA_WIDGET_TYPE = "widget.type.textArea";
 
+    /**
+     * A table widget which use json as input. Below is a sample:
+     * <pre>
+     * {
+     *  "columnNames": [
+     *      "Id",
+     *      "Name",
+     *      "Age"
+     *  ],
+     *  "data": [
+     *      [
+     *          "1",
+     *          "Tom",
+     *          "22"
+     *      ],
+     *      [
+     *          "2",
+     *          "Mike",
+     *          "33"
+     *      ],
+     *      [
+     *          "3",
+     *          "Lucy",
+     *          "18"
+     *      ]
+     *  ]
+     * }
+     * </pre>
+     * Notes: The "columnNames" is a column names array. If there is not this element table will use "Column 1, Column 2, ..." as column names by default.
+     * The "data" is a data array. Every subset is a row of table.
+     */
+    public static final String JSON_TABLE_WIDGET_TYPE = "widget.type.jsonTable";
+
     /*
     Widget configurations
      */
