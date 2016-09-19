@@ -9,8 +9,16 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
+ * <p>
  * Scans for {@link org.talend.daikon.annotation.Service} annotated classes, as well as
  * {@link org.talend.daikon.annotation.ServiceImplementation} annotated classes.
+ * </p>
+ * <p>
+ * The classpath is scanned starting from the package of the class annotated with
+ * {@link org.talend.daikon.annotation.EnableServices} and checks all sub-packages.
+ * </p>
+ * 
+ * @see org.talend.daikon.annotation.EnableServices
  * @see org.talend.daikon.annotation.Service
  * @see org.talend.daikon.annotation.ServiceImplementation
  * @see ServiceTypeFilter

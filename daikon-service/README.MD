@@ -68,6 +68,74 @@ At this point, you can already run:
 
 This will start a Tomcat server with port 8080. Go to http://localhost:8080/docs and you will see the documentation of the service and a link to Swagger where you can try your service.
 
+Service access with client service
+----------------------------------
+
+You first need a dependency to the service you wish to use. Add a dependency to the other service in the pom.xml:
+
+    <dependencies>
+        <dependency>
+            <groupId>welcome-message-services</groupId>
+            <artifactId>say-hi-service</artifactId>
+            <version>1.0</version>
+            <classifier>service</classifier>
+        </dependency>
+    </dependencies>
+
+When a service is created using `service-parent` an artifact is created with the content of `org.talend.services.**` which contains all needed classes for communication with the service. So adding this dependency enables your module to use all services defined in `welcome-message-services:say-hi-service`. 
+
+The entry point to create a service client is the `org.talend.daikon.client.ClientService` class, you may get using a `@Autowired` field.
+
+    @Component
+    public class MyClass {
+
+      @Autowired
+      private ClientService clientService;
+
+      public void callTheOtherService() {
+        SayHiService sayHiService = clientService.of(SayHiService.class);
+        System.out.println("Service says: " + sayHiService.sayHi());
+      }
+    }
+
+The first thing to notice you have no idea whether the `SayHiService` is a remote service accessed using REST or a local bean.
+You may want to customize (and even prioritize) which kind of access you prefer, in this case you may do
+
+    clientService.of(SayHiService.class, Access.LOCAL, Access.REMOTE)
+
+This call to `of(...)` will *first* try to look for local implementation and if it fails return a remote client.
+
+Service access with client injection
+------------------------------------
+
+If you don't feel like adding an autowired field with `ClientService`, you have an alternative.
+
+  @Component
+  public class MyClass {
+
+    @Client
+    private SayHiService sayHiService;
+
+    public void callTheOtherService() {
+      System.out.println("Service says: " + sayHiService.sayHi());
+    }
+  }
+
+In this case the field `sayHiService` will receive the result of `clientService.of(SayHiService.class)`.
+Same as for `ClientService.of(...)`, you can specify preferred accesses.
+
+    @Component
+    public class MyClass {
+
+      @Client(access = REMOTE, LOCAL)
+      private SayHiService sayHiService;
+
+      public void callTheOtherService() {
+        System.out.println("Service says: " + sayHiService.sayHi());
+      }
+    }
+
+
 Gateway service / Forward operations
 ------------------------------------
 
@@ -125,55 +193,3 @@ What happens when a GET request reaches "/forward/sayHi"? The @Call annotation i
 
 **Note #3/3** In case you want to customize the call to another service, you can use `@Call(using = Class<? extends HystrixCommand>)`, when `using=...` is present, @Call will execute the command instead of the service.
 
-Service access with client service
-----------------------------------
-The entry point to create a service client is the `org.talend.daikon.client.ClientService` class, you may get using a `@Autowired` field.
-
-    @Component
-    public class MyClass {
-
-      @Autowired
-      private ClientService clientService;
-
-      public void callTheOtherService() {
-        SayHiService sayHiService = clientService.of(SayHiService.class);
-        System.out.println("Service says: " + sayHiService.sayHi());
-      }
-    }
-
-The first thing to notice you have no idea whether the `SayHiService` is a remote service accessed using REST or a local bean.
-You may want to customize (and even prioritize) which kind of access you prefer, in this case you may do
-
-    clientService.of(SayHiService.class, Access.LOCAL, Access.REMOTE)
-
-This call to `of(...)` will *first* try to look for local implementation and if it fails return a remote client.
-
-Service access with client injection
-------------------------------------
-
-If you don't feel like adding an autowired field with `ClientService`, you have an alternative.
-
-  @Component
-  public class MyClass {
-
-    @Client
-    private SayHiService sayHiService;
-
-    public void callTheOtherService() {
-      System.out.println("Service says: " + sayHiService.sayHi());
-    }
-  }
-
-In this case the field `sayHiService` will receive the result of `clientService.of(SayHiService.class)`.
-Same as for `ClientService.of(...)`, you can specify preferred accesses.
-
-    @Component
-    public class MyClass {
-
-      @Client(access = REMOTE, LOCAL)
-      private SayHiService sayHiService;
-
-      public void callTheOtherService() {
-        System.out.println("Service says: " + sayHiService.sayHi());
-      }
-    }

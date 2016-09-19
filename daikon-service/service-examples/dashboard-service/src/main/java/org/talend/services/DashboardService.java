@@ -10,4 +10,7 @@ public interface DashboardService {
     @RequestMapping(path = "dashboard/", method = RequestMethod.GET)
     WeatherDashboard getDashboard();
 
+    @RequestMapping(path = "dashboard/injection", method = RequestMethod.GET)
+    WeatherDashboard getDashboardWithClient();
+
 }

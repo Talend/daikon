@@ -42,7 +42,7 @@ class LocalServiceFinder implements ServiceFinder {
             return localServiceInstances.get(0);
         } else {
             LOGGER.warn("{} local services found for {}", localServiceInstances.size(), serviceClass);
-            return localServiceInstances.get(0);
+            return null;
         }
     }
 

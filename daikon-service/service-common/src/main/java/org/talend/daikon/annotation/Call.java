@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import com.netflix.hystrix.HystrixCommand;
 
 /**
- * Use this annotation on any method in a class already annotated with{@link ServiceImplementation}. When a method is
+ * Use this annotation on any method in a class already annotated with {@link ServiceImplementation}. When a method is
  * annotated with @Call, its body will be ignored and replaced by an invocation of:
  * <ul>
  * <li>A service: using {@link #service()} and {@link #operation()}</li>

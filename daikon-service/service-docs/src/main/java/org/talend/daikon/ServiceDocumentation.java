@@ -19,6 +19,10 @@ import com.webcohesion.enunciate.modules.spring_web.model.SpringController;
 
 import static com.webcohesion.enunciate.module.ApiRegistryProviderModule.DataTypeDetectionStrategy.*;
 
+/**
+ * This Enunciate module extends the Spring default ones and allow to take into account classes annotated with
+ * {@link org.talend.daikon.annotation.Service} annotation.
+ */
 public class ServiceDocumentation extends SpringWebModule {
 
     private ApiRegistry registry;

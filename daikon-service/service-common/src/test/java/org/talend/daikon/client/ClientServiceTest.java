@@ -1,6 +1,7 @@
 package org.talend.daikon.client;
 
 import static org.junit.Assert.assertEquals;
+import static org.talend.daikon.client.ClientServiceTestUtils.assertServiceClientClass;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,20 +28,26 @@ public class ClientServiceTest extends ServiceBaseTests {
 
     @Test
     public void testAutoMode() throws Exception {
-        final String sayAuto = clients.of(TestService.class).sayHi();
+        final TestService client = clients.of(TestService.class);
+        final String sayAuto = client.sayHi();
+        assertServiceClientClass(client, Access.LOCAL);
         assertEquals(TestService.I_SAY_HI, sayAuto);
         assertEquals(sayAuto, sayAuto);
     }
 
     @Test
     public void testLocalMode() throws Exception {
-        final String sayLocal = clients.of(TestService.class, Access.LOCAL).sayHi();
+        final TestService client = clients.of(TestService.class, Access.LOCAL);
+        final String sayLocal = client.sayHi();
+        assertServiceClientClass(client, Access.LOCAL);
         assertEquals(TestService.I_SAY_HI, sayLocal);
     }
 
     @Test
     public void testRemoteMode() throws Exception {
-        final String sayRemote = clients.of(TestService.class, Access.REMOTE).sayHi();
+        final TestService client = clients.of(TestService.class, Access.REMOTE);
+        final String sayRemote = client.sayHi();
+        assertServiceClientClass(client, Access.REMOTE);
         assertEquals(TestService.I_SAY_HI, sayRemote);
     }
 

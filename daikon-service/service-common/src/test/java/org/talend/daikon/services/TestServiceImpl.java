@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.talend.daikon.annotation.ServiceImplementation;
 
 @ServiceImplementation
-class TestServiceImpl implements TestService {
+public class TestServiceImpl implements TestService {
 
     @Override
     public String sayHi() {
