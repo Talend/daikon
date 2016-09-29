@@ -340,8 +340,9 @@ public class Widget implements ToStringIndent {
         return Boolean.valueOf(String.valueOf(getConfigurationValue(READ_ONLY_WIDGET_CONF)));
     }
 
-    public void setReadonly(boolean readonly) {
+    public Widget setReadonly(boolean readonly) {
         setConfigurationValue(READ_ONLY_WIDGET_CONF, readonly);
+        return this;
     }
 
     /**
