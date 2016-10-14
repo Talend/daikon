@@ -12,12 +12,15 @@
 // ============================================================================
 package org.talend.daikon.properties.presentation;
 
-import static org.junit.Assert.*;
-import static org.talend.daikon.properties.presentation.Widget.*;
-import static org.talend.daikon.properties.property.PropertyFactory.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.talend.daikon.properties.presentation.Widget.widget;
+import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
+import org.talend.daikon.properties.property.Property;
 
 public class FormTest {
 
@@ -45,6 +48,30 @@ public class FormTest {
         form.setSubtitle(subTitle);
         assertEquals("Ze Form Title", form.getTitle());
         assertEquals(subTitle, form.getSubtitle());
+    }
+
+    @Test
+    public void testGetWidget() {
+        Property<String> w1 = newString("w1");
+        Property<String> w2 = newString("w2");
+        Property<String> w3 = newString("w3");
+        Form form = new Form(new PropertiesImpl("bar") { //$NON-NLS-1$
+        }, "foo"); //$NON-NLS-1$
+        form.addRow(widget(w1));
+        form.addRow(widget(w2));
+        form.addRow(widget(w3));
+
+        assertEquals(w1, form.getWidget("w1").getContent());
+        assertEquals(w2, form.getWidget("w2").getContent());
+        assertEquals(w3, form.getWidget("w3").getContent());
+
+        assertEquals(w1, form.getWidget(w1.getName()).getContent());
+        assertEquals(w2, form.getWidget(w2.getName()).getContent());
+        assertEquals(w3, form.getWidget(w3.getName()).getContent());
+
+        assertEquals(w1, form.getWidget(w1).getContent());
+        assertEquals(w2, form.getWidget(w2).getContent());
+        assertEquals(w3, form.getWidget(w3).getContent());
     }
 
     @Test

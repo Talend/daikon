@@ -273,6 +273,13 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     }
 
     /**
+     * Return the {@link Widget} with the specified name.
+     */
+    public Widget getWidget(Property<?> child) {
+        return widgetMap.get(child.getName());
+    }
+
+    /**
      * Uses the class name to get a {@link Widget}.
      *
      * @param childClass the Class of the desired {@link Properties} to get.
