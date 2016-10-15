@@ -37,7 +37,7 @@ public class JsonBaseTool {
 
     protected static List<Property> getSubProperty(Properties cProperties) {
         List<Property> propertyList = new ArrayList<>();
-        Field[] allFields = cProperties.getClass().getDeclaredFields();
+        Field[] allFields = cProperties.getClass().getFields();
         for (Field field : allFields) {
             if (Property.class.isAssignableFrom(field.getType())) {
                 try {
