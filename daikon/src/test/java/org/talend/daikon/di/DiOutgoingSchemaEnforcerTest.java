@@ -5,8 +5,10 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
@@ -433,5 +435,63 @@ public class DiOutgoingSchemaEnforcerTest {
 
         assertThat(enforcer.get(0), instanceOf(Date.class));
         assertThat(enforcer.get(0), is((Object) currentDate));
+    }
+
+    @Test
+    public void testValueConversionToDecimal() {
+        // The expected schema after enforcement.
+        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
+                .name("TestBigDecimal").type(AvroUtils._decimal()).noDefault() //
+                .endRecord();
+
+        // The enforcer to test.
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
+
+        // Use this factory to create a one-column indexed record.
+        SingleColumnIndexedRecordConverter<String> factory = new SingleColumnIndexedRecordConverter<>(String.class,
+                AvroUtils._decimal());
+        // Test not null value
+        IndexedRecord testData = factory.convertToAvro("10.20");
+
+        enforcer.setWrapped(testData);
+
+        assertThat(enforcer.get(0), instanceOf(BigDecimal.class));
+        assertThat(enforcer.get(0), is((Object) new BigDecimal("10.20")));
+
+        // Test null value
+        testData = factory.convertToAvro(null);
+
+        enforcer.setWrapped(testData);
+        assertNull(enforcer.get(0));
+
+    }
+
+    @Test
+    public void testValueConversionToCharacter() {
+        // The expected schema after enforcement.
+        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
+                .name("TestBigCharacter").type(AvroUtils._character()).noDefault() //
+                .endRecord();
+
+        // The enforcer to test.
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
+
+        // Use this factory to create a one-column indexed record.
+        SingleColumnIndexedRecordConverter<String> factory = new SingleColumnIndexedRecordConverter<>(String.class,
+                AvroUtils._character());
+        // Test not null value
+        IndexedRecord testData = factory.convertToAvro("A");
+
+        enforcer.setWrapped(testData);
+
+        assertThat(enforcer.get(0), instanceOf(Character.class));
+        assertThat(enforcer.get(0), is((Object) 'A'));
+
+        // Test null value
+        testData = factory.convertToAvro(null);
+
+        enforcer.setWrapped(testData);
+        assertNull(enforcer.get(0));
+
     }
 }
