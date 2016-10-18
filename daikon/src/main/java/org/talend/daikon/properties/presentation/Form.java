@@ -248,9 +248,9 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     /**
      * Change the visibility status of all of the {@code Form}'s widgets.
      */
-    public void setVisible(boolean hidden) {
+    public void setVisible(boolean visible) {
         for (Widget w : getWidgets()) {
-            w.setVisible(hidden);
+            w.setVisible(visible);
         }
     }
 
