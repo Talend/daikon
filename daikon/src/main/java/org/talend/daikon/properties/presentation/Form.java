@@ -246,6 +246,15 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     }
 
     /**
+     * Change the visibility status of all of the {@code Form}'s widgets.
+     */
+    public void setVisible(boolean hidden) {
+        for (Widget w : getWidgets()) {
+            w.setVisible(hidden);
+        }
+    }
+
+    /**
      * Return widget name from its contents
      */
     private String getWidgetContentName(Widget widget) {
@@ -273,9 +282,9 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     }
 
     /**
-     * Return the {@link Widget} with the specified name.
+     * Return the {@link Widget} of a NamedThing.
      */
-    public Widget getWidget(Property<?> child) {
+    public Widget getWidget(NamedThing child) {
         return widgetMap.get(child.getName());
     }
 

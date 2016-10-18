@@ -75,7 +75,7 @@ public class FormTest {
     }
 
     @Test
-    public void testSetVisible() {
+    public void testSetHidden() {
         Form form = new Form(new PropertiesImpl("bar") { //$NON-NLS-1$
         }, "foo"); //$NON-NLS-1$
         form.addRow(widget(newString("w1")));
@@ -95,7 +95,7 @@ public class FormTest {
     }
 
     @Test
-    public void testSetVisibleForNestedForms() {
+    public void testSetHiddenForNestedForms() {
         Form form = new Form(new PropertiesImpl("bar") { //$NON-NLS-1$
         }, "foo"); //$NON-NLS-1$
         Form nestedForm = new Form(new PropertiesImpl("foo") { //$NON-NLS-1$
@@ -109,6 +109,45 @@ public class FormTest {
         assertTrue(form.getWidget("w1").isHidden());
         assertTrue(nestedForm.getWidget("w3").isHidden());
         form.setHidden(false);
+        assertFalse(form.getWidget("w1").isHidden());
+        assertFalse(nestedForm.getWidget("w3").isHidden());
+    }
+
+    @Test
+    public void testSetVisible() {
+        Form form = new Form(new PropertiesImpl("bar") { //$NON-NLS-1$
+        }, "foo"); //$NON-NLS-1$
+        form.addRow(widget(newString("w1")));
+        form.addRow(widget(newString("w2")));
+        form.addRow(widget(newString("w3")));
+        assertFalse(form.getWidget("w1").isHidden());
+        assertFalse(form.getWidget("w2").isHidden());
+        assertFalse(form.getWidget("w3").isHidden());
+        form.setVisible(false);
+        assertTrue(form.getWidget("w1").isHidden());
+        assertTrue(form.getWidget("w2").isHidden());
+        assertTrue(form.getWidget("w3").isHidden());
+        form.setVisible(true);
+        assertFalse(form.getWidget("w1").isHidden());
+        assertFalse(form.getWidget("w2").isHidden());
+        assertFalse(form.getWidget("w3").isHidden());
+    }
+
+    @Test
+    public void testSetVisibleForNestedForms() {
+        Form form = new Form(new PropertiesImpl("bar") { //$NON-NLS-1$
+        }, "foo"); //$NON-NLS-1$
+        Form nestedForm = new Form(new PropertiesImpl("foo") { //$NON-NLS-1$
+        }, "bar"); //$NON-NLS-1$
+        form.addRow(widget(newString("w1")));
+        form.addRow(widget(nestedForm));
+        nestedForm.addRow(widget(newString("w3")));
+        assertFalse(form.getWidget("w1").isHidden());
+        assertFalse(nestedForm.getWidget("w3").isHidden());
+        form.setVisible(false);
+        assertTrue(form.getWidget("w1").isHidden());
+        assertTrue(nestedForm.getWidget("w3").isHidden());
+        form.setVisible(true);
         assertFalse(form.getWidget("w1").isHidden());
         assertFalse(nestedForm.getWidget("w3").isHidden());
     }

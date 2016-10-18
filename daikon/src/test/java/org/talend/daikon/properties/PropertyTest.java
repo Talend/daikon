@@ -15,14 +15,11 @@ package org.talend.daikon.properties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
 
 import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
@@ -115,6 +112,24 @@ public class PropertyTest {
         widget.setHidden(true);
         assertTrue(element.isFlag(Property.Flags.HIDDEN));
         widget.setHidden(false);
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
+        widget.setHidden();
+        assertTrue(element.isFlag(Property.Flags.HIDDEN));
+    }
+
+    @Test
+    public void testVisibleForProperties() {
+        Property<String> element = newProperty("element");
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
+        Widget widget = new Widget(element);
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
+        widget.setVisible(false);
+        assertTrue(element.isFlag(Property.Flags.HIDDEN));
+        widget.setVisible(true);
+        assertFalse(element.isFlag(Property.Flags.HIDDEN));
+        widget.setVisible(false);
+        assertTrue(element.isFlag(Property.Flags.HIDDEN));
+        widget.setVisible();
         assertFalse(element.isFlag(Property.Flags.HIDDEN));
     }
 

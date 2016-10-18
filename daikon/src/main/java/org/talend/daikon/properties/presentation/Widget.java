@@ -250,6 +250,41 @@ public class Widget implements ToStringIndent {
         return this;
     }
 
+    /**
+     * Set or reset this as hidden and mark the underlying {@link Property} or {@link Form} as hidden or not.
+     */
+    public Widget setHidden(Property<Boolean> hidden) {
+        return setHidden(hidden.getValue());
+    }
+
+    /**
+     * Set or reset this as hidden and mark the underlying {@link Property} or {@link Form} as hidden or not.
+     */
+    public Widget setHidden() {
+        return setHidden(true);
+    }
+
+    /**
+     * Set or reset this as visible and mark the underlying {@link Property} or {@link Form} as visible or not.
+     */
+    public Widget setVisible(boolean visible) {
+        return setHidden(!visible);
+    }
+
+    /**
+     * Set or reset this as visible and mark the underlying {@link Property} or {@link Form} as visible or not.
+     */
+    public Widget setVisible(Property<Boolean> visible) {
+        return setHidden(!visible.getValue());
+    }
+
+    /**
+     * Set or reset this as visible and mark the underlying {@link Property} or {@link Form} as visible or not.
+     */
+    public Widget setVisible() {
+        return setVisible(true);
+    }
+
     public boolean isHidden() {
         return hidden;
     }
