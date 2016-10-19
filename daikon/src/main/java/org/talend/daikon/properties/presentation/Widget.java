@@ -289,6 +289,13 @@ public class Widget implements ToStringIndent {
         return hidden;
     }
 
+    /**
+     * return if the current Widget is visible or not.
+     */
+    public boolean isVisible() {
+        return !hidden;
+    }
+
     public String getWidgetType() {
         return widgetType;
     }

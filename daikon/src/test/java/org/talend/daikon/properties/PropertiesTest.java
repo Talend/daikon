@@ -191,10 +191,12 @@ public class PropertiesTest {
     public void testCopyValuesRefreshLayout() {
         TestProperties props = (TestProperties) new TestProperties("props").init();
         assertFalse(props.nestedProps.getForm(Form.MAIN).getWidget(props.nestedProps.anotherProp.getName()).isHidden());
+        assertTrue(props.nestedProps.getForm(Form.MAIN).getWidget(props.nestedProps.anotherProp.getName()).isVisible());
         TestProperties props2 = (TestProperties) new TestProperties("props2").init();
         props2.nestedProps.booleanProp.setValue(true);
         props.copyValuesFrom(props2);
         assertTrue(props.nestedProps.getForm(Form.MAIN).getWidget(props.nestedProps.anotherProp.getName()).isHidden());
+        assertFalse(props.nestedProps.getForm(Form.MAIN).getWidget(props.nestedProps.anotherProp.getName()).isVisible());
     }
 
     @Test
