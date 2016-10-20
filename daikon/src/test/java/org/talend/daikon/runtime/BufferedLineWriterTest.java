@@ -18,33 +18,41 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Random;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
-public class BufferedOutputTest {
-
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+public class BufferedLineWriterTest {
 
     @Test
-    public void testBufferdWirter() throws Throwable {
+    public void testBufferedLineWriter() throws Throwable {
         // String length bigger than the buffer size
         String strRow_1024 = getAsciiRandomString(1024) + System.lineSeparator();
 
-        // Test Buffered Output
-        String testFile_1 = tempFolder.newFile("test_buffered_writer.txt").getAbsolutePath();
-        BufferedOutput buf_writer_1 = new BufferedOutput(createOutputStreamWriter(testFile_1));
-        BufferedOutput buf_writer_2 = new BufferedOutput(createOutputStreamWriter(testFile_1));
-        BufferedOutput buf_writer_3 = new BufferedOutput(createOutputStreamWriter(testFile_1));
+        // Test BufferedLineWriter
+        StringWriter stringWriter_1 = new StringWriter();
+        BufferedLineWriter buf_line_writer_1 = new BufferedLineWriter(stringWriter_1);
+        BufferedLineWriter buf_line_writer_2 = new BufferedLineWriter(stringWriter_1);
+        BufferedLineWriter buf_line_writer_3 = new BufferedLineWriter(stringWriter_1);
+        for (int i = 0; i < 100; i++) {
+            buf_line_writer_1.write(strRow_1024);
+            buf_line_writer_2.write(strRow_1024);
+            buf_line_writer_3.write(strRow_1024);
+        }
+        flushAndClose(buf_line_writer_1);
+        flushAndClose(buf_line_writer_2);
+        flushAndClose(buf_line_writer_3);
+        assertEquals(300, checkGeneratedFile(stringWriter_1.toString()));
+
+        // Test BufferedWriter would be used to reproduce the problem which we fix
+        StringWriter stringWriter_2 = new StringWriter();
+        BufferedWriter buf_writer_1 = new BufferedWriter(stringWriter_2);
+        BufferedWriter buf_writer_2 = new BufferedWriter(stringWriter_2);
+        BufferedWriter buf_writer_3 = new BufferedWriter(stringWriter_2);
         for (int i = 0; i < 100; i++) {
             buf_writer_1.write(strRow_1024);
             buf_writer_2.write(strRow_1024);
@@ -53,23 +61,8 @@ public class BufferedOutputTest {
         flushAndClose(buf_writer_1);
         flushAndClose(buf_writer_2);
         flushAndClose(buf_writer_3);
-        assertEquals(300, checkGeneratedFile(testFile_1));
-
-        // Test BufferedWriter woule be used to reproduce the problem which we fix
-        String testFile_2 = tempFolder.newFile("test_buffered_writer_output.txt").getAbsolutePath();
-        BufferedWriter buf_writer_output_1 = new BufferedWriter(createOutputStreamWriter(testFile_2));
-        BufferedWriter buf_writer_output_2 = new BufferedWriter(createOutputStreamWriter(testFile_2));
-        BufferedWriter buf_writer_output_3 = new BufferedWriter(createOutputStreamWriter(testFile_2));
-        for (int i = 0; i < 100; i++) {
-            buf_writer_output_1.write(strRow_1024);
-            buf_writer_output_2.write(strRow_1024);
-            buf_writer_output_3.write(strRow_1024);
-        }
-        flushAndClose(buf_writer_output_1);
-        flushAndClose(buf_writer_output_2);
-        flushAndClose(buf_writer_output_3);
         // This would maybe smaller than 300
-        // assertEquals(300, checkGeneratedFile(testFile_2));
+        // assertEquals(300, checkGeneratedFile(stringWriter_2.toString()));
     }
 
     protected void flushAndClose(Writer writer) throws IOException {
@@ -79,13 +72,9 @@ public class BufferedOutputTest {
         }
     }
 
-    private OutputStreamWriter createOutputStreamWriter(String file) throws Throwable {
-        return new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8");
-    }
-
     // Check the correct row which length is 1024
-    private int checkGeneratedFile(String testFile) throws Throwable {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(testFile), "UTF-8"));
+    private int checkGeneratedFile(String testStr) throws Throwable {
+        BufferedReader reader = new BufferedReader(new StringReader(testStr));
         String rowStr = null;
         int nb_line = 0;
         while ((rowStr = reader.readLine()) != null) {

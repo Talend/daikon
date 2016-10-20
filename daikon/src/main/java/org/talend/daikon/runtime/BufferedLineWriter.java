@@ -19,7 +19,7 @@ import java.io.Writer;
  * Copy from routines.system.BufferedOutput which is rewrite based on java.io.BufferedWriter
  */
 
-public class BufferedOutput extends java.io.Writer {
+public class BufferedLineWriter extends java.io.Writer {
 
     private Writer out;
 
@@ -40,7 +40,7 @@ public class BufferedOutput extends java.io.Writer {
      *
      * @param out A Writer
      */
-    public BufferedOutput(Writer out) {
+    public BufferedLineWriter(Writer out) {
         this(out, defaultCharBufferSize);
     }
 
@@ -52,7 +52,7 @@ public class BufferedOutput extends java.io.Writer {
      *
      * @exception IllegalArgumentException If sz is <= 0
      */
-    public BufferedOutput(Writer out, int sz) {
+    public BufferedLineWriter(Writer out, int sz) {
         super(out);
         if (sz <= 0)
             throw new IllegalArgumentException("Buffer size <= 0"); //$NON-NLS-1$
