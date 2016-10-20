@@ -1,15 +1,14 @@
 package org.talend.daikon.example;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.talend.daikon.annotation.ServiceImplementation;
 import org.talend.daikon.http.HttpResponseContext;
 import org.talend.services.WeatherService;
-
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Implementation of the {@link WeatherService}.
@@ -27,7 +26,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public Weather getWeather(@PathVariable("city") String city) {
+    public Weather getWeather(String city) {
         if (!cityToWeather.containsKey(city.toUpperCase())) {
             HttpResponseContext.status(HttpStatus.NOT_FOUND);
             return null;
@@ -36,7 +35,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public void updateWeather(@PathVariable("city") String city, @RequestBody Weather weather) {
+    public void updateWeather(String city, Weather weather) {
         if (!cityToWeather.containsKey(city.toUpperCase())) {
             HttpResponseContext.status(HttpStatus.NOT_FOUND);
             return;
