@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
+import org.talend.daikon.client.ClientService;
 import org.talend.daikon.service.ServiceRegistrar;
 
 /**
@@ -14,12 +15,14 @@ import org.talend.daikon.service.ServiceRegistrar;
  * <ul>
  *     <li>Enable Feign clients ({@link EnableFeignClients}.</li>
  *     <li>Scans for classes annotated with {@link Service}.</li>
+ *     <li>Adds a {@link ClientService} to the context's available beans.</li>
  * </ul>
  * @see ServiceRegistrar
+ * @see EnableEnunciate
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import(ServiceRegistrar.class)
+@Import({ServiceRegistrar.class, ClientService.class})
 @EnableFeignClients
 public @interface EnableServices {
 }

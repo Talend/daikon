@@ -2,6 +2,7 @@ package org.talend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.talend.daikon.annotation.EnableEnunciate;
 import org.talend.daikon.annotation.EnableServices;
 
 /**
@@ -9,9 +10,11 @@ import org.talend.daikon.annotation.EnableServices;
  * creation.
  * 
  * @see EnableServices
+ * @see EnableEnunciate
  */
 @SpringBootApplication
 @EnableServices
+@EnableEnunciate
 public class Application {
 
     public static void main(String[] args) { //NOSONAR

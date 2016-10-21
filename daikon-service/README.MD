@@ -193,3 +193,22 @@ What happens when a GET request reaches "/forward/sayHi"? The @Call annotation i
 
 **Note #3/3** In case you want to customize the call to another service, you can use `@Call(using = Class<? extends HystrixCommand>)`, when `using=...` is present, @Call will execute the command instead of the service.
 
+Custom Spring Boot Application
+------------------------------
+
+The `service-common` module comes with a default Spring Boot Application (`org.talend.Applcation`). However using it is *not* mandatory.
+To enable the feature, you need to use a couple of annotations:
+* @EnableServices: enables the client invocation mechanism.
+* @EnableEnunciate: enables the documentation for the service.
+
+The Spring Application may look like:
+
+    @SpringBootApplication
+    @EnableServices // Enable client invocation for current Spring context
+    @EnableEnunciate // Enable documentation for current Spring context
+    public class Application {
+    
+        public static void main(String[] args) { //NOSONAR
+            SpringApplication.run(Application.class, args); //NOSONAR
+        }
+    }
