@@ -15,11 +15,13 @@ package org.talend.daikon.exception;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.daikon.exception.ExceptionContext.ExceptionContextBuilder;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.daikon.exception.json.JsonErrorCode;
@@ -135,6 +137,7 @@ public class TalendRuntimeException extends RuntimeException {
 
     /**
      * Describe this error in json into the given writer.
+     * The json format can then be used to deserialize it into {@link JsonErrorCode}.
      * 
      * @param writer where to write this error.
      */
@@ -186,5 +189,99 @@ public class TalendRuntimeException extends RuntimeException {
      */
     public ExceptionContext getContext() {
         return context;
+    }
+
+    public static TalendRuntimeExceptionBuilder build(ErrorCode code) {
+        return new TalendRuntimeExceptionBuilder(code);
+    }
+
+    public static TalendRuntimeExceptionBuilder build(ErrorCode code, Throwable exception) {
+        return new TalendRuntimeExceptionBuilder(code, exception);
+    }
+
+    public static class TalendRuntimeExceptionBuilder {
+
+        ExceptionContextBuilder ecb = ExceptionContext.withBuilder();
+
+        private ErrorCode errorCode;
+
+        private Throwable exception;
+
+        TalendRuntimeExceptionBuilder(ErrorCode errorCode) {
+            this(errorCode, null);
+        }
+
+        /**
+         * @param code
+         * @param exception
+         */
+        public TalendRuntimeExceptionBuilder(ErrorCode code, Throwable exception) {
+            this.exception = exception;
+            this.errorCode = code;
+        }
+
+        /**
+         * add new key,value to the context of the exception that will be created
+         */
+        public TalendRuntimeExceptionBuilder put(String key, String value) {
+            if (ecb.getContextSize() != errorCode.getExpectedContextEntries().size()) {
+                ecb.put(key, value);
+            } // or else context is already set so ingor this
+            return this;
+        }
+
+        /**
+         * add values to the context of the exception that will be created in the order of the context
+         * keys, shall be used only once instead of {@link #put(String, String)} if you want to set all values at once.
+         * This will return a final TalendRuntimeException as no more context can be set.
+         * 
+         * @param values all ordered value to set. never null.
+         * @throws IllegalArgumentException if the context values set do not match the expected context
+         */
+        public TalendRuntimeException set(String... values) {
+            String[] expectedContextEntries = errorCode.getExpectedContextEntries()
+                    .toArray(new String[errorCode.getExpectedContextEntries().size()]);
+
+            for (int i = 0; (i < expectedContextEntries.length) && (i < values.length); i++) {
+                put(expectedContextEntries[i], values[i]);
+            }
+            if (values.length != errorCode.getExpectedContextEntries().size()) {
+                throw new IllegalArgumentException("values set [" + Arrays.toString(values)
+                        + "] do not match the expected context keys [" + errorCode.getExpectedContextEntries() + "]");
+            }
+            return create();
+        }
+
+        /**
+         * same as {@link #set(String...)} and throws the exception as well instead of returning it
+         * 
+         * @throws IllegalArgumentException if the context values set do not match the expected context
+         */
+        public void setAndThrow(String... values) {
+            throw set(values);
+        }
+
+        /**
+         * same as {@link #create()} but also throws it
+         * 
+         * @throws IllegalArgumentException if the context values set do not match the expected context
+         */
+        public void throwIt() {
+            throw create();
+        }
+
+        /**
+         * creates the exception with the previously set context. It enforces the context number of arguments that must match.
+         * It throws an {@link IllegalArgumentException} in case the context was not set properly.
+         * 
+         * @throws IllegalArgumentException if the context values set do not match the expected context
+         */
+        public TalendRuntimeException create() {
+            if (ecb.getContextSize() != errorCode.getExpectedContextEntries().size()) {
+                throw new IllegalArgumentException("context values [" + ecb.toString()
+                        + "] do not match the expected context keys [" + errorCode.getExpectedContextEntries() + "]");
+            }
+            return new TalendRuntimeException(errorCode, exception, ecb.build());
+        }
     }
 }
