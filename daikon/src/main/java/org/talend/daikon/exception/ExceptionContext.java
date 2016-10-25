@@ -26,7 +26,7 @@ public class ExceptionContext implements Serializable {
     private static final long serialVersionUID = -8905451634883948364L;
 
     /**
-     * The internal context. is a LinkedHashMap to garanty the order of the context entries to help the exception builder. see
+     * The internal context. is a LinkedHashMap to guarantee the order of the context entries to help the exception builder. see
      * {@link TalendRuntimeExceptionBuilder#set(String...)}
      */
     private LinkedHashMap<String, Object> context;

@@ -226,7 +226,7 @@ public class TalendRuntimeException extends RuntimeException {
         public TalendRuntimeExceptionBuilder put(String key, String value) {
             if (ecb.getContextSize() != errorCode.getExpectedContextEntries().size()) {
                 ecb.put(key, value);
-            } // or else context is already set so ingor this
+            } // or else context is already set so ignore this
             return this;
         }
 

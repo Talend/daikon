@@ -29,7 +29,7 @@ public class JsonErrorCodeTest {
 
     @Test
     public void testDeserialize() throws IOException {
-        // check that the CodeError serilization can be deserialized into an JsonCodeError
+        // check that the CodeError serialization can be deserialized into an JsonCodeError
         TalendRuntimeException talendRuntimeException = new TalendRuntimeException(CommonErrorCodes.MISSING_I18N_TRANSLATOR,
                 ExceptionContext.build().put("key", "the key").put("baseName", "the baseName"));
         StringWriter writer = new StringWriter();
