@@ -12,12 +12,10 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
+import static org.talend.daikon.properties.property.PropertyFactory.*;
 
 import java.util.EnumSet;
 
@@ -205,6 +203,30 @@ public class PropertyTest {
         assertEquals(notAnExistingTypeInstance, foo.getValue());
         foo.encryptStoredValue(false);
         assertEquals(notAnExistingTypeInstance, foo.getValue());
+    }
+
+    @Test
+    public void testEquals() {
+        Property<String> prop1 = newProperty("name");
+        prop1.setValue("foo");
+        Property<String> prop2 = newProperty("name");
+        prop2.setValue("foo");
+        Property<String> prop3 = newProperty("name");
+        prop3.setValue("bar");
+        /* Reflexive */
+        assertThat(prop1.equals(prop1), is(Boolean.TRUE));
+        assertThat(prop2.equals(prop2), is(Boolean.TRUE));
+
+        /* Symmetric */
+        assertThat(prop1.equals(prop2), is(Boolean.TRUE));
+        assertThat(prop2.equals(prop1), is(Boolean.TRUE));
+
+        /* Transitive */
+        assertThat(prop1.equals(null), is(Boolean.FALSE));
+        assertThat(prop2.equals(null), is(Boolean.FALSE));
+
+        assertThat(prop1.equals(prop3), is(Boolean.FALSE));
+
     }
 
 }

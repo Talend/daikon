@@ -199,7 +199,7 @@ public class SerializerDeserializer {
      *         materialize the
      *         object.
      */
-    public static <T> String toSerialized(T object, boolean persistent, Map<String, Object> jsonIoOptions) {
+    public static String toSerialized(Object object, boolean persistent, Map<String, Object> jsonIoOptions) {
         JsonWriter.JsonClassWriterEx writer = new JsonWriter.JsonClassWriterEx() {
 
             @Override

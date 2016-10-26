@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.talend.daikon.NamedThing;
@@ -347,9 +348,9 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
      * Get the actual value of the property, resolving the stored value if requried.
      *
      * @return the value of the property. This value may not be the one Stored with setValue(), it may be evaluated with
-     * {@link PropertyValueEvaluator}.
+     *         {@link PropertyValueEvaluator}.
      * @exception ClassCastException is the stored value is not of the property type and no {@code PropertyValueEvaluator} has
-     * been set.
+     *                been set.
      */
     @SuppressWarnings("unchecked")
     public T getValue() {
@@ -377,7 +378,8 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
     }
 
     /**
-     * If no displayName was specified then the i18n key, then {@link Property#I18N_PROPERTY_PREFIX} + {@code name_of_this_property} +
+     * If no displayName was specified then the i18n key, then {@link Property#I18N_PROPERTY_PREFIX} +
+     * {@code name_of_this_property} +
      * {@link NamedThing#I18N_DISPLAY_NAME_SUFFIX} to find the value from the i18n.
      */
     @Override
@@ -393,7 +395,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
      * 
      * @return a I18n value or possibleValue.toString if the value is not found.
      * @exception TalendRuntimeException with {@link CommonErrorCodes#UNEXPECTED_ARGUMENT} if the possible value does not belong
-     * to possible values
+     *                to possible values
      */
     public String getPossibleValuesDisplayName(Object possibleValue) {
         // first check that the possibleValue is part of the possible values
@@ -472,6 +474,30 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
      */
     public void encryptStoredValue(boolean encrypt) {
         // do nothing by default see StringProperty for an example
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((this.storedValue == null) ? 0 : this.storedValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Property<?> other = (Property<?>) obj;
+
+        return new EqualsBuilder().appendSuper(super.equals(obj)).append(storedValue, other.storedValue).isEquals();
     }
 
 }

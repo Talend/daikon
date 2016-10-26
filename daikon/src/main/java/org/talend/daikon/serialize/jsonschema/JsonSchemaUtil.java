@@ -35,7 +35,7 @@ public class JsonSchemaUtil {
     /**
      * fills the initalInstance with the properties from the Json-data String
      */
-    public static <T extends Properties> T fromJson(String jsonStr, T initialInstance) {
+    public static <P extends Properties> P fromJson(String jsonStr, P initialInstance) {
         JsonNode jsonNode;
         try {
             jsonNode = mapper.readTree(jsonStr);
@@ -49,7 +49,7 @@ public class JsonSchemaUtil {
     /**
      * fills the initalInstance with the properties from the Json-data intput stream
      */
-    public static Properties fromJson(InputStream jsonIS, Properties initialInstance) {
+    public static <P extends Properties> P fromJson(InputStream jsonIS, P initialInstance) {
         try {
             JsonNode jsonNode = mapper.readTree(jsonIS);
             return fromJson(jsonNode, initialInstance);

@@ -21,8 +21,9 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
@@ -365,21 +366,27 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
         return AnyProperty.class.isAssignableFrom(clazz);
     }
 
+    /**
+     * @return a Namething from a property path wich allow to recurse into nested properties using the . as a separator
+     *         for Properties names and the final Property. Or null if none found
+     */
     @Override
-    public NamedThing getProperty(String propName) {
-        String[] propComps = propName.split("\\.");
-        PropertiesImpl currentProps = this;
-        int i = 0;
-        for (String prop : propComps) {
-            if (i++ == propComps.length - 1) {
-                return currentProps.getLocalProperty(prop);
+    public NamedThing getProperty(String propPath) {
+        if (propPath != null) {
+            String[] propComps = propPath.split("\\.");
+            PropertiesImpl currentProps = this;
+            int i = 0;
+            for (String prop : propComps) {
+                if (i++ == propComps.length - 1) {
+                    return currentProps.getLocalProperty(prop);
+                }
+                NamedThing se = currentProps.getLocalProperty(prop);
+                if (!(se instanceof PropertiesImpl)) {
+                    return null;
+                }
+                currentProps = (PropertiesImpl) se;
             }
-            NamedThing se = currentProps.getLocalProperty(prop);
-            if (!(se instanceof PropertiesImpl)) {
-                return null;
-            }
-            currentProps = (PropertiesImpl) se;
-        }
+        } // else propName is null so return null
         return null;
     }
 
@@ -613,22 +620,18 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        final AtomicInteger result = new AtomicInteger(1);
+        final HashCodeBuilder hashCodeBuilder = new HashCodeBuilder(17, 5);
         accept(new PropertyVisitor() {
 
             @Override
             public void visit(Property property, Properties parent) {
                 // use the property name
-                result.addAndGet(prime + result.get() + (property.getName() != null ? property.getName().hashCode() : 1));
+                hashCodeBuilder.append(property.getName());
                 // and the property value
-                Object storedValue = property.getStoredValue();
-                if (storedValue != null) {
-                    result.addAndGet(prime + result.get() + storedValue.hashCode());
-                } // else do nothing
+                hashCodeBuilder.append(property.getStoredValue());
             }
         }, null);
-        return result.get();
+        return hashCodeBuilder.toHashCode();
     }
 
     @Override
@@ -642,7 +645,22 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
         if (getClass() != obj.getClass()) {
             return false;
         }
-        return this.hashCode() == obj.hashCode();
+        PropertiesImpl other = (PropertiesImpl) obj;
+        return computeEqualityWith(this, other);
+    }
+
+    boolean computeEqualityWith(Properties current, Properties other) {
+        final EqualsBuilder equalsBuilder = new EqualsBuilder();
+        List<NamedThing> properties = current.getProperties();
+        for (NamedThing nt : properties) {
+            if (nt instanceof PropertiesImpl) {
+                equalsBuilder.append(nt, other.getProperties(nt.getName()));
+            } else if (nt instanceof Property<?>) {
+                equalsBuilder.append(nt, other.getValuedProperty(nt.getName()));
+            }
+        }
+        return equalsBuilder.isEquals();
+
     }
 
 }
