@@ -1,11 +1,11 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.avro.SchemaBuilder;
@@ -17,7 +17,14 @@ public class JsonDataGeneratorTest {
     @Test
     public void genData() throws Exception {
         String jsonStr = JsonSchemaUtilTest.readJson("FullExampleJsonData.json");
-        FullExampleProperties properties = new FullExampleProperties("properties");
+        FullExampleProperties properties = createASetupFullExampleProperties();
+
+        JsonDataGenerator generator = new JsonDataGenerator();
+        assertEquals(jsonStr, generator.genData(properties).toString());
+    }
+
+    static public FullExampleProperties createASetupFullExampleProperties() throws ParseException {
+        FullExampleProperties properties = (FullExampleProperties) new FullExampleProperties("properties").init();
         properties.stringProp.setValue("abc");
         properties.integerProp.setValue(1);
         properties.hideStringPropProp.setValue(false);
@@ -36,9 +43,7 @@ public class JsonDataGeneratorTest {
                 .asList(new FullExampleProperties.TableProperties.ColEnum[] { FullExampleProperties.TableProperties.ColEnum.FOO,
                         FullExampleProperties.TableProperties.ColEnum.BAR, FullExampleProperties.TableProperties.ColEnum.FOO }));
         properties.tableProp.colListString.setValue(Arrays.asList(new String[] { "a", "b", "c" }));
-
-        JsonDataGenerator generator = new JsonDataGenerator();
-        assertEquals(jsonStr, generator.genData(properties).toString());
+        return properties;
     }
 
 }

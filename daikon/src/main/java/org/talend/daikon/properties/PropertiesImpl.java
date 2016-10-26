@@ -17,10 +17,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
@@ -332,13 +333,16 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     @Override
     public void accept(AnyPropertyVisitor visitor, Properties parent) {
-        Set<Properties> visited = new HashSet();
+        // uses a set that uses reference-equality instead of instance-equality to avoid stackoveflow with hashcode() using a
+        // visitor.
+        Set<Properties> visited = Collections.newSetFromMap(new IdentityHashMap<Properties, Boolean>());
         acceptInternal(visitor, parent, visited);
     }
 
     private void acceptInternal(AnyPropertyVisitor visitor, Properties parent, Set<Properties> visited) {
-        if (visited.contains(this))
+        if (visited.contains(this)) {
             return;
+        }
         visited.add(this);
         List<NamedThing> properties = getProperties();
         for (NamedThing nt : properties) {
@@ -602,6 +606,43 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
             sb.append("\n" + form.toStringIndent(indent + 6));
         }
         return sb.toString();
+    }
+
+    /**
+     * hashcode is compute with the recursive Property name and values.
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        final AtomicInteger result = new AtomicInteger(1);
+        accept(new PropertyVisitor() {
+
+            @Override
+            public void visit(Property property, Properties parent) {
+                // use the property name
+                result.addAndGet(prime + result.get() + (property.getName() != null ? property.getName().hashCode() : 1));
+                // and the property value
+                Object storedValue = property.getStoredValue();
+                if (storedValue != null) {
+                    result.addAndGet(prime + result.get() + storedValue.hashCode());
+                } // else do nothing
+            }
+        }, null);
+        return result.get();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return this.hashCode() == obj.hashCode();
     }
 
 }

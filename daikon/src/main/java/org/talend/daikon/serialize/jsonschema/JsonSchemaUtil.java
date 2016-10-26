@@ -16,11 +16,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class JsonSchemaUtil {
 
-    static final String TAG_JSON_SCHEMA = "jsonSchema";
+    public static final String TAG_JSON_SCHEMA = "jsonSchema";
 
-    static final String TAG_JSON_UI = "uiSchema";
+    public static final String TAG_JSON_UI = "uiSchema";
 
-    static final String TAG_JSON_DATA = "properties";
+    public static final String TAG_JSON_DATA = "properties";
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -36,11 +36,13 @@ public class JsonSchemaUtil {
      * fills the initalInstance with the properties from the Json-data String
      */
     public static <T extends Properties> T fromJson(String jsonStr, T initialInstance) {
+        JsonNode jsonNode;
         try {
-            JsonNode jsonNode = mapper.readTree(jsonStr);
+            jsonNode = mapper.readTree(jsonStr);
             return fromJson(jsonNode, initialInstance);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException
+                | ClassNotFoundException e) {
+            throw TalendRuntimeException.createUnexpectedException(e);
         }
     }
 
@@ -65,11 +67,11 @@ public class JsonSchemaUtil {
         return resolver.resolveJson((ObjectNode) jsonData, initialInstance);
     }
 
-    public static String toJson(Properties cp, boolean hasWidget) {
+    public static String toJson(Properties cp) {
         ObjectNode objectNode = mapper.createObjectNode();
         objectNode.set(TAG_JSON_SCHEMA, jsonSchemaGenerator.genSchema(cp));
         objectNode.set(TAG_JSON_DATA, jsonDataGenerator.genData(cp));
-        if (hasWidget) {
+        if (!cp.getForms().isEmpty()) {
             objectNode.set(TAG_JSON_UI, uiSchemaGenerator.genWidget(cp));
         }
         return objectNode.toString();

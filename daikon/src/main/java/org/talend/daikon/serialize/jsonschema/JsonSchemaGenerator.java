@@ -19,16 +19,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class JsonSchemaGenerator {
 
-    protected <T extends Properties> ObjectNode genSchema(T properties) {
-        return processTProperties(properties, properties.getClass().getName());
+    protected ObjectNode genSchema(Properties properties) {
+        return processTProperties(properties);
     }
 
-    private ObjectNode processTProperties(Properties cProperties, String className) {
+    private ObjectNode processTProperties(Properties cProperties) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
-        if (className != null) {
-            schema.put(JsonSchemaConstants.CUSTOM_TAG_ID, className);
-        }
+        // if (className != null) {
+        // schema.put(JsonSchemaConstants.CUSTOM_TAG_ID, className);
+        // }
         schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
 
         List<Property> propertyList = getSubProperty(cProperties);
@@ -42,7 +42,7 @@ public class JsonSchemaGenerator {
         List<Properties> propertiesList = getSubProperties(cProperties);
         for (Properties properties : propertiesList) {
             String name = properties.getName();
-            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties, null));
+            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties));
         }
         return schema;
     }
@@ -69,7 +69,8 @@ public class JsonSchemaGenerator {
         } else {
             schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
             if (Date.class.getName().equals(property.getType())) {
-                schema.put(JsonSchemaConstants.TAG_FORMAT, "date-time");//Do not support other format for date till Property support it
+                schema.put(JsonSchemaConstants.TAG_FORMAT, "date-time");// Do not support other format for date till Property
+                                                                        // support it
             }
         }
         return schema;

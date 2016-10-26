@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.talend.daikon.exception.TalendRuntimeException;
 
@@ -57,7 +58,7 @@ public class SerializerDeserializer {
 
     private static class CustomReader implements JsonReader.JsonClassReaderEx {
 
-        Map<PostDeserializeHandler, Integer> postDeserializeHandlers = new HashMap<>();
+        Map<PostDeserializeHandler, Integer> postDeserializeHandlers;
 
         CustomReader(Map<PostDeserializeHandler, Integer> handlers) {
             postDeserializeHandlers = handlers;
@@ -165,8 +166,9 @@ public class SerializerDeserializer {
 
         d.object = (T) JsonReader.jsonToJava(serialized, args);
         boolean migrated = false;
-        for (PostDeserializeHandler obj : postDeserializeHandlers.keySet()) {
-            migrated |= obj.postDeserialize(postDeserializeHandlers.get(obj), setup, persistent);
+        for (Entry<PostDeserializeHandler, Integer> entry : postDeserializeHandlers.entrySet()) {
+            // use Entry key because the hash code may have changed
+            migrated |= entry.getKey().postDeserialize(entry.getValue(), setup, persistent);
         }
         d.migrated = migrated || migratedDeleted[0];
         return d;
