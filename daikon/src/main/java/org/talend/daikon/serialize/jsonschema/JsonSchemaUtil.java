@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
+import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.properties.Properties;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * Util for round trip between ComponentProperties and JSONSchema/UISchema/JSONData
  */
-public class JsonUtil {
+public class JsonSchemaUtil {
 
     static final String TAG_JSON_SCHEMA = "jsonSchema";
 
@@ -29,35 +30,39 @@ public class JsonUtil {
 
     private static final JsonDataGenerator jsonDataGenerator = new JsonDataGenerator();
 
-    private static final JsonResolver resolver = new JsonResolver();
+    private static final JsonPropertiesResolver resolver = new JsonPropertiesResolver();
 
-    public static Properties fromJson(String jsonStr) {
+    /**
+     * fills the initalInstance with the properties from the Json-data String
+     */
+    public static <T extends Properties> T fromJson(String jsonStr, T initialInstance) {
         try {
             JsonNode jsonNode = mapper.readTree(jsonStr);
-            return fromJson(jsonNode);
+            return fromJson(jsonNode, initialInstance);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static Properties fromJson(InputStream jsonIS) {
+    /**
+     * fills the initalInstance with the properties from the Json-data intput stream
+     */
+    public static Properties fromJson(InputStream jsonIS, Properties initialInstance) {
         try {
             JsonNode jsonNode = mapper.readTree(jsonIS);
-            return fromJson(jsonNode);
+            return fromJson(jsonNode, initialInstance);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static Properties fromJson(JsonNode jsonNode) throws NoSuchMethodException, IOException, InstantiationException,
-            IllegalAccessException, InvocationTargetException, ClassNotFoundException {
-        JsonNode jsonSchema = jsonNode.get(TAG_JSON_SCHEMA);
-        JsonNode jsonData = jsonNode.get(TAG_JSON_DATA);
-        if (jsonSchema == null || jsonData == null) {
-            throw new RuntimeException(TAG_JSON_SCHEMA + " or " + TAG_JSON_DATA + " should not be null");
+    private static <P extends Properties> P fromJson(JsonNode jsonData, P initialInstance) throws NoSuchMethodException,
+            IOException, InstantiationException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
+        if (jsonData == null) {
+            throw TalendRuntimeException
+                    .createUnexpectedException(TAG_JSON_SCHEMA + " or " + TAG_JSON_DATA + " should not be null");
         }
-        Properties root = resolver.resolveJson((ObjectNode) jsonSchema, (ObjectNode) jsonData);
-        return root;
+        return resolver.resolveJson((ObjectNode) jsonData, initialInstance);
     }
 
     public static String toJson(Properties cp, boolean hasWidget) {

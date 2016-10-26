@@ -8,7 +8,7 @@ public class UiSchemaGeneratorTest {
 
     @Test
     public void genWidget() throws Exception {
-        String jsonStr = JsonUtilTest.readJson("FullExampleUiSchema.json");
+        String jsonStr = JsonSchemaUtilTest.readJson("FullExampleUiSchema.json");
         FullExampleProperties properties = new FullExampleProperties("properties");
         properties.init();
         UiSchemaGenerator generator = new UiSchemaGenerator();

@@ -8,7 +8,7 @@ public class JsonSchemaGeneratorTest {
 
     @Test
     public void genSchema() throws Exception {
-        String jsonStr = JsonUtilTest.readJson("FullExampleJsonSchema.json");
+        String jsonStr = JsonSchemaUtilTest.readJson("FullExampleJsonSchema.json");
         FullExampleProperties properties = new FullExampleProperties("properties");
         properties.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();

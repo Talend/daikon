@@ -1,11 +1,19 @@
 package org.talend.daikon.serialize;
 
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import com.cedarsoftware.util.io.JsonWriter;
+
+import shaded.org.apache.commons.io.IOUtils;
 
 public class SerializeDeserializeTest {
 
@@ -91,4 +99,21 @@ public class SerializeDeserializeTest {
         deser.object.checkMigrate();
     }
 
+    @Test
+    public void testJsonIoWithNoTypeAndStream() throws IOException {
+        PersistenceTestObject.testMigrate = false;
+        PersistenceTestObject pt = new PersistenceTestObject();
+        pt.setup();
+        final Map<String, Object> jsonIoOptions = new HashMap<>();
+        jsonIoOptions.put(JsonWriter.TYPE, false);
+
+        String ser = SerializerDeserializer.toSerialized(pt, SerializerDeserializer.PERSISTENT, jsonIoOptions);
+        LOGGER.info(ser);
+
+        try (InputStream is = IOUtils.toInputStream(ser, "UTF-8")) {
+            SerializerDeserializer.Deserialized<PersistenceTestObject> deser = SerializerDeserializer.fromSerialized(is,
+                    PersistenceTestObject.class, null, true);
+            pt.checkEqual(deser.object);
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.text.DateFormat;
@@ -16,17 +15,16 @@ import org.talend.daikon.avro.SchemaConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class JsonResolverTest {
+public class JsonPropertiesResolverTest {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void resolveJson() throws Exception {
-        String jsonSchemaStr = JsonUtilTest.readJson("FullExampleJsonSchema.json");
-        String jsonDataStr = JsonUtilTest.readJson("FullExampleJsonData.json");
-        JsonResolver resolver = new JsonResolver();
-        FullExampleProperties properties = (FullExampleProperties) resolver
-                .resolveJson((ObjectNode) mapper.readTree(jsonSchemaStr), (ObjectNode) mapper.readTree(jsonDataStr));
+        String jsonDataStr = JsonSchemaUtilTest.readJson("FullExampleJsonData.json");
+        JsonPropertiesResolver resolver = new JsonPropertiesResolver();
+        FullExampleProperties properties = (FullExampleProperties) resolver.resolveJson((ObjectNode) mapper.readTree(jsonDataStr),
+                new FullExampleProperties("").init());
 
         assertEquals("abc", properties.stringProp.getValue());
         assertThat(1, is(equalTo(properties.integerProp.getValue())));

@@ -103,15 +103,35 @@ public class TalendRuntimeException extends RuntimeException {
      * Called when something unexpected happens.
      * 
      * @param cause the unexpected exception.
+     * @deprecated cause the IDEs do not know this throws an exception please use {@link #createUnexpectedException(Throwable)}
      */
+    @Deprecated
     public static void unexpectedException(Throwable cause) {
         // TODO - add some logging here
         throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, cause);
     }
 
+    /**
+     * Called when something unexpected happens.
+     * 
+     * @param cause the unexpected exception.
+     * @deprecated cause the IDEs do not know this throws an exception please use {@link #createUnexpectedException(String)}
+     */
+    @Deprecated
     public static void unexpectedException(String message) {
         // TODO - add some logging here
         throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
+                ExceptionContext.build().put(ExceptionContext.KEY_MESSAGE, message));
+    }
+
+    public static RuntimeException createUnexpectedException(Throwable cause) {
+        // TODO - add some logging here
+        return new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, cause);
+    }
+
+    public static TalendRuntimeException createUnexpectedException(String message) {
+        // TODO - add some logging here
+        return new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION,
                 ExceptionContext.build().put(ExceptionContext.KEY_MESSAGE, message));
     }
 
@@ -266,7 +286,7 @@ public class TalendRuntimeException extends RuntimeException {
          * 
          * @throws IllegalArgumentException if the context values set do not match the expected context
          */
-        public void throwIt() {
+        public void throwIt() throws TalendRuntimeException {
             throw create();
         }
 

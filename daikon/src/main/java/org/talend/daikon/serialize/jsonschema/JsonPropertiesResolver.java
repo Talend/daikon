@@ -3,7 +3,6 @@ package org.talend.daikon.serialize.jsonschema;
 import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -18,18 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class JsonResolver {
+public class JsonPropertiesResolver {
 
-    protected Properties resolveJson(ObjectNode jsonSchema, ObjectNode jsonData) throws NoSuchMethodException, IOException,
-            InstantiationException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
-        JsonNode classNameNode = jsonSchema.get(JsonSchemaConstants.CUSTOM_TAG_ID);
-        Class<?> aClass = Class.forName(classNameNode.textValue());
-        Constructor<?> declaredConstructor = aClass.getDeclaredConstructor(String.class);
-        Properties cProperties = (Properties) declaredConstructor.newInstance("root");
-        return resolveJson(jsonData, cProperties);
-    }
-
-    private Properties resolveJson(ObjectNode jsonData, Properties cProperties) throws IOException, ClassNotFoundException,
+    public <P extends Properties> P resolveJson(ObjectNode jsonData, P cProperties) throws IOException, ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
 
         List<Property> propertyList = getSubProperty(cProperties);

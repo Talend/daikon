@@ -1,15 +1,21 @@
 package org.talend.daikon.serialize;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.talend.daikon.exception.TalendRuntimeException;
+
 import com.cedarsoftware.util.io.JsonObject;
 import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
+import com.cedarsoftware.util.io.JsonWriter.JsonClassWriterEx;
 import com.cedarsoftware.util.io.ObjectResolver;
+
+import shaded.org.apache.commons.io.IOUtils;
 
 /**
  * Handles serialization and deserialization to/from a String and supports migration of serialized data to newer
@@ -63,12 +69,14 @@ public class SerializerDeserializer {
             JsonObject<String, Object> jsonObject = (JsonObject<String, Object>) jOb;
             Object versionObj = jsonObject.get(VERSION_FIELD);
             long version = 0;
-            if (versionObj != null)
+            if (versionObj != null) {
                 version = ((Long) versionObj).longValue();
+            }
             resolver.traverseFields(stack, (JsonObject<String, Object>) jOb);
             Object target = ((JsonObject<String, Object>) jOb).getTarget();
-            if (target instanceof PostDeserializeHandler)
+            if (target instanceof PostDeserializeHandler) {
                 postDeserializeHandlers.put((PostDeserializeHandler) target, (int) version);
+            }
             return target;
         }
     }
@@ -83,8 +91,9 @@ public class SerializerDeserializer {
 
         @Override
         public void fieldMissing(Object object, String fieldName, Object value) {
-            if (!DeserializeDeletedFieldHandler.class.isAssignableFrom(object.getClass()))
+            if (!DeserializeDeletedFieldHandler.class.isAssignableFrom(object.getClass())) {
                 return;
+            }
             Boolean migrated = ((DeserializeDeletedFieldHandler) object).deletedField(fieldName, value);
             if (migrated) {
                 migratedDeleted[0] = true;
@@ -117,6 +126,23 @@ public class SerializerDeserializer {
      */
     public static <T> Deserialized<T> fromSerialized(String serialized, Class<T> serializedClass, PostDeserializeSetup setup,
             boolean persistent) {
+        try (InputStream is = IOUtils.toInputStream(serialized, "UTF-8")) {
+            return fromSerialized(is, serializedClass, setup, persistent);
+        } catch (IOException e) {
+            throw TalendRuntimeException.createUnexpectedException(e);
+        }
+    }
+
+    /**
+     * Returns a materialized object from a previously serialized JSON String.
+     *
+     * @param serialized created by {@link #toSerialized(Object object, boolean persistent)}.
+     * @param serializedClass the class of the object being deserialized
+     * @param persistent see {@link #PERSISTENT} and {@link #TRANSIENT}.
+     * @return a {@code Properties} object represented by the {@code serialized} value.
+     */
+    public static <T> Deserialized<T> fromSerialized(InputStream serialized, Class<T> serializedClass, PostDeserializeSetup setup,
+            boolean persistent) {
 
         // serializedClass is not used, but we have it only for the generic type support so the caller
         // can avoid casting.
@@ -132,6 +158,10 @@ public class SerializerDeserializer {
         Map<String, Object> args = new HashMap<>();
         args.put(JsonReader.CUSTOM_READER_MAP, readerMap);
         args.put(JsonReader.MISSING_FIELD_HANDLER, new MissingFieldHandler(migratedDeleted));
+        // in case the json has not type we can try to instantiate the expected type.
+        if (serializedClass != null) {
+            args.put(JsonReader.UNKNOWN_OBJECT, serializedClass.getCanonicalName());
+        }
 
         d.object = (T) JsonReader.jsonToJava(serialized, args);
         boolean migrated = false;
@@ -153,18 +183,30 @@ public class SerializerDeserializer {
      * Returns a serialized version of the specified object.
      *
      * @return the serialized {@code String}, use {@link #fromSerialized(String, Class, PostDeserializeSetup, boolean)} to
-     * materialize the
-     * object.
+     *         materialize the
+     *         object.
      */
     public static <T> String toSerialized(T object, boolean persistent) {
+        return toSerialized(object, persistent, null);
+    }
+
+    /**
+     * Returns a serialized version of the specified object.
+     *
+     * @return the serialized {@code String}, use {@link #fromSerialized(String, Class, PostDeserializeSetup, boolean)} to
+     *         materialize the
+     *         object.
+     */
+    public static <T> String toSerialized(T object, boolean persistent, Map<String, Object> jsonIoOptions) {
         JsonWriter.JsonClassWriterEx writer = new JsonWriter.JsonClassWriterEx() {
 
             @Override
             public void write(Object o, boolean showType, Writer output, Map<String, Object> args) throws IOException {
                 JsonWriter writer = JsonWriter.JsonClassWriterEx.Support.getWriter(args);
                 int version = ((SerializeSetVersion) o).getVersionNumber();
-                if (version > 0)
+                if (version > 0) {
                     output.write("\"" + VERSION_FIELD + "\":" + version + ",");
+                }
                 writer.writeObject(o, false, true);
             }
         };
@@ -174,6 +216,19 @@ public class SerializerDeserializer {
 
         final Map<String, Object> args = new HashMap<>();
         args.put(JsonWriter.CUSTOM_WRITER_MAP, writerMap);
+        if (jsonIoOptions != null) {
+            Map<String, Object> additionalOption = new HashMap<>(jsonIoOptions);
+            // check for CUSTOM_WRITER_MAP
+            if (additionalOption.containsKey(JsonWriter.CUSTOM_WRITER_MAP)) {
+                Map<Class, JsonWriter.JsonClassWriterEx> additionalWriterMap = (Map<Class, JsonClassWriterEx>) additionalOption
+                        .get(JsonWriter.CUSTOM_WRITER_MAP);
+                // remove the object from the additionalOption
+                additionalOption.remove(additionalWriterMap);
+                // add the map elements to our own map
+                writerMap.putAll(additionalWriterMap);
+            }
+            args.putAll(jsonIoOptions);
+        }
 
         return JsonWriter.objectToJson(object, args);
     }

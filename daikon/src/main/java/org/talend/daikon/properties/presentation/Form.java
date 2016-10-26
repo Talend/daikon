@@ -107,7 +107,7 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
      */
     protected boolean refreshUI;
 
-    public Form() {
+    private Form() {// used for deserialization
     }
 
     /**

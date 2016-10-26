@@ -16,7 +16,7 @@ public class JsonDataGeneratorTest {
 
     @Test
     public void genData() throws Exception {
-        String jsonStr = JsonUtilTest.readJson("FullExampleJsonData.json");
+        String jsonStr = JsonSchemaUtilTest.readJson("FullExampleJsonData.json");
         FullExampleProperties properties = new FullExampleProperties("properties");
         properties.stringProp.setValue("abc");
         properties.integerProp.setValue(1);
