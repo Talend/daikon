@@ -26,9 +26,6 @@ public class JsonSchemaGenerator {
     private ObjectNode processTProperties(Properties cProperties) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
-        // if (className != null) {
-        // schema.put(JsonSchemaConstants.CUSTOM_TAG_ID, className);
-        // }
         schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
 
         List<Property> propertyList = getSubProperty(cProperties);
