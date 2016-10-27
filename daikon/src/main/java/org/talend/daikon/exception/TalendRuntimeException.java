@@ -286,7 +286,7 @@ public class TalendRuntimeException extends RuntimeException {
          * 
          * @throws IllegalArgumentException if the context values set do not match the expected context
          */
-        public void throwIt() throws TalendRuntimeException {
+        public void throwIt() {
             throw create();
         }
 
