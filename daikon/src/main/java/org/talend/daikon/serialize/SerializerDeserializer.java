@@ -1,5 +1,6 @@
 package org.talend.daikon.serialize;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -15,8 +16,6 @@ import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
 import com.cedarsoftware.util.io.JsonWriter.JsonClassWriterEx;
 import com.cedarsoftware.util.io.ObjectResolver;
-
-import shaded.org.apache.commons.io.IOUtils;
 
 /**
  * Handles serialization and deserialization to/from a String and supports migration of serialized data to newer
@@ -127,7 +126,7 @@ public class SerializerDeserializer {
      */
     public static <T> Deserialized<T> fromSerialized(String serialized, Class<T> serializedClass, PostDeserializeSetup setup,
             boolean persistent) {
-        try (InputStream is = IOUtils.toInputStream(serialized, "UTF-8")) {
+        try (InputStream is = new ByteArrayInputStream(serialized.getBytes("UTF-8"))) {
             return fromSerialized(is, serializedClass, setup, persistent);
         } catch (IOException e) {
             throw TalendRuntimeException.createUnexpectedException(e);
