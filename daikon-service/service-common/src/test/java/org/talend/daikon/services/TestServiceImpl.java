@@ -12,7 +12,13 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public String sayHiWithMyName(@PathVariable String name) {
+    public String sayHiWithMyName(String name) {
         return "Hi " + name;
     }
+
+    @Override
+    public String sayHiWithMyNameInImplementation(@PathVariable("name") String name) {
+        return "Hi from implementation: " + name;
+    }
+
 }

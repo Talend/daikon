@@ -16,4 +16,6 @@ public interface TestService {
     @RequestMapping(value = "/path/to/service/{name}", method = RequestMethod.GET)
     String sayHiWithMyName(@PathVariable("name") String name);
 
+    @RequestMapping(value = "/path/to/service/implementation/{name}", method = RequestMethod.GET)
+    String sayHiWithMyNameInImplementation(@PathVariable("name") String name);
 }
