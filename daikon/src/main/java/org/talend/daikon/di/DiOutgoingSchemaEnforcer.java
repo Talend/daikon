@@ -56,6 +56,17 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
      * This schema may contain di-specific properties
      */
     private final Schema designSchema;
+    
+    /**
+     * A {@link List} of design schema {@link Field}s
+     * It is stored as separate field to accelerate access to them 
+     */
+    private final List<Field> designFields;
+    
+    /**
+     * Number of fields in design schema
+     */
+    private final int designSchemaSize;
 
     /**
      * {@link IndexedRecord} currently wrapped by this enforcer. This can be swapped out for new data as long as
@@ -63,6 +74,23 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
      * schema. Runtime schema can't contain dynamic columns.
      */
     private IndexedRecord wrappedRecord;
+    
+    /**
+     * Actual schema of {@link IndexedRecord}. It is retrieved from first incoming {@link IndexedRecord}
+     * All subsequent records should have the same schema
+     */
+    private Schema runtimeSchema;
+    
+    /**
+     * A {@link List} of runtime schema {@link Field}s
+     * It is stored as separate field to accelerate access to them 
+     */
+    private List<Field> runtimeFields;
+    
+    /**
+     * Number of fields in runtime schema
+     */
+    private int runtimeSchemaSize;
     
     /**
      * Specifies whether design schema contains dynamic columns
@@ -106,6 +134,8 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
      */
     public DiOutgoingSchemaEnforcer(Schema designSchema, boolean byIndex) {
         this.designSchema = designSchema;
+        designFields = designSchema.getFields();
+        designSchemaSize = designFields.size();
         this.byIndex = byIndex;
 
         hasDynamic = AvroUtils.isIncludeAllFields(designSchema);
@@ -138,7 +168,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
      * wrapped. Then these values could be reused for all subsequent records
      */
     private void processFirstRecord() {
-        
+        setRuntimeSchema();
         if (hasDynamic) {
             computeDynamicColumnsNumber();
             createDynamicColumnsSchema();
@@ -146,6 +176,15 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
         
     }
     
+    /**
+     * Sets runtime schema, its fields and size
+     */
+    private void setRuntimeSchema() {
+        runtimeSchema = wrappedRecord.getSchema();
+        runtimeFields = runtimeSchema.getFields();
+        runtimeSchemaSize = runtimeFields.size();
+    }
+
     /**
      * Creates schema, which contains only dynamic columns.
      * It is used to create routines.system.DynamicMetadata.
@@ -188,6 +227,8 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
      * {@inheritDoc}
      * 
      * Could be called only after first record was wrapped
+     * 
+     * @param i index of required value. Could be from 0 to designSchemaSize-1
      */
     @Override
     public Object get(int i) {
@@ -208,11 +249,11 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
         }
 
         // We should never ask for an index outside of the outgoing schema.
-        if (i >= designSchema.getFields().size()) {
+        if (i >= designSchemaSize) {
             throw new ArrayIndexOutOfBoundsException(i);
         }
 
-        Field outField = designSchema.getFields().get(i);
+        Field outField = designFields.get(i);
         Field wrappedField;
 
         // If we are not asking for the dynamic column, then get the input field that corresponds to the position.
@@ -226,13 +267,14 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
                 wrappedIndex = i;
             }
             // If the wrappedIndex is out of bounds, then return the default value.
-            if (wrappedIndex >= wrappedRecord.getSchema().getFields().size()) {
+            // TODO(igonchar): how could it be?
+            if (wrappedIndex >= runtimeSchemaSize) {
                 return transformValue(null, outField);
             }
-            wrappedField = wrappedRecord.getSchema().getFields().get(wrappedIndex);
+            wrappedField = runtimeFields.get(wrappedIndex);
         } else {
             // Matching fields by name.
-            wrappedField = wrappedRecord.getSchema().getField(outField.name());
+            wrappedField = runtimeSchema.getField(outField.name());
             if (wrappedField == null) {
                 return transformValue(null, outField);
             }
@@ -282,7 +324,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
      * It could be computed only after first record was wrapped. However, it should be same for all records
      */
     private void computeDynamicColumnsNumber() {
-        dynamicColumns = wrappedRecord.getSchema().getFields().size() - designSchema.getFields().size();
+        dynamicColumns = runtimeSchemaSize - designSchemaSize;
         if (dynamicColumns < 0) {
             throw new UnsupportedOperationException(
                     "The incoming data does not have sufficient columns to create a dynamic column."); //$NON-NLS-1$
@@ -296,7 +338,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
     private Map<String, Object> getDynamicMapByIndex() {
         Map<String, Object> result = new HashMap<>();
         for (int j = 0; j < dynamicColumns; j++) {
-            result.put(wrappedRecord.getSchema().getFields().get(dynamicColumnPosition + j).name(),
+            result.put(runtimeFields.get(dynamicColumnPosition + j).name(),
                     wrappedRecord.get(dynamicColumnPosition + j));
         }
         return result;
@@ -309,7 +351,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
     private List<Schema.Field> getDynamicSchemaByIndex() {
         List<Schema.Field> fields = new ArrayList<>();
         for (int j = 0; j < dynamicColumns; j++) {
-            Schema.Field se = wrappedRecord.getSchema().getFields().get(dynamicColumnPosition + j);
+            Schema.Field se = runtimeFields.get(dynamicColumnPosition + j);
             Schema.Field field = new Schema.Field(se.name(), se.schema(), se.doc(), se.defaultVal());
             Map<String, Object> fieldProperties = se.getObjectProps();
             for (String propName : fieldProperties.keySet()) {
@@ -331,7 +373,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
         // Lazy initialization of source position by name.
         if (dynamicColumnSources == null) {
             dynamicColumnSources = new HashMap<>();
-            for (Schema.Field wrappedField : wrappedRecord.getSchema().getFields()) {
+            for (Schema.Field wrappedField : runtimeFields) {
                 Schema.Field outField = designSchema.getField(wrappedField.name());
                 if (outField == null) {
                     dynamicColumnSources.put(wrappedField.name(), wrappedField.pos());
@@ -353,11 +395,10 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
     private List<Schema.Field> getDynamicSchemaByName() {
         List<Schema.Field> fields = new ArrayList<>();
         List<String> designColumnsName = new ArrayList<>();
-        for (Schema.Field se : designSchema.getFields()) {
+        for (Schema.Field se : designFields) {
             designColumnsName.add(se.name());
         }
-        Schema runtimeSchema = wrappedRecord.getSchema();
-        for (Schema.Field se : runtimeSchema.getFields()) {
+        for (Schema.Field se : runtimeFields) {
             if (designColumnsName.contains(se.name())) {
                 continue;
             }
