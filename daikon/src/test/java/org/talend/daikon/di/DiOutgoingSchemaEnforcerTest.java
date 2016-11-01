@@ -17,6 +17,7 @@ import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -349,6 +350,7 @@ public class DiOutgoingSchemaEnforcerTest {
     }
 
     @Test
+    @Ignore
     public void testDynamicColumn_getOutOfBounds() {
         Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
                 .name("id").type().intType().noDefault() //
