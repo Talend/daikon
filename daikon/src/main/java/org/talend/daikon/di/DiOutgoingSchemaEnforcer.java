@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.di;
 
+import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,7 +74,7 @@ import org.talend.daikon.avro.converter.SingleColumnIndexedRecordConverter;
  * See, component_util_indexedrecord_to_rowstruct.javajet. Note, get() is called for each field in Row2Struct. When user specified dynamic column,
  * Row2Struct will contain one more field than desigh avro schema.
  */
-public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstants {
+public class DiOutgoingSchemaEnforcer implements IndexedRecord {
 
     /**
      * Denotes column retrieving mode: by index or by name
