@@ -1,3 +1,15 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.daikon.di;
 
 import java.util.ArrayList;
@@ -8,6 +20,9 @@ import org.talend.daikon.avro.AvroUtils;
 
 /**
  * {@link DynamicIndexMapper} implementation, which match fields according their indexes
+ * 
+ * When design schema and runtime schema have fields in different order or when there are gaps between non dynamic
+ * fields, {@link DynamicIndexMapperByName} should be used instead
  */
 class DynamicIndexMapperByIndex implements DynamicIndexMapper {
 
