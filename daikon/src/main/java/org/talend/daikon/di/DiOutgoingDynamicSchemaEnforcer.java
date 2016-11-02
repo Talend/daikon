@@ -12,12 +12,9 @@
 // ============================================================================
 package org.talend.daikon.di;
 
-import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
 import static org.talend.daikon.di.IndexMapper.DYNAMIC;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +23,6 @@ import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
-import org.talend.daikon.avro.SchemaConstants;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to transform output avro-styled values to the exact
@@ -41,23 +37,7 @@ import org.talend.daikon.avro.SchemaConstants;
  * <p>
  * It extends {@link DiOutgoingSchemaEnforcer} and provides handling for dynamic fields
  */
-public class DiOutgoingDynamicSchemaEnforcer {
-
-    /**
-     * {@link Schema} which was specified by user during setting component properties (at design time)
-     * This schema may contain di-specific properties
-     */
-    private final Schema designSchema;
-
-    /**
-     * A {@link List} of design schema {@link Field}s
-     */
-    private final List<Field> designFields;
-
-    /**
-     * Number of fields in design schema
-     */
-    private final int designSchemaSize;
+public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
 
     /**
      * A {@link List} of runtime schema {@link Field}s
@@ -81,20 +61,6 @@ public class DiOutgoingDynamicSchemaEnforcer {
     private Schema dynamicFieldsSchema;
 
     /**
-     * Maps design field indexes to runtime field indexes.
-     * Design indexes are keys of this array and runtime indexed are values.
-     * -1 value means this index corresponds to dynamic field
-     */
-    private final int[] indexMap;
-
-    /**
-     * {@link IndexedRecord} currently wrapped by this enforcer. This can be swapped out for new data as long as
-     * they keep the same schema. This {@link IndexedRecord} contains another {@link Schema} which is called actual or runtime
-     * schema.
-     */
-    private IndexedRecord wrappedRecord;
-
-    /**
      * Constructor sets design schema, its fields and size, runtime schema fields and values related to dynamic fields handling
      * 
      * @param designSchema design schema (specified by user and provided by Di Studio)
@@ -102,13 +68,10 @@ public class DiOutgoingDynamicSchemaEnforcer {
      * @param indexMapper tool, which computes correspondence between design and runtime fields
      */
     public DiOutgoingDynamicSchemaEnforcer(Schema designSchema, Schema runtimeSchema, DynamicIndexMapper indexMapper) {
-        this.designSchema = designSchema;
-        this.designFields = designSchema.getFields();
-        this.designSchemaSize = designFields.size();
+        super(designSchema, indexMapper);
 
         this.runtimeFields = runtimeSchema.getFields();
 
-        this.indexMap = indexMapper.computeIndexMap();
         this.dynamicFieldsIndexes = indexMapper.computeDynamicFieldsIndexes();
 
         if (AvroUtils.isIncludeAllFields(designSchema)) {
@@ -120,26 +83,13 @@ public class DiOutgoingDynamicSchemaEnforcer {
         createDynamicFieldsSchema(indexMapper);
     }
 
-    // TODO move to parent class
-    // @Override
-    public Schema getSchema() {
-        return designSchema;
-    }
-
-    // @Override
+    /**
+     * Returns dynamic fields schema
+     * 
+     * @return dynamic fields schema
+     */
     public Schema getDynamicFieldsSchema() {
         return dynamicFieldsSchema;
-    }
-
-    /**
-     * Wraps {@link IndexedRecord}
-     * 
-     * @param record {@link IndexedRecord} to be wrapped
-     */
-    // TODO move to parent class
-    // @Override
-    public void setWrapped(IndexedRecord record) {
-        wrappedRecord = record;
     }
 
     /**
@@ -151,7 +101,7 @@ public class DiOutgoingDynamicSchemaEnforcer {
      */
     // @Override
     public Object get(int pojoIndex) {
-        if (pojoIndex > designSchemaSize) {
+        if (0 > pojoIndex || pojoIndex > designSchemaSize) {
             throw new IndexOutOfBoundsException("index should be from 0 to design schema size, but was " + pojoIndex);
         }
 
@@ -182,39 +132,6 @@ public class DiOutgoingDynamicSchemaEnforcer {
             dynamicValues.put(dynamicFieldName, transformedValue);
         }
         return dynamicValues;
-    }
-
-    /**
-     * Transforms record column value from Avro type to Talend type
-     * 
-     * @param value record column value, which should be transformed into Talend compatible value.
-     * It can be null when null
-     * corresponding wrapped field.
-     * @param designField design field, it should contain information about value's Talend type. It mustn't be null
-     */
-    // TODO: move it to parent class
-    private Object transformValue(Object value, Field designField) {
-
-        if (null == value) {
-            return null;
-        }
-
-        String talendType = designField.getProp(TALEND6_COLUMN_TALEND_TYPE);
-        String javaClass = AvroUtils.unwrapIfNullable(designField.schema()).getProp(SchemaConstants.JAVA_CLASS_FLAG);
-
-        // TODO(rskraba): A full list of type conversion to coerce to Talend-compatible types.
-        if ("id_Short".equals(talendType)) {
-            return value instanceof Number ? ((Number) value).shortValue() : Short.parseShort(String.valueOf(value));
-        } else if ("id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) {
-            return value instanceof Date ? value : new Date((Long) value);
-        } else if ("id_Byte".equals(talendType)) {
-            return value instanceof Number ? ((Number) value).byteValue() : Byte.parseByte(String.valueOf(value));
-        } else if ("id_Character".equals(talendType) || "java.lang.Character".equals(javaClass)) {
-            return value instanceof Character ? value : ((String) value).charAt(0);
-        } else if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {
-            return value instanceof BigDecimal ? value : new BigDecimal(String.valueOf(value));
-        }
-        return value;
     }
 
     /**

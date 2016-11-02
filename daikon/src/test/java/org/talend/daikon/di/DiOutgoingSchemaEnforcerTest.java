@@ -1,499 +1,217 @@
 package org.talend.daikon.di;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Map;
 
 import org.apache.avro.Schema;
+import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
-import org.talend.daikon.avro.converter.SingleColumnIndexedRecordConverter;
 
 /**
- * Unit tests for {DiOutgoingSchemaEnforcer}.
+ * Unit-tests for {@link DiOutgoingSchemaEnforcer} class
  */
 @SuppressWarnings("nls")
 public class DiOutgoingSchemaEnforcerTest {
 
     /**
+     * Runtime {@link Schema} instance, which is used as argument in tests
+     */
+    private static Schema runtimeSchema;
+    
+    /**
+     * Design {@link Schema} instance, which is used as argument in tests
+     */
+    private static Schema talend6Schema;
+    
+    /**
      * An actual record that a component would like to be emitted, which may or may not contain enriched schema
      * information.
      */
-    private IndexedRecord componentRecord;
+    private static IndexedRecord record;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    @Before
-    public void setup() {
-        Schema componentSchema = SchemaBuilder.builder().record("Record").fields() //
+    /**
+     * Creates runtime schema, design schema and record, which is used as test arguments
+     */
+    @BeforeClass
+    public static void setup() {
+        runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
                 .name("id").type().intType().noDefault() //
                 .name("name").type().stringType().noDefault() //
                 .name("age").type().intType().noDefault() //
                 .name("valid").type().booleanType().noDefault() //
-                .name("address").type().stringType().noDefault() //
-                .name("comment").prop(DiSchemaConstants.TALEND6_COLUMN_LENGTH, "255").type().stringType().noDefault() //
-                .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date")
-                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType()
+                .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType() //
                 .noDefault() //
-                .endRecord();
-        componentRecord = new GenericData.Record(componentSchema);
-        componentRecord.put(0, 1);
-        componentRecord.put(1, "User");
-        componentRecord.put(2, 100);
-        componentRecord.put(3, true);
-        componentRecord.put(4, "Main Street");
-        componentRecord.put(5, "This is a record with six columns.");
-        componentRecord.put(6, new Date(1467170137872L));
-    }
-
-    @Test
-    public void testDynamicColumn_ByIndex_DynamicColumnAtStart() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("out1").type().intType().noDefault() //
-                .name("out2").type().stringType().noDefault() //
-                .name("out3").type().intType().noDefault() //
-                .name("out4").type().intType().noDefault() //
-                .endRecord();
-        talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
-
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, true);
-
-        enforcer.setWrapped(componentRecord);
-
-        Schema outgoingDynamicRuntimeSchema = enforcer.getOutgoingDynamicRuntimeSchema();
-        assertThat(outgoingDynamicRuntimeSchema.getFields().size(), is(3));
-        assertThat(outgoingDynamicRuntimeSchema.getField("id").schema().getType(), is(Schema.Type.INT));
-        assertThat(outgoingDynamicRuntimeSchema.getField("name").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("age").schema().getType(), is(Schema.Type.INT));
-
-        // Check the resolved fields.
-        assertThat(enforcer.get(1), is((Object) true));
-        assertThat(enforcer.get(2), is((Object) "Main Street"));
-        assertThat(enforcer.get(3), is((Object) "This is a record with six columns."));
-
-        // Check the dynamic field.
-        assertThat(enforcer.get(0), instanceOf(Map.class));
-        Map<?, ?> unresolved = (Map<?, ?>) enforcer.get(0);
-        assertThat(unresolved.keySet(), containsInAnyOrder((Object) "id", "name", "age"));
-        assertThat(unresolved, hasEntry((Object) "id", (Object) 1));
-        assertThat(unresolved, hasEntry((Object) "age", (Object) 100));
-        assertThat(unresolved, hasEntry((Object) "name", (Object) "User"));
-
-        Schema talend6SchemaWithoutDynamic = enforcer.getSchema();
-        assertThat(talend6SchemaWithoutDynamic.getFields(), hasSize(4));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(0).name(), is("out1"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(1).name(), is("out2"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(2).name(), is("out3"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(3).name(), is("out4"));
-    }
-
-    @Test
-    public void testDynamicColumn_ByIndex_DynamicColumnAtMiddle() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("out1").type().intType().noDefault() //
-                .name("out2").type().stringType().noDefault() //
-                .name("out3").type().intType().noDefault() //
-                .name("out4").type().intType().noDefault() //
-                .endRecord();
-        talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
-
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, true);
-
-        enforcer.setWrapped(componentRecord);
-
-        Schema outgoingDynamicRuntimeSchema = enforcer.getOutgoingDynamicRuntimeSchema();
-        assertThat(outgoingDynamicRuntimeSchema.getFields().size(), is(3));
-        assertThat(outgoingDynamicRuntimeSchema.getField("name").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("age").schema().getType(), is(Schema.Type.INT));
-        assertThat(outgoingDynamicRuntimeSchema.getField("valid").schema().getType(), is(Schema.Type.BOOLEAN));
-
-        // Check the resolved fields.
-        assertThat(enforcer.get(0), is((Object) 1));
-        assertThat(enforcer.get(2), is((Object) "Main Street"));
-        assertThat(enforcer.get(3), is((Object) "This is a record with six columns."));
-
-        // Check the dynamic field.
-        assertThat(enforcer.get(1), instanceOf(Map.class));
-        Map<?, ?> unresolved = (Map<?, ?>) enforcer.get(1);
-        assertThat(unresolved.keySet(), containsInAnyOrder((Object) "name", "age", "valid"));
-        assertThat(unresolved, hasEntry((Object) "name", (Object) "User"));
-        assertThat(unresolved, hasEntry((Object) "age", (Object) 100));
-        assertThat(unresolved, hasEntry((Object) "valid", (Object) true));
-
-        Schema talend6SchemaWithoutDynamic = enforcer.getSchema();
-        assertThat(talend6SchemaWithoutDynamic.getFields(), hasSize(4));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(0).name(), is("out1"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(1).name(), is("out2"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(2).name(), is("out3"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(3).name(), is("out4"));
-    }
-
-    @Test
-    public void testDynamicColumn_ByIndex_DynamicColumnAtEnd() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("out1").type().intType().noDefault() //
-                .name("out2").type().stringType().noDefault() //
-                .name("out3").type().intType().noDefault() //
-                .endRecord();
-        talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
-
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, true);
-
-        enforcer.setWrapped(componentRecord);
-
-        Schema outgoingDynamicRuntimeSchema = enforcer.getOutgoingDynamicRuntimeSchema();
-        assertThat(outgoingDynamicRuntimeSchema.getFields().size(), is(4));
-        assertThat(outgoingDynamicRuntimeSchema.getField("valid").schema().getType(), is(Schema.Type.BOOLEAN));
-        assertThat(outgoingDynamicRuntimeSchema.getField("address").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("comment").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("comment").getProp(DiSchemaConstants.TALEND6_COLUMN_LENGTH),
-                is((Object) "255"));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getType(), is(Schema.Type.UNION));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().size(), is(2));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().get(0).getType(),
-                is(Schema.Type.LONG));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN),
-                is("yyyy-MM-dd'T'HH:mm:ss'000Z'"));
-
-        // Check the resolved fields.
-        assertThat(enforcer.get(0), is((Object) 1));
-        assertThat(enforcer.get(1), is((Object) "User"));
-        assertThat(enforcer.get(2), is((Object) 100));
-
-        // Check the dynamic field.
-        assertThat(enforcer.get(3), instanceOf(Map.class));
-        Map<?, ?> unresolved = (Map<?, ?>) enforcer.get(3);
-        assertThat(unresolved.keySet(), containsInAnyOrder((Object) "valid", "address", "comment", "createdDate"));
-        assertThat(unresolved, hasEntry((Object) "valid", (Object) true));
-        assertThat(unresolved, hasEntry((Object) "address", (Object) "Main Street"));
-        assertThat(unresolved, hasEntry((Object) "comment", (Object) "This is a record with six columns."));
-        assertThat(unresolved, hasEntry((Object) "createdDate", (Object) new Date(1467170137872L)));
-
-        Schema talend6SchemaWithoutDynamic = enforcer.getSchema();
-        assertThat(talend6SchemaWithoutDynamic.getFields(), hasSize(3));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(0).name(), is("out1"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(1).name(), is("out2"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(2).name(), is("out3"));
-    }
-
-    @Test
-    public void testDynamicColumn_ByName_DynamicColumnAtStart() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
+                .endRecord(); //
+        
+        talend6Schema = SchemaBuilder.builder().record("Record").fields() //
                 .name("id").type().intType().noDefault() //
                 .name("name").type().stringType().noDefault() //
                 .name("age").type().intType().noDefault() //
-                .endRecord();
-        talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
+                .name("valid").type().booleanType().noDefault() //
+                .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType().noDefault() //
+                .endRecord(); //
+        
+        record = new GenericData.Record(runtimeSchema);
+        record.put(0, 1);
+        record.put(1, "User");
+        record.put(2, 100);
+        record.put(3, true);
+        record.put(4, new Date(1467170137872L));
+    }
+    
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#getSchema()} returns design schema, which was passed to constructor without
+     * any changes
+     */
+    @Test
+    public void testGetSchema() {
+        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
+        Schema actualSchema = enforcer.getSchema();
 
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
-
-        enforcer.setWrapped(componentRecord);
-
-        Schema outgoingDynamicRuntimeSchema = enforcer.getOutgoingDynamicRuntimeSchema();
-        assertThat(outgoingDynamicRuntimeSchema.getFields().size(), is(4));
-        assertThat(outgoingDynamicRuntimeSchema.getField("valid").schema().getType(), is(Schema.Type.BOOLEAN));
-        assertThat(outgoingDynamicRuntimeSchema.getField("address").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("comment").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("comment").getProp(DiSchemaConstants.TALEND6_COLUMN_LENGTH),
-                is((Object) "255"));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getType(), is(Schema.Type.UNION));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().size(), is(2));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().get(0).getType(),
-                is(Schema.Type.LONG));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN),
-                is("yyyy-MM-dd'T'HH:mm:ss'000Z'"));
-
-        // Check the resolved fields.
-        assertThat(enforcer.get(1), is((Object) 1));
-        assertThat(enforcer.get(2), is((Object) "User"));
-        assertThat(enforcer.get(3), is((Object) 100));
-
-        // Check the dynamic field.
-        assertThat(enforcer.get(0), instanceOf(Map.class));
-        Map<?, ?> unresolved = (Map<?, ?>) enforcer.get(0);
-        assertThat(unresolved.keySet(), containsInAnyOrder((Object) "valid", "address", "comment", "createdDate"));
-        assertThat(unresolved, hasEntry((Object) "valid", (Object) true));
-        assertThat(unresolved, hasEntry((Object) "address", (Object) "Main Street"));
-        assertThat(unresolved, hasEntry((Object) "comment", (Object) "This is a record with six columns."));
-        assertThat(unresolved, hasEntry((Object) "createdDate", (Object) new Date(1467170137872L)));
-
-        Schema talend6SchemaWithoutDynamic = enforcer.getSchema();
-        assertThat(talend6SchemaWithoutDynamic.getFields(), hasSize(3));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(0).name(), is("id"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(1).name(), is("name"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(2).name(), is("age"));
+        assertThat(actualSchema, equalTo(talend6Schema));
     }
 
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} returns correct values retrieved from wrapped {@link IndexedRecord}
+     * in case design and runtime schema have same order of the fields 
+     */
     @Test
-    public void testDynamicColumn_ByName_DynamicColumnAtMiddle() {
-        // The expected schema after enforcement.
+    public void testGetByIndex() {
+        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
+        enforcer.setWrapped(record);
+
+        assertThat(enforcer.get(0), equalTo((Object) 1));
+        assertThat(enforcer.get(1), equalTo((Object) "User"));
+        assertThat(enforcer.get(2), equalTo((Object) 100));
+        assertThat(enforcer.get(3), equalTo((Object) true));
+        assertThat(enforcer.get(4), equalTo((Object) new Date(1467170137872L)));
+    }
+    
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} returns correct values retrieved from wrapped {@link IndexedRecord}
+     * in case design and runtime schema have different order of the fields 
+     */
+    @Test
+    public void testGetByName() {
         Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type().intType().noDefault() //
+                .name("valid").type().booleanType().noDefault() //
                 .name("name").type().stringType().noDefault() //
+                .name("id").type().intType().noDefault() //
+                .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType().noDefault() //
                 .name("age").type().intType().noDefault() //
-                .endRecord();
-        talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
+                .endRecord(); //
+        
+        IndexMapper indexMapper = new IndexMapperByName(talend6Schema, runtimeSchema);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
+        enforcer.setWrapped(record);
 
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
-
-        enforcer.setWrapped(componentRecord);
-
-        Schema outgoingDynamicRuntimeSchema = enforcer.getOutgoingDynamicRuntimeSchema();
-        assertThat(outgoingDynamicRuntimeSchema.getFields().size(), is(4));
-        assertThat(outgoingDynamicRuntimeSchema.getField("valid").schema().getType(), is(Schema.Type.BOOLEAN));
-        assertThat(outgoingDynamicRuntimeSchema.getField("address").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("comment").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("comment").getProp(DiSchemaConstants.TALEND6_COLUMN_LENGTH),
-                is((Object) "255"));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getType(), is(Schema.Type.UNION));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().size(), is(2));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().get(0).getType(),
-                is(Schema.Type.LONG));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN),
-                is("yyyy-MM-dd'T'HH:mm:ss'000Z'"));
-
-        // Check the resolved fields.
-        assertThat(enforcer.get(0), is((Object) 1));
-        assertThat(enforcer.get(2), is((Object) "User"));
-        assertThat(enforcer.get(3), is((Object) 100));
-
-        // Check the dynamic field.
-        assertThat(enforcer.get(1), instanceOf(Map.class));
-        Map<?, ?> unresolved = (Map<?, ?>) enforcer.get(1);
-        assertThat(unresolved.keySet(), containsInAnyOrder((Object) "valid", "address", "comment", "createdDate"));
-        assertThat(unresolved, hasEntry((Object) "valid", (Object) true));
-        assertThat(unresolved, hasEntry((Object) "address", (Object) "Main Street"));
-        assertThat(unresolved, hasEntry((Object) "comment", (Object) "This is a record with six columns."));
-        assertThat(unresolved, hasEntry((Object) "createdDate", (Object) new Date(1467170137872L)));
-
-        Schema talend6SchemaWithoutDynamic = enforcer.getSchema();
-        assertThat(talend6SchemaWithoutDynamic.getFields(), hasSize(3));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(0).name(), is("id"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(1).name(), is("name"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(2).name(), is("age"));
+        assertThat(enforcer.get(0), equalTo((Object) true));
+        assertThat(enforcer.get(1), equalTo((Object) "User"));
+        assertThat(enforcer.get(2), equalTo((Object) 1));
+        assertThat(enforcer.get(3), equalTo((Object) new Date(1467170137872L)));
+        assertThat(enforcer.get(4), equalTo((Object) 100));
     }
 
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} throws {@link IndexOutOfBoundsException} in case of incoming index less than 0
+     * or more than (designSchemaSize - 1) 
+     */
+    @Test(expected=IndexOutOfBoundsException.class)
+    public void testGetOutOfBounds() {
+        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
+        enforcer.setWrapped(record);
+
+        enforcer.get(5);
+    }
+
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Date} value correctly
+     * using Talend type property
+     */
     @Test
-    public void testDynamicColumn_ByName_DynamicColumnAtEnd() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type().intType().noDefault() //
-                .name("name").type().stringType().noDefault() //
-                .name("age").type().intType().noDefault() //
-                .endRecord();
-        talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
+    public void testTransformValueToDateByTalendType() {
+        Date expectedDate = new Date(1L);
 
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
+        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
 
-        enforcer.setWrapped(componentRecord);
+        Field dateField = new Field("createdDate", Schema.create(Schema.Type.LONG), null, null);
+        dateField.addProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date");
+        dateField.addProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'");
 
-        Schema outgoingDynamicRuntimeSchema = enforcer.getOutgoingDynamicRuntimeSchema();
-        assertThat(outgoingDynamicRuntimeSchema.getFields().size(), is(4));
-        assertThat(outgoingDynamicRuntimeSchema.getField("valid").schema().getType(), is(Schema.Type.BOOLEAN));
-        assertThat(outgoingDynamicRuntimeSchema.getField("address").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("comment").schema().getType(), is(Schema.Type.STRING));
-        assertThat(outgoingDynamicRuntimeSchema.getField("comment").getProp(DiSchemaConstants.TALEND6_COLUMN_LENGTH),
-                is((Object) "255"));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getType(), is(Schema.Type.UNION));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().size(), is(2));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").schema().getTypes().get(0).getType(),
-                is(Schema.Type.LONG));
-        assertThat(outgoingDynamicRuntimeSchema.getField("createdDate").getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN),
-                is("yyyy-MM-dd'T'HH:mm:ss'000Z'"));
+        Object transformedValue = enforcer.transformValue(1L, dateField);
 
-        // Check the resolved fields.
-        assertThat(enforcer.get(0), is((Object) 1));
-        assertThat(enforcer.get(1), is((Object) "User"));
-        assertThat(enforcer.get(2), is((Object) 100));
-
-        // Check the dynamic field.
-        assertThat(enforcer.get(3), instanceOf(Map.class));
-        Map<?, ?> unresolved = (Map<?, ?>) enforcer.get(3);
-        assertThat(unresolved.keySet(), containsInAnyOrder((Object) "valid", "address", "comment", "createdDate"));
-        assertThat(unresolved, hasEntry((Object) "valid", (Object) true));
-        assertThat(unresolved, hasEntry((Object) "address", (Object) "Main Street"));
-        assertThat(unresolved, hasEntry((Object) "comment", (Object) "This is a record with six columns."));
-        assertThat(unresolved, hasEntry((Object) "createdDate", (Object) new Date(1467170137872L)));
-
-        Schema talend6SchemaWithoutDynamic = enforcer.getSchema();
-        assertThat(talend6SchemaWithoutDynamic.getFields(), hasSize(3));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(0).name(), is("id"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(1).name(), is("name"));
-        assertThat(talend6SchemaWithoutDynamic.getFields().get(2).name(), is("age"));
+        assertThat(transformedValue, equalTo((Object) expectedDate));
     }
-
+    
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Date} value correctly
+     * using Java class
+     */
     @Test
-    @Ignore
-    public void testDynamicColumn_getOutOfBounds() {
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type().intType().noDefault() //
-                .endRecord();
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
-        enforcer.setWrapped(componentRecord);
+    public void testTransformValueToDateByJavaClass() {
+        Date expectedDate = new Date(1L);
 
-        assertThat(enforcer.get(0), is((Object) 1));
+        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
 
-        thrown.expect(ArrayIndexOutOfBoundsException.class);
-        enforcer.get(1); // Only one field available.
+        Field dateField = new Field("createdDate", Schema.create(Schema.Type.LONG), null, null);
+        dateField.schema().addProp(SchemaConstants.JAVA_CLASS_FLAG, "java.util.Date");
+
+        Object transformedValue = enforcer.transformValue(1L, dateField);
+
+        assertThat(transformedValue, equalTo((Object) expectedDate));
     }
-
+    
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link BigDecimal} value correctly
+     * using Java class
+     */
     @Test
-    public void testWrappedSingleColumnIndexedRecord() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("name").type().stringType().noDefault() //
-                .endRecord();
+    public void testTransformValueToDecimal() {
+        BigDecimal expectedDecimal = new BigDecimal("10.20");
 
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
+        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
 
-        SingleColumnIndexedRecordConverter<String> factory = new SingleColumnIndexedRecordConverter<>(String.class,
-                Schema.create(Schema.Type.STRING));
+        Field decimalField = new Field("decimal",  AvroUtils._decimal(), null, null);
 
-        enforcer.setWrapped(factory.convertToAvro("one"));
+        Object transformedValue = enforcer.transformValue("10.20", decimalField);
 
-        assertThat(enforcer.get(0), is((Object) "one"));
+        assertThat(transformedValue, equalTo((Object) expectedDecimal));
     }
-
+    
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Character} value correctly
+     * using Java class
+     */
     @Test
-    public void testValueConversion_toDate() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("d")
-                .prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, //
-                        "id_Date")
-                .type().longType().noDefault() //
-                .endRecord();
+    public void testTransformValueToCharacter() {
+        char expectedChar = 'A';
 
-        // The enforcer to test.
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
+        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
 
-        // Use this factory to create a one-column indexed record.
-        SingleColumnIndexedRecordConverter<Long> factory = new SingleColumnIndexedRecordConverter<>(Long.class,
-                Schema.create(Schema.Type.LONG));
-        IndexedRecord testData = factory.convertToAvro(1L);
+        Field characterField = new Field("character",  AvroUtils._character(), null, null);
 
-        enforcer.setWrapped(testData);
+        Object transformedValue = enforcer.transformValue("A", characterField);
 
-        assertThat(enforcer.get(0), instanceOf(Date.class));
-        assertThat(enforcer.get(0), is((Object) new Date(1L)));
+        assertThat(transformedValue, equalTo((Object) expectedChar));
     }
-
-    @Test
-    public void testValueConversion_toDate_javaClass() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("d").type().longType().noDefault() //
-                .endRecord();
-
-        talend6Schema.getFields().get(0).schema().addProp(SchemaConstants.JAVA_CLASS_FLAG, "java.util.Date");
-
-        // The enforcer to test.
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
-
-        // Use this factory to create a one-column indexed record.
-        SingleColumnIndexedRecordConverter<Long> factory = new SingleColumnIndexedRecordConverter<>(Long.class,
-                Schema.create(Schema.Type.LONG));
-        IndexedRecord testData = factory.convertToAvro(1L);
-
-        enforcer.setWrapped(testData);
-
-        assertThat(enforcer.get(0), instanceOf(Date.class));
-        assertThat(enforcer.get(0), is((Object) new Date(1L)));
-
-        // Enforcer record date column value with date type
-        SingleColumnIndexedRecordConverter<Date> dateFactory = new SingleColumnIndexedRecordConverter<>(Date.class,
-                AvroUtils._date());
-        Date currentDate = new Date();
-        IndexedRecord dateRecord = dateFactory.convertToAvro(currentDate);
-
-        enforcer.setWrapped(dateRecord);
-
-        assertThat(enforcer.get(0), instanceOf(Date.class));
-        assertThat(enforcer.get(0), is((Object) currentDate));
-    }
-
-    @Test
-    public void testValueConversionToDecimal() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("TestBigDecimal").type(AvroUtils._decimal()).noDefault() //
-                .endRecord();
-
-        // The enforcer to test.
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
-
-        // Use this factory to create a one-column indexed record.
-        SingleColumnIndexedRecordConverter<String> factory = new SingleColumnIndexedRecordConverter<>(String.class,
-                AvroUtils._decimal());
-        // Test not null value
-        IndexedRecord testData = factory.convertToAvro("10.20");
-
-        enforcer.setWrapped(testData);
-
-        assertThat(enforcer.get(0), instanceOf(BigDecimal.class));
-        assertThat(enforcer.get(0), is((Object) new BigDecimal("10.20")));
-
-        // Test null value
-        testData = factory.convertToAvro(null);
-
-        enforcer.setWrapped(testData);
-        assertNull(enforcer.get(0));
-
-    }
-
-    @Test
-    public void testValueConversionToCharacter() {
-        // The expected schema after enforcement.
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("TestBigCharacter").type(AvroUtils._character()).noDefault() //
-                .endRecord();
-
-        // The enforcer to test.
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, false);
-
-        // Use this factory to create a one-column indexed record.
-        SingleColumnIndexedRecordConverter<String> factory = new SingleColumnIndexedRecordConverter<>(String.class,
-                AvroUtils._character());
-        // Test not null value
-        IndexedRecord testData = factory.convertToAvro("A");
-
-        enforcer.setWrapped(testData);
-
-        assertThat(enforcer.get(0), instanceOf(Character.class));
-        assertThat(enforcer.get(0), is((Object) 'A'));
-
-        // Test null value
-        testData = factory.convertToAvro(null);
-
-        enforcer.setWrapped(testData);
-        assertNull(enforcer.get(0));
-
-    }
+    
 }
