@@ -18,13 +18,13 @@ import java.util.Map;
 import org.talend.daikon.definition.Definition;
 
 /**
- * The service should handle {@link Definition} and garanties that onyl one instance is registered with on unique name (
+ * The service should handle {@link Definition} and guarantees that only one instance is registered with a unique name (
  * {@link Definition.getName()}
  */
 public interface DefinitionRegistryService {
 
     /**
-     * Get the map of all {@link Definition} that implement a specific interface using thier name as the map key.
+     * Get the map of all {@link Definition} that implement a specific interface using the name as the map key.
      *
      * @param An interface or subclass of {@link Definition}.
      * @return All {@link Definition} that were registered in the framework and that implement that interface or an empty map.
