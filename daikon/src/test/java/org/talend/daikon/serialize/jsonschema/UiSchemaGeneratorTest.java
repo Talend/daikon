@@ -9,7 +9,7 @@ public class UiSchemaGeneratorTest {
     @Test
     public void genWidget() throws Exception {
         String jsonStr = JsonSchemaUtilTest.readJson("FullExampleUiSchema.json");
-        FullExampleProperties properties = new FullExampleProperties("properties");
+        FullExampleProperties properties = new FullExampleProperties();
         properties.init();
         UiSchemaGenerator generator = new UiSchemaGenerator();
         assertEquals(jsonStr, generator.genWidget(properties).toString());

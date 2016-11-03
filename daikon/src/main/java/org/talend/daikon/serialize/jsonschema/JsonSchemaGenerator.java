@@ -8,6 +8,7 @@ import java.util.List;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.EnumProperty;
+import org.talend.daikon.properties.property.EnumListProperty;
 import org.talend.daikon.properties.property.Property;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -25,6 +26,7 @@ public class JsonSchemaGenerator {
 
     private ObjectNode processTProperties(Properties cProperties) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
+        schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getDisplayName());
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
         schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
 
@@ -46,31 +48,46 @@ public class JsonSchemaGenerator {
 
     private ObjectNode processTProperty(Property property) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
+        schema.put(JsonSchemaConstants.TAG_TITLE, property.getDisplayName());
         if (!property.getPossibleValues().isEmpty()) {
             if (property instanceof EnumProperty) {
-                schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_STRING);
+                resolveEnum(schema, property);
+            } else if (property instanceof EnumListProperty) {
+                resolveList(schema, property);
             } else {
                 schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
-            }
-            ArrayNode enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
-            List possibleValues = property.getPossibleValues();
-            for (Object possibleValue : possibleValues) {
-                String value = possibleValue.toString();
-                if (NamedThing.class.isAssignableFrom(possibleValue.getClass())) {
-                    value = ((NamedThing) possibleValue).getName();
+                ArrayNode enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
+                List possibleValues = property.getPossibleValues();
+                for (Object possibleValue : possibleValues) {
+                    String value = possibleValue.toString();
+                    if (NamedThing.class.isAssignableFrom(possibleValue.getClass())) {
+                        value = ((NamedThing) possibleValue).getName();
+                    }
+                    enumList.add(value);
                 }
-                enumList.add(value);
             }
         } else if (isListClass(property.getType())) {
             resolveList(schema, property);
         } else {
             schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
             if (Date.class.getName().equals(property.getType())) {
-                schema.put(JsonSchemaConstants.TAG_FORMAT, "date-time");// Do not support other format for date till Property
+                schema.put(JsonSchemaConstants.TAG_FORMAT, "date-time");// Do not support other format for date till
+                                                                        // Property
                                                                         // support it
             }
         }
         return schema;
+    }
+
+    private void resolveEnum(ObjectNode schema, Property property) {
+        schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_STRING);
+        ArrayNode enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
+        ArrayNode enumValues = schema.putArray(JsonSchemaConstants.TAG_ENUM);
+        List possibleValues = property.getPossibleValues();
+        for (Object possibleValue : possibleValues) {
+            enumValues.add(possibleValue.toString());
+            enumNames.add(property.getPossibleValuesDisplayName(possibleValue));
+        }
     }
 
     private void resolveList(ObjectNode schema, Property property) {
@@ -78,16 +95,10 @@ public class JsonSchemaGenerator {
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_ARRAY);
         ObjectNode items = JsonNodeFactory.instance.objectNode();
         schema.set(JsonSchemaConstants.TAG_ITEMS, items);
-        String innerClassName = getListInnerClassName(className);
-        Class<?> aClass = findClass(innerClassName);
-        if (aClass.isEnum()) {
-            items.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_STRING);
-            ArrayNode enumList = items.putArray(JsonSchemaConstants.TAG_ENUM);
-            for (Object k : aClass.getEnumConstants()) {
-                enumList.add(k.toString());
-            }
+        if (property instanceof EnumListProperty) {
+            resolveEnum(items, property);
         } else {
-            items.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(innerClassName));
+            items.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(getListInnerClassName(className)));
         }
     }
 

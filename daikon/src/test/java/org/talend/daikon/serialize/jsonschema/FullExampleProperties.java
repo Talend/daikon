@@ -18,6 +18,7 @@ import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.EnumProperty;
+import org.talend.daikon.properties.property.EnumListProperty;
 import org.talend.daikon.properties.property.Property;
 
 /**
@@ -79,8 +80,8 @@ public class FullExampleProperties extends PropertiesImpl {
 
     private List<String> methodCalled = new ArrayList<>();
 
-    public FullExampleProperties(String name) {
-        super(name);
+    public FullExampleProperties() {
+        super("fullexample");
     }
 
     private void thisMethodWasCalled() {
@@ -288,7 +289,7 @@ public class FullExampleProperties extends PropertiesImpl {
 
         public Property<List<String>> colListString = newProperty(LIST_STRING_TYPE, "colListString");
 
-        public Property<List<ColEnum>> colListEnum = newProperty(LIST_ENUM_TYPE, "colListEnum");
+        public EnumListProperty<ColEnum> colListEnum = newEnumList("colListEnum", LIST_ENUM_TYPE);
 
         public Property<List<Boolean>> colListBoolean = newProperty(LIST_BOOLEAN_TYPE, "colListBoolean");
 

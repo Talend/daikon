@@ -24,7 +24,7 @@ public class JsonDataGeneratorTest {
     }
 
     static public FullExampleProperties createASetupFullExampleProperties() throws ParseException {
-        FullExampleProperties properties = (FullExampleProperties) new FullExampleProperties("properties").init();
+        FullExampleProperties properties = (FullExampleProperties) new FullExampleProperties().init();
         properties.stringProp.setValue("abc");
         properties.integerProp.setValue(1);
         properties.hideStringPropProp.setValue(false);
