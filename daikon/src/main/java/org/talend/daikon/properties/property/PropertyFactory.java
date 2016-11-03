@@ -13,6 +13,7 @@
 package org.talend.daikon.properties.property;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.avro.Schema;
 import org.apache.commons.lang3.reflect.TypeLiteral;
@@ -99,6 +100,10 @@ public class PropertyFactory {
 
     public static <T extends Enum<T>> EnumProperty<T> newEnum(String name, Class<T> zeEnumType) {
         return new EnumProperty<>(zeEnumType, name);
+    }
+
+    public static <T extends Enum<T>> EnumListProperty<T> newEnumList(String name, TypeLiteral<List<T>> type) {
+        return new EnumListProperty<T>(type, name);
     }
 
     public static Property<Schema> newSchema(String name) {
