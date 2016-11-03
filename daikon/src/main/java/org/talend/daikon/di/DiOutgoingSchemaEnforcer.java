@@ -156,10 +156,6 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      */
     @Override
     public Object get(int pojoIndex) {
-        if (0 > pojoIndex || pojoIndex >= designSchemaSize) {
-            throw new IndexOutOfBoundsException("index should be from 0 to " + (designSchemaSize - 1) + " but was " + pojoIndex);
-        }
-
         Field outField = designFields.get(pojoIndex);
         Object value = wrappedRecord.get(indexMap[pojoIndex]);
         return transformValue(value, outField);

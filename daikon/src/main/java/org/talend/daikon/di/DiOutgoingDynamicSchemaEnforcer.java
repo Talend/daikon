@@ -101,10 +101,6 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
      */
     // @Override
     public Object get(int pojoIndex) {
-        if (0 > pojoIndex || pojoIndex > designSchemaSize) {
-            throw new IndexOutOfBoundsException("index should be from 0 to design schema size, but was " + pojoIndex);
-        }
-
         int runtimeIndex = indexMap[pojoIndex];
         if (runtimeIndex == DYNAMIC) {
             return getDynamicValues();
