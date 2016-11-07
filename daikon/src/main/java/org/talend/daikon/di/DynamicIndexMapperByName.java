@@ -90,18 +90,20 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
     @Override
     public int[] computeIndexMap() {
         int[] indexMap = new int[designSchemaSize + 1];
-        for (int i = 0; i < dynamicFieldPosition; i++) {
+        
+        for (int i = 0; i < designSchemaSize; i++) {
+            if (i == dynamicFieldPosition) {
+                indexMap[dynamicFieldPosition] = DYNAMIC;
+            }
             Field designField = designFields.get(i);
             String fieldName = designField.name();
             Field runtimeField = runtimeSchema.getField(fieldName);
-            indexMap[i] = runtimeField.pos();
-        }
-        indexMap[dynamicFieldPosition] = -1;
-        for (int i = dynamicFieldPosition; i < designSchemaSize; i++) {
-            Field designField = designFields.get(i);
-            String fieldName = designField.name();
-            Field runtimeField = runtimeSchema.getField(fieldName);
-            indexMap[i + 1] = runtimeField.pos();
+            if (i <  dynamicFieldPosition) {
+                indexMap[i] = runtimeField.pos();
+            } else {
+                indexMap[i + 1] = runtimeField.pos();
+            }
+
         }
         return indexMap;
     }

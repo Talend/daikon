@@ -70,12 +70,16 @@ class DynamicIndexMapperByIndex implements DynamicIndexMapper {
     @Override
     public int[] computeIndexMap() {
         int[] indexMap = new int[designSchemaSize + 1];
-        for (int i = 0; i < dynamicFieldPosition; i++) {
-            indexMap[i] = i;
-        }
-        indexMap[dynamicFieldPosition] = -1;
-        for (int i = dynamicFieldPosition + 1; i < designSchemaSize + 1; i++) {
-            indexMap[i] = dynamicFields + i - 1;
+        for (int i = 0; i < designSchemaSize + 1; i++) {
+            if (i == dynamicFieldPosition) {
+                indexMap[dynamicFieldPosition] = DYNAMIC;
+                continue;
+            }
+            if (i <  dynamicFieldPosition) {
+                indexMap[i] = i;
+            } else {
+                indexMap[i] = dynamicFields + i - 1;
+            }
         }
         return indexMap;
     }
