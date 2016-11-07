@@ -17,7 +17,7 @@ public final class EnforcerCreator {
      * @return instance of {@link DiOutgoingSchemaEnforcer}
      */
     public static DiOutgoingSchemaEnforcer createOutgoingEnforcer(Schema designSchema, Schema runtimeSchema, boolean byIndex) {
-        
+
         DiOutgoingSchemaEnforcer enforcer = null;
         if (AvroUtils.isIncludeAllFields(designSchema)) {
             DynamicIndexMapper indexMapper = null;
@@ -36,7 +36,7 @@ public final class EnforcerCreator {
             }
             enforcer = new DiOutgoingSchemaEnforcer(designSchema, indexMapper);
         }
-        
+
         return enforcer;
     }
 }

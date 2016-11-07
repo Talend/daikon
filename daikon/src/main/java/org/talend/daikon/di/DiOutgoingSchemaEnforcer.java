@@ -40,12 +40,16 @@ import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapt
  * method.
  * <p>
  * This class accepts so-called design schema as an argument for constructor. Design schema is specified by user in Schema Editor.
- * It contains data fields, which user wants to retrieve from data source. Schema Editor creates schema in old manner. It creates instance 
+ * It contains data fields, which user wants to retrieve from data source. Schema Editor creates schema in old manner. It creates
+ * instance
  * of MetadataTable. For new components this instance is converted to avro {@link Schema} instance by MetadataToolAvroHelper.
  * <p>
- * There could be a situation when user doesn't know all fields of data, but he wants to retrieve them all. In this case user should specify
- * some field as dynamic. Dynamic means it is not known at design time how much actual fields will be retrieved. Dynamic field aggregates
- * all unknown fields. Note, design avro {@link Schema} doesn't contain dynamic field. It contain special properties, which describe 
+ * There could be a situation when user doesn't know all fields of data, but he wants to retrieve them all. In this case user
+ * should specify
+ * some field as dynamic. Dynamic means it is not known at design time how much actual fields will be retrieved. Dynamic field
+ * aggregates
+ * all unknown fields. Note, design avro {@link Schema} doesn't contain dynamic field. It contain special properties, which
+ * describe
  * dynamic field (its name, position in schema etc).
  * <p>
  * Consider following example:
@@ -62,12 +66,16 @@ import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapt
  * </ul>
  * and properties, which describes dynamic field
  * <p>
- * There is one more thing, which should be mentioned. Both old and TCOMP components could be used in one Job in Di (Studio). To make them 
- * compatible there is special handling in codegen plugin. TCOMP component output (IndexedRecord and its Schema) is converted to old Di objects.
- * Row2Struct (also known as POJO) corresponds to IndexedRecord. Its fields correspond to data fields. Important note is that Row2Struct contains
- * also a field for dynamic field. {@link DiOutgoingSchemaEnforcer} goal is to convert avro-styled data to Talend-styled. 
+ * There is one more thing, which should be mentioned. Both old and TCOMP components could be used in one Job in Di (Studio). To
+ * make them
+ * compatible there is special handling in codegen plugin. TCOMP component output (IndexedRecord and its Schema) is converted to
+ * old Di objects.
+ * Row2Struct (also known as POJO) corresponds to IndexedRecord. Its fields correspond to data fields. Important note is that
+ * Row2Struct contains
+ * also a field for dynamic field. {@link DiOutgoingSchemaEnforcer} goal is to convert avro-styled data to Talend-styled.
  * {@link DiOutgoingSchemaEnforcer#get(int)} is the main functionality of this class. This class is used in codegen plugin.
- * See, component_util_indexedrecord_to_rowstruct.javajet. Note, get() is called for each field in Row2Struct. When user specified dynamic column,
+ * See, component_util_indexedrecord_to_rowstruct.javajet. Note, get() is called for each field in Row2Struct. When user specified
+ * dynamic column,
  * Row2Struct will contain one more field than desigh avro schema.
  */
 public class DiOutgoingSchemaEnforcer implements IndexedRecord {
@@ -77,13 +85,13 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      * This schema may contain di-specific properties
      */
     protected final Schema designSchema;
-    
+
     /**
      * A {@link List} of design schema {@link Field}s
-     * It is stored as separate field to accelerate access to them 
+     * It is stored as separate field to accelerate access to them
      */
     protected final List<Field> designFields;
-    
+
     /**
      * Number of fields in design schema
      */
@@ -95,7 +103,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      * schema.
      */
     protected IndexedRecord wrappedRecord;
-    
+
     /**
      * Maps design field indexes to runtime field indexes.
      * Design indexes are indexed of this array and runtime indexed are values
@@ -128,7 +136,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
 
     /**
      * Returns schema of this {@link IndexedRecord}
-     * Note, this schema doesn't contain dynamic field. 
+     * Note, this schema doesn't contain dynamic field.
      * However, {@link DiOutgoingDynamicSchemaEnforcer} returns dynamic values
      * in map, when dynamic field index is passed
      */
@@ -149,7 +157,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      * {@inheritDoc}
      * 
      * Could be called only after first record was wrapped.
-     * Here design schema and runtime schema have the same fields 
+     * Here design schema and runtime schema have the same fields
      * (but fields could be in different order)
      * 
      * @param pojoIndex index of required value. Could be from 0 to designSchemaSize - 1
@@ -164,7 +172,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
     /**
      * Transforms record column value from Avro type to Talend type
      * 
-     * @param value record column value, which should be transformed into Talend compatible value. 
+     * @param value record column value, which should be transformed into Talend compatible value.
      * It can be null when null
      * corresponding wrapped field.
      * @param valueField field, which contain information about value's Talend type. It mustn't be null
@@ -173,7 +181,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
         if (null == value) {
             return null;
         }
-        
+
         String talendType = valueField.getProp(TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = AvroUtils.unwrapIfNullable(valueField.schema()).getProp(SchemaConstants.JAVA_CLASS_FLAG);
 

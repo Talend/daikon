@@ -26,12 +26,12 @@ public class DiOutgoingSchemaEnforcerTest {
      * Runtime {@link Schema} instance, which is used as argument in tests
      */
     private static Schema runtimeSchema;
-    
+
     /**
      * Design {@link Schema} instance, which is used as argument in tests
      */
     private static Schema talend6Schema;
-    
+
     /**
      * An actual record that a component would like to be emitted, which may or may not contain enriched schema
      * information.
@@ -52,16 +52,17 @@ public class DiOutgoingSchemaEnforcerTest {
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType() //
                 .noDefault() //
                 .endRecord(); //
-        
+
         talend6Schema = SchemaBuilder.builder().record("Record").fields() //
                 .name("id").type().intType().noDefault() //
                 .name("name").type().stringType().noDefault() //
                 .name("age").type().intType().noDefault() //
                 .name("valid").type().booleanType().noDefault() //
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
-                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType().noDefault() //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType()
+                .noDefault() //
                 .endRecord(); //
-        
+
         record = new GenericData.Record(runtimeSchema);
         record.put(0, 1);
         record.put(1, "User");
@@ -69,7 +70,7 @@ public class DiOutgoingSchemaEnforcerTest {
         record.put(3, true);
         record.put(4, new Date(1467170137872L));
     }
-    
+
     /**
      * Checks {@link DiOutgoingSchemaEnforcer#getSchema()} returns design schema, which was passed to constructor without
      * any changes
@@ -85,7 +86,7 @@ public class DiOutgoingSchemaEnforcerTest {
 
     /**
      * Checks {@link DiOutgoingSchemaEnforcer#get(int)} returns correct values retrieved from wrapped {@link IndexedRecord}
-     * in case design and runtime schema have same order of the fields 
+     * in case design and runtime schema have same order of the fields
      */
     @Test
     public void testGetByIndex() {
@@ -99,10 +100,10 @@ public class DiOutgoingSchemaEnforcerTest {
         assertThat(enforcer.get(3), equalTo((Object) true));
         assertThat(enforcer.get(4), equalTo((Object) new Date(1467170137872L)));
     }
-    
+
     /**
      * Checks {@link DiOutgoingSchemaEnforcer#get(int)} returns correct values retrieved from wrapped {@link IndexedRecord}
-     * in case design and runtime schema have different order of the fields 
+     * in case design and runtime schema have different order of the fields
      */
     @Test
     public void testGetByName() {
@@ -111,10 +112,11 @@ public class DiOutgoingSchemaEnforcerTest {
                 .name("name").type().stringType().noDefault() //
                 .name("id").type().intType().noDefault() //
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
-                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType().noDefault() //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType() //
+                .noDefault() //
                 .name("age").type().intType().noDefault() //
                 .endRecord(); //
-        
+
         IndexMapper indexMapper = new IndexMapperByName(talend6Schema, runtimeSchema);
         DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
         enforcer.setWrapped(record);
@@ -127,10 +129,11 @@ public class DiOutgoingSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} throws {@link IndexOutOfBoundsException} in case of incoming index less than 0
-     * or more than (designSchemaSize - 1) 
+     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} throws {@link IndexOutOfBoundsException} in case of incoming index less
+     * than 0
+     * or more than (designSchemaSize - 1)
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testGetOutOfBounds() {
         IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
         DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
@@ -158,7 +161,7 @@ public class DiOutgoingSchemaEnforcerTest {
 
         assertThat(transformedValue, equalTo((Object) expectedDate));
     }
-    
+
     /**
      * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Date} value correctly
      * using Java class
@@ -177,7 +180,7 @@ public class DiOutgoingSchemaEnforcerTest {
 
         assertThat(transformedValue, equalTo((Object) expectedDate));
     }
-    
+
     /**
      * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link BigDecimal} value correctly
      * using Java class
@@ -189,13 +192,13 @@ public class DiOutgoingSchemaEnforcerTest {
         IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
         DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
 
-        Field decimalField = new Field("decimal",  AvroUtils._decimal(), null, null);
+        Field decimalField = new Field("decimal", AvroUtils._decimal(), null, null);
 
         Object transformedValue = enforcer.transformValue("10.20", decimalField);
 
         assertThat(transformedValue, equalTo((Object) expectedDecimal));
     }
-    
+
     /**
      * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Character} value correctly
      * using Java class
@@ -207,11 +210,11 @@ public class DiOutgoingSchemaEnforcerTest {
         IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
         DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
 
-        Field characterField = new Field("character",  AvroUtils._character(), null, null);
+        Field characterField = new Field("character", AvroUtils._character(), null, null);
 
         Object transformedValue = enforcer.transformValue("A", characterField);
 
         assertThat(transformedValue, equalTo((Object) expectedChar));
     }
-    
+
 }

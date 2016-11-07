@@ -32,17 +32,17 @@ public class IndexMapperByNameTest {
     public void testComputeIndexMap() {
         int[] expectedIndexMap = { 0, 1, 2 };
 
-        Schema designSchema = SchemaBuilder.builder().record("Record").fields()
-                .name("col0").type().intType().noDefault()
-                .name("col1").type().stringType().noDefault()
-                .name("col2").type().intType().noDefault()
-                .endRecord();
+        Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col1").type().stringType().noDefault() //
+                .name("col2").type().intType().noDefault() //
+                .endRecord(); //
 
-        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields()
-                .name("col0").type().intType().noDefault()
-                .name("col1").type().stringType().noDefault()
-                .name("col2").type().intType().noDefault()
-                .endRecord();
+        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col1").type().stringType().noDefault() //
+                .name("col2").type().intType().noDefault() //
+                .endRecord(); //
 
         IndexMapperByName indexMapper = new IndexMapperByName(designSchema, runtimeSchema);
         int[] actualIndexMap = indexMapper.computeIndexMap();
@@ -58,17 +58,17 @@ public class IndexMapperByNameTest {
     public void testComputeIndexMapDiffOrder() {
         int[] expectedIndexMap = { 1, 0, 2 };
 
-        Schema designSchema = SchemaBuilder.builder().record("Record").fields()
-                .name("col0").type().intType().noDefault()
-                .name("col1").type().stringType().noDefault()
-                .name("col2").type().intType().noDefault()
+        Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col1").type().stringType().noDefault() //
+                .name("col2").type().intType().noDefault() //
                 .endRecord();
 
-        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields()
-                .name("col1").type().intType().noDefault()
-                .name("col0").type().stringType().noDefault()
-                .name("col2").type().intType().noDefault()
-                .endRecord();
+        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("col1").type().intType().noDefault() //
+                .name("col0").type().stringType().noDefault() //
+                .name("col2").type().intType().noDefault() //
+                .endRecord(); //
 
         IndexMapperByName indexMapper = new IndexMapperByName(designSchema, runtimeSchema);
         int[] actualIndexMap = indexMapper.computeIndexMap();

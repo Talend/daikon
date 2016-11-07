@@ -64,7 +64,8 @@ class DynamicIndexMapperByIndex implements DynamicIndexMapper {
     /**
      * {@inheritDoc}
      * 
-     * If there is dynamic field corresponding value has no sense, because there are several runtime fields which corresponds dynamic field.
+     * If there is dynamic field corresponding value has no sense, because there are several runtime fields which corresponds
+     * dynamic field.
      * That's why -1 value is set for dynamic field index. All other fields should be shifted on dynamicFields positions forward
      */
     @Override
@@ -75,7 +76,7 @@ class DynamicIndexMapperByIndex implements DynamicIndexMapper {
                 indexMap[dynamicFieldPosition] = DYNAMIC;
                 continue;
             }
-            if (i <  dynamicFieldPosition) {
+            if (i < dynamicFieldPosition) {
                 indexMap[i] = i;
             } else {
                 indexMap[i] = dynamicFields + i - 1;

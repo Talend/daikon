@@ -32,32 +32,33 @@ import org.talend.daikon.avro.SchemaConstants;
  * Unit-tests for {@link DiOutgoingDynamicSchemaEnforcer} class
  */
 public class DiOutgoingDynamicSchemaEnforcerTest {
-    
+
     /**
      * Runtime {@link Schema} instance, which is used as argument in tests
      */
     private static Schema runtimeSchema;
-    
+
     /**
      * {@link IndexedRecord} instance, which is used as argument in tests
      */
     private static IndexedRecord record;
-    
+
     /**
      * Creates runtime schema and record, which are used in all tests
      */
     @BeforeClass
     public static void setup() {
-        runtimeSchema = SchemaBuilder.builder().record("Record").fields()
-                .name("id").type().intType().noDefault()
-                .name("name").type().stringType().noDefault()
-                .name("age").type().intType().noDefault()
-                .name("valid").type().booleanType().noDefault()
-                .name("address").type().stringType().noDefault()
-                .name("comment").prop(DiSchemaConstants.TALEND6_COLUMN_LENGTH, "255").type().stringType().noDefault()
-                .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date")
-                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType().noDefault()
-                .endRecord();
+        runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("age").type().intType().noDefault() //
+                .name("valid").type().booleanType().noDefault() //
+                .name("address").type().stringType().noDefault() //
+                .name("comment").prop(DiSchemaConstants.TALEND6_COLUMN_LENGTH, "255").type().stringType().noDefault() //
+                .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType() //
+                .noDefault() //
+                .endRecord(); //
 
         record = new GenericData.Record(runtimeSchema);
         record.put(0, 1);
@@ -68,67 +69,73 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         record.put(5, "This is a record with six columns.");
         record.put(6, new Date(1467170137872L));
     }
-    
+
     /**
      * Checks {@link DiOutgoingDynamicSchemaEnforcer#getSchema()} returns design schema, which was passed to constructor without
      * any changes
      */
     @Test
     public void testGetSchema() {
-        
-        Schema designSchema = SchemaBuilder.builder().record("Record")
-                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields()
-                .name("address").type().intType().noDefault()
-                .name("comment").type().stringType().noDefault()
-                .name("createdDate").type().intType().noDefault()
-                .endRecord();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("address").type().intType().noDefault() //
+                .name("comment").type().stringType().noDefault() //
+                .name("createdDate").type().intType().noDefault() //
+                .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
         Schema actualSchema = enforcer.getSchema();
         assertEquals(designSchema, actualSchema);
     }
-    
+
     /**
      * Checks {@link DiOutgoingDynamicSchemaEnforcer#getDynamicFieldsSchema()} returns schema, which contains only dynamic fields
      * (i.e. fields which are present in runtime schema, but are not present in design schema)
      */
     @Test
     public void testGetDynamicFieldsSchema() {
-        
-        Schema expectedDynamicSchema = SchemaBuilder.builder().record("dynamic").fields()
-                .name("id").type().intType().noDefault()
-                .name("name").type().stringType().noDefault()
-                .name("age").type().intType().noDefault()
-                .name("valid").type().booleanType().noDefault()
+
+        Schema expectedDynamicSchema = SchemaBuilder.builder().record("dynamic").fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("age").type().intType().noDefault() //
+                .name("valid").type().booleanType().noDefault() //
                 .endRecord();
-        
-        Schema designSchema = SchemaBuilder.builder().record("Record")
-                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields()
-                .name("address").type().intType().noDefault()
-                .name("comment").type().stringType().noDefault()
-                .name("createdDate").type().intType().noDefault()
-                .endRecord();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("address").type().intType().noDefault() //
+                .name("comment").type().stringType().noDefault() //
+                .name("createdDate").type().intType().noDefault() //
+                .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
         Schema actualDynamicSchema = enforcer.getDynamicFieldsSchema();
         assertEquals(expectedDynamicSchema, actualDynamicSchema);
     }
-    
+
     /**
      * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values,
      * when dynamic field is in the start of design schema
      */
     @Test
     public void testGetDynamicAtStart() {
-        
-        Schema designSchema = SchemaBuilder.builder().record("Record")
-                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields()
-                .name("name").type().intType().noDefault()
-                .name("valid").type().stringType().noDefault()
-                .name("createdDate").type().intType().noDefault()
-                .endRecord();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("name").type().intType().noDefault() //
+                .name("valid").type().stringType().noDefault() //
+                .name("createdDate").type().intType().noDefault() //
+                .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema, runtimeSchema);
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
@@ -145,21 +152,23 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         assertThat(dynamicValues, hasEntry("address", (Object) "Main Street"));
         assertThat(dynamicValues, hasEntry("comment", (Object) "This is a record with six columns."));
     }
-    
+
     /**
      * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values,
      * when dynamic field is in the middle of design schema
      */
     @Test
     public void testGetDynamicAtMiddle() {
-        
-        Schema designSchema = SchemaBuilder.builder().record("Record")
-                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "2").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields()
-                .name("id").type().intType().noDefault()
-                .name("name").type().stringType().noDefault()
-                .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date")
-                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType().noDefault()
-                .endRecord();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "2") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType() //
+                .noDefault() //
+                .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
@@ -176,20 +185,22 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         assertThat(dynamicValues, hasEntry("address", (Object) "Main Street"));
         assertThat(dynamicValues, hasEntry("comment", (Object) "This is a record with six columns."));
     }
-    
+
     /**
      * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values,
      * when dynamic field is in the end of design schema
      */
     @Test
     public void testGetDynamicAtEnd() {
-        
-        Schema designSchema = SchemaBuilder.builder().record("Record")
-                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields()
-                .name("id").type().intType().noDefault()
-                .name("name").type().stringType().noDefault()
-                .name("age").type().intType().noDefault()
-                .endRecord();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("age").type().intType().noDefault() //
+                .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
@@ -206,20 +217,21 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         assertThat(dynamicValues, hasEntry("comment", (Object) "This is a record with six columns."));
         assertThat(dynamicValues, hasEntry("createdDate", (Object) new Date(1467170137872L)));
     }
-    
+
     /**
      * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values,
      * when dynamic field is in the end of design schema
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testGetOutOfBounds() {
-        
-        Schema designSchema = SchemaBuilder.builder().record("Record")
-                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields()
-                .name("id").type().intType().noDefault()
-                .name("name").type().stringType().noDefault()
-                .name("age").type().intType().noDefault()
-                .endRecord();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true")
+                .fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("age").type().intType().noDefault() //
+                .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
@@ -227,5 +239,5 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
 
         enforcer.get(4);
     }
-    
+
 }

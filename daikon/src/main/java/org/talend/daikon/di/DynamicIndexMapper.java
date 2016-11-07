@@ -15,7 +15,7 @@ package org.talend.daikon.di;
 import java.util.List;
 
 /**
- * Provides means to map design and dynamic fields to runtime fields 
+ * Provides means to map design and dynamic fields to runtime fields
  */
 interface DynamicIndexMapper extends IndexMapper {
 

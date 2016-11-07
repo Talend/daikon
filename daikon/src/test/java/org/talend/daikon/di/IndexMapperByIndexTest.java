@@ -30,29 +30,29 @@ public class IndexMapperByIndexTest {
     @Test
     public void testComputeIndexMap() {
         int[] expectedIndexMap = { 0, 1, 2, 3, 4 };
-        
-        Schema designSchema = SchemaBuilder.builder().record("Record").fields()
-                .name("col0").type().intType().noDefault()
-                .name("col1").type().stringType().noDefault()
-                .name("col2").type().intType().noDefault()
-                .name("col3").type().booleanType().noDefault()
-                .name("col4").type().stringType().noDefault()
-                .endRecord();
-        
+
+        Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col1").type().stringType().noDefault() //
+                .name("col2").type().intType().noDefault() //
+                .name("col3").type().booleanType().noDefault() //
+                .name("col4").type().stringType().noDefault() //
+                .endRecord(); //
+
         IndexMapperByIndex indexMapper = new IndexMapperByIndex(designSchema);
         int[] actualIndexMap = indexMapper.computeIndexMap();
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
-    
+
     /**
      * Checks {@link IndexMapperByIndex#computeIndexMap()} returns empty int array, if design schema has no fields
      */
     @Test
     public void testComputeIndexMapZero() {
         int[] expectedIndexMap = {};
-        
+
         Schema designSchema = SchemaBuilder.record("Record").fields().endRecord();
-        
+
         IndexMapperByIndex indexMapper = new IndexMapperByIndex(designSchema);
         int[] actualIndexMap = indexMapper.computeIndexMap();
         assertArrayEquals(expectedIndexMap, actualIndexMap);
