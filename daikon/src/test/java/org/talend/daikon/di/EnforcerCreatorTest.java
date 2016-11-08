@@ -26,14 +26,7 @@ public class EnforcerCreatorTest {
                 .name("name").type().stringType().noDefault() //
                 .endRecord(); //
 
-        Schema runtimeSchema = SchemaBuilder.builder().record("Record") //
-                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
-                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields() //
-                .name("id").type().intType().noDefault() //
-                .name("name").type().stringType().noDefault() //
-                .endRecord(); //
-
-        DiOutgoingSchemaEnforcer enforcer = EnforcerCreator.createOutgoingEnforcer(designSchema, runtimeSchema, true);
+        DiOutgoingSchemaEnforcer enforcer = EnforcerCreator.createOutgoingEnforcer(designSchema, true);
         assertThat(enforcer, instanceOf(DiOutgoingDynamicSchemaEnforcer.class));
     }
 
@@ -48,11 +41,7 @@ public class EnforcerCreatorTest {
                 .name("name").type().stringType().noDefault() //
                 .endRecord(); //
 
-        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
-                .name("name").type().stringType().noDefault() //
-                .endRecord(); //
-
-        DiOutgoingSchemaEnforcer enforcer = EnforcerCreator.createOutgoingEnforcer(designSchema, runtimeSchema, true);
+        DiOutgoingSchemaEnforcer enforcer = EnforcerCreator.createOutgoingEnforcer(designSchema, true);
         assertThat(enforcer, instanceOf(DiOutgoingSchemaEnforcer.class));
     }
 

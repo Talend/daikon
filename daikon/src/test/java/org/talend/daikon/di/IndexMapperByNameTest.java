@@ -44,8 +44,8 @@ public class IndexMapperByNameTest {
                 .name("col2").type().intType().noDefault() //
                 .endRecord(); //
 
-        IndexMapperByName indexMapper = new IndexMapperByName(designSchema, runtimeSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        IndexMapperByName indexMapper = new IndexMapperByName(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
 
@@ -70,8 +70,8 @@ public class IndexMapperByNameTest {
                 .name("col2").type().intType().noDefault() //
                 .endRecord(); //
 
-        IndexMapperByName indexMapper = new IndexMapperByName(designSchema, runtimeSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        IndexMapperByName indexMapper = new IndexMapperByName(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
 }

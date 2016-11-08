@@ -12,27 +12,26 @@ public final class EnforcerCreator {
      * Instantiates concrete class of {@link DiOutgoingSchemaEnforcer} according to incoming arguments
      * 
      * @param designSchema design schema specified by user
-     * @param runtimeSchema runtime or actual schema, which comes with {@link IndexedRecord}
      * @param byIndex schema fields mapper mode; true for by index mode; false is for by name mode
      * @return instance of {@link DiOutgoingSchemaEnforcer}
      */
-    public static DiOutgoingSchemaEnforcer createOutgoingEnforcer(Schema designSchema, Schema runtimeSchema, boolean byIndex) {
+    public static DiOutgoingSchemaEnforcer createOutgoingEnforcer(Schema designSchema, boolean byIndex) {
 
         DiOutgoingSchemaEnforcer enforcer = null;
         if (AvroUtils.isIncludeAllFields(designSchema)) {
             DynamicIndexMapper indexMapper = null;
             if (byIndex) {
-                indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
+                indexMapper = new DynamicIndexMapperByIndex(designSchema);
             } else {
-                indexMapper = new DynamicIndexMapperByName(designSchema, runtimeSchema);
+                indexMapper = new DynamicIndexMapperByName(designSchema);
             }
-            enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
+            enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         } else {
             IndexMapper indexMapper = null;
             if (byIndex) {
                 indexMapper = new IndexMapperByIndex(designSchema);
             } else {
-                indexMapper = new IndexMapperByName(designSchema, runtimeSchema);
+                indexMapper = new IndexMapperByName(designSchema);
             }
             enforcer = new DiOutgoingSchemaEnforcer(designSchema, indexMapper);
         }

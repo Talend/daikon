@@ -56,8 +56,8 @@ public class DynamicIndexMapperByIndexTest {
                 .name("col3").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
 
@@ -86,8 +86,8 @@ public class DynamicIndexMapperByIndexTest {
                 .name("col3").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
 
@@ -116,8 +116,8 @@ public class DynamicIndexMapperByIndexTest {
                 .name("col3_2").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
 
@@ -146,8 +146,8 @@ public class DynamicIndexMapperByIndexTest {
                 .name("col3_2").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertThat(actualIndexMap, not(equalTo(expectedIndexMap)));
     }
 
@@ -156,6 +156,7 @@ public class DynamicIndexMapperByIndexTest {
      * if design schema argument doesn't contain dynamic field properties
      */
     @Test(expected = IllegalArgumentException.class)
+    @SuppressWarnings("unused")
     public void testIndexMapperConstructorThrowsException() {
         Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
                 .name("col0").type().intType().noDefault() //
@@ -163,15 +164,7 @@ public class DynamicIndexMapperByIndexTest {
                 .name("col2").type().intType().noDefault() //
                 .endRecord(); //
 
-        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
-                .name("col0").type().intType().noDefault() //
-                .name("col1").type().intType().noDefault() //
-                .name("col2").type().intType().noDefault() //
-                .name("col3_1").type().stringType().noDefault() //
-                .name("col3_2").type().intType().noDefault() //
-                .endRecord(); //
-
-        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
+        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema);
     }
 
     /**
@@ -199,8 +192,8 @@ public class DynamicIndexMapperByIndexTest {
                 .name("col3_2").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        List<Integer> actualIndexes = indexMapper.computeDynamicFieldsIndexes();
+        DynamicIndexMapperByIndex indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        List<Integer> actualIndexes = indexMapper.computeDynamicFieldsIndexes(runtimeSchema);
         assertThat(actualIndexes, IsIterableContainingInOrder.contains(expectedIndexes.toArray()));
     }
 

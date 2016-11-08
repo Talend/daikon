@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
-import org.apache.avro.generic.IndexedRecord;
 
 /**
  * {@link IndexMapper} implementation, which match fields according their names
@@ -30,19 +29,12 @@ class IndexMapperByName implements IndexMapper {
     private final Schema designSchema;
 
     /**
-     * Actual schema of {@link IndexedRecord}
-     */
-    private final Schema runtimeSchema;
-
-    /**
-     * Constructor sets design and runtime schemas
+     * Constructor sets design schema
      * 
      * @param designSchema design schema
-     * @param runtimeSchema runtime schema
      */
-    IndexMapperByName(Schema designSchema, Schema runtimeSchema) {
+    IndexMapperByName(Schema designSchema) {
         this.designSchema = designSchema;
-        this.runtimeSchema = runtimeSchema;
     }
 
     /**
@@ -51,7 +43,7 @@ class IndexMapperByName implements IndexMapper {
      * For each design field it finds corresponding runtime field by name and then uses runtime field's position
      */
     @Override
-    public int[] computeIndexMap() {
+    public int[] computeIndexMap(Schema runtimeSchema) {
         int designSchemaSize = designSchema.getFields().size();
         int[] indexMap = new int[designSchemaSize];
         List<Field> designFields = designSchema.getFields();

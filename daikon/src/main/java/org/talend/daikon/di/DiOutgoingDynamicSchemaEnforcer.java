@@ -42,7 +42,7 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     /**
      * A {@link List} of runtime schema {@link Field}s
      */
-    private final List<Field> runtimeFields;
+    private List<Field> runtimeFields;
 
     /**
      * Dynamic field position in the design schema. Schema can contain 0 or 1 dynamic columns.
@@ -52,7 +52,7 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     /**
      * Contains indexes of dynamic fields (i.e. fields which are present in runtime schema, but are not present in design schema)
      */
-    private final List<Integer> dynamicFieldsIndexes;
+    private List<Integer> dynamicFieldsIndexes;
 
     /**
      * {@link Schema}, which describes dynamic fields (i.e. fields which are present in runtime schema, but are not present in
@@ -61,30 +61,29 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     private Schema dynamicFieldsSchema;
 
     /**
+     * State field, which denotes whether first incoming {@link IndexedRecord} was processed
+     * (i.e. )
+     */
+    private boolean firstRecordProcessed = false;
+
+    /**
      * Constructor sets design schema, its fields and size, runtime schema fields and values related to dynamic fields handling
      * 
      * @param designSchema design schema (specified by user and provided by Di Studio)
-     * @param runtimeSchema runtime schema (created by component and included into {@link IndexedRecord} ), actual schema of data
      * @param indexMapper tool, which computes correspondence between design and runtime fields
      */
-    public DiOutgoingDynamicSchemaEnforcer(Schema designSchema, Schema runtimeSchema, DynamicIndexMapper indexMapper) {
+    public DiOutgoingDynamicSchemaEnforcer(Schema designSchema, DynamicIndexMapper indexMapper) {
         super(designSchema, indexMapper);
-
-        this.runtimeFields = runtimeSchema.getFields();
-
-        this.dynamicFieldsIndexes = indexMapper.computeDynamicFieldsIndexes();
-
         if (AvroUtils.isIncludeAllFields(designSchema)) {
             this.dynamicFieldPosition = Integer.valueOf(designSchema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION));
         } else {
             throw new IllegalArgumentException("Design schema doesn't contain dynamic field");
         }
-
-        createDynamicFieldsSchema(indexMapper);
     }
 
     /**
      * Returns dynamic fields schema
+     * This method could be called only after {@ling DiOutgoingDynamicSchemaEnforcer#setWrapped(IndexedRecord)} was called
      * 
      * @return dynamic fields schema
      */
@@ -112,6 +111,27 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     }
 
     /**
+     * Wraps {@link IndexedRecord},
+     * creates map of correspondence between design and runtime fields, when first record is wrapped
+     * 
+     * @param record {@link IndexedRecord} to be wrapped
+     */
+    @Override
+    public void setWrapped(IndexedRecord record) {
+        super.setWrapped(record);
+        // wrappedRecord = record;
+        // if (indexMap == null) {
+        // indexMap = indexMapper.computeIndexMap(record.getSchema());
+        // }
+        if (!firstRecordProcessed) {
+            Schema runtimeSchema = record.getSchema();
+            this.runtimeFields = runtimeSchema.getFields();
+            this.dynamicFieldsIndexes = ((DynamicIndexMapper) indexMapper).computeDynamicFieldsIndexes(runtimeSchema);
+            createDynamicFieldsSchema();
+        }
+    }
+
+    /**
      * Retrieves dynamic fields values and returns them as map.
      * Map key is dynamic field name
      * Map value is dynamic field value, transformed to Talend type
@@ -132,13 +152,10 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
 
     /**
      * Creates {@link Schema} of dynamic fields
-     * Note, this method is used only in constructor
-     * 
-     * @param indexMapper instance of {@link DynamicIndexMapper}, it provides dynamic field indexes
      */
-    private void createDynamicFieldsSchema(DynamicIndexMapper indexMapper) {
+    private void createDynamicFieldsSchema() {
         List<Field> dynamicFields = new ArrayList<>();
-        List<Integer> dynamicFieldsIndexes = indexMapper.computeDynamicFieldsIndexes();
+        // List<Integer> dynamicFieldsIndexes = indexMapper.computeDynamicFieldsIndexes();
         for (int index : dynamicFieldsIndexes) {
             Field dynamicField = runtimeFields.get(index);
             Field dynamicFieldCopy = new Schema.Field(dynamicField.name(), dynamicField.schema(), dynamicField.doc(),

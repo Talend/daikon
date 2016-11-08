@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.daikon.di;
 
+import org.apache.avro.Schema;
+import org.apache.avro.generic.IndexedRecord;
+
 /**
  * Provides means to map design fields to runtime fields
  */
@@ -23,8 +26,9 @@ interface IndexMapper {
      * Computes map of correspondence between design fields (POJO fields) and runtime fields
      * (IndexedRecord fields)
      * 
+     * @param runtimeSchema runtime data schema, which goes along with {@link IndexedRecord}
      * @return map of correspondence
      */
-    int[] computeIndexMap();
+    int[] computeIndexMap(Schema runtimeSchema);
 
 }

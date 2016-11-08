@@ -37,9 +37,10 @@ class IndexMapperByIndex implements IndexMapper {
      * {@inheritDoc}
      * 
      * If there is no dynamic fields runtime indexes equal design indexes
+     * <code>runtimeSchema</code> parameter is not used here
      */
     @Override
-    public int[] computeIndexMap() {
+    public int[] computeIndexMap(Schema runtimeSchema) {
         int[] indexMap = new int[designSchemaSize];
         for (int i = 0; i < designSchemaSize; i++) {
             indexMap[i] = i;

@@ -14,6 +14,9 @@ package org.talend.daikon.di;
 
 import java.util.List;
 
+import org.apache.avro.Schema;
+import org.apache.avro.generic.IndexedRecord;
+
 /**
  * Provides means to map design and dynamic fields to runtime fields
  */
@@ -22,7 +25,8 @@ interface DynamicIndexMapper extends IndexMapper {
     /**
      * Computes dynamic fields indexes
      * 
+     * @param runtimeSchema runtime data schema, which goes along with {@link IndexedRecord}
      * @return list of dynamic fields indexes
      */
-    List<Integer> computeDynamicFieldsIndexes();
+    List<Integer> computeDynamicFieldsIndexes(Schema runtimeSchema);
 }

@@ -86,8 +86,8 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .name("createdDate").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         Schema actualSchema = enforcer.getSchema();
         assertEquals(designSchema, actualSchema);
     }
@@ -115,8 +115,9 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .name("createdDate").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+        enforcer.setWrapped(record);
         Schema actualDynamicSchema = enforcer.getDynamicFieldsSchema();
         assertEquals(expectedDynamicSchema, actualDynamicSchema);
     }
@@ -137,8 +138,8 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .name("createdDate").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema, runtimeSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         enforcer.setWrapped(record);
 
         assertThat(enforcer.get(1), equalTo((Object) "User"));
@@ -170,8 +171,8 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         enforcer.setWrapped(record);
 
         assertThat(enforcer.get(0), equalTo((Object) 1));
@@ -202,8 +203,8 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .name("age").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         enforcer.setWrapped(record);
 
         assertThat(enforcer.get(0), equalTo((Object) 1));
@@ -233,8 +234,8 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .name("age").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema, runtimeSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, runtimeSchema, indexMapper);
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         enforcer.setWrapped(record);
 
         enforcer.get(4);

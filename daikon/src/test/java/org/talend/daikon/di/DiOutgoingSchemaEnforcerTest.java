@@ -117,7 +117,7 @@ public class DiOutgoingSchemaEnforcerTest {
                 .name("age").type().intType().noDefault() //
                 .endRecord(); //
 
-        IndexMapper indexMapper = new IndexMapperByName(talend6Schema, runtimeSchema);
+        IndexMapper indexMapper = new IndexMapperByName(talend6Schema);
         DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
         enforcer.setWrapped(record);
 

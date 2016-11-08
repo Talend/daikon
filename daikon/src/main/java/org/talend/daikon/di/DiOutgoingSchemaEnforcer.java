@@ -105,6 +105,11 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
     protected IndexedRecord wrappedRecord;
 
     /**
+     * Tool, which computes correspondence between design and runtime fields
+     */
+    protected final IndexMapper indexMapper;
+
+    /**
      * Maps design field indexes to runtime field indexes.
      * Design indexes are indexed of this array and runtime indexed are values
      * This map is computed once for the first incoming record and then used for all subsequent records
@@ -113,7 +118,13 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
     protected int[] indexMap;
 
     /**
-     * Constructor sets design schema and creates map of correspondence between design and runtime fields
+     * State field, which denotes whether first incoming {@link IndexedRecord} was processed
+     * (i.e. <code>indexMap</code> was created)
+     */
+    private boolean firstRecordProcessed = false;
+
+    /**
+     * Constructor sets design schema and {@link IndexMapper} instance
      * 
      * @param designSchema design schema specified by user
      * @param indexMapper tool, which computes correspondence between design and runtime fields
@@ -122,16 +133,21 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
         this.designSchema = designSchema;
         this.designFields = designSchema.getFields();
         this.designSchemaSize = designFields.size();
-        indexMap = indexMapper.computeIndexMap();
+        this.indexMapper = indexMapper;
     }
 
     /**
-     * Wraps {@link IndexedRecord}
+     * Wraps {@link IndexedRecord},
+     * creates map of correspondence between design and runtime fields, when first record is wrapped
      * 
      * @param record {@link IndexedRecord} to be wrapped
      */
     public void setWrapped(IndexedRecord record) {
         wrappedRecord = record;
+        if (!firstRecordProcessed) {
+            indexMap = indexMapper.computeIndexMap(record.getSchema());
+            firstRecordProcessed = true;
+        }
     }
 
     /**

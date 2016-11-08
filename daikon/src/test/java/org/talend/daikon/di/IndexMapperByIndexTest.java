@@ -40,7 +40,7 @@ public class IndexMapperByIndexTest {
                 .endRecord(); //
 
         IndexMapperByIndex indexMapper = new IndexMapperByIndex(designSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        int[] actualIndexMap = indexMapper.computeIndexMap(null);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
 
@@ -54,7 +54,7 @@ public class IndexMapperByIndexTest {
         Schema designSchema = SchemaBuilder.record("Record").fields().endRecord();
 
         IndexMapperByIndex indexMapper = new IndexMapperByIndex(designSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        int[] actualIndexMap = indexMapper.computeIndexMap(null);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
 }

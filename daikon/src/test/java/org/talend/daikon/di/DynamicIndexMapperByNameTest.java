@@ -54,8 +54,8 @@ public class DynamicIndexMapperByNameTest {
                 .name("col3").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema, runtimeSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
 
@@ -84,8 +84,8 @@ public class DynamicIndexMapperByNameTest {
                 .name("col1").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema, runtimeSchema);
-        int[] actualIndexMap = indexMapper.computeIndexMap();
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
 
@@ -94,6 +94,7 @@ public class DynamicIndexMapperByNameTest {
      * if design schema argument doesn't contain dynamic field properties
      */
     @Test(expected = IllegalArgumentException.class)
+    @SuppressWarnings("unused")
     public void testIndexMapperConstructorThrowsException() {
         Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
                 .name("col0").type().intType().noDefault() //
@@ -101,15 +102,7 @@ public class DynamicIndexMapperByNameTest {
                 .name("col2").type().intType().noDefault() //
                 .endRecord(); //
 
-        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
-                .name("col0").type().intType().noDefault() //
-                .name("col1").type().intType().noDefault() //
-                .name("col2").type().intType().noDefault() //
-                .name("col3_1").type().stringType().noDefault() //
-                .name("col3_2").type().intType().noDefault() //
-                .endRecord(); //
-
-        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema, runtimeSchema);
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema);
     }
 
     /**
@@ -137,8 +130,8 @@ public class DynamicIndexMapperByNameTest {
                 .name("col1").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema, runtimeSchema);
-        List<Integer> actualIndexes = indexMapper.computeDynamicFieldsIndexes();
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema);
+        List<Integer> actualIndexes = indexMapper.computeDynamicFieldsIndexes(runtimeSchema);
         assertThat(actualIndexes, IsIterableContainingInOrder.contains(expectedIndexes.toArray()));
     }
 }

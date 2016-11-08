@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
-import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
@@ -42,37 +41,19 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
     private final int designSchemaSize;
 
     /**
-     * Number of dynamic fields. It equals runtime schema size minus design schema size
-     * Note, design schema doesn't contain dynamic field as a field. It contains schema properties, which
-     * describes dynamic field
-     */
-    private final int dynamicFields;
-
-    /**
      * Dynamic column position in the design schema. Schema can contain 0 or 1 dynamic columns.
      */
     private final int dynamicFieldPosition;
 
     /**
-     * Actual schema of {@link IndexedRecord}
-     */
-    private final Schema runtimeSchema;
-
-    /**
-     * Constructor sets design and runtime schemas, design schema fields and size, dynamic field position and number of dynamic
-     * fields
+     * Constructor sets design schema, design schema fields and size and dynamic field position
      * 
      * @param designSchema design schema
-     * @param runtimeSchema runtime schema
      */
-    DynamicIndexMapperByName(Schema designSchema, Schema runtimeSchema) {
+    DynamicIndexMapperByName(Schema designSchema) {
         this.designSchema = designSchema;
         this.designFields = designSchema.getFields();
         this.designSchemaSize = designFields.size();
-        this.runtimeSchema = runtimeSchema;
-        int runtimeSchemaSize = runtimeSchema.getFields().size();
-        this.dynamicFields = runtimeSchemaSize - designSchemaSize;
-
         if (AvroUtils.isIncludeAllFields(designSchema)) {
             dynamicFieldPosition = Integer.valueOf(designSchema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION));
         } else {
@@ -88,7 +69,7 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
      * That's why -1 value is set for dynamic field index.
      */
     @Override
-    public int[] computeIndexMap() {
+    public int[] computeIndexMap(Schema runtimeSchema) {
         int[] indexMap = new int[designSchemaSize + 1];
 
         for (int i = 0; i < designSchemaSize; i++) {
@@ -112,8 +93,11 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
      * {@inheritDoc}
      */
     @Override
-    public List<Integer> computeDynamicFieldsIndexes() {
-        ArrayList<Integer> dynamicFieldsIndexes = new ArrayList<Integer>(dynamicFields);
+    public List<Integer> computeDynamicFieldsIndexes(Schema runtimeSchema) {
+        int runtimeSchemaSize = runtimeSchema.getFields().size();
+        int dynamicFieldsNumber = runtimeSchemaSize - designSchemaSize;
+
+        ArrayList<Integer> dynamicFieldsIndexes = new ArrayList<Integer>(dynamicFieldsNumber);
         for (Field runtimeField : runtimeSchema.getFields()) {
             String fieldName = runtimeField.name();
             Field designField = designSchema.getField(fieldName);
