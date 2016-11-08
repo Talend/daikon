@@ -19,7 +19,7 @@ public class JsonBaseToolTest {
 
     @Test
     public void findClass() throws Exception {
-        FullExampleProperties properties = new FullExampleProperties();
+        FullExampleProperties properties = new FullExampleProperties("fullexample");
         assertEquals(String.class, JsonBaseTool.findClass(properties.stringProp.getType()));
         assertEquals(Integer.class, JsonBaseTool.findClass(properties.integerProp.getType()));
         assertEquals(Date.class, JsonBaseTool.findClass(properties.dateProp.getType()));
@@ -33,14 +33,14 @@ public class JsonBaseToolTest {
 
     @Test
     public void isListClass() throws Exception {
-        FullExampleProperties properties = new FullExampleProperties();
+        FullExampleProperties properties = new FullExampleProperties("fullexample");
         assertTrue(JsonBaseTool.isListClass(properties.tableProp.colListString.getType()));
         assertFalse(JsonBaseTool.isListClass(properties.stringProp.getType()));
     }
 
     @Test
     public void getListInnerClassName() throws Exception {
-        FullExampleProperties properties = new FullExampleProperties();
+        FullExampleProperties properties = new FullExampleProperties("fullexample");
         assertEquals(String.class.getName(), JsonBaseTool.getListInnerClassName(properties.tableProp.colListString.getType()));
         assertEquals(FullExampleProperties.TableProperties.ColEnum.class,
                 JsonBaseTool.findClass(JsonBaseTool.getListInnerClassName(properties.tableProp.colListEnum.getType())));

@@ -21,7 +21,7 @@ public class JsonSchemaUtilTest {
         String jsonDataStr = readJson("FullExampleJsonData.json");
 
         FullExampleProperties properties = JsonSchemaUtil.fromJson(jsonDataStr,
-                (FullExampleProperties) new FullExampleProperties().init());
+                (FullExampleProperties) new FullExampleProperties("fullexample").init());
 
         String jsonStr = readJson("FullExampleProperties.json");
         String jsonResult = JsonSchemaUtil.toJson(properties);
@@ -38,7 +38,7 @@ public class JsonSchemaUtilTest {
         JsonNode jsonNode = mapper.readTree(json);
         JsonNode jsonData = jsonNode.get(JsonSchemaUtil.TAG_JSON_DATA);
         FullExampleProperties deserFep = JsonSchemaUtil.fromJson(jsonData.toString(),
-                (FullExampleProperties) new FullExampleProperties().init());
+                (FullExampleProperties) new FullExampleProperties("fullexample").init());
         // compare them
         assertEquals(fep, deserFep);
     }

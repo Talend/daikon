@@ -80,8 +80,8 @@ public class FullExampleProperties extends PropertiesImpl {
 
     private List<String> methodCalled = new ArrayList<>();
 
-    public FullExampleProperties() {
-        super("fullexample");
+    public FullExampleProperties(String name) {
+        super(name);
     }
 
     private void thisMethodWasCalled() {

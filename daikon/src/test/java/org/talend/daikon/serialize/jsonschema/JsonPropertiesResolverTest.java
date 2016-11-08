@@ -24,7 +24,7 @@ public class JsonPropertiesResolverTest {
         String jsonDataStr = JsonSchemaUtilTest.readJson("FullExampleJsonData.json");
         JsonPropertiesResolver resolver = new JsonPropertiesResolver();
         FullExampleProperties properties = (FullExampleProperties) resolver.resolveJson((ObjectNode) mapper.readTree(jsonDataStr),
-                new FullExampleProperties().init());
+                new FullExampleProperties("fullexample").init());
 
         assertEquals("abc", properties.stringProp.getValue());
         assertThat(1, is(equalTo(properties.integerProp.getValue())));

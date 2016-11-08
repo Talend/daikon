@@ -9,7 +9,7 @@ import org.talend.daikon.properties.presentation.Widget;
 
 public class JsonWidgetTest {
 
-    FullExampleProperties properties = new FullExampleProperties();
+    FullExampleProperties properties = new FullExampleProperties("fullexample");
 
     Form mainForm;
 
