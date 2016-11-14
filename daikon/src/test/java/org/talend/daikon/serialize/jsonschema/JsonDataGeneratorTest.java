@@ -1,6 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -43,6 +43,14 @@ public class JsonDataGeneratorTest {
                 .asList(new FullExampleProperties.TableProperties.ColEnum[] { FullExampleProperties.TableProperties.ColEnum.FOO,
                         FullExampleProperties.TableProperties.ColEnum.BAR, FullExampleProperties.TableProperties.ColEnum.FOO }));
         properties.tableProp.colListString.setValue(Arrays.asList(new String[] { "a", "b", "c" }));
+        return properties;
+    }
+
+    static public ReferenceExampleProperties createASetupReferenceExampleProperties() throws ParseException {
+        ReferenceExampleProperties properties = new ReferenceExampleProperties("refexample");
+        properties.init();
+        properties.parentProp.setValue("testParentValue");
+        properties.reference.childProp.setValue("testChildValue");
         return properties;
     }
 

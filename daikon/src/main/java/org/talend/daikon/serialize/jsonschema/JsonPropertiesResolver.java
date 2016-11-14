@@ -1,6 +1,11 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.dateFormatter;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.findClass;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -11,6 +16,7 @@ import java.util.List;
 
 import org.apache.avro.Schema;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.property.Property;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,7 +34,9 @@ public class JsonPropertiesResolver {
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
         for (Properties properties : propertiesList) {
-            resolveJson((ObjectNode) jsonData.get(properties.getName()), cProperties.getProperties(properties.getName()));
+            if (!ReferenceProperties.class.isAssignableFrom(properties.getClass())) {
+                resolveJson((ObjectNode) jsonData.get(properties.getName()), cProperties.getProperties(properties.getName()));
+            }
         }
         return cProperties;
     }

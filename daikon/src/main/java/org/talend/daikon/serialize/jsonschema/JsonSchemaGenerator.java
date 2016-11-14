@@ -1,14 +1,18 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.util.Date;
 import java.util.List;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.property.EnumProperty;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.property.EnumListProperty;
+import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -41,7 +45,12 @@ public class JsonSchemaGenerator {
         List<Properties> propertiesList = getSubProperties(cProperties);
         for (Properties properties : propertiesList) {
             String name = properties.getName();
-            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties));
+            if (ReferenceProperties.class.isAssignableFrom(properties.getClass())) {
+                ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).put(name,
+                        ((ReferenceProperties) properties).componentType.getValue());
+            } else {
+                ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties));
+            }
         }
         return schema;
     }

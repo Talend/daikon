@@ -1,12 +1,18 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.dateFormatter;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.findClass;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.util.Date;
 import java.util.List;
 
 import org.apache.avro.Schema;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.property.Property;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -28,8 +34,10 @@ public class JsonDataGenerator {
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
         for (Properties properties : propertiesList) {
-            String name = properties.getName();
-            rootNode.set(name, processTPropertiesData(properties));
+            if (!ReferenceProperties.class.isAssignableFrom(properties.getClass())) {
+                String name = properties.getName();
+                rootNode.set(name, processTPropertiesData(properties));
+            }
         }
         return rootNode;
     }
@@ -96,4 +104,5 @@ public class JsonDataGenerator {
             throw new RuntimeException("Do not support type " + type + " yet.");
         }
     }
+
 }

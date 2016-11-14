@@ -2,10 +2,14 @@ package org.talend.daikon.serialize.jsonschema;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ReferenceProperties;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,5 +79,24 @@ public class JsonSchemaUtil {
             objectNode.set(TAG_JSON_UI, uiSchemaGenerator.genWidget(cp));
         }
         return objectNode.toString();
+    }
+
+    /**
+     * resolve the referenced properties between a group of properties
+     */
+    public static void resolveReferenceProperties(Map<String, Properties> propertiesMap) {
+        for (Entry<String, Properties> entry : propertiesMap.entrySet()) {
+            Field[] allFields = entry.getValue().getClass().getFields();
+            for (Field field : allFields) {
+                if (ReferenceProperties.class.isAssignableFrom(field.getType())) {
+                    try {
+                        String referenceName = ((ReferenceProperties) field.get(entry.getValue())).componentType.getValue();
+                        field.set(entry.getValue(), propertiesMap.get(referenceName));
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
     }
 }
