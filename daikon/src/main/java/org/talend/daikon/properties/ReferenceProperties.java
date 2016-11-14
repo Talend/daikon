@@ -47,8 +47,6 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
      */
     private transient T reference;
 
-    private static Iterable<Definition> definitionForPropertyType;
-
     public ReferenceProperties(String name, String referenceDefintionName) {
         super(name);
         this.referenceDefinitionName.setValue(referenceDefintionName);
