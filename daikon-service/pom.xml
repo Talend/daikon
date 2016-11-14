@@ -45,7 +45,7 @@
     <distributionManagement>
         <snapshotRepository>
             <id>talend_nexus_deployment</id>
-            <url>${talend_snapshots}</url>
+            <url>${talend_snapshots_deployment}</url>
         </snapshotRepository>
         <repository>
             <id>talend_nexus_deployment</id>
