@@ -18,10 +18,21 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Generator JSONSchema from Properties
+ * Provide methods to create JSON Schema documents from a {@link Properties}.
+ *
+ * This JSON Schema can be used to validate a Properties in its "reduced JSON" format as provided by
+ * {@link JsonDataGenerator}.
+ *
+ * <ul>
+ * <li>https://spacetelescope.github.io/understanding-json-schema/</li>
+ * </ul>
  */
 public class JsonSchemaGenerator {
 
+    /**
+     * @param properties the properties to create a JSON Schema representation for.
+     * @return the JSON Schema representation.
+     */
     protected ObjectNode genSchema(Properties properties) {
         return processTProperties(properties);
     }

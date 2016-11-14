@@ -28,7 +28,7 @@ import org.talend.daikon.properties.property.Property;
 /**
  * A reference to another properties.
  * 
- * The {@link org.talend.daikon.properties.presentation.WidgetType#COMPONENT_REFERENCE} uses this class as its
+ * The {@link org.talend.daikon.properties.presentation.Widget#COMPONENT_REFERENCE_WIDGET_TYPE} uses this class as its
  * properties and the Widget will populate these values.
  */
 
@@ -37,8 +37,7 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
     private static final Logger LOG = LoggerFactory.getLogger(ReferenceProperties.class);
 
     /**
-     * name of the definition that may be used to create the reference type.
-     * the Generic type T for this class must be created by the defition matching the referenceDefintionName.
+     * name of the definition that may be used to create the reference type, which must create a Properties of type T.
      */
     public final Property<String> referenceDefinitionName = newProperty("referenceDefinitionName");
 
@@ -47,9 +46,9 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
      */
     private transient T reference;
 
-    public ReferenceProperties(String name, String referenceDefintionName) {
+    public ReferenceProperties(String name, String referenceDefinitionName) {
         super(name);
-        this.referenceDefinitionName.setValue(referenceDefintionName);
+        this.referenceDefinitionName.setValue(referenceDefinitionName);
     }
 
     public void setReference(Properties prop) {
@@ -65,7 +64,7 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
         if (super.acceptUninitializedField(f)) {
             return true;
         }
-        // we accept that return field is not intialized after setupProperties.
+        // we accept that return field is not initialized after setupProperties.
         return "reference".equals(f.getName());
     }
 
@@ -109,7 +108,7 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
                             referenceProperties.setReference(theReference);
                         } else {// no reference of the required type has been provided so do no set anything but log it
                             LOG.debug("failed to find a reference object for ReferenceProperties[" + referenceProperties.getName()
-                                    + "] with defintion [" + referenceProperties.referenceDefinitionName.getValue()
+                                    + "] with definition [" + referenceProperties.referenceDefinitionName.getValue()
                                     + "] and with parent type [" + (parent != null ? parent.getClass().getName() : "null") + "]");
                         }
                     }

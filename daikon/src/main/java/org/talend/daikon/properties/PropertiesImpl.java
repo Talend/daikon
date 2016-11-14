@@ -566,11 +566,11 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
     }
 
     /**
-     * creates a new Properties instance looking for a String constructor and use name as a parameter
+     * creates a new Properties instance looking for a String constructor and uses name as a parameter
      * 
      * @param propClass never null, the class to instantiate.
      * @param name the name of the properties to be set if a String contructor is found
-     * @throws TalendRuntimeException is any reflection method thrown an exception.
+     * @throws TalendRuntimeException if any reflection method throws an exception.
      */
     public static <P extends Properties> P createNewInstance(Class<P> propClass, String name) {
         try {
@@ -580,7 +580,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                 return stringConstructor.newInstance(name);
             } // else no constructor found so throw an exception
             throw TalendRuntimeException
-                    .createUnexpectedException("Could nor find a suitable constructor for class [" + propClass.getName() + "]");
+                    .createUnexpectedException("Could not find a suitable constructor for class [" + propClass.getName() + "]");
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException e) {
             throw TalendRuntimeException.createUnexpectedException(e);

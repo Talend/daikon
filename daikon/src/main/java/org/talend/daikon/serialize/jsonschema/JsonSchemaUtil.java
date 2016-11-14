@@ -90,7 +90,7 @@ public class JsonSchemaUtil {
     }
 
     /**
-     * fills the initalInstance with the properties from the Json-data intput stream
+     * fills the initialInstance with the properties from the Json-data intput stream
      */
     public static Properties fromJson(InputStream jsonIS, DefinitionRegistryService defRegistryService) {
         try {
@@ -102,7 +102,7 @@ public class JsonSchemaUtil {
     }
 
     /**
-     * fills the initalInstance with the properties from the Json-data intput stream
+     * fills the initialInstance with the properties from the Json-data intput stream
      */
     public static <P extends Properties> P fromJson(InputStream inputStream, P initialInstance) {
         try {
@@ -124,7 +124,7 @@ public class JsonSchemaUtil {
 
     /**
      * serialize the properties to a ui-specs including a json schema, json data and json ui.
-     * The json data have a extra string field named {@link JsonSchemaConstants#DEFINITION_NAME_JSON_METADATA} containing the
+     * The json data has a extra string field named {@link JsonSchemaConstants#DEFINITION_NAME_JSON_METADATA} containing the
      * definitionName
      */
     public static String toJson(Properties cp, String definitionName) {
