@@ -1,6 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 
 import org.junit.Test;
+import org.talend.daikon.properties.TestEmptyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,5 +48,28 @@ public class JsonSchemaUtilTest {
         java.net.URL url = JsonSchemaUtilTest.class.getResource(path);
         java.nio.file.Path resPath = java.nio.file.Paths.get(url.toURI());
         return new String(java.nio.file.Files.readAllBytes(resPath), "UTF8").trim();
+    }
+
+    @Test
+    public void testDeserializeEmptyProperties() throws ParseException, JsonProcessingException, IOException {
+        TestEmptyProperties properties = TestEmptyProperties.createASetupOptionalProperties();
+
+        // Test instanciate the Properties with its default value
+        String full = "{\"aProperty\":\"initalValue\",\"innerProperties\":{\"innerProperty\":\"initialInnerValue\"},"
+                + "\"@definitionName\":\"testName\"}";
+        TestEmptyProperties propertiesFull = JsonSchemaUtil.fromJson(full, TestEmptyProperties.createASetupOptionalProperties());
+        assertEquals(properties, propertiesFull);
+
+        // Test instanciate the Properties an empty JSON.
+        String emptyJSON = "{}";
+        TestEmptyProperties propertiesEmptyJSON = JsonSchemaUtil.fromJson(emptyJSON,
+                TestEmptyProperties.createASetupOptionalProperties());
+        assertEquals(properties, propertiesEmptyJSON);
+
+        // Test instanciate the Properties with a JSON containing no Property but all the properties.
+        String noData = "{\"innerProperties\":{}}";
+        TestEmptyProperties propertiesNoData = JsonSchemaUtil.fromJson(noData,
+                TestEmptyProperties.createASetupOptionalProperties());
+        assertEquals(properties, propertiesNoData);
     }
 }

@@ -1,6 +1,11 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.dateFormatter;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.findClass;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -24,11 +29,18 @@ public class JsonPropertiesResolver {
 
         List<Property> propertyList = getSubProperty(cProperties);
         for (Property property : propertyList) {
-            property.setValue(getTPropertyValue(property, jsonData.get(property.getName())));
+            Object newProperty = getTPropertyValue(property, jsonData.get(property.getName()));
+            // when the Property is empty, keep the default one
+            if (newProperty != null) {
+                property.setValue(newProperty);
+            }
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
         for (Properties properties : propertiesList) {
-            resolveJson((ObjectNode) jsonData.get(properties.getName()), cProperties.getProperties(properties.getName()));
+            // when the Properties is empty, keep the default one
+            if (jsonData.get(properties.getName()) != null) {
+                resolveJson((ObjectNode) jsonData.get(properties.getName()), cProperties.getProperties(properties.getName()));
+            }
         }
         return cProperties;
     }

@@ -14,6 +14,8 @@ package org.talend.daikon.properties;
 
 import org.talend.daikon.exception.TalendRuntimeException;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Contains the result of the validation of a components property.
  * <p/>
@@ -33,6 +35,7 @@ public class ValidationResult {
 
     public static ValidationResult OK = new ValidationResult().setStatus(Result.OK);
 
+    @JsonIgnore
     public Result status = Result.OK;
 
     public int number;
@@ -63,6 +66,7 @@ public class ValidationResult {
     /**
      * @return the message previously set or null if none. If a message is returned the client will display it.
      */
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public String getMessage() {
         return message;
     }
@@ -76,6 +80,7 @@ public class ValidationResult {
         return this;
     }
 
+    @JsonIgnore
     public String message;
 
     @Override
