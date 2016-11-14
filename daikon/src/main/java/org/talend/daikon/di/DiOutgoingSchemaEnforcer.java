@@ -12,12 +12,11 @@
 // ============================================================================
 package org.talend.daikon.di;
 
+import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
+
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -25,7 +24,6 @@ import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapterException;
-import org.talend.daikon.avro.converter.SingleColumnIndexedRecordConverter;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to coerce the output type to the exact
@@ -35,162 +33,173 @@ import org.talend.daikon.avro.converter.SingleColumnIndexedRecordConverter;
  * Schema constraints imposed by the Studio, including:
  * <ul>
  * <li>Coercing the types of the returned objects to *exactly* the type required by the Talend POJO.</li>
- * <li>Placing all of the unresolved columns between the wrapped schema and the output schema in the Dynamic column.
- * </li>
+ * <li>Placing all of the unresolved columns between the wrapped schema and the output schema in the Dynamic column.</li>
  * </ul>
  * <p>
  * One instance of this object can be created per outgoing schema and reused via the {@link #setWrapped(IndexedRecord)}
  * method.
+ * <p>
+ * This class accepts so-called design schema as an argument for constructor. Design schema is specified by user in Schema Editor.
+ * It contains data fields, which user wants to retrieve from data source. Schema Editor creates schema in old manner. It creates
+ * instance
+ * of MetadataTable. For new components this instance is converted to avro {@link Schema} instance by MetadataToolAvroHelper.
+ * <p>
+ * There could be a situation when user doesn't know all fields of data, but he wants to retrieve them all. In this case user
+ * should specify
+ * some field as dynamic. Dynamic means it is not known at design time how much actual fields will be retrieved. Dynamic field
+ * aggregates
+ * all unknown fields. Note, design avro {@link Schema} doesn't contain dynamic field. It contain special properties, which
+ * describe
+ * dynamic field (its name, position in schema etc).
+ * <p>
+ * Consider following example:
+ * User specified schema with following fields (field name, type):
+ * <ul>
+ * <li>(name, String)</li>
+ * <li>(dynamic, Dynamic)</li>
+ * <li>(address, String)</li>
+ * </ul>
+ * After conversion with MetadataToolAvroHelper avro {@link Schema} will contain only:
+ * <ul>
+ * <li>(name, String)</li>
+ * <li>(address, String)</li>
+ * </ul>
+ * and properties, which describes dynamic field
+ * <p>
+ * There is one more thing, which should be mentioned. Both old and TCOMP components could be used in one Job in Di (Studio). To
+ * make them
+ * compatible there is special handling in codegen plugin. TCOMP component output (IndexedRecord and its Schema) is converted to
+ * old Di objects.
+ * Row2Struct (also known as POJO) corresponds to IndexedRecord. Its fields correspond to data fields. Important note is that
+ * Row2Struct contains
+ * also a field for dynamic field. {@link DiOutgoingSchemaEnforcer} goal is to convert avro-styled data to Talend-styled.
+ * {@link DiOutgoingSchemaEnforcer#get(int)} is the main functionality of this class. This class is used in codegen plugin.
+ * See, component_util_indexedrecord_to_rowstruct.javajet. Note, get() is called for each field in Row2Struct. When user specified
+ * dynamic column,
+ * Row2Struct will contain one more field than desigh avro schema.
  */
-public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstants {
+public class DiOutgoingSchemaEnforcer implements IndexedRecord {
 
     /**
-     * True if columns from the incoming schema are matched to the outgoing schema exclusively by position.
+     * {@link Schema} which was specified by user during setting component properties (at design time)
+     * This schema may contain di-specific properties
      */
-    private boolean byIndex;
+    protected final Schema designSchema;
 
     /**
-     * The outgoing schema that determines which Java objects are produced.
+     * A {@link List} of design schema {@link Field}s
+     * It is stored as separate field to accelerate access to them
      */
-    private final Schema outgoing;
+    protected final List<Field> designFields;
 
     /**
-     * The incoming IndexedRecord currently wrapped by this enforcer. This can be swapped out for new data as long as
-     * they keep the same schema.
+     * Number of fields in design schema
      */
-    private IndexedRecord wrapped;
+    protected final int designSchemaSize;
 
     /**
-     * The position of the dynamic column in the outgoing schema. This is -1 if there is no dynamic column. There can be
-     * a maximum of one dynamic column in the schema.
+     * {@link IndexedRecord} currently wrapped by this enforcer. This can be swapped out for new data as long as
+     * they keep the same schema. This {@link IndexedRecord} contains another {@link Schema} which is called actual or runtime
+     * schema.
      */
-    private final int outgoingDynamicColumn;
+    protected IndexedRecord wrappedRecord;
 
     /**
-     * The {@link Schema} of dynamic column, it will be calculated only once and be used for initial
-     * routines.system.DynamicMetadata
+     * Tool, which computes correspondence between design and runtime fields
      */
-    private Schema outgoingDynamicRuntimeSchema;
+    protected final IndexMapper indexMapper;
 
     /**
-     * The name and position of fields in the wrapped record that need to be put into the dynamic column of the output
-     * record.
+     * Maps design field indexes to runtime field indexes.
+     * Design indexes are indexed of this array and runtime indexed are values
+     * This map is computed once for the first incoming record and then used for all subsequent records
+     * -1 value is used to to denote that design field corresponds to dynamic field
      */
-    private Map<String, Integer> dynamicColumnSources;
+    protected int[] indexMap;
 
-    public DiOutgoingSchemaEnforcer(Schema outgoing, boolean byIndex) {
-        this.outgoing = outgoing;
-        this.byIndex = byIndex;
+    /**
+     * State field, which denotes whether first incoming {@link IndexedRecord} was processed
+     * (i.e. <code>indexMap</code> was created)
+     */
+    private boolean firstRecordProcessed = false;
 
-        // Find the dynamic column, if any.
-        outgoingDynamicColumn = AvroUtils.isIncludeAllFields(outgoing)
-                ? Integer.valueOf(outgoing.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : -1;
+    /**
+     * Constructor sets design schema and {@link IndexMapper} instance
+     * 
+     * @param designSchema design schema specified by user
+     * @param indexMapper tool, which computes correspondence between design and runtime fields
+     */
+    public DiOutgoingSchemaEnforcer(Schema designSchema, IndexMapper indexMapper) {
+        this.designSchema = designSchema;
+        this.designFields = designSchema.getFields();
+        this.designSchemaSize = designFields.size();
+        this.indexMapper = indexMapper;
     }
 
     /**
-     * @param wrapped The internal, actual data represented as an IndexedRecord.
+     * Wraps {@link IndexedRecord},
+     * creates map of correspondence between design and runtime fields, when first record is wrapped
+     * 
+     * @param record {@link IndexedRecord} to be wrapped
      */
-    public void setWrapped(IndexedRecord wrapped) {
-        // TODO: This matches the salesforce and file-input single output components. Is this sufficient logic
-        // for all components?
-        if (wrapped instanceof SingleColumnIndexedRecordConverter.PrimitiveAsIndexedRecordAdapter) {
-            byIndex = true;
-        }
-        this.wrapped = wrapped;
-        if (outgoingDynamicRuntimeSchema == null && outgoingDynamicColumn != -1) {
-            List<Schema.Field> copyFieldList;
-            if (byIndex) {
-                copyFieldList = getDynamicSchemaByIndex();
-            } else {
-                copyFieldList = getDynamicSchemaByName();
-            }
-            outgoingDynamicRuntimeSchema = Schema.createRecord("dynamic", null, null, false);
-            outgoingDynamicRuntimeSchema.setFields(copyFieldList);
+    public void setWrapped(IndexedRecord record) {
+        wrappedRecord = record;
+        if (!firstRecordProcessed) {
+            indexMap = indexMapper.computeIndexMap(record.getSchema());
+            firstRecordProcessed = true;
         }
     }
 
+    /**
+     * Returns schema of this {@link IndexedRecord}
+     * Note, this schema doesn't contain dynamic field.
+     * However, {@link DiOutgoingDynamicSchemaEnforcer} returns dynamic values
+     * in map, when dynamic field index is passed
+     */
     @Override
     public Schema getSchema() {
-        return outgoing;
+        return designSchema;
     }
 
-    public Schema getOutgoingDynamicRuntimeSchema() {
-        return outgoingDynamicRuntimeSchema;
-    }
-
+    /**
+     * Throws {@link UnmodifiableAdapterException}. This operation is not supported
+     */
     @Override
     public void put(int i, Object v) {
         throw new UnmodifiableAdapterException();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * Could be called only after first record was wrapped.
+     * Here design schema and runtime schema have the same fields
+     * (but fields could be in different order)
+     * 
+     * @param pojoIndex index of required value. Could be from 0 to designSchemaSize - 1
+     */
     @Override
-    public Object get(int i) {
-        if (outgoingDynamicColumn != -1) {
-            // If we are asking for the dynamic column, then all of the fields that don't match the outgoing schema are
-            // added to a map.
-            if (i == outgoingDynamicColumn) {
-                if (byIndex) {
-                    return getDynamicMapByIndex();
-                } else {
-                    return getDynamicMapByName();
-                }
-            }
-
-            if (i > outgoingDynamicColumn) {
-                i--;
-            }
-        }
-
-        // We should never ask for an index outside of the outgoing schema.
-        if (i >= outgoing.getFields().size()) {
-            throw new ArrayIndexOutOfBoundsException(i);
-        }
-
-        Field outField = getSchema().getFields().get(i);
-        Field wrappedField;
-
-        // If we are not asking for the dynamic column, then get the input field that corresponds to the position.
-        int wrappedIndex;
-        if (byIndex) {
-            if (outgoingDynamicColumn != -1 && i >= outgoingDynamicColumn) {
-                // If the requested index is after the dynamic column and we are matching by index, then the actual
-                // index should be counted from the end of the fields.
-                wrappedIndex = getNumberOfDynamicColumns() + i;
-            } else {
-                wrappedIndex = i;
-            }
-            // If the wrappedIndex is out of bounds, then return the default value.
-            if (wrappedIndex >= wrapped.getSchema().getFields().size()) {
-                return transformValue(null, null, outField);
-            }
-            wrappedField = wrapped.getSchema().getFields().get(wrappedIndex);
-        } else {
-            // Matching fields by name.
-            wrappedField = wrapped.getSchema().getField(outField.name());
-            if (wrappedField == null) {
-                return transformValue(null, null, outField);
-            }
-            wrappedIndex = wrappedField.pos();
-        }
-
-        Object value = wrapped.get(wrappedIndex);
-        return transformValue(value, wrappedField, outField);
+    public Object get(int pojoIndex) {
+        Field outField = designFields.get(pojoIndex);
+        Object value = wrappedRecord.get(indexMap[pojoIndex]);
+        return transformValue(value, outField);
     }
 
     /**
-     * @param value The incoming value for the field. This can be null when null is a valid value, or if there is no
+     * Transforms record column value from Avro type to Talend type
+     * 
+     * @param value record column value, which should be transformed into Talend compatible value.
+     * It can be null when null
      * corresponding wrapped field.
-     * @param wrappedField The incoming field description (a valid Avro Schema). This can be null if there is no
-     * corresponding wrapped field.
-     * @param outField The outgoing field description that must be enforced. This must not be null.
+     * @param valueField field, which contain information about value's Talend type. It mustn't be null
      */
-    private Object transformValue(Object value, Field wrappedField, Field outField) {
-        String talendType = outField.getProp(TALEND6_COLUMN_TALEND_TYPE);
-        String javaClass = AvroUtils.unwrapIfNullable(outField.schema()).getProp(SchemaConstants.JAVA_CLASS_FLAG);
-
+    protected Object transformValue(Object value, Field valueField) {
         if (null == value) {
             return null;
         }
+
+        String talendType = valueField.getProp(TALEND6_COLUMN_TALEND_TYPE);
+        String javaClass = AvroUtils.unwrapIfNullable(valueField.schema()).getProp(SchemaConstants.JAVA_CLASS_FLAG);
 
         // TODO(rskraba): A full list of type conversion to coerce to Talend-compatible types.
         if ("id_Short".equals(talendType)) { //$NON-NLS-1$
@@ -205,105 +214,6 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord, DiSchemaConstant
             return value instanceof BigDecimal ? value : new BigDecimal(String.valueOf(value));
         }
         return value;
-    }
-
-    /**
-     * @return the number of columns that will be placed in the dynamic holder.
-     */
-    private int getNumberOfDynamicColumns() {
-        int dynColN = wrapped.getSchema().getFields().size() - getSchema().getFields().size();
-        if (dynColN < 0) {
-            throw new UnsupportedOperationException(
-                    "The incoming data does not have sufficient columns to create a dynamic column."); //$NON-NLS-1$
-        }
-        return dynColN;
-    }
-
-    /**
-     * @return A map of all of the unresolved columns, when the unresolved columns are determined by the position of the
-     * Dynamic column in enforced schema.
-     */
-    private Map<String, Object> getDynamicMapByIndex() {
-        int dynColN = getNumberOfDynamicColumns();
-        Map<String, Object> result = new HashMap<>();
-        for (int j = 0; j < dynColN; j++) {
-            result.put(wrapped.getSchema().getFields().get(outgoingDynamicColumn + j).name(),
-                    wrapped.get(outgoingDynamicColumn + j));
-        }
-        return result;
-    }
-
-    /**
-     * @return A list of all of the unresolved columns's schema, when the unresolved columns are determined by the
-     * position of the Dynamic column in enforced schema.
-     */
-    private List<Schema.Field> getDynamicSchemaByIndex() {
-        List<Schema.Field> fields = new ArrayList<>();
-        int dynColN = getNumberOfDynamicColumns();
-        for (int j = 0; j < dynColN; j++) {
-            Schema.Field se = wrapped.getSchema().getFields().get(outgoingDynamicColumn + j);
-            Schema.Field field = new Schema.Field(se.name(), se.schema(), se.doc(), se.defaultVal());
-            Map<String, Object> fieldProperties = se.getObjectProps();
-            for (String propName : fieldProperties.keySet()) {
-                Object propValue = fieldProperties.get(propName);
-                if (propValue != null) {
-                    field.addProp(propName, propValue);
-                }
-            }
-            fields.add(field);
-        }
-        return fields;
-    }
-
-    /**
-     * @return A map of all of the unresolved columns, when the unresolved columns are determined by the names of the
-     * resolved column in enforced schema.
-     */
-    private Map<String, Object> getDynamicMapByName() {
-        // Lazy initialization of source position by name.
-        if (dynamicColumnSources == null) {
-            dynamicColumnSources = new HashMap<>();
-            for (Schema.Field wrappedField : wrapped.getSchema().getFields()) {
-                Schema.Field outField = getSchema().getField(wrappedField.name());
-                if (outField == null) {
-                    dynamicColumnSources.put(wrappedField.name(), wrappedField.pos());
-                }
-            }
-        }
-
-        Map<String, Object> result = new HashMap<>();
-        for (Map.Entry<String, Integer> e : dynamicColumnSources.entrySet()) {
-            result.put(e.getKey(), wrapped.get(e.getValue()));
-        }
-        return result;
-    }
-
-    /**
-     * @return A list of all of the unresolved columns's schema, when the unresolved columns are determined by the names
-     * of the resolved column in enforced schema.
-     */
-    private List<Schema.Field> getDynamicSchemaByName() {
-        List<Schema.Field> fields = new ArrayList<>();
-        List<String> designColumnsName = new ArrayList<>();
-        for (Schema.Field se : outgoing.getFields()) {
-            designColumnsName.add(se.name());
-        }
-        Schema runtimeSchema = wrapped.getSchema();
-        for (Schema.Field se : runtimeSchema.getFields()) {
-            if (designColumnsName.contains(se.name())) {
-                continue;
-            }
-            Schema.Field field = new Schema.Field(se.name(), se.schema(), se.doc(), se.defaultVal());
-            Map<String, Object> fieldProperties = se.getObjectProps();
-            for (String propName : fieldProperties.keySet()) {
-                Object propValue = fieldProperties.get(propName);
-                if (propValue != null) {
-                    field.addProp(propName, propValue);
-                }
-            }
-            fields.add(field);
-        }
-        return fields;
     }
 
 }
