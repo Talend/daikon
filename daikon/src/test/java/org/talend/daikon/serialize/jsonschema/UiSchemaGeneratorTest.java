@@ -1,8 +1,12 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import org.junit.Test;
-
 import static org.junit.Assert.*;
+
+import org.junit.Test;
+import org.talend.daikon.properties.ReferenceExampleProperties;
+import org.talend.daikon.properties.ReferenceExampleProperties.TestAProperties;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class UiSchemaGeneratorTest {
 
@@ -14,4 +18,17 @@ public class UiSchemaGeneratorTest {
         UiSchemaGenerator generator = new UiSchemaGenerator();
         assertEquals(jsonStr, generator.genWidget(properties).toString());
     }
+
+    @Test
+    public void genWidgetWithRefPropertiesHidden() throws Exception {
+        String jsonStr = JsonSchemaUtilTest.readJson("ReferenceExampleUiSchema.json");
+        ReferenceExampleProperties refEProp = (ReferenceExampleProperties) new ReferenceExampleProperties(null).init();
+        TestAProperties testAProp = (TestAProperties) new TestAProperties(null).init();
+        refEProp.testAPropReference.setReference(testAProp);
+
+        UiSchemaGenerator generator = new UiSchemaGenerator();
+        ObjectNode uiSchemaJsonObj = generator.genWidget(refEProp);
+        assertEquals(jsonStr, uiSchemaJsonObj.toString());
+    }
+
 }

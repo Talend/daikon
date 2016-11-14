@@ -2,6 +2,7 @@ package org.talend.daikon.properties;
 
 import static org.talend.daikon.properties.property.PropertyFactory.*;
 
+import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 
 public class ReferenceExampleProperties extends PropertiesImpl {
@@ -13,6 +14,12 @@ public class ReferenceExampleProperties extends PropertiesImpl {
 
     public ReferenceExampleProperties(String name) {
         super(name);
+    }
+
+    @Override
+    public void setupLayout() {
+        super.setupLayout();
+        new Form(this, Form.MAIN);
     }
 
     public static class TestAProperties extends PropertiesImpl {
