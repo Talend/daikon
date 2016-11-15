@@ -83,7 +83,6 @@ public class JsonDataGenerator {
         } else if (Float.class.equals(type)) {
             node.add((Float) value);
         } else if (Long.class.equals(type)) {
-        } else if (Float.class.equals(type)) {
             node.add(Long.getLong((String) value));
         } else if (Date.class.equals(type)) {
             node.add(dateFormatter.format((Date) value));
