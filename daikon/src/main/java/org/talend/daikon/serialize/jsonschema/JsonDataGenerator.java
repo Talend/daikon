@@ -1,6 +1,11 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.dateFormatter;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.findClass;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.util.Date;
 import java.util.List;
@@ -77,6 +82,9 @@ public class JsonDataGenerator {
             node.add((Double) value);
         } else if (Float.class.equals(type)) {
             node.add((Float) value);
+        } else if (Long.class.equals(type)) {
+        } else if (Float.class.equals(type)) {
+            node.add(Long.getLong((String) value));
         } else if (Date.class.equals(type)) {
             node.add(dateFormatter.format((Date) value));
         } else {
@@ -99,6 +107,8 @@ public class JsonDataGenerator {
             node.put(key, (Double) value);
         } else if (Float.class.equals(type)) {
             node.put(key, (Float) value);
+        } else if (Long.class.equals(type)) {
+            node.put(key, value.toString());
         } else if (Date.class.equals(type)) {
             node.put(key, dateFormatter.format((Date) value));
         } else {
