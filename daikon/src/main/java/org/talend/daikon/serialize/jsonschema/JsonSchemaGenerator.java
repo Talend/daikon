@@ -34,12 +34,14 @@ public class JsonSchemaGenerator {
      * @return the JSON Schema representation.
      */
     protected ObjectNode genSchema(Properties properties) {
-        return processTProperties(properties);
+        return processTProperties(properties, false);
     }
 
-    private ObjectNode processTProperties(Properties cProperties) {
+    private ObjectNode processTProperties(Properties cProperties, boolean hasTitle) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
-        schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getDisplayName());
+        if (hasTitle) {
+            schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getDisplayName());
+        }
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
         schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
 
@@ -60,7 +62,7 @@ public class JsonSchemaGenerator {
                 ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name,
                         processReferenceProperties(referenceProperties));
             } else {
-                ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties));
+                ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties, true));
             }
         }
         return schema;
