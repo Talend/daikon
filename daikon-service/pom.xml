@@ -28,6 +28,7 @@
         <enunciate-version>2.5.0</enunciate-version>
         <servlet-version>3.1.0</servlet-version>
         <talend_snapshots>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
+        <talend_snapshots_deployment>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
     </properties>
 
     <dependencyManagement>

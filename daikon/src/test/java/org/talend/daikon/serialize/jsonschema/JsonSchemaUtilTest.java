@@ -15,6 +15,7 @@ import org.talend.daikon.definition.Definition;
 import org.talend.daikon.definition.service.DefinitionRegistryService;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
+import org.talend.daikon.properties.TestEmptyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -126,4 +127,26 @@ public class JsonSchemaUtilTest {
         return new String(java.nio.file.Files.readAllBytes(resPath), "UTF8").trim();
     }
 
+    @Test
+    public void testDeserializeEmptyProperties() throws ParseException, JsonProcessingException, IOException {
+        TestEmptyProperties properties = TestEmptyProperties.createASetupOptionalProperties();
+
+        // Test instanciate the Properties with its default value
+        String full = "{\"aProperty\":\"initalValue\",\"innerProperties\":{\"innerProperty\":\"initialInnerValue\"},"
+                + "\"@definitionName\":\"testName\"}";
+        TestEmptyProperties propertiesFull = JsonSchemaUtil.fromJson(full, TestEmptyProperties.createASetupOptionalProperties());
+        assertEquals(properties, propertiesFull);
+
+        // Test instanciate the Properties an empty JSON.
+        String emptyJSON = "{}";
+        TestEmptyProperties propertiesEmptyJSON = JsonSchemaUtil.fromJson(emptyJSON,
+                TestEmptyProperties.createASetupOptionalProperties());
+        assertEquals(properties, propertiesEmptyJSON);
+
+        // Test instanciate the Properties with a JSON containing no Property but all the properties.
+        String noData = "{\"innerProperties\":{}}";
+        TestEmptyProperties propertiesNoData = JsonSchemaUtil.fromJson(noData,
+                TestEmptyProperties.createASetupOptionalProperties());
+        assertEquals(properties, propertiesNoData);
+    }
 }
