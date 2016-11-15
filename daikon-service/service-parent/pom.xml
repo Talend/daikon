@@ -19,6 +19,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<enunciate-version>2.5.0</enunciate-version>
+		<talend_snapshots>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
 	</properties>
 	<dependencies>
 		<dependency>
