@@ -26,6 +26,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.Property.Flags;
@@ -612,6 +614,29 @@ public class PropertiesTest {
 
         assertThat(prop1.equals(prop3), is(Boolean.FALSE));
 
+    }
+
+    @Test
+    public void createInstance() {
+        Properties instanceWithStringConstructor = new PropertiesImpl("foo");
+        Properties newInstance = PropertiesImpl.createNewInstance(instanceWithStringConstructor.getClass(), "bar");
+        assertEquals("bar", newInstance.getName());
+        newInstance = PropertiesImpl.createNewInstance(instanceWithStringConstructor.getClass(), null);
+        assertEquals(null, newInstance.getName());
+        Properties instanceWithEmptyConstructor = new EmptyConstructorProperties();
+        try {
+            PropertiesImpl.createNewInstance(instanceWithEmptyConstructor.getClass(), "bar");
+            fail("should have throw an exception at the above code");
+        } catch (TalendRuntimeException e) {
+            assertEquals(CommonErrorCodes.UNEXPECTED_EXCEPTION, e.getCode());
+        }
+    }
+
+    static public class EmptyConstructorProperties extends PropertiesImpl {// this should never happend
+
+        public EmptyConstructorProperties() {
+            super("foo");
+        }
     }
 
 }

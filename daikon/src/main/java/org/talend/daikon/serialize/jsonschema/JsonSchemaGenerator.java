@@ -1,32 +1,47 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.util.Date;
 import java.util.List;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.property.EnumProperty;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.property.EnumListProperty;
+import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Generator JSONSchema from Properties
+ * Provide methods to create JSON Schema documents from a {@link Properties}.
+ *
+ * This JSON Schema can be used to validate a Properties in its "reduced JSON" format as provided by
+ * {@link JsonDataGenerator}.
+ *
+ * <ul>
+ * <li>https://spacetelescope.github.io/understanding-json-schema/</li>
+ * </ul>
  */
 public class JsonSchemaGenerator {
 
+    /**
+     * @param properties the properties to create a JSON Schema representation for.
+     * @return the JSON Schema representation.
+     */
     protected ObjectNode genSchema(Properties properties) {
         return processTProperties(properties);
     }
 
     private ObjectNode processTProperties(Properties cProperties) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
-        schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getDisplayName());
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
         schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
 
@@ -41,8 +56,25 @@ public class JsonSchemaGenerator {
         List<Properties> propertiesList = getSubProperties(cProperties);
         for (Properties properties : propertiesList) {
             String name = properties.getName();
-            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties));
+            // if this is a reference then just store it as a string and only store the definition
+            if (properties instanceof ReferenceProperties<?>) {
+                ReferenceProperties<?> referenceProperties = (ReferenceProperties<?>) properties;
+                ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name,
+                        processReferenceProperties(referenceProperties));
+            } else {
+                ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties));
+            }
         }
+        return schema;
+    }
+
+    /**
+     * create a simple String definition with the {@link ReferenceProperties#referenceDefinitionName} value
+     */
+    private JsonNode processReferenceProperties(ReferenceProperties<?> referenceProperties) {
+        ObjectNode schema = JsonNodeFactory.instance.objectNode();
+        schema.put(JsonSchemaConstants.TAG_TITLE, referenceProperties.getDisplayName());
+        schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_STRING);
         return schema;
     }
 

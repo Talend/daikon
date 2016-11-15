@@ -1,12 +1,14 @@
 package org.talend.daikon.serialize.jsonschema;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
 
@@ -65,11 +67,11 @@ public class JsonBaseTool {
         List<Property> propertyList = new ArrayList<>();
         Field[] allFields = cProperties.getClass().getFields();
         for (Field field : allFields) {
-            if (Property.class.isAssignableFrom(field.getType())) {
+            if (Property.class.isAssignableFrom(field.getType()) && !Modifier.isTransient(field.getModifiers())) {
                 try {
                     propertyList.add((Property) field.get(cProperties));
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    throw TalendRuntimeException.createUnexpectedException(e);
                 }
             }
         }
@@ -80,11 +82,11 @@ public class JsonBaseTool {
         List<Properties> propertiesList = new ArrayList<>();
         Field[] allFields = cProperties.getClass().getFields();
         for (Field field : allFields) {
-            if (Properties.class.isAssignableFrom(field.getType())) {
+            if (Properties.class.isAssignableFrom(field.getType()) && !Modifier.isTransient(field.getModifiers())) {
                 try {
                     propertiesList.add((Properties) field.get(cProperties));
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    throw TalendRuntimeException.createUnexpectedException(e);
                 }
             }
         }

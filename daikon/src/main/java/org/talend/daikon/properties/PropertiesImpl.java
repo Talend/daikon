@@ -14,6 +14,7 @@ package org.talend.daikon.properties;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -562,6 +563,28 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                     .unexpectedException("Unexpected property class: " + otherProp.getClass() + " prop: " + otherProp);
         }
         return thisProp;
+    }
+
+    /**
+     * creates a new Properties instance looking for a String constructor and uses name as a parameter
+     * 
+     * @param propClass never null, the class to instantiate.
+     * @param name the name of the properties to be set if a String contructor is found
+     * @throws TalendRuntimeException if any reflection method throws an exception.
+     */
+    public static <P extends Properties> P createNewInstance(Class<P> propClass, String name) {
+        try {
+            // look for a string constructor
+            Constructor<P> stringConstructor = propClass.getConstructor(String.class);
+            if (stringConstructor != null) {
+                return stringConstructor.newInstance(name);
+            } // else no constructor found so throw an exception
+            throw TalendRuntimeException
+                    .createUnexpectedException("Could not find a suitable constructor for class [" + propClass.getName() + "]");
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            throw TalendRuntimeException.createUnexpectedException(e);
+        }
     }
 
     @Override

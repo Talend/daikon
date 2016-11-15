@@ -1,9 +1,8 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.talend.daikon.properties.property.PropertyFactory.newInteger;
-import static org.talend.daikon.properties.property.PropertyFactory.newString;
+import static org.talend.daikon.properties.property.PropertyFactory.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,6 +75,8 @@ public class JsonBaseToolTest {
 
         public PCommonClass pCommon = new PCommonClass("pCommon");
 
+        public transient PCommonClass pCommonTransient = new PCommonClass("pCommon");
+
         public ParentClass(String name) {
             super(name);
         }
@@ -95,6 +96,8 @@ public class JsonBaseToolTest {
         public Property<String> cString = newString("cString");
 
         public CCommonClass cCommon = new CCommonClass("cCommon");
+
+        public transient Property<Integer> pcIntegerTransient = newInteger("pcInteger");
 
         public ChildClass(String name) {
             super(name);

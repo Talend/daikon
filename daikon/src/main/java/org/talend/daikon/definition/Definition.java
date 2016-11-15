@@ -16,15 +16,20 @@ import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 
 /**
- * provide named and image definition for any entity, mainly classes that are associated with {@link Properties}
- * all definitions {@link #getName()} must return a unique value within a single jvm
+ * Provides information about a Properties, such as an associated name and image and a factory to create an instance.
+ * All definitions {@link #getName()} must return a unique value within a single jvm
  */
-public interface Definition extends NamedThing {
+public interface Definition<P extends Properties> extends NamedThing {
 
     /**
-     * A path relative to the current instance, ideally is should just be the name of the png image if
-     * placed in the same resource folder as the implementing class. The service api requesting an icon
-     * will use the following code:
+     * @return the Properties class associated with this definition. This class must have a constructor with a String
+     * parameter to set its name.
+     */
+    Class<P> getPropertiesClass();
+
+    /**
+     * A path relative to the current instance, ideally it should just be the name of the png image if placed in the
+     * same resource folder as the implementing class. The service api requesting an icon will use the following code:
      * 
      * <pre>
      * {@code

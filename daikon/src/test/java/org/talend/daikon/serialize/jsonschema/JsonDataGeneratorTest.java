@@ -20,7 +20,7 @@ public class JsonDataGeneratorTest {
         FullExampleProperties properties = createASetupFullExampleProperties();
 
         JsonDataGenerator generator = new JsonDataGenerator();
-        assertEquals(jsonStr, generator.genData(properties).toString());
+        assertEquals(jsonStr, generator.genData(properties, "def1").toString());
     }
 
     static public FullExampleProperties createASetupFullExampleProperties() throws ParseException {

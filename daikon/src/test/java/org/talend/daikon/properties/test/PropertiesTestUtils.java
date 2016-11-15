@@ -82,9 +82,9 @@ public class PropertiesTestUtils {
      */
     static public void checkAllI18N(Properties checkedProps, final ErrorCollector errorCollector) {
         if (checkedProps == null) {
-            System.out.println("No properties to be checked.");
+            LOGGER.info("No properties to be checked.");
         } else {
-            System.out.println("Checking: " + checkedProps);
+            LOGGER.info("Checking: " + checkedProps.getClass().getName());
             checkedProps.accept(new AnyPropertyVisitor() {
 
                 @Override
@@ -131,6 +131,9 @@ public class PropertiesTestUtils {
                         + "] should have a translated message key [property." + prop.getName()
                         + ".displayName] in [the proper messages.properties]",
                 prop.getDisplayName().endsWith(".displayName"), is(false));
+        if (prop.getDisplayName().endsWith(".displayName")) {// display this to help create the I18N file
+            System.out.println("property." + prop.getName() + ".displayName=");
+        }
     }
 
     /**

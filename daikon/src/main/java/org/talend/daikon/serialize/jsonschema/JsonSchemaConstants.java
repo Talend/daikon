@@ -98,7 +98,7 @@ public class JsonSchemaConstants {
         // TYPE_MAPPING.put(Byte.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
         // TYPE_MAPPING.put(Short.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
         TYPE_MAPPING.put(Integer.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
-        // TYPE_MAPPING.put(Long.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        TYPE_MAPPING.put(Long.class.getName(), JsonSchemaConstants.TYPE_STRING);
         // TYPE_MAPPING.put(BigInteger.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
 
         TYPE_MAPPING = Collections.unmodifiableMap(TYPE_MAPPING);
@@ -107,4 +107,6 @@ public class JsonSchemaConstants {
     public static Map<String, String> getTypeMapping() {
         return TYPE_MAPPING;
     }
+
+    public static final String DEFINITION_NAME_JSON_METADATA = "@definitionName";
 }

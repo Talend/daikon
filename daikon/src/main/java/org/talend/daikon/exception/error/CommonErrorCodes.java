@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 public enum CommonErrorCodes implements ErrorCode {
     UNEXPECTED_EXCEPTION(HttpServletResponse.SC_INTERNAL_SERVER_ERROR), // 500
     MISSING_I18N_TRANSLATOR(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "key", "baseName"), //$NON-NLS-1$ //$NON-NLS-2$
+    /** uses <b>definitionName<b> context key */
+    UNREGISTERED_DEFINITION(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "definitionName"),
     UNABLE_TO_PARSE_JSON(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
     UNABLE_TO_WRITE_JSON(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
     UNABLE_TO_SERIALIZE_TO_JSON(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),

@@ -1,12 +1,18 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.dateFormatter;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.findClass;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.util.Date;
 import java.util.List;
 
 import org.apache.avro.Schema;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.property.Property;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -15,11 +21,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JsonDataGenerator {
 
-    protected <T extends Properties> ObjectNode genData(T properties) {
-        return processTPropertiesData(properties);
+    protected ObjectNode genData(Properties properties, String definitionName) {
+        ObjectNode propertiesJsonDataObject = processTPropertiesData(properties);
+        propertiesJsonDataObject.put(JsonSchemaConstants.DEFINITION_NAME_JSON_METADATA, definitionName);
+        return propertiesJsonDataObject;
     }
 
-    private ObjectNode processTPropertiesData(Properties cProperties) {
+    ObjectNode processTPropertiesData(Properties cProperties) {
         ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
 
         List<Property> propertyList = getSubProperty(cProperties);
@@ -29,7 +37,13 @@ public class JsonDataGenerator {
         List<Properties> propertiesList = getSubProperties(cProperties);
         for (Properties properties : propertiesList) {
             String name = properties.getName();
-            rootNode.set(name, processTPropertiesData(properties));
+            // for ReferenceProperties we just create a String node in the root just like any Property
+            if (properties instanceof ReferenceProperties<?>) {
+                ReferenceProperties<?> referenceProperties = (ReferenceProperties<?>) properties;
+                rootNode.put(properties.getName(), referenceProperties.referenceDefinitionName.getValue());
+            } else {
+                rootNode.set(name, processTPropertiesData(properties));
+            }
         }
         return rootNode;
     }
@@ -68,6 +82,8 @@ public class JsonDataGenerator {
             node.add((Double) value);
         } else if (Float.class.equals(type)) {
             node.add((Float) value);
+        } else if (Long.class.equals(type)) {
+            node.add(Long.getLong((String) value));
         } else if (Date.class.equals(type)) {
             node.add(dateFormatter.format((Date) value));
         } else {
@@ -90,10 +106,13 @@ public class JsonDataGenerator {
             node.put(key, (Double) value);
         } else if (Float.class.equals(type)) {
             node.put(key, (Float) value);
+        } else if (Long.class.equals(type)) {
+            node.put(key, value.toString());
         } else if (Date.class.equals(type)) {
             node.put(key, dateFormatter.format((Date) value));
         } else {
             throw new RuntimeException("Do not support type " + type + " yet.");
         }
     }
+
 }
