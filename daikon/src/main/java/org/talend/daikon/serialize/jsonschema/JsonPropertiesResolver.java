@@ -79,6 +79,8 @@ public class JsonPropertiesResolver {
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
+        } else if (Long.class.equals(type)) {
+            return dataNode.longValue();
         } else {
             throw new RuntimeException("Do not support type " + type + " yet.");
         }

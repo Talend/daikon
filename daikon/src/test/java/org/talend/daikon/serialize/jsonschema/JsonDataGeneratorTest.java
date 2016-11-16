@@ -27,6 +27,7 @@ public class JsonDataGeneratorTest {
         FullExampleProperties properties = (FullExampleProperties) new FullExampleProperties("fullexample").init();
         properties.stringProp.setValue("abc");
         properties.integerProp.setValue(1);
+        properties.longProp.setValue(100l);
         properties.hideStringPropProp.setValue(false);
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.000'Z'");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));

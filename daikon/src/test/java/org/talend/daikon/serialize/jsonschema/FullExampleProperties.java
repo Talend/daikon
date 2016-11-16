@@ -1,14 +1,7 @@
 package org.talend.daikon.serialize.jsonschema;
 
 import static org.talend.daikon.properties.presentation.Widget.widget;
-import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
-import static org.talend.daikon.properties.property.PropertyFactory.newDate;
-import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
-import static org.talend.daikon.properties.property.PropertyFactory.newEnumList;
-import static org.talend.daikon.properties.property.PropertyFactory.newInteger;
-import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
-import static org.talend.daikon.properties.property.PropertyFactory.newSchema;
-import static org.talend.daikon.properties.property.PropertyFactory.newString;
+import static org.talend.daikon.properties.property.PropertyFactory.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +20,7 @@ import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.EnumListProperty;
 import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.PropertyFactory;
 
 /**
  * TODO This is a duplicate one by org.talend.components.fullexample.FullExampleProperties, but for test json schema
@@ -67,10 +61,12 @@ public class FullExampleProperties extends PropertiesImpl {
     /** checking {@link WidgetType#HIDDEN_TEXT} */
     public final Property<String> hiddenTextProp = newString("hiddenTextProp");
 
-    /** use the default widget for this Date type */
+    /** use the default widget for this Integer type */
     public final Property<Integer> integerProp = newInteger("integerProp").setRequired();
 
-    /** use the default widget for this Integer type */
+    public final Property<Long> longProp = PropertyFactory.newProperty(Long.class, "longProp");
+
+    /** use the default widget for this Date type */
     public final Property<Date> dateProp = newDate("dateProp").setRequired();
 
     /** checking {@link WidgetType#TEXT_AREA} */
@@ -122,6 +118,7 @@ public class FullExampleProperties extends PropertiesImpl {
         mainForm.addColumn(widget(hiddenTextProp).setWidgetType(Widget.HIDDEN_TEXT_WIDGET_TYPE));
         mainForm.addColumn(widget(filepathProp).setWidgetType(Widget.FILE_WIDGET_TYPE));
         mainForm.addRow(integerProp);
+        mainForm.addRow(longProp);
         mainForm.addRow(dateProp);
         mainForm.addRow(widget(tableProp).setWidgetType(Widget.TABLE_WIDGET_TYPE));
         Form advancedForm = new Form(this, Form.ADVANCED);

@@ -28,6 +28,7 @@ public class JsonPropertiesResolverTest {
 
         assertEquals("abc", properties.stringProp.getValue());
         assertThat(1, is(equalTo(properties.integerProp.getValue())));
+        assertThat(100l, is(equalTo(properties.longProp.getValue())));
         assertFalse(properties.hideStringPropProp.getValue());
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.000'Z'");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));

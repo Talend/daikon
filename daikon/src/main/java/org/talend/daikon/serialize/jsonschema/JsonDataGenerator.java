@@ -83,7 +83,7 @@ public class JsonDataGenerator {
         } else if (Float.class.equals(type)) {
             node.add((Float) value);
         } else if (Long.class.equals(type)) {
-            node.add(Long.getLong((String) value));
+            node.add((Long) value);
         } else if (Date.class.equals(type)) {
             node.add(dateFormatter.format((Date) value));
         } else {
@@ -107,7 +107,7 @@ public class JsonDataGenerator {
         } else if (Float.class.equals(type)) {
             node.put(key, (Float) value);
         } else if (Long.class.equals(type)) {
-            node.put(key, value.toString());
+            node.put(key, (Long) value);
         } else if (Date.class.equals(type)) {
             node.put(key, dateFormatter.format((Date) value));
         } else {
