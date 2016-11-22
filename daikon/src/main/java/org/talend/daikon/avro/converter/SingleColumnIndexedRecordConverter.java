@@ -1,3 +1,15 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.daikon.avro.converter;
 
 import org.apache.avro.Schema;
@@ -23,18 +35,42 @@ public class SingleColumnIndexedRecordConverter<DatumT>
      * @param datumClass The class of the instances that this factory knows how to create IndexedRecords for. This must
      * be an Avro-compatible class since it's instances will be directly inserted into the output records without
      * validation.
-     * @param schema The schema that the datum class can be converted to. This will be the schema of the single field in
+     * @param fieldSchema The schema that the datum class can be converted to. This will be the schema of the single field in
      * the generated {@link IndexedRecord}s.
      */
-    public SingleColumnIndexedRecordConverter(Class<DatumT> datumClass, Schema schema) {
+    public SingleColumnIndexedRecordConverter(Class<DatumT> datumClass, Schema fieldSchema) {
+        this(datumClass, fieldSchema, createRecordName(datumClass), "field");
+    }
+
+    /**
+     * @param datumClass The class of the instances that this factory knows how to create IndexedRecords for. This must
+     * be an Avro-compatible class since it's instances will be directly inserted into the output records without
+     * validation.
+     * @param fieldSchema The schema that the datum class can be converted to. This will be the schema of the single
+     * field in the generated {@link IndexedRecord}s.
+     * @param recordName the Avro name to use in the generated record.
+     * @param fieldName the Avro name to use for the single generated field.
+     */
+    public SingleColumnIndexedRecordConverter(Class<DatumT> datumClass, Schema fieldSchema, String recordName, String fieldName) {
         this.mDatumClass = datumClass;
         // Construct a record name that is compatible with Avro.
-        String recordName = datumClass.getSimpleName() + "Record"; //$NON-NLS-1$
-        if (datumClass.isArray())
-            recordName = datumClass.getComponentType().getName() + "ArrayRecord"; //$NON-NLS-1$
         this.mSchema = SchemaBuilder.record(recordName) //
-                .fields().name("field1").type(schema).noDefault() // //$NON-NLS-1$
+                .fields().name(fieldName).type(fieldSchema).noDefault() // //$NON-NLS-1$
                 .endRecord();
+    }
+
+    /**
+     * Utility to create a record name for the given class.
+     *
+     * @param datumClass The class of the instances that this factory knows how to create IndexedRecords for. This must
+     * be an Avro-compatible class since it's instances will be directly inserted into the output records without
+     * validation.
+     * @return A valid Avro record name for this converter.
+     */
+    public static String createRecordName(Class<?> datumClass) {
+        if (datumClass.isArray())
+            return datumClass.getComponentType().getSimpleName() + "ArrayRecord";
+        return datumClass.getSimpleName() + "Record";
     }
 
     @Override
