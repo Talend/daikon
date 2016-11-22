@@ -28,7 +28,11 @@ public class SingleColumnIndexedRecordConverter<DatumT>
      */
     public SingleColumnIndexedRecordConverter(Class<DatumT> datumClass, Schema schema) {
         this.mDatumClass = datumClass;
-        this.mSchema = SchemaBuilder.record(datumClass.getSimpleName() + "Record") // //$NON-NLS-1$
+        // Construct a record name that is compatible with Avro.
+        String recordName = datumClass.getSimpleName() + "Record"; //$NON-NLS-1$
+        if (datumClass.isArray())
+            recordName = datumClass.getComponentType().getName() + "ArrayRecord"; //$NON-NLS-1$
+        this.mSchema = SchemaBuilder.record(recordName) //
                 .fields().name("field1").type(schema).noDefault() // //$NON-NLS-1$
                 .endRecord();
     }
