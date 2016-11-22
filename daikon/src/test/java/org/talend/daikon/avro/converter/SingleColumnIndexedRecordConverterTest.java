@@ -20,6 +20,7 @@ public class SingleColumnIndexedRecordConverterTest {
                 Schema.create(Schema.Type.BYTES));
         assertThat(converter.getDatumClass(), equalTo(byte[].class));
         assertThat(converter.getSchema().getType(), is(Schema.Type.RECORD));
+        assertThat(converter.getSchema().getName(), is("byteArrayRecord"));
         assertThat(converter.getSchema().getFields(), hasSize(1));
         assertThat(converter.getSchema().getFields().get(0).name(), is("field1"));
         assertThat(converter.getSchema().getFields().get(0).schema().getType(), is(Schema.Type.BYTES));
