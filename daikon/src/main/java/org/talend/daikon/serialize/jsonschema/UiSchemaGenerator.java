@@ -144,21 +144,21 @@ public class UiSchemaGenerator {
     }
 
     private ObjectNode addTriggerTWidget(Widget widget, ObjectNode schema) {
-        ArrayNode jsonNodes = schema.putArray(UiSchemaConstants.TAG_TRIGGER);
+        ArrayNode jsonNodes = schema.arrayNode();
         if (widget.isCallAfter()) {
-            jsonNodes.add(UiSchemaConstants.TRIGGER_AFTER);
+            jsonNodes.add(PropertyTrigger.after.name());
         }
         if (widget.isCallBeforeActivate()) {
-            jsonNodes.add(UiSchemaConstants.TRIGGER_BEFORE_ACTIVATE);
+            jsonNodes.add(PropertyTrigger.beforeActive.name());
         }
         if (widget.isCallBeforePresent()) {
-            jsonNodes.add(UiSchemaConstants.TRIGGER_BEFORE_PRESENT);
+            jsonNodes.add(PropertyTrigger.beforePresent.name());
         }
         if (widget.isCallValidate()) {
-            jsonNodes.add(UiSchemaConstants.TRIGGER_VALIDATE);
+            jsonNodes.add(PropertyTrigger.validate.name());
         }
-        if (jsonNodes.size() == 0) {
-            schema.remove(UiSchemaConstants.TAG_TRIGGER);
+        if (jsonNodes.size() != 0) {
+            schema.set(UiSchemaConstants.TAG_TRIGGER, jsonNodes);
         }
         return schema;
     }
