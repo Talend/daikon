@@ -3,9 +3,12 @@ package org.talend.daikon.di;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
@@ -38,30 +41,52 @@ public class DiOutgoingSchemaEnforcerTest {
      */
     private static IndexedRecord record;
 
+    private static void setLogicalType(Schema schema, LogicalType lt) throws Exception {
+        Method setLogicalType = Schema.class.getDeclaredMethod("setLogicalType", new Class[] { LogicalType.class });
+        setLogicalType.setAccessible(true);
+        setLogicalType.invoke(schema, new Object[] { lt });
+    }
+
     /**
      * Creates runtime schema, design schema and record, which is used as test arguments
      */
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
         runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type().intType().noDefault() //
+                .name("id").type(Schema.create(Schema.Type.INT)).noDefault() //
                 .name("name").type().stringType().noDefault() //
-                .name("age").type().intType().noDefault() //
+                .name("age").type(Schema.create(Schema.Type.INT)).noDefault() //
                 .name("valid").type().booleanType().noDefault() //
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType() //
                 .noDefault() //
+                .name("logicalDate").prop("logicalType", "date").type(Schema.create(Schema.Type.INT)).noDefault() //
+                .name("logicalTime").prop("logicalType", "time-millis").type(Schema.create(Schema.Type.INT)).noDefault() //
+                .name("logicalTimestamp").prop("logicalType", "timestamp-millis").type(Schema.create(Schema.Type.LONG))
+                .noDefault() //
                 .endRecord(); //
 
+        setLogicalType(runtimeSchema.getField("logicalDate").schema(), LogicalTypes.date());
+        setLogicalType(runtimeSchema.getField("logicalTime").schema(), LogicalTypes.timeMillis());
+        setLogicalType(runtimeSchema.getField("logicalTimestamp").schema(), LogicalTypes.timestampMillis());
+
         talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type().intType().noDefault() //
+                .name("id").type(Schema.create(Schema.Type.INT)).noDefault() //
                 .name("name").type().stringType().noDefault() //
-                .name("age").type().intType().noDefault() //
+                .name("age").type(Schema.create(Schema.Type.INT)).noDefault() //
                 .name("valid").type().booleanType().noDefault() //
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType()
                 .noDefault() //
+                .name("logicalDate").prop("logicalType", "date").type(Schema.create(Schema.Type.INT)).noDefault() //
+                .name("logicalTime").prop("logicalType", "time-millis").type(Schema.create(Schema.Type.INT)).noDefault() //
+                .name("logicalTimestamp").prop("logicalType", "timestamp-millis").type(Schema.create(Schema.Type.LONG))
+                .noDefault() //
                 .endRecord(); //
+
+        setLogicalType(talend6Schema.getField("logicalDate").schema(), LogicalTypes.date());
+        setLogicalType(talend6Schema.getField("logicalTime").schema(), LogicalTypes.timeMillis());
+        setLogicalType(talend6Schema.getField("logicalTimestamp").schema(), LogicalTypes.timestampMillis());
 
         record = new GenericData.Record(runtimeSchema);
         record.put(0, 1);
@@ -69,6 +94,9 @@ public class DiOutgoingSchemaEnforcerTest {
         record.put(2, 100);
         record.put(3, true);
         record.put(4, new Date(1467170137872L));
+        record.put(5, 1000L);
+        record.put(6, 1000L);
+        record.put(7, 1467170137872L);
     }
 
     /**
@@ -99,6 +127,9 @@ public class DiOutgoingSchemaEnforcerTest {
         assertThat(enforcer.get(2), equalTo((Object) 100));
         assertThat(enforcer.get(3), equalTo((Object) true));
         assertThat(enforcer.get(4), equalTo((Object) new Date(1467170137872L)));
+        assertThat(enforcer.get(5), equalTo((Object) new Date(1000L)));
+        assertThat(enforcer.get(6), equalTo((Object) new Date(1000L)));
+        assertThat(enforcer.get(7), equalTo((Object) new Date(1467170137872L)));
     }
 
     /**
@@ -139,7 +170,7 @@ public class DiOutgoingSchemaEnforcerTest {
         DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
         enforcer.setWrapped(record);
 
-        enforcer.get(5);
+        enforcer.get(10);
     }
 
     /**

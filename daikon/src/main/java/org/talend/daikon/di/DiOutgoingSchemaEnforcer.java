@@ -12,18 +12,20 @@
 // ============================================================================
 package org.talend.daikon.di;
 
-import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
+import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapterException;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to coerce the output type to the exact
@@ -125,9 +127,9 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
 
     /**
      * Constructor sets design schema and {@link IndexMapper} instance
-     * 
+     *
      * @param designSchema design schema specified by user
-     * @param indexMapper tool, which computes correspondence between design and runtime fields
+     * @param indexMapper  tool, which computes correspondence between design and runtime fields
      */
     public DiOutgoingSchemaEnforcer(Schema designSchema, IndexMapper indexMapper) {
         this.designSchema = designSchema;
@@ -139,7 +141,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
     /**
      * Wraps {@link IndexedRecord},
      * creates map of correspondence between design and runtime fields, when first record is wrapped
-     * 
+     *
      * @param record {@link IndexedRecord} to be wrapped
      */
     public void setWrapped(IndexedRecord record) {
@@ -171,11 +173,11 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
 
     /**
      * {@inheritDoc}
-     * 
+     * <p>
      * Could be called only after first record was wrapped.
      * Here design schema and runtime schema have the same fields
      * (but fields could be in different order)
-     * 
+     *
      * @param pojoIndex index of required value. Could be from 0 to designSchemaSize - 1
      */
     @Override
@@ -187,10 +189,10 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
 
     /**
      * Transforms record column value from Avro type to Talend type
-     * 
-     * @param value record column value, which should be transformed into Talend compatible value.
-     * It can be null when null
-     * corresponding wrapped field.
+     *
+     * @param value      record column value, which should be transformed into Talend compatible value.
+     *                   It can be null when null
+     *                   corresponding wrapped field.
      * @param valueField field, which contain information about value's Talend type. It mustn't be null
      */
     protected Object transformValue(Object value, Field valueField) {
@@ -198,8 +200,17 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
             return null;
         }
 
+        Schema nonnull = AvroUtils.unwrapIfNullable(valueField.schema());
+        LogicalType logicalType = nonnull.getLogicalType();
+        if (logicalType != null) {
+            if (logicalType == LogicalTypes.date() || logicalType == LogicalTypes.timeMillis()
+                    || logicalType == LogicalTypes.timestampMillis()) {
+                return new Date(value instanceof Integer ? (Integer) value : (Long) value);
+            }
+        }
+
         String talendType = valueField.getProp(TALEND6_COLUMN_TALEND_TYPE);
-        String javaClass = AvroUtils.unwrapIfNullable(valueField.schema()).getProp(SchemaConstants.JAVA_CLASS_FLAG);
+        String javaClass = nonnull.getProp(SchemaConstants.JAVA_CLASS_FLAG);
 
         // TODO(rskraba): A full list of type conversion to coerce to Talend-compatible types.
         if ("id_Short".equals(talendType)) { //$NON-NLS-1$
