@@ -6,6 +6,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
+import org.talend.daikon.exception.TalendRuntimeException;
 
 /**
  * Provides methods and structures for generating and using simple generic records.
@@ -30,6 +31,8 @@ public class GenericDataRecordHelper {
      *
      * @param name a proposed record name, if this schema is a record type.
      * @param values the object values to base the schema on.
+     * @param unions field names (not fully qualified) that should be assigned to union types (the actual type plus
+     * null), or null if no fields should be unions.
      * @return a schema that corresponds to the values.
      */
     public static Schema createSchemaFromObject(String name, Object values, String... unions) {
@@ -150,7 +153,7 @@ public class GenericDataRecordHelper {
                     }
                 }
                 if (fieldSchema.getType() == Type.UNION) {
-                    throw new RuntimeException("No non-null type found in union.");
+                    throw TalendRuntimeException.createUnexpectedException("No non-null type found in union.");
                 }
             }
 
@@ -193,7 +196,7 @@ public class GenericDataRecordHelper {
                 }
             }
             if (elementSchema.getType() == Type.UNION) {
-                throw new RuntimeException("No non-null type found in union.");
+                throw TalendRuntimeException.createUnexpectedException("No non-null type found in union.");
             }
         }
 
