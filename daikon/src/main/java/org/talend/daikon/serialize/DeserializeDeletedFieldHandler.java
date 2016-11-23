@@ -12,7 +12,8 @@ public interface DeserializeDeletedFieldHandler extends DeserializeMarker {
      * An action may be taken based on the value of the deleted field.
      *
      * @param fieldName the name of the deleted field
-     * @param value the value of the deleted field in the old object
+     * @param value the value of the deleted field in the old object, this may be null if the deserialization failed to create the
+     *            an object.
      * @return true if the object is considered to have migrated (it was modified from the serialized version)
      */
     boolean deletedField(String fieldName, Object value);

@@ -19,7 +19,7 @@ public class PersistenceTestObjectInner {
     }
 
     public void checkMigrate() {
-        innerObject2.checkMigrate();
+        innerObject2.assertMigrateOk();
     }
 
 }
