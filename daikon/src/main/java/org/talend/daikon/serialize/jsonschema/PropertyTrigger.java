@@ -16,10 +16,10 @@ package org.talend.daikon.serialize.jsonschema;
  * enum serializer on jackson and/or spring to serialize in lower case.
  */
 public enum PropertyTrigger {
-    validate,
-    beforeActive,
-    beforePresent,
-    after,
+    VALIDATE,
+    BEFORE_ACTIVE,
+    BEFORE_PRESENT,
+    AFTER,
     /** Custom tag. Represent the widget(normally a button) which can open a new form */
-    showForm
+    SHOW_FORM
 }

@@ -32,25 +32,25 @@ public class UiSchemaConstants {
      */
     public static final String TAG_TRIGGER = "ui:trigger";
 
-    /** @deprecated please use PropertyTrigger#after */
+    /** @deprecated please use PropertyTrigger#AFTER */
     @Deprecated
-    public static final String TRIGGER_AFTER = PropertyTrigger.after.name();
+    public static final String TRIGGER_AFTER = PropertyTrigger.AFTER.name();
 
-    /** @deprecated please use PropertyTrigger#beforePresent */
+    /** @deprecated please use PropertyTrigger#BEFORE_PRESENT */
     @Deprecated
-    public static final String TRIGGER_BEFORE_PRESENT = PropertyTrigger.beforePresent.name();
+    public static final String TRIGGER_BEFORE_PRESENT = PropertyTrigger.BEFORE_PRESENT.name();
 
-    /** @deprecated please use PropertyTrigger#beforeActive */
+    /** @deprecated please use PropertyTrigger#BEFORE_ACTIVE */
     @Deprecated
-    public static final String TRIGGER_BEFORE_ACTIVATE = PropertyTrigger.beforeActive.name();
+    public static final String TRIGGER_BEFORE_ACTIVATE = PropertyTrigger.BEFORE_ACTIVE.name();
 
-    /** @deprecated please use PropertyTrigger#validate */
+    /** @deprecated please use PropertyTrigger#VALIDATE */
     @Deprecated
-    public static final String TRIGGER_VALIDATE = PropertyTrigger.validate.name();
+    public static final String TRIGGER_VALIDATE = PropertyTrigger.VALIDATE.name();
 
-    /** @deprecated please use PropertyTrigger#showForm */
+    /** @deprecated please use PropertyTrigger#SHOW_FORM */
     @Deprecated
-    public static final String TRIGGER_SHOW_FORM = PropertyTrigger.showForm.name();
+    public static final String TRIGGER_SHOW_FORM = PropertyTrigger.SHOW_FORM.name();
 
     /**
      * Built-in widget type. Display the character as * to hidden the actually character

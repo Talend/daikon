@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
@@ -146,21 +147,31 @@ public class UiSchemaGenerator {
     private ObjectNode addTriggerTWidget(Widget widget, ObjectNode schema) {
         ArrayNode jsonNodes = schema.arrayNode();
         if (widget.isCallAfter()) {
-            jsonNodes.add(PropertyTrigger.after.name());
+            jsonNodes.add(fromUpperCaseToCamel(PropertyTrigger.AFTER.name()));
         }
         if (widget.isCallBeforeActivate()) {
-            jsonNodes.add(PropertyTrigger.beforeActive.name());
+            jsonNodes.add(fromUpperCaseToCamel(PropertyTrigger.BEFORE_ACTIVE.name()));
         }
         if (widget.isCallBeforePresent()) {
-            jsonNodes.add(PropertyTrigger.beforePresent.name());
+            jsonNodes.add(fromUpperCaseToCamel(PropertyTrigger.BEFORE_PRESENT.name()));
         }
         if (widget.isCallValidate()) {
-            jsonNodes.add(PropertyTrigger.validate.name());
+            jsonNodes.add(fromUpperCaseToCamel(PropertyTrigger.VALIDATE.name()));
         }
         if (jsonNodes.size() != 0) {
             schema.set(UiSchemaConstants.TAG_TRIGGER, jsonNodes);
         }
         return schema;
+    }
+
+    /** Take an UPPER_CASE String and returns its lowerCase couterpart. Used to serialize enums. **/
+    private static String fromUpperCaseToCamel(String upperCase) {
+            StringBuilder builder = new StringBuilder();
+            String[] tokens = upperCase.toLowerCase().split("_");
+            for (String token : tokens) {
+                builder.append(StringUtils.capitalize(token));
+            }
+            return StringUtils.uncapitalize(builder.toString());
     }
 
     private List<JsonWidget> listTypedWidget(Form form) {
