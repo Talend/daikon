@@ -14,7 +14,6 @@ package org.talend.daikon.avro.converter;
 
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
-import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 
 /**
@@ -105,7 +104,7 @@ public class SingleColumnIndexedRecordConverter<DatumT>
      * 
      * @param <T> The primitive type to wrap.
      */
-    public static class PrimitiveAsIndexedRecordAdapter<T> implements IndexedRecord, Comparable<IndexedRecord> {
+    public static class PrimitiveAsIndexedRecordAdapter<T> extends ComparableIndexedRecordBase {
 
         private final T mValue;
 
@@ -130,34 +129,5 @@ public class SingleColumnIndexedRecordConverter<DatumT>
         public void put(int i, Object v) {
             throw new UnmodifiableAdapterException();
         }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this)
-                return true;
-            if (!(o instanceof IndexedRecord))
-                return false;
-            IndexedRecord that = (IndexedRecord) o;
-            if (!this.getSchema().equals(that.getSchema()))
-                return false;
-            // TODO(rskraba): there should be an better/faster compare for Avro!
-            return GenericData.get().compare(this, that, getSchema()) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return GenericData.get().hashCode(this, getSchema());
-        }
-
-        @Override
-        public int compareTo(IndexedRecord that) {
-            return GenericData.get().compare(this, that, getSchema());
-        }
-
-        @Override
-        public String toString() {
-            return GenericData.get().toString(this);
-        }
-
     }
 }
