@@ -12,22 +12,31 @@
 // ============================================================================
 package org.talend.daikon.runtime;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
-
 import org.ops4j.pax.url.mvn.Handler;
 import org.ops4j.pax.url.mvn.ServiceConstants;
 import org.talend.daikon.sandbox.SandboxInstanceFactory;
 import org.talend.daikon.sandbox.SandboxedInstance;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
+
 public class RuntimeUtil {
 
-    static {// install the mvn protocol handler if not already installed.
+    static {
+        // The mvn: protocol is always necessary for the methods in this class.
+        registerMavenUrlHandler();
+    }
+
+    /**
+     * Install the mvn protocol handler for URLs.
+     */
+    public static void registerMavenUrlHandler() {
         try {
             new URL("mvn:foo/bar");
-        } catch (MalformedURLException e) {// mvn protocal not installed so do it now
+        } catch (MalformedURLException e) {
+            // If the URL above failed, the mvn protocol needs to be installed.
             URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
 
                 @Override
