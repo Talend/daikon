@@ -44,7 +44,7 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
     /**
      * the reference instance
      */
-    private transient T reference;
+    private T reference;
 
     public ReferenceProperties(String name, String referenceDefinitionName) {
         super(name);

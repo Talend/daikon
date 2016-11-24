@@ -15,13 +15,7 @@ package org.talend.daikon.properties;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -50,7 +44,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     private String name;
 
-    private List<Form> forms = new ArrayList<>();
+    private transient List<Form> forms = new ArrayList<>();
 
     ValidationResult validationResult;
 
@@ -236,15 +230,8 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
     @Override
     public String toSerialized() {
         handleAllPropertyEncryption(ENCRYPT);
-        // remove form from serialization for storing the properties
-        // FIXME - move this to use the SerializeFieldOmitter
-        Map<Class<?>, List<String>> fieldBlackLists = new HashMap<>();
-        List<String> fields = new ArrayList<>();
-        fields.add("forms");
-        fieldBlackLists.put(PropertiesImpl.class, fields);
         try {
-            return JsonWriter.objectToJson(this,
-                    Collections.singletonMap(JsonWriter.FIELD_NAME_BLACK_LIST, (Object) fieldBlackLists));
+            return JsonWriter.objectToJson(this);
         } finally {
             handleAllPropertyEncryption(!ENCRYPT);
         }
@@ -632,8 +619,10 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
             }
         }
         sb.append("\n " + is + "  Forms:");
-        for (Form form : getForms()) {
-            sb.append("\n" + form.toStringIndent(indent + 6));
+        if (getForms() != null) {
+            for (Form form : getForms()) {
+                sb.append("\n" + form.toStringIndent(indent + 6));
+            }
         }
         return sb.toString();
     }

@@ -14,10 +14,12 @@ package org.talend.daikon;
 
 import org.talend.daikon.i18n.TranslatableImpl;
 
+import java.io.Serializable;
+
 /**
  * Simple implementation of {@link NamedThing}
  */
-public class SimpleNamedThing extends TranslatableImpl implements NamedThing {
+public class SimpleNamedThing extends TranslatableImpl implements NamedThing, Serializable {
 
     protected String name;
 
