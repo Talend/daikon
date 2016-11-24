@@ -5,14 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;
 import org.apache.avro.SchemaBuilder;
-import org.talend.daikon.avro.converter.ConvertBigDecimal;
-import org.talend.daikon.avro.converter.ConvertByte;
-import org.talend.daikon.avro.converter.ConvertCharacter;
-import org.talend.daikon.avro.converter.ConvertDate;
-import org.talend.daikon.avro.converter.ConvertShort;
+import org.talend.daikon.avro.converter.*;
 
 /**
  * Helper methods for accessing Avro {@link Schema} and Avro-compatible objects.
@@ -41,8 +38,21 @@ public class AvroUtils {
 
     private static final ConvertDate DATE_TYPE = new ConvertDate();
 
+    // FIXME - remove this one, this is not the date representation we ultimately want to use
     public static Schema _date() {
         return DATE_TYPE.getSchema();
+    }
+
+    public static Schema _logicalDate() {
+        return LogicalTypes.date().addToSchema(Schema.create(Schema.Type.INT));
+    }
+
+    public static Schema _logicalTime() {
+        return LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
+    }
+
+    public static Schema _logicalTimestamp() {
+        return LogicalTypes.timestampMillis().addToSchema(Schema.create(Schema.Type.LONG));
     }
 
     public static Schema _double() {
@@ -164,6 +174,7 @@ public class AvroUtils {
 
     /**
      * Schema don't support overwrite property's value, so have to clone it then put the new value
+     *
      * @return schema with the new value for the property: key
      */
     public static Schema setProperty(Schema schema, String key, String value) {

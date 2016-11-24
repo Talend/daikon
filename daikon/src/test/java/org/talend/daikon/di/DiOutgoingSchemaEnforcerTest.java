@@ -14,6 +14,7 @@ import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
+import org.joda.time.LocalDate;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.daikon.avro.AvroUtils;
@@ -41,11 +42,9 @@ public class DiOutgoingSchemaEnforcerTest {
      */
     private static IndexedRecord record;
 
-    private static void setLogicalType(Schema schema, LogicalType lt) throws Exception {
-        Method setLogicalType = Schema.class.getDeclaredMethod("setLogicalType", new Class[] { LogicalType.class });
-        setLogicalType.setAccessible(true);
-        setLogicalType.invoke(schema, new Object[] { lt });
-    }
+    private static int NUM_DAYS = 1000;
+
+    private static Date DATE_COMPARE = new LocalDate(1970, 1, 1).plusDays(1000).toDate();
 
     /**
      * Creates runtime schema, design schema and record, which is used as test arguments
@@ -60,15 +59,10 @@ public class DiOutgoingSchemaEnforcerTest {
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType() //
                 .noDefault() //
-                .name("logicalDate").prop("logicalType", "date").type(Schema.create(Schema.Type.INT)).noDefault() //
-                .name("logicalTime").prop("logicalType", "time-millis").type(Schema.create(Schema.Type.INT)).noDefault() //
-                .name("logicalTimestamp").prop("logicalType", "timestamp-millis").type(Schema.create(Schema.Type.LONG))
-                .noDefault() //
+                .name("logicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("logicalTime").type(AvroUtils._logicalTime()).noDefault() //
+                .name("logicalTimestamp").type(AvroUtils._logicalTimestamp()).noDefault() //
                 .endRecord(); //
-
-        setLogicalType(runtimeSchema.getField("logicalDate").schema(), LogicalTypes.date());
-        setLogicalType(runtimeSchema.getField("logicalTime").schema(), LogicalTypes.timeMillis());
-        setLogicalType(runtimeSchema.getField("logicalTimestamp").schema(), LogicalTypes.timestampMillis());
 
         talend6Schema = SchemaBuilder.builder().record("Record").fields() //
                 .name("id").type(Schema.create(Schema.Type.INT)).noDefault() //
@@ -78,15 +72,10 @@ public class DiOutgoingSchemaEnforcerTest {
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType()
                 .noDefault() //
-                .name("logicalDate").prop("logicalType", "date").type(Schema.create(Schema.Type.INT)).noDefault() //
-                .name("logicalTime").prop("logicalType", "time-millis").type(Schema.create(Schema.Type.INT)).noDefault() //
-                .name("logicalTimestamp").prop("logicalType", "timestamp-millis").type(Schema.create(Schema.Type.LONG))
-                .noDefault() //
+                .name("logicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("logicalTime").type(AvroUtils._logicalTime()).noDefault() //
+                .name("logicalTimestamp").type(AvroUtils._logicalTimestamp()).noDefault() //
                 .endRecord(); //
-
-        setLogicalType(talend6Schema.getField("logicalDate").schema(), LogicalTypes.date());
-        setLogicalType(talend6Schema.getField("logicalTime").schema(), LogicalTypes.timeMillis());
-        setLogicalType(talend6Schema.getField("logicalTimestamp").schema(), LogicalTypes.timestampMillis());
 
         record = new GenericData.Record(runtimeSchema);
         record.put(0, 1);
@@ -94,8 +83,8 @@ public class DiOutgoingSchemaEnforcerTest {
         record.put(2, 100);
         record.put(3, true);
         record.put(4, new Date(1467170137872L));
-        record.put(5, 1000L);
-        record.put(6, 1000L);
+        record.put(5, NUM_DAYS);
+        record.put(6, 1000);
         record.put(7, 1467170137872L);
     }
 
@@ -127,8 +116,8 @@ public class DiOutgoingSchemaEnforcerTest {
         assertThat(enforcer.get(2), equalTo((Object) 100));
         assertThat(enforcer.get(3), equalTo((Object) true));
         assertThat(enforcer.get(4), equalTo((Object) new Date(1467170137872L)));
-        assertThat(enforcer.get(5), equalTo((Object) new Date(1000L)));
-        assertThat(enforcer.get(6), equalTo((Object) new Date(1000L)));
+        assertThat(enforcer.get(5), equalTo((Object) DATE_COMPARE));
+        assertThat(enforcer.get(6), equalTo((Object) 1000));
         assertThat(enforcer.get(7), equalTo((Object) new Date(1467170137872L)));
     }
 

@@ -12,18 +12,19 @@
 // ============================================================================
 package org.talend.daikon.di;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
+import org.apache.avro.data.TimeConversions;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapterException;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
 
 import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
 
@@ -125,6 +126,12 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      */
     private boolean firstRecordProcessed = false;
 
+    private TimeConversions.DateConversion dateConversion = new TimeConversions.DateConversion();
+
+    private TimeConversions.TimeConversion timeConversion = new TimeConversions.TimeConversion();
+
+    private TimeConversions.TimestampConversion timestampConversion = new TimeConversions.TimestampConversion();
+
     /**
      * Constructor sets design schema and {@link IndexMapper} instance
      *
@@ -203,12 +210,16 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
         Schema nonnull = AvroUtils.unwrapIfNullable(valueField.schema());
         LogicalType logicalType = nonnull.getLogicalType();
         if (logicalType != null) {
-            if (logicalType == LogicalTypes.date() || logicalType == LogicalTypes.timeMillis()
-                    || logicalType == LogicalTypes.timestampMillis()) {
-                return new Date(value instanceof Integer ? (Integer) value : (Long) value);
+            if (logicalType == LogicalTypes.date()) {
+                return dateConversion.fromInt((Integer) value, nonnull, logicalType).toDate();
+            } else if (logicalType == LogicalTypes.timeMillis()) {
+                return value;
+            } else if (logicalType == LogicalTypes.timestampMillis()) {
+                return timestampConversion.fromLong((Long) value, nonnull, logicalType).toDate();
             }
         }
 
+        // This might not always have been specified.
         String talendType = valueField.getProp(TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = nonnull.getProp(SchemaConstants.JAVA_CLASS_FLAG);
 
@@ -216,6 +227,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
         if ("id_Short".equals(talendType)) { //$NON-NLS-1$
             return value instanceof Number ? ((Number) value).shortValue() : Short.parseShort(String.valueOf(value));
         } else if ("id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) { //$NON-NLS-1$
+            // FIXME - remove this mapping in favor of using Avro logical types
             return value instanceof Date ? value : new Date((Long) value);
         } else if ("id_Byte".equals(talendType)) { //$NON-NLS-1$
             return value instanceof Number ? ((Number) value).byteValue() : Byte.parseByte(String.valueOf(value));
