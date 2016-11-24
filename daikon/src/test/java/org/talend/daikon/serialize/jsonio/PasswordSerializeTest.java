@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.jsonio;
 
 import static org.junit.Assert.assertEquals;
 import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
@@ -20,6 +20,7 @@ import java.util.EnumSet;
 import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.serialize.SerializerDeserializer;
 
 public class PasswordSerializeTest {
 

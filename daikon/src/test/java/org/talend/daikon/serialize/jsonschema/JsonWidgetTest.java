@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
+import org.talend.daikon.serialize.FullExampleProperties;
 
 public class JsonWidgetTest {
 

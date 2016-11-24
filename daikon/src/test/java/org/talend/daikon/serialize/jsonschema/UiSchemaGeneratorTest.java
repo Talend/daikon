@@ -7,6 +7,7 @@ import org.talend.daikon.properties.ReferenceExampleProperties;
 import org.talend.daikon.properties.ReferenceExampleProperties.TestAProperties;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.talend.daikon.serialize.FullExampleProperties;
 
 public class UiSchemaGeneratorTest {
 

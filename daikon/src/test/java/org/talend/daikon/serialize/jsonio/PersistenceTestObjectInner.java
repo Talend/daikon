@@ -1,4 +1,4 @@
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.jsonio;
 
 public class PersistenceTestObjectInner {
 

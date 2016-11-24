@@ -1,4 +1,4 @@
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.jsonio;
 
 import static org.junit.Assert.*;
 
@@ -13,13 +13,14 @@ import org.slf4j.LoggerFactory;
 
 import com.cedarsoftware.util.io.JsonWriter;
 
+import org.talend.daikon.serialize.SerializerDeserializer;
 import shaded.org.apache.commons.io.IOUtils;
 
 public class SerializeDeserializeTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SerializeDeserializeTest.class);
 
-    static final String oldSer1 = "{\"@type\":\"org.talend.daikon.serialize.PersistenceTestObject\",\"string1\":\"string1\",\"string2\":\"string2\",\"string3\":\"string3\","
+    static final String oldSer1 = "{\"@type\":\"org.talend.daikon.serialize.jsonio.PersistenceTestObject\",\"string1\":\"string1\",\"string2\":\"string2\",\"string3\":\"string3\","
             + "\"inner\":{\"string1\":\"string1\",\"string2\":\"string2\","
             + "\"innerObject2\":{\"string1\":\"string1\",\"string2\":\"string2\"}}}";
 

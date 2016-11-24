@@ -1,4 +1,9 @@
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.jsonio;
+
+import org.talend.daikon.serialize.DeserializeDeletedFieldHandler;
+import org.talend.daikon.serialize.PostDeserializeHandler;
+import org.talend.daikon.serialize.PostDeserializeSetup;
+import org.talend.daikon.serialize.SerializeSetVersion;
 
 public class PersistenceTestObjectInner2 implements DeserializeDeletedFieldHandler, PostDeserializeHandler, SerializeSetVersion {
 

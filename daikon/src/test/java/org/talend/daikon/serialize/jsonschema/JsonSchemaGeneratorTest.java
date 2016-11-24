@@ -6,6 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.talend.daikon.properties.test.PropertiesTestUtils;
+import org.talend.daikon.serialize.FullExampleProperties;
 
 public class JsonSchemaGeneratorTest {
 

@@ -1,4 +1,4 @@
-package org.talend.daikon.serialize.jsonschema;
+package org.talend.daikon.serialize;
 
 import static org.talend.daikon.properties.presentation.Widget.widget;
 import static org.talend.daikon.properties.property.PropertyFactory.*;
