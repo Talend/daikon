@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.di;
 
+import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -25,8 +27,6 @@ import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapterException;
-
-import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to coerce the output type to the exact
