@@ -14,6 +14,7 @@ package org.talend.daikon.avro.converter;
 
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
+import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 
 /**
@@ -35,8 +36,8 @@ public class SingleColumnIndexedRecordConverter<DatumT>
      * @param datumClass The class of the instances that this factory knows how to create IndexedRecords for. This must
      * be an Avro-compatible class since it's instances will be directly inserted into the output records without
      * validation.
-     * @param fieldSchema The schema that the datum class can be converted to. This will be the schema of the single field in
-     * the generated {@link IndexedRecord}s.
+     * @param fieldSchema The schema that the datum class can be converted to. This will be the schema of the single
+     * field in the generated {@link IndexedRecord}s.
      */
     public SingleColumnIndexedRecordConverter(Class<DatumT> datumClass, Schema fieldSchema) {
         this(datumClass, fieldSchema, createRecordName(datumClass), "field");
@@ -104,7 +105,7 @@ public class SingleColumnIndexedRecordConverter<DatumT>
      * 
      * @param <T> The primitive type to wrap.
      */
-    public static class PrimitiveAsIndexedRecordAdapter<T> implements IndexedRecord {
+    public static class PrimitiveAsIndexedRecordAdapter<T> implements IndexedRecord, Comparable<IndexedRecord> {
 
         private final T mValue;
 
@@ -129,5 +130,34 @@ public class SingleColumnIndexedRecordConverter<DatumT>
         public void put(int i, Object v) {
             throw new UnmodifiableAdapterException();
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this)
+                return true;
+            if (!(o instanceof IndexedRecord))
+                return false;
+            IndexedRecord that = (IndexedRecord) o;
+            if (!this.getSchema().equals(that.getSchema()))
+                return false;
+            // TODO(rskraba): there should be an better/faster compare for Avro!
+            return GenericData.get().compare(this, that, getSchema()) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return GenericData.get().hashCode(this, getSchema());
+        }
+
+        @Override
+        public int compareTo(IndexedRecord that) {
+            return GenericData.get().compare(this, that, getSchema());
+        }
+
+        @Override
+        public String toString() {
+            return GenericData.get().toString(this);
+        }
+
     }
 }
