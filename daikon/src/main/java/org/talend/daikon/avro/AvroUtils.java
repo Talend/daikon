@@ -9,7 +9,11 @@ import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;
 import org.apache.avro.SchemaBuilder;
-import org.talend.daikon.avro.converter.*;
+import org.talend.daikon.avro.converter.ConvertBigDecimal;
+import org.talend.daikon.avro.converter.ConvertByte;
+import org.talend.daikon.avro.converter.ConvertCharacter;
+import org.talend.daikon.avro.converter.ConvertDate;
+import org.talend.daikon.avro.converter.ConvertShort;
 
 /**
  * Helper methods for accessing Avro {@link Schema} and Avro-compatible objects.

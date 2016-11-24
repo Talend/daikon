@@ -52,9 +52,9 @@ public class DiOutgoingSchemaEnforcerTest {
     @BeforeClass
     public static void setup() throws Exception {
         runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type(Schema.create(Schema.Type.INT)).noDefault() //
+                .name("id").type().intType().noDefault() //
                 .name("name").type().stringType().noDefault() //
-                .name("age").type(Schema.create(Schema.Type.INT)).noDefault() //
+                .name("age").type().intType().noDefault() //
                 .name("valid").type().booleanType().noDefault() //
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType() //
@@ -65,9 +65,9 @@ public class DiOutgoingSchemaEnforcerTest {
                 .endRecord(); //
 
         talend6Schema = SchemaBuilder.builder().record("Record").fields() //
-                .name("id").type(Schema.create(Schema.Type.INT)).noDefault() //
+                .name("id").type().intType().noDefault() //
                 .name("name").type().stringType().noDefault() //
-                .name("age").type(Schema.create(Schema.Type.INT)).noDefault() //
+                .name("age").type().intType().noDefault() //
                 .name("valid").type().booleanType().noDefault() //
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType()
