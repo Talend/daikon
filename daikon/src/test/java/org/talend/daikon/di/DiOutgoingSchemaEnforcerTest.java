@@ -43,7 +43,7 @@ public class DiOutgoingSchemaEnforcerTest {
     /**
      * 1000 days after 1970-01-01, equal to 1972-09-27.
      */
-    private static Date DATE_COMPARE = new Date(1000 * 60 * 60 * 24 * 1000L);
+    private static Date DATE_COMPARE = new Date(NUM_DAYS * 60 * 60 * 24 * 1000L);
 
     /**
      * Creates runtime schema, design schema and record, which is used as test arguments
