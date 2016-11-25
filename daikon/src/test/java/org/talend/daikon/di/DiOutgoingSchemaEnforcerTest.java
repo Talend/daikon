@@ -3,18 +3,14 @@ package org.talend.daikon.di;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.apache.avro.LogicalType;
-import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
-import org.joda.time.LocalDate;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.daikon.avro.AvroUtils;
@@ -44,7 +40,10 @@ public class DiOutgoingSchemaEnforcerTest {
 
     private static int NUM_DAYS = 1000;
 
-    private static Date DATE_COMPARE = new LocalDate(1970, 1, 1).plusDays(1000).toDate();
+    /**
+     * 1000 days after 1970-01-01, equal to 1972-09-27.
+     */
+    private static Date DATE_COMPARE = new Date(1000 * 60 * 60 * 24 * 1000L);
 
     /**
      * Creates runtime schema, design schema and record, which is used as test arguments
