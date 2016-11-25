@@ -27,6 +27,7 @@
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>2.8.2</version>
+            <optional>true</optional>			
 		</dependency>
 		<dependency>
 			<groupId>org.apache.avro</groupId>
@@ -181,8 +182,8 @@
 								<DynamicImport-Package>*</DynamicImport-Package>
 								<Service-Component>*</Service-Component>
 								<Embed-Transitive>true</Embed-Transitive>
-								<Embed-Dependency>*;artifactId=paranamer|snappy-java|commons-compress|xz;inline=true</Embed-Dependency>
-								<Import-Package>com.cedarsoftware.*;resolution:=optional,com.fasterxml.*;resolution:=optional,org.apache.*;resolution:=optional,*</Import-Package>
+								<Embed-Dependency>*;artifactId=paranamer|snappy-java|commons-compress|xz|joda-time;inline=false</Embed-Dependency>
+								<Import-Package>!org.joda.convert,com.cedarsoftware.*;resolution:=optional,com.fasterxml.*;resolution:=optional,org.apache.*;resolution:=optional,*</Import-Package>
 							</instructions>
 						</configuration>
 					</execution>
