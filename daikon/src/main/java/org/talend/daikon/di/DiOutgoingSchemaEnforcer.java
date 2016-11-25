@@ -15,6 +15,7 @@ package org.talend.daikon.di;
 import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +23,6 @@ import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
-import org.apache.avro.data.TimeConversions;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
@@ -126,12 +126,6 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      */
     private boolean firstRecordProcessed = false;
 
-    private TimeConversions.DateConversion dateConversion = new TimeConversions.DateConversion();
-
-    private TimeConversions.TimeConversion timeConversion = new TimeConversions.TimeConversion();
-
-    private TimeConversions.TimestampConversion timestampConversion = new TimeConversions.TimestampConversion();
-
     /**
      * Constructor sets design schema and {@link IndexMapper} instance
      *
@@ -211,11 +205,14 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
         LogicalType logicalType = nonnull.getLogicalType();
         if (logicalType != null) {
             if (logicalType == LogicalTypes.date()) {
-                return dateConversion.fromInt((Integer) value, nonnull, logicalType).toDate();
+                Calendar c = Calendar.getInstance();
+                c.setTimeInMillis(0L);
+                c.add(Calendar.DATE, (Integer) value);
+                return c.getTime();
             } else if (logicalType == LogicalTypes.timeMillis()) {
                 return value;
             } else if (logicalType == LogicalTypes.timestampMillis()) {
-                return timestampConversion.fromLong((Long) value, nonnull, logicalType).toDate();
+                return new Date((Long) value);
             }
         }
 
