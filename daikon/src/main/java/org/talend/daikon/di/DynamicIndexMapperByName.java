@@ -72,10 +72,8 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
     public int[] computeIndexMap(Schema runtimeSchema) {
         int[] indexMap = new int[designSchemaSize + 1];
 
+        indexMap[dynamicFieldPosition] = DYNAMIC;
         for (int i = 0; i < designSchemaSize; i++) {
-            if (i == dynamicFieldPosition) {
-                indexMap[dynamicFieldPosition] = DYNAMIC;
-            }
             Field designField = designFields.get(i);
             String fieldName = designField.name();
             Field runtimeField = runtimeSchema.getField(fieldName);

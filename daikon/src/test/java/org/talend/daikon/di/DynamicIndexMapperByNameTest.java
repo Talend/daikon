@@ -90,6 +90,66 @@ public class DynamicIndexMapperByNameTest {
     }
     
     /**
+     * Checks {@link DynamicIndexMapperByName#computeIndexMap()} returns int array, which size equals n+1 and
+     * with values which equal indexes of corresponding fields in runtime schema, where n - number of fields in design schema
+     * and dynamic field position is in the middle
+     */
+    @Test
+    public void testComputeIndexMapMiddle() {
+        int[] expectedIndexMap = { 0, -1, 3, 4 };
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true")
+                .fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col2").type().stringType().noDefault() //
+                .name("col3").type().intType().noDefault() //
+                .endRecord(); //
+
+        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col1_1").type().intType().noDefault() //
+                .name("col1_2").type().intType().noDefault() //
+                .name("col2").type().stringType().noDefault() //
+                .name("col3").type().intType().noDefault() //
+                .endRecord(); //
+
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
+        assertArrayEquals(expectedIndexMap, actualIndexMap);
+    }
+
+    /**
+     * Checks {@link DynamicIndexMapperByName#computeIndexMap()} returns int array, which size equals n+1 and
+     * with values which equal indexes of corresponding fields in runtime schema, where n - number of fields in design schema
+     * and dynamic field position is in the end
+     */
+    @Test
+    public void testComputeIndexMapEnd() {
+        int[] expectedIndexMap = { 0, 1, 2, -1 };
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true")
+                .fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col1").type().stringType().noDefault() //
+                .name("col2").type().intType().noDefault() //
+                .endRecord(); //
+
+        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col1").type().intType().noDefault() //
+                .name("col2").type().intType().noDefault() //
+                .name("col3_1").type().stringType().noDefault() //
+                .name("col3_2").type().intType().noDefault() //
+                .endRecord(); //
+
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
+        assertArrayEquals(expectedIndexMap, actualIndexMap);
+    }
+    
+    /**
      * Checks {@link DynamicIndexMapperByName#computeIndexMap()} in case when design schema has only 1 dynamic field
      * and no more other fields. Method should return int array, which size is 1 and the only element = -1
      * Test-case related to https://jira.talendforge.org/browse/TDI-37866
