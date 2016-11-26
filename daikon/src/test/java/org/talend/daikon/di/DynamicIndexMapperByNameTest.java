@@ -88,6 +88,31 @@ public class DynamicIndexMapperByNameTest {
         int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
+    
+    /**
+     * Checks {@link DynamicIndexMapperByName#computeIndexMap()} in case when design schema has only 1 dynamic field
+     * and no more other fields. Method should return int array, which size is 1 and the only element = -1
+     * Test-case related to https://jira.talendforge.org/browse/TDI-37866
+     */
+    @Test
+    public void testComputeIndexMapOnlyDynamic() {
+        int[] expectedIndexMap = { -1 };
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields() //
+                .endRecord(); //
+
+        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col1").type().intType().noDefault() //
+                .name("col2").type().stringType().noDefault() //
+                .endRecord(); //
+
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema);
+        int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
+        assertArrayEquals(expectedIndexMap, actualIndexMap);
+    }
 
     /**
      * Checks {@link DynamicIndexMapperByName#DynamicIndexMapperByName(Schema, Schema)} throws {@link IllegalArgumentException}
