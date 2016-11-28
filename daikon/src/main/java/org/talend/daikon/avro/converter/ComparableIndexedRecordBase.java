@@ -30,7 +30,7 @@ public abstract class ComparableIndexedRecordBase implements IndexedRecord, Comp
         IndexedRecord that = (IndexedRecord) o;
         if (!this.getSchema().equals(that.getSchema()))
             return false;
-        // TODO(rskraba): there should be an better/faster compare for Avro!
+        // TODO(rskraba): there should be an better&faster compare for Avro!
         return GenericData.get().compare(this, that, getSchema()) == 0;
     }
 
