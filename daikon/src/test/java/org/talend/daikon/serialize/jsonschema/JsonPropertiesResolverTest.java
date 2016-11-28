@@ -18,7 +18,7 @@ public class JsonPropertiesResolverTest {
         FullExampleProperties properties = (FullExampleProperties) resolver.resolveJson((ObjectNode) mapper.readTree(jsonDataStr),
                 new FullExampleProperties("fullexample").init());
 
-        FullExampleTestUtil.comparePropertiesValue(FullExampleTestUtil.createASetupFullExampleProperties(), properties);
+        FullExampleTestUtil.assertPropertiesValueAreEquals(FullExampleTestUtil.createASetupFullExampleProperties(), properties);
     }
 
 }

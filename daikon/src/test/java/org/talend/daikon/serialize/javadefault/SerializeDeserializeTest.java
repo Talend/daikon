@@ -38,7 +38,7 @@ public class SerializeDeserializeTest {
         des.close();
         inStore.close();
 
-        FullExampleTestUtil.comparePropertiesValue(properties, copiedProperties);
+        FullExampleTestUtil.assertPropertiesValueAreEquals(properties, copiedProperties);
     }
 
 }

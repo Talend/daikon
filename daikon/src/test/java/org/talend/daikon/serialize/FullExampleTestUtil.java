@@ -56,7 +56,7 @@ public class FullExampleTestUtil {
         return properties;
     }
 
-    static public void comparePropertiesValue(Properties expectedProperties, Properties actualProperties) {
+    static public void assertPropertiesValueAreEquals(Properties expectedProperties, Properties actualProperties) {
         List<NamedThing> expectedProps = expectedProperties.getProperties();
         for (NamedThing expectedProp : expectedProps) {
             String propName = expectedProp.getName();
@@ -64,7 +64,7 @@ public class FullExampleTestUtil {
             assertNotNull(propName, actualProp);
             if (expectedProp instanceof Properties) {
                 assertTrue(propName + " should Properties", actualProp instanceof Properties);
-                comparePropertiesValue((Properties) expectedProp, (Properties) actualProp);
+                assertPropertiesValueAreEquals((Properties) expectedProp, (Properties) actualProp);
             } else if (expectedProp instanceof Property) {
                 assertTrue(propName + " should Property", actualProp instanceof Property);
                 assertEquals(propName, ((Property) expectedProp).getValue(), ((Property) actualProp).getValue());
