@@ -42,6 +42,8 @@ import com.cedarsoftware.util.io.JsonWriter;
  */
 public class PropertiesImpl extends TranslatableImpl implements Properties, AnyProperty, PostDeserializeHandler, ToStringIndent {
 
+    private static final long serialVersionUID = -7970336622844281900L;
+
     private String name;
 
     private transient List<Form> forms = new ArrayList<>();

@@ -26,6 +26,8 @@ import org.talend.daikon.security.CryptoHelper;
  */
 public class StringProperty extends Property<String> {
 
+    private static final long serialVersionUID = -7464790471464008148L;
+
     private List<NamedThing> possibleValues2;
 
     public StringProperty(String name) {

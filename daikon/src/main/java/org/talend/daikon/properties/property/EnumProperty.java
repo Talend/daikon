@@ -21,6 +21,8 @@ import org.talend.daikon.exception.TalendRuntimeException;
  */
 public class EnumProperty<T extends Enum<T>> extends Property<T> {
 
+    private static final long serialVersionUID = -8979975127595348829L;
+
     public EnumProperty(Class<T> zeEnumType, String name) {
         super(zeEnumType, name, null);
         // set the possible values accoording with all the enum types.

@@ -28,6 +28,8 @@ import org.talend.daikon.properties.property.PropertyFactory;
  */
 public class FullExampleProperties extends PropertiesImpl {
 
+    private static final long serialVersionUID = 8049049878260901939L;
+
     /**
      * table property to use with table widget.
      */
@@ -256,6 +258,8 @@ public class FullExampleProperties extends PropertiesImpl {
 
     public static class CommonProperties extends PropertiesImpl {
 
+        private static final long serialVersionUID = 8094271685971123111L;
+
         public final Property<String> colString = newString("colString");
 
         public final EnumProperty<ColEnum> colEnum = newEnum("colEnum", ColEnum.class);
@@ -281,6 +285,8 @@ public class FullExampleProperties extends PropertiesImpl {
     }
 
     public static class TableProperties extends PropertiesImpl {
+
+        private static final long serialVersionUID = -2223674382898148884L;
 
         public static final TypeLiteral<List<ColEnum>> LIST_ENUM_TYPE = new TypeLiteral<List<ColEnum>>() {// empty
         };

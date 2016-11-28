@@ -46,6 +46,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
+    private static final long serialVersionUID = 6151130865421353629L;
+
     private static final String I18N_PROPERTY_PREFIX = "property."; //$NON-NLS-1$
 
     public static final String I18N_PROPERTY_POSSIBLE_VALUE_PREFIX = "property.possiblevalue."; //$NON-NLS-1$
@@ -318,7 +320,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     /**
      * Set the stored value for this property.
-     * 
+     *
      * @see #setStoredValue(Object)
      */
     public Property<T> setValue(T value) {
@@ -392,7 +394,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
      * Return a i18n String for a given possible value. It will automatically look for the key
      * {@value Property#I18N_PROPERTY_PREFIX}.possibleValue.toString(). {@value NamedThing#I18N_DISPLAY_NAME_SUFFIX}. if the key
      * is not found it returns the possibleValue.toString().
-     * 
+     *
      * @return a I18n value or possibleValue.toString if the value is not found.
      * @exception TalendRuntimeException with {@link CommonErrorCodes#UNEXPECTED_ARGUMENT} if the possible value does not belong
      *                to possible values
@@ -427,7 +429,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
      * This stores a value with the given key in a map this will be serialized with the component. This may be used to
      * identify the context of the value, whether is may be some java string or some context value or system properties.
      * Use this tag a will as long as the value is serializable.
-     * 
+     *
      * @param key, key to store the object with
      * @param value, any serializable object.
      */
@@ -437,7 +439,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
 
     /**
      * Return the previously stored value using {@link Property#setTaggedValue(String, Object)} and the given key.
-     * 
+     *
      * @param key, identify the value to be fetched
      * @return the object stored along with the key or null if none found.
      */
