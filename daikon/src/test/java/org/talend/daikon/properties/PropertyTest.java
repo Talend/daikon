@@ -12,14 +12,19 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
-import static org.talend.daikon.properties.property.PropertyFactory.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
 
 import java.util.EnumSet;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -184,10 +189,23 @@ public class PropertyTest {
     }
 
     @Test
-    public void testType() {
-        Property foo = PropertyFactory.newInteger("foo");
-        foo.setValue("bar");
-        assertEquals("bar", foo.getValue());
+    public void testIntegerType() {
+        Property<Integer> foo = PropertyFactory.newInteger("foo");
+
+        foo.setValue(1);
+        assertEquals(new Integer(1), foo.getValue());
+
+        foo.setStoredValue("1");
+        assertEquals(new Integer(1), foo.getValue());
+
+        try {
+            foo.setStoredValue("not a number");
+            foo.getValue();
+        } catch (NumberFormatException e) {
+
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
     @Test

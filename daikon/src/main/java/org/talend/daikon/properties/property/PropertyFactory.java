@@ -43,7 +43,29 @@ public class PropertyFactory {
     }
 
     public static Property<Integer> newInteger(String name) {
-        return new Property<>(Integer.class, name);
+        Property<Integer> result = new Property<>(Integer.class, name);
+        result.setValueEvaluator(new PropertyValueEvaluator() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                if (storedValue == null) {
+                    return null;
+                }
+
+                if (storedValue instanceof Integer) {
+                    return (T) storedValue;
+                }
+
+                if (storedValue instanceof String) {
+                    return (T) (Integer.valueOf((String) storedValue));
+                }
+
+                return null;
+            }
+
+        });
+        return result;
     }
 
     public static Property<Integer> newInteger(String name, String initialValue) {
