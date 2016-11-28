@@ -206,6 +206,9 @@ public class PropertyTest {
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
+
+        foo.setValue(null);
+        assertEquals(null, foo.getValue());
     }
 
     @Test
