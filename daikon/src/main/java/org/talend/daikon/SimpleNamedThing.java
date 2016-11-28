@@ -21,13 +21,13 @@ import org.talend.daikon.i18n.TranslatableImpl;
  */
 public class SimpleNamedThing extends TranslatableImpl implements NamedThing, Serializable {
 
-    private static final long serialVersionUID = -8036314685198853264L;
+    private static final long serialVersionUID = 6570117916097073559L;
 
     protected String name;
 
-    protected String displayName;
+    protected transient String displayName;
 
-    protected String title;
+    protected transient String title;
 
     public SimpleNamedThing() {
         this(null, null, null);
