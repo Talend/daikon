@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
@@ -205,7 +206,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
         LogicalType logicalType = nonnull.getLogicalType();
         if (logicalType != null) {
             if (logicalType == LogicalTypes.date()) {
-                Calendar c = Calendar.getInstance();
+                Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
                 c.setTimeInMillis(0L);
                 c.add(Calendar.DATE, (Integer) value);
                 return c.getTime();
