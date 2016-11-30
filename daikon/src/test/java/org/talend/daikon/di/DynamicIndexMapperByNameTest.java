@@ -21,13 +21,77 @@ import java.util.List;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.hamcrest.collection.IsIterableContainingInOrder;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.talend.daikon.avro.SchemaConstants;
 
 /**
  * Unit-tests for {@link DynamicIndexMapperByName} class
  */
 public class DynamicIndexMapperByNameTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    /**
+     * Checks {@link DynamicIndexMapperByName#DynamicIndexMapperByName(Schema)} throws {@link IllegalArgumentException}
+     * in case when incoming design schema doesn't contain dynamic field
+     * Case#1 INCLUDE_ALL_FIELDS is not present
+     */
+    @Test
+    public void testConstructorDynamicNotPresent1() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Design schema doesn't contain dynamic field");
+
+        Schema designSchemaWithoutIncludeAllFields = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0").fields() //
+                .name("col1").type().intType().noDefault() //
+                .name("col2").type().stringType().noDefault() //
+                .name("col3").type().intType().noDefault() //
+                .endRecord(); //
+
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchemaWithoutIncludeAllFields);
+    }
+
+    /**
+     * Checks {@link DynamicIndexMapperByName#DynamicIndexMapperByName(Schema)} throws {@link IllegalArgumentException}
+     * in case when incoming design schema doesn't contain dynamic field
+     * Case#2 TALEND6_DYNAMIC_COLUMN_POSITION is not present
+     */
+    @Test
+    public void testConstructorDynamicNotPresent2() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Design schema doesn't contain dynamic field");
+
+        Schema designSchemaWithoutDynamicColumnPosition = SchemaBuilder.builder().record("Record") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields() //
+                .name("col1").type().intType().noDefault() //
+                .name("col2").type().stringType().noDefault() //
+                .name("col3").type().intType().noDefault() //
+                .endRecord(); //
+
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchemaWithoutDynamicColumnPosition);
+    }
+
+    /**
+     * Checks {@link DynamicIndexMapperByName#DynamicIndexMapperByName(Schema)} throws {@link IllegalArgumentException}
+     * in case when incoming design schema doesn't contain dynamic field
+     * Case#3 both TALEND6_DYNAMIC_COLUMN_POSITION and INCLUDE_ALL_FIELDS are not present
+     */
+    @Test
+    public void testConstructorDynamicNotPresent3() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Design schema doesn't contain dynamic field");
+
+        Schema designSchemaWithoutDynamic = SchemaBuilder.builder().record("Record").fields() //
+                .name("col1").type().intType().noDefault() //
+                .name("col2").type().stringType().noDefault() //
+                .name("col3").type().intType().noDefault() //
+                .endRecord(); //
+
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchemaWithoutDynamic);
+    }
 
     /**
      * Checks {@link DynamicIndexMapperByName#computeIndexMap()} returns int array, which size equals n+1 and
@@ -88,7 +152,7 @@ public class DynamicIndexMapperByNameTest {
         int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
-    
+
     /**
      * Checks {@link DynamicIndexMapperByName#computeIndexMap()} returns int array, which size equals n+1 and
      * with values which equal indexes of corresponding fields in runtime schema, where n - number of fields in design schema
@@ -148,7 +212,7 @@ public class DynamicIndexMapperByNameTest {
         int[] actualIndexMap = indexMapper.computeIndexMap(runtimeSchema);
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
-    
+
     /**
      * Checks {@link DynamicIndexMapperByName#computeIndexMap()} in case when design schema has only 1 dynamic field
      * and no more other fields. Method should return int array, which size is 1 and the only element = -1

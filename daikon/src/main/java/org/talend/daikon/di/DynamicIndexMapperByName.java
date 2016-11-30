@@ -58,7 +58,7 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
         if (AvroUtils.isIncludeAllFields(designSchema) && dynamicFieldProperty != null) {
             dynamicFieldPosition = Integer.valueOf(dynamicFieldProperty);
         } else {
-            throw new IllegalArgumentException("Runtime schema doesn't contain dynamic field");
+            throw new IllegalArgumentException("Design schema doesn't contain dynamic field");
         }
     }
 
