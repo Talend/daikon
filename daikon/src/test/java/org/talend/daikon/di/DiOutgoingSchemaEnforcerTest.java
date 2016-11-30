@@ -44,7 +44,10 @@ public class DiOutgoingSchemaEnforcerTest {
 
     private static int NUM_DAYS = 1000;
 
-    private static Date DATE_COMPARE = new LocalDate(1970, 1, 1).plusDays(1000).toDate();
+    /**
+     * 1000 days after 1970-01-01, equal to 1972-09-27.
+     */
+    private static Date DATE_COMPARE = new Date(NUM_DAYS * 60 * 60 * 24 * 1000L);
 
     /**
      * Creates runtime schema, design schema and record, which is used as test arguments

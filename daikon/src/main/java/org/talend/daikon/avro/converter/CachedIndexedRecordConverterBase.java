@@ -1,16 +1,14 @@
 package org.talend.daikon.avro.converter;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
-import org.apache.avro.reflect.ReflectData;
-import org.apache.avro.specific.SpecificData;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.container.ContainerReaderByIndex;
 import org.talend.daikon.avro.container.ContainerWriterByIndex;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
 
 /**
  * This abstract base class provides an implementation of an {@link IndexedRecordConverter} that caches the maximum
@@ -213,7 +211,7 @@ public abstract class CachedIndexedRecordConverterBase<ContainerDataSpecT, Field
      * An Adapter that maps the given {@link GettableT} to have the appearance of an Avro {@link IndexedRecord}. This
      * relies heavily on the cached and unchanging information stored in the factory.
      */
-    private class IndexedRecordAdapterWithCache implements IndexedRecord, Comparable<IndexedRecord> {
+    private class IndexedRecordAdapterWithCache extends ComparableIndexedRecordBase {
 
         /** The wrapped data. */
         public GettableT gettable;
@@ -254,31 +252,8 @@ public abstract class CachedIndexedRecordConverterBase<ContainerDataSpecT, Field
         }
 
         @Override
-        public int hashCode() {
-            // Base the hash code only on the schema.
-            return SpecificData.get().hashCode(this, getSchema());
-        }
-
-        @Override
-        public boolean equals(Object that) {
-            if (that == this) {
-                return true; // identical object
-            }
-            if (!(that instanceof IndexedRecord)) {
-                return false; // not a record
-            }
-            return compareTo((IndexedRecord) that) == 0;
-        }
-
-        @Override
         public String toString() {
             return gettable.toString();
         }
-
-        @Override
-        public int compareTo(IndexedRecord that) {
-            return ReflectData.get().compare(this, that, getSchema());
-        }
-
     }
 }
