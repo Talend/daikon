@@ -24,7 +24,6 @@ import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
-import org.apache.avro.data.TimeConversions;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
@@ -128,12 +127,6 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      */
     private boolean firstRecordProcessed = false;
 
-    private TimeConversions.DateConversion dateConversion = new TimeConversions.DateConversion();
-
-    private TimeConversions.TimeConversion timeConversion = new TimeConversions.TimeConversion();
-
-    private TimeConversions.TimestampConversion timestampConversion = new TimeConversions.TimestampConversion();
-
     /**
      * Constructor sets design schema and {@link IndexMapper} instance
      *
@@ -167,14 +160,16 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      * However, {@link DiOutgoingDynamicSchemaEnforcer} returns dynamic values
      * in map, when dynamic field index is passed
      */
-    @Override public Schema getSchema() {
+    @Override
+    public Schema getSchema() {
         return designSchema;
     }
 
     /**
      * Throws {@link UnmodifiableAdapterException}. This operation is not supported
      */
-    @Override public void put(int i, Object v) {
+    @Override
+    public void put(int i, Object v) {
         throw new UnmodifiableAdapterException();
     }
 
@@ -187,7 +182,8 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      *
      * @param pojoIndex index of required value. Could be from 0 to designSchemaSize - 1
      */
-    @Override public Object get(int pojoIndex) {
+    @Override
+    public Object get(int pojoIndex) {
         Field outField = designFields.get(pojoIndex);
         Object value = wrappedRecord.get(indexMap[pojoIndex]);
         return transformValue(value, outField);
@@ -209,14 +205,16 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
         Schema nonnull = AvroUtils.unwrapIfNullable(valueField.schema());
         LogicalType logicalType = nonnull.getLogicalType();
         if (logicalType != null) {
-            Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-            c.setTimeInMillis(0L);
-            c.add(Calendar.DATE, (Integer) value);
-            return c.getTime();
-        } else if (logicalType == LogicalTypes.timeMillis()) {
-            return value;
-        } else if (logicalType == LogicalTypes.timestampMillis()) {
-            return new Date((Long) value);
+            if (logicalType == LogicalTypes.date()) {
+                Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+                c.setTimeInMillis(0L);
+                c.add(Calendar.DATE, (Integer) value);
+                return c.getTime();
+            } else if (logicalType == LogicalTypes.timeMillis()) {
+                return value;
+            } else if (logicalType == LogicalTypes.timestampMillis()) {
+                return new Date((Long) value);
+            }
         }
 
         // This might not always have been specified.
