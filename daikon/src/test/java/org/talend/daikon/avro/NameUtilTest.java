@@ -1,5 +1,6 @@
 package org.talend.daikon.avro;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,28 +12,23 @@ public class NameUtilTest {
     private String[] wrongNames = { "P1_Vente_Qté", "P1_Vente_PVEscpteNet", "P1_Vente_PVEscpteBrut", "TVA", "CA HT",
             "Numéro de ticket", "Article unique", "N° référence", "Désignation", "Photo n°", "Date_PV", "éà", "+" };
 
+    private String[] expectedNames = { "P1_Vente_Qt_", "P1_Vente_PVEscpteNet", "P1_Vente_PVEscpteBrut", "TVA", "CA_HT",
+            "Num_ro_de_ticket", "Article_unique", "N__r_f_rence", "D_signation", "Photo_n_", "Date_PV", "Column11", "Column12" };
+
     @Test
     public void testCorrect() {
-        Set<String> previousNames = new HashSet<String>();
+        Set<String> resultNames = new HashSet<String>();
         int i = 0;
-        for (String each : wrongNames) {
-            String name = NameUtil.correct(each, i++, previousNames);
-            Assert.assertTrue("too many underline", countUnderLine(name) <= (name.length() / 2));
-            previousNames.add(name);
-        }
-        Assert.assertEquals("after the correct, we miss some one or create a duplicated one, please check the NameUtil class",
-                wrongNames.length, previousNames.size());
-    }
 
-    private int countUnderLine(String str) {
-        int result = 0;
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if (c == '_') {
-                result++;
-            }
+        Set<String> expectedSet = new HashSet<>();
+        expectedSet.addAll(Arrays.asList(expectedNames));
+
+        for (String each : wrongNames) {
+            String name = NameUtil.correct(each, i++, resultNames);
+            resultNames.add(name);
         }
-        return result;
+
+        Assert.assertEquals(expectedSet, resultNames);
     }
 
 }
