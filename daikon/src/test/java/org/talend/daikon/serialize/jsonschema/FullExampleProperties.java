@@ -33,6 +33,9 @@ public class FullExampleProperties extends PropertiesImpl {
      */
     static final String POPUP_FORM_NAME = "popup";
 
+    /** property to check the title of generated jsonSchema **/
+    static final String MAIN_FORM_TITLE = "Main Form Title";
+
     /** use the default widget for this String type */
     public final Property<String> stringProp = newString("stringProp", "initialValue");
 
@@ -106,6 +109,7 @@ public class FullExampleProperties extends PropertiesImpl {
     public void setupLayout() {
         super.setupLayout();
         Form mainForm = new Form(this, Form.MAIN);
+        mainForm.setTitle(MAIN_FORM_TITLE);
         mainForm.addRow(stringProp);
         mainForm.addRow(widget(schema).setWidgetType(Widget.SCHEMA_EDITOR_WIDGET_TYPE));
         mainForm.addRow(widget(schema).setWidgetType(Widget.SCHEMA_REFERENCE_WIDGET_TYPE));
@@ -113,6 +117,7 @@ public class FullExampleProperties extends PropertiesImpl {
         mainForm.addRow(widget(multipleSelectionProp).setWidgetType(Widget.NAME_SELECTION_REFERENCE_WIDGET_TYPE));
         mainForm.addRow(widget(showNewForm).setWidgetType(Widget.BUTTON_WIDGET_TYPE));
         Form popUpForm = new Form(this, POPUP_FORM_NAME);
+        popUpForm.setTitle("Popup Form");
         showNewForm.setFormtoShow(popUpForm);
         mainForm.addColumn(commonProp);
         mainForm.addColumn(widget(hiddenTextProp).setWidgetType(Widget.HIDDEN_TEXT_WIDGET_TYPE));
@@ -269,6 +274,7 @@ public class FullExampleProperties extends PropertiesImpl {
         @Override
         public void setupLayout() {
             Form mainForm = new Form(this, Form.MAIN);
+            mainForm.setTitle("Common Form");
             mainForm.addRow(colString);
             mainForm.addRow(colEnum);
             mainForm.addRow(colBoolean);
