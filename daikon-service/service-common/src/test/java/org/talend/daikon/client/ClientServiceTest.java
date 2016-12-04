@@ -67,4 +67,11 @@ public class ClientServiceTest extends ServiceBaseTests {
         assertEquals("Hi from implementation: myself", sayRemote);
     }
 
+    @Test
+    public void testRemoteModeWithPathVariablesAndRequestBody() throws Exception {
+        final TestService client = clients.of(TestService.class, Access.REMOTE);
+        final String sayRemote = client.sayHiWithMyNameAndValue("myself", "value", "body");
+        assertServiceClientClass(client, Access.REMOTE);
+        assertEquals("Hi myself value body", sayRemote);
+    }
 }
