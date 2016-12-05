@@ -44,6 +44,11 @@ import org.slf4j.LoggerFactory;
  */
 public class ClassLoaderIsolatedSystemProperties extends Properties {
 
+    /**
+     * 
+     */
+    public static final String ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY = "org.ops4j.pax.url.mvn.localRepository";
+
     private static final Map<ClassLoader, Properties> classLoaderProperties = new HashMap<ClassLoader, Properties>();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassLoaderIsolatedSystemProperties.class);
@@ -89,7 +94,14 @@ public class ClassLoaderIsolatedSystemProperties extends Properties {
             }
             // we are cloning here cause the new Properties(Properties default) is using default as a backup when a key is not
             // found and does not have any key/values in it's properties
-            classLoaderProperties.put(classloader, (Properties) theClassLoaderProperties.clone());
+            Properties clonedProperties = (Properties) theClassLoaderProperties.clone();
+            // setup pax.url local repo for a proper classloader resolution when using mvn protocol
+            // TODO setup a generic way to copy certain properties to isolated CL.
+            if (defaultSystemProperties.containsKey(ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY)) {
+                clonedProperties.setProperty(ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY,
+                        defaultSystemProperties.getProperty(ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY));
+            }
+            classLoaderProperties.put(classloader, clonedProperties);
         }
     }
 
