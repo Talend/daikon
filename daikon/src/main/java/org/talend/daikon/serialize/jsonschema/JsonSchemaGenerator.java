@@ -11,6 +11,7 @@ import java.util.List;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.ReferenceProperties;
+import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.EnumListProperty;
 import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
@@ -42,6 +43,9 @@ public class JsonSchemaGenerator {
 
     private ObjectNode processTProperties(Properties cProperties) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
+        if (cProperties.getForm(Form.MAIN) != null) {
+            schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getForm(Form.MAIN).getTitle());
+        }
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
         schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
 

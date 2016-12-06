@@ -251,4 +251,43 @@ public class ClassLoaderIsolatedSystemPropertiesTest {
         }
     }
 
+    @Test
+    public void testPaxUrlMvnLocalRepo() {
+        String initialValue = (String) ClassLoaderIsolatedSystemProperties.getInstance().getDefaultSystemProperties()
+                .get(ClassLoaderIsolatedSystemProperties.ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY);
+        try {
+            Properties theClassLoaderProperties = new Properties();
+            // setup property
+            ClassLoaderIsolatedSystemProperties.getInstance().getDefaultSystemProperties()
+                    .setProperty(ClassLoaderIsolatedSystemProperties.ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY, "foo");
+            ClassLoaderIsolatedSystemProperties.getInstance()
+                    .startIsolateClassLoader(Thread.currentThread().getContextClassLoader(), theClassLoaderProperties);
+            // check that property is copied into isolated CL
+            assertEquals("foo", System.getProperty(ClassLoaderIsolatedSystemProperties.ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY));
+            ClassLoaderIsolatedSystemProperties.getInstance()
+                    .stopIsolateClassLoader(Thread.currentThread().getContextClassLoader());
+
+            // unset property
+            ClassLoaderIsolatedSystemProperties.getInstance().getDefaultSystemProperties()
+                    .remove(ClassLoaderIsolatedSystemProperties.ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY);
+            ClassLoaderIsolatedSystemProperties.getInstance()
+                    .startIsolateClassLoader(Thread.currentThread().getContextClassLoader(), theClassLoaderProperties);
+            // check that property is copied into isolated CL
+            assertEquals(null, System.getProperty(ClassLoaderIsolatedSystemProperties.ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY));
+            ClassLoaderIsolatedSystemProperties.getInstance()
+                    .stopIsolateClassLoader(Thread.currentThread().getContextClassLoader());
+        } finally {
+            // set initial value back
+            if (initialValue != null) {
+                ClassLoaderIsolatedSystemProperties.getInstance().getDefaultSystemProperties()
+                        .setProperty(ClassLoaderIsolatedSystemProperties.ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY, initialValue);
+            } else {
+                ClassLoaderIsolatedSystemProperties.getInstance().getDefaultSystemProperties()
+                        .remove(ClassLoaderIsolatedSystemProperties.ORG_OPS4J_PAX_URL_MVN_LOCAL_REPOSITORY);
+            }
+            ClassLoaderIsolatedSystemProperties.getInstance()
+                    .stopIsolateClassLoader(Thread.currentThread().getContextClassLoader());
+        }
+    }
+
 }

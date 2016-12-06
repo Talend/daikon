@@ -51,7 +51,7 @@ public class SandboxInstanceFactoryTest {
         ClassLoader parent = new ClassLoader(this.getClass().getClassLoader()) {
             // abstract class but without anything to implement
         };
-        URL libUrl = this.getClass().getResource("zeLib-0.0.1-SNAPSHOT.jar");
+        URL libUrl = this.getClass().getResource("zeLib-0.0.1.jar");
         try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(TEST_CLASS_NAME,
                 Collections.singletonList(libUrl), parent, true)) {
             assertNotNull(sandboxedInstance);
@@ -75,7 +75,7 @@ public class SandboxInstanceFactoryTest {
      */
     @Test
     public void testCreateSandboxedInstanceWithNullParenClassLoader() throws Exception {
-        URL libUrl = this.getClass().getResource("zeLib-0.0.1-SNAPSHOT.jar");
+        URL libUrl = this.getClass().getResource("zeLib-0.0.1.jar");
         try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(TEST_CLASS_NAME,
                 Collections.singletonList(libUrl), null, true)) {
             assertNotNull(sandboxedInstance);

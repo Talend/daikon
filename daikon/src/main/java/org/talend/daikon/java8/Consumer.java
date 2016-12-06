@@ -12,9 +12,13 @@
 // ============================================================================
 package org.talend.daikon.java8;
 
-import java.io.Serializable;
+/** Stand in for java.util.function.Consumer for pre-Java 8 code. */
+public interface Consumer<T> {
 
-/** Adds Serializable to the Supplier interface. */
-public interface SerializableSupplier<T> extends Supplier<T>, Serializable {
-
+    /**
+     * Performs this operation on the given argument.
+     *
+     * @param t the input argument
+     */
+    void accept(T t);
 }

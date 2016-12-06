@@ -35,8 +35,8 @@ public class SingleColumnIndexedRecordConverter<DatumT>
      * @param datumClass The class of the instances that this factory knows how to create IndexedRecords for. This must
      * be an Avro-compatible class since it's instances will be directly inserted into the output records without
      * validation.
-     * @param fieldSchema The schema that the datum class can be converted to. This will be the schema of the single field in
-     * the generated {@link IndexedRecord}s.
+     * @param fieldSchema The schema that the datum class can be converted to. This will be the schema of the single
+     * field in the generated {@link IndexedRecord}s.
      */
     public SingleColumnIndexedRecordConverter(Class<DatumT> datumClass, Schema fieldSchema) {
         this(datumClass, fieldSchema, createRecordName(datumClass), "field");
@@ -104,7 +104,7 @@ public class SingleColumnIndexedRecordConverter<DatumT>
      * 
      * @param <T> The primitive type to wrap.
      */
-    public static class PrimitiveAsIndexedRecordAdapter<T> implements IndexedRecord {
+    public static class PrimitiveAsIndexedRecordAdapter<T> extends ComparableIndexedRecordBase {
 
         private final T mValue;
 

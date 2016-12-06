@@ -14,6 +14,8 @@ package org.talend.daikon.sandbox;
 
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
@@ -28,7 +30,7 @@ import org.talend.daikon.sandbox.properties.StandardPropertiesStrategyFactory;
  */
 public class SandboxedInstance implements AutoCloseable {
 
-    private Object instance;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SandboxedInstance.class);
 
     ClassLoader previousContextClassLoader;
 
@@ -38,8 +40,12 @@ public class SandboxedInstance implements AutoCloseable {
 
     private ClassLoader sandboxClassLoader;
 
-    SandboxedInstance(Object instance, boolean useCurrentJvmProperties, ClassLoader sandboxClassLoader) {
-        this.instance = instance;
+    private String classToInstanciate;
+
+    private Object instance;
+
+    SandboxedInstance(String classToInstanciate, boolean useCurrentJvmProperties, ClassLoader sandboxClassLoader) {
+        this.classToInstanciate = classToInstanciate;
         this.useCurrentJvmProperties = useCurrentJvmProperties;
         this.sandboxClassLoader = sandboxClassLoader;
     }
@@ -57,9 +63,9 @@ public class SandboxedInstance implements AutoCloseable {
     @Override
     public void close() {
         instance = null;
-        if (isolatedThread != null) {// in case getInstance was not called.
+        if (isolatedThread != null) {
             isolatedThread.setContextClassLoader(previousContextClassLoader);
-        }
+        } // else getInstance was not called so no need to reset context classloader.
         ClassLoaderIsolatedSystemProperties.getInstance().stopIsolateClassLoader(sandboxClassLoader);
         if (sandboxClassLoader instanceof AutoCloseable) {
             try {
@@ -80,6 +86,7 @@ public class SandboxedInstance implements AutoCloseable {
      * threads (assuming they use the same contextClassLoader).
      *
      * @return the instance or null if the {@link #close()} method has been called.
+     * @throws TalendRuntimeException is the class failed to be instanciated
      */
     public Object getInstance() {
         if (isolatedThread == null) {
@@ -90,7 +97,15 @@ public class SandboxedInstance implements AutoCloseable {
                     : StandardPropertiesStrategyFactory.create().getStandardProperties();
             ClassLoaderIsolatedSystemProperties.getInstance().startIsolateClassLoader(sandboxClassLoader, isolatedProperties);
             isolatedThread.setContextClassLoader(sandboxClassLoader);
-        }
+            LOGGER.info("creating class '" + classToInstanciate + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+            Class<?> clazz;
+            try {
+                clazz = sandboxClassLoader.loadClass(classToInstanciate);
+                instance = clazz.newInstance();
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+            }
+        } // else getInstance has already been called
         return this.instance;
     }
 

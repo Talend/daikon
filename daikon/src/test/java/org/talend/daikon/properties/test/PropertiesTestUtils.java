@@ -15,12 +15,14 @@ package org.talend.daikon.properties.test;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.rules.ErrorCollector;
+import org.ops4j.pax.url.mvn.ServiceConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.NamedThing;
@@ -37,6 +39,20 @@ import org.talend.daikon.serialize.SerializerDeserializer;
 public class PropertiesTestUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesTestUtils.class);
+
+    /**
+     * if we are running from maven and a local repo is used, we also configure pax url to use this local repos.
+     */
+    public static void setupPaxUrlFromMavenLaunch() {
+        String localRepo = System.getProperty("maven.repo.local", "");
+        if (!"".equals(localRepo)) {// local repo set
+            if (!new File(localRepo).isAbsolute()) {// must be absolute.
+                throw new RuntimeException("maven.repo.local system properties must be absolute.");
+            } else {
+                System.setProperty(ServiceConstants.PID + "." + ServiceConstants.PROPERTY_LOCAL_REPOSITORY, localRepo);
+            }
+        } // no local repo set so do nothing
+    }
 
     public static Properties checkSerialize(Properties props, ErrorCollector errorCollector) {
         String s = props.toSerialized();
