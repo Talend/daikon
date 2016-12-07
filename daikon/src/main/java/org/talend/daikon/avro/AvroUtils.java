@@ -243,4 +243,15 @@ public class AvroUtils {
         return fields == null || fields.isEmpty();
     }
 
+    /**
+     * Creates empty record schema, i.e. record schema, which has no fields.
+     * "EmptyRecord" name is used for this schema
+     * 
+     * @return empty record schema
+     */
+    public static Schema createEmptySchema() {
+        Schema emptySchema = SchemaBuilder.builder().record("EmptySchema").fields().endRecord(); //$NON-NLS-1$
+        return emptySchema;
+    }
+
 }
