@@ -224,7 +224,7 @@ public class AvroUtils {
     }
 
     /**
-     * check if schema is valid before using it. If valid, return true, if not, return false.
+     * check if schema is empty before using it. If empty, return true, if not, return false.
      * 
      * @param schema
      * @return
