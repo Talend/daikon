@@ -14,8 +14,6 @@ import java.util.Map;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.junit.Test;
-import org.talend.daikon.avro.AvroUtils;
-import org.talend.daikon.avro.SchemaConstants;
 
 /**
  * Unit tests for {AvroUtils}.
@@ -93,6 +91,22 @@ public class AvroUtilsTest {
         assertTrue(AvroUtils.isIncludeAllFields(s));
         s = AvroUtils.setIncludeAllFields(s, false);
         assertFalse(AvroUtils.isIncludeAllFields(s));
+    }
+
+    @Test
+    public void testIsSchemaEmpty() {
+        Schema s = null;
+        assertTrue(AvroUtils.isSchemaEmpty(s));
+
+        s = SchemaBuilder.record("test").fields().endRecord();
+        assertTrue(AvroUtils.isSchemaEmpty(s));
+
+        s = AvroUtils.setIncludeAllFields(s, true);
+        assertFalse(AvroUtils.isSchemaEmpty(s));
+
+        s = SchemaBuilder.record("test").fields().name("field1").type().booleanType().noDefault().name("field2").type()
+                .stringType().noDefault().endRecord();
+        assertFalse(AvroUtils.isSchemaEmpty(s));
     }
 
     @Test

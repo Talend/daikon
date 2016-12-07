@@ -223,4 +223,24 @@ public class AvroUtils {
         return setProperty(schema, SchemaConstants.INCLUDE_ALL_FIELDS, String.valueOf(value));
     }
 
+    /**
+     * check if schema is valid before using it. If valid, return true, if not, return false.
+     * 
+     * @param schema
+     * @return
+     */
+    public static boolean isSchemaEmpty(Schema schema) {
+        if (schema == null) {
+            return true;
+        }
+
+        if (isIncludeAllFields(schema)) {
+            return false;
+        }
+
+        List<Schema.Field> fields = schema.getFields();
+
+        return fields == null || fields.isEmpty();
+    }
+
 }
