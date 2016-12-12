@@ -21,19 +21,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class UiSchemaGenerator {
 
-    protected <T extends Properties> ObjectNode genWidget(T properties) {
-        return processTPropertiesWidget(properties);
+    protected <T extends Properties> ObjectNode genWidget(T properties, String formName) {
+        return processTPropertiesWidget(properties, formName);
     }
 
     /**
-     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider Main and Advanced Form
-     *
-     * @param cProperties
-     * @return UISchema
+     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider the requested form and Advanced Form
      */
-    private ObjectNode processTPropertiesWidget(Properties cProperties) {
-        Form mainForm = cProperties.getForm(Form.MAIN);
-        Form advancedForm = cProperties.getForm(Form.ADVANCED);
+    private ObjectNode processTPropertiesWidget(Properties cProperties, String formName) {
+        Form mainForm = cProperties.getPreferredForm(formName);
+        Form advancedForm = cProperties.getPreferredForm(Form.ADVANCED);
         return processTPropertiesWidget(mainForm, advancedForm);
     }
 
@@ -41,9 +38,6 @@ public class UiSchemaGenerator {
      * ComponentProeprties could use multiple forms in one time to represent the graphic setting, Main & Advanced for
      * instance. ComponentProperties could has Properties/Property which are not in Form, treat it as hidden
      * Properties/Property
-     *
-     * @param forms
-     * @return
      */
     private ObjectNode processTPropertiesWidget(Form... forms) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
@@ -51,9 +45,12 @@ public class UiSchemaGenerator {
             return schema;
         }
 
+        Form firstForm = null;
         List<JsonWidget> jsonWidgets = new ArrayList<>();
         for (Form form : forms) {
             if (form != null) {
+                if (firstForm == null)
+                    firstForm = form;
                 jsonWidgets.addAll(listTypedWidget(form));
             }
         }
@@ -83,8 +80,8 @@ public class UiSchemaGenerator {
                     checkProperties = resolveForm.getProperties();
                 } else {
                     checkProperties = (Properties) content;
-                    resolveForm = checkProperties.getForm(Form.MAIN);// It's possible to add Properties in widget, so
-                                                                     // find the Main form default
+                    resolveForm = checkProperties.getForm(firstForm.getName());// It's possible to add Properties in widget, so
+                                                                     // find the first form default
                 }
                 if (propertiesList.contains(checkProperties) && resolveForm != null) {
                     ObjectNode jsonNodes = processTPropertiesWidget(resolveForm);

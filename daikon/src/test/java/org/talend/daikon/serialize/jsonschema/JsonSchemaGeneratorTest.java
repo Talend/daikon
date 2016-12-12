@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.test.PropertiesTestUtils;
 import org.talend.daikon.serialize.FullExampleProperties;
 
@@ -19,7 +20,7 @@ public class JsonSchemaGeneratorTest {
         FullExampleProperties properties = new FullExampleProperties("fullexample");
         properties.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
-        assertEquals(jsonStr, generator.genSchema(properties).toString());
+        assertEquals(jsonStr, generator.genSchema(properties, Form.MAIN).toString());
     }
 
     @Test

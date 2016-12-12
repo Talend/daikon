@@ -281,6 +281,19 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
     }
 
     @Override
+    public Form getPreferredForm(String formName) {
+        Form form = getForm(formName);
+        if (form != null)
+            return form;
+        // This is the only fallback case at present. If there are other fallback cases,
+        // they can be included here.
+        if (formName.equals(Form.CITIZEN_USER))
+            return getForm(Form.MAIN);
+        return form;
+    }
+
+
+    @Override
     public void addForm(Form form) {
         forms.add(form);
     }

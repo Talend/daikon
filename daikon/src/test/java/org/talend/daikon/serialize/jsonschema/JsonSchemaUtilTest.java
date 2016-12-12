@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.serialize.FullExampleProperties;
 import org.talend.daikon.serialize.FullExampleTestUtil;
 import shaded.org.apache.commons.io.IOUtils;
@@ -114,7 +115,7 @@ public class JsonSchemaUtilTest {
     @Test
     public void testSerializeWithDefinitionName() throws URISyntaxException, IOException, ClassNotFoundException,
             NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        String propertiesJsonStr = JsonSchemaUtil.toJson(new FullExampleProperties("fullexample").init(), "ZeDefinitionName");
+        String propertiesJsonStr = JsonSchemaUtil.toJson(new FullExampleProperties("fullexample").init(), Form.MAIN, "ZeDefinitionName");
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(propertiesJsonStr);
         ObjectNode jsonData = (ObjectNode) jsonNode.get(JsonSchemaUtil.TAG_JSON_DATA);

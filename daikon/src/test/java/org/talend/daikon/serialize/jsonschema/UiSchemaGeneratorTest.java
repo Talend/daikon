@@ -7,6 +7,7 @@ import org.talend.daikon.properties.ReferenceExampleProperties;
 import org.talend.daikon.properties.ReferenceExampleProperties.TestAProperties;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.serialize.FullExampleProperties;
 
 public class UiSchemaGeneratorTest {
@@ -17,7 +18,7 @@ public class UiSchemaGeneratorTest {
         FullExampleProperties properties = new FullExampleProperties("fullexample");
         properties.init();
         UiSchemaGenerator generator = new UiSchemaGenerator();
-        assertEquals(jsonStr, generator.genWidget(properties).toString());
+        assertEquals(jsonStr, generator.genWidget(properties, Form.MAIN).toString());
     }
 
     @Test
@@ -28,7 +29,7 @@ public class UiSchemaGeneratorTest {
         refEProp.testAPropReference.setReference(testAProp);
 
         UiSchemaGenerator generator = new UiSchemaGenerator();
-        ObjectNode uiSchemaJsonObj = generator.genWidget(refEProp);
+        ObjectNode uiSchemaJsonObj = generator.genWidget(refEProp, Form.MAIN);
         assertEquals(jsonStr, uiSchemaJsonObj.toString());
     }
 

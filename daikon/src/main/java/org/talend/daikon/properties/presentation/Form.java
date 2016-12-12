@@ -49,6 +49,14 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     public static final String MAIN = "Main"; //$NON-NLS-1$
 
     /**
+     * Standard form name for the citizen-user form associated with a component. This would typically
+     * have less content than the MAIN form, and is suitable for the less technical user.
+     *
+     * This has no significance in the Framework, it's just a usage convention.
+     */
+    public static final String CITIZEN_USER = "CitizenUser"; //$NON-NLS-1$
+
+    /**
      * Standard form name for advanced properties associated with a component.
      *
      * This has no significance in the Framework, it's just a usage convention.

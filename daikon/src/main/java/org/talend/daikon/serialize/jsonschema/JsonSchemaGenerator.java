@@ -37,14 +37,15 @@ public class JsonSchemaGenerator {
      * @param properties the properties to create a JSON Schema representation for.
      * @return the JSON Schema representation.
      */
-    protected ObjectNode genSchema(Properties properties) {
-        return processTProperties(properties);
+    protected ObjectNode genSchema(Properties properties, String formName) {
+        return processTProperties(properties, formName);
     }
 
-    private ObjectNode processTProperties(Properties cProperties) {
+    private ObjectNode processTProperties(Properties cProperties, String formName) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
-        if (cProperties.getForm(Form.MAIN) != null) {
-            schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getForm(Form.MAIN).getTitle());
+        Form form = cProperties.getPreferredForm(formName);
+        if (form != null) {
+            schema.put(JsonSchemaConstants.TAG_TITLE, form.getTitle());
         }
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
         schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
@@ -66,7 +67,7 @@ public class JsonSchemaGenerator {
                 ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name,
                         processReferenceProperties(referenceProperties));
             } else {
-                ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties));
+                ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperties(properties, formName));
             }
         }
         return schema;

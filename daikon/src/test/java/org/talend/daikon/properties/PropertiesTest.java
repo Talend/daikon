@@ -150,6 +150,19 @@ public class PropertiesTest {
     }
 
     @Test
+    public void testGetPreferredForm() {
+        TestProperties props = (TestProperties) new TestProperties("test").init();
+        // Test fallback
+        Form main = props.getPreferredForm(Form.CITIZEN_USER);
+        assertTrue(main == props.mainForm);
+        // Test actual
+        main = props.getPreferredForm(Form.MAIN);
+        assertTrue(main == props.mainForm);
+        Form restoreTest = props.getPreferredForm("restoreTest");
+        assertTrue(restoreTest == props.restoreForm);
+    }
+
+    @Test
     public void testCopyValues() {
         TestProperties props = (TestProperties) new TestProperties("test1").init();
         props.integer.setValue(1);
