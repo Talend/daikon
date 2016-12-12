@@ -81,7 +81,7 @@ public class UiSchemaGenerator {
                 } else {
                     checkProperties = (Properties) content;
                     resolveForm = checkProperties.getForm(firstForm.getName());// It's possible to add Properties in widget, so
-                                                                     // find the first form default
+                    // find the first form default
                 }
                 if (propertiesList.contains(checkProperties) && resolveForm != null) {
                     ObjectNode jsonNodes = processTPropertiesWidget(resolveForm);

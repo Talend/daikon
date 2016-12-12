@@ -292,7 +292,6 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
         return form;
     }
 
-
     @Override
     public void addForm(Form form) {
         forms.add(form);

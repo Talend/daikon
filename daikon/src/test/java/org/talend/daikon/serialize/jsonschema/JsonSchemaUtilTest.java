@@ -115,7 +115,8 @@ public class JsonSchemaUtilTest {
     @Test
     public void testSerializeWithDefinitionName() throws URISyntaxException, IOException, ClassNotFoundException,
             NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        String propertiesJsonStr = JsonSchemaUtil.toJson(new FullExampleProperties("fullexample").init(), Form.MAIN, "ZeDefinitionName");
+        String propertiesJsonStr = JsonSchemaUtil.toJson(new FullExampleProperties("fullexample").init(), Form.MAIN,
+                "ZeDefinitionName");
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(propertiesJsonStr);
         ObjectNode jsonData = (ObjectNode) jsonNode.get(JsonSchemaUtil.TAG_JSON_DATA);
