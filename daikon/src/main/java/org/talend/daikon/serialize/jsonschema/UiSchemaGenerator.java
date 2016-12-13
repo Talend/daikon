@@ -132,7 +132,7 @@ public class UiSchemaGenerator {
 
                 final List<Property> subProperties = getSubProperty(properties);
                 final ObjectNode subPropertyNode = JsonNodeFactory.instance.objectNode();
-                for (Property subProperty: subProperties) {
+                for (Property subProperty : subProperties) {
                     final String subPropertyName = subProperty.getName();
                     subPropertyNode.set(subPropertyName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
                 }

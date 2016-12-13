@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.talend.daikon.NamedThing;
@@ -272,23 +273,38 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     @Override
     public Form getForm(String formName) {
+
+        final String wantedFormName;
+
+        // default to Form.Main if the formName is blank
+        if (StringUtils.isBlank(formName)) {
+            wantedFormName = Form.MAIN;
+        } else {
+            wantedFormName = formName;
+        }
+
         for (Form f : forms) {
-            if (f.getName().equals(formName)) {
+            if (f.getName().equals(wantedFormName)) {
                 return f;
             }
         }
+
         return null;
     }
 
     @Override
     public Form getPreferredForm(String formName) {
         Form form = getForm(formName);
-        if (form != null)
+        if (form != null) {
             return form;
+        }
+
         // This is the only fallback case at present. If there are other fallback cases,
         // they can be included here.
-        if (formName.equals(Form.CITIZEN_USER))
+        if (formName.equals(Form.CITIZEN_USER)) {
             return getForm(Form.MAIN);
+        }
+
         return form;
     }
 
