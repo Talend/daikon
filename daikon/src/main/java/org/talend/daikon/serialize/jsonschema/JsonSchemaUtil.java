@@ -127,12 +127,12 @@ public class JsonSchemaUtil {
      * The json data has a extra string field named {@link JsonSchemaConstants#DEFINITION_NAME_JSON_METADATA} containing the
      * definitionName
      */
-    public static String toJson(Properties cp, String form, String definitionName) {
+    public static String toJson(Properties cp, String formName, String definitionName) {
         ObjectNode objectNode = mapper.createObjectNode();
-        objectNode.set(TAG_JSON_SCHEMA, jsonSchemaGenerator.genSchema(cp, form));
+        objectNode.set(TAG_JSON_SCHEMA, jsonSchemaGenerator.genSchema(cp, formName));
         objectNode.set(TAG_JSON_DATA, jsonDataGenerator.genData(cp, definitionName));
         if (!cp.getForms().isEmpty()) {
-            objectNode.set(TAG_JSON_UI, uiSchemaGenerator.genWidget(cp, form));
+            objectNode.set(TAG_JSON_UI, uiSchemaGenerator.genWidget(cp, formName));
         }
         return objectNode.toString();
     }

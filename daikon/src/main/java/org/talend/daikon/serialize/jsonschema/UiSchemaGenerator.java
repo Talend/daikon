@@ -1,6 +1,7 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -49,8 +51,9 @@ public class UiSchemaGenerator {
         List<JsonWidget> jsonWidgets = new ArrayList<>();
         for (Form form : forms) {
             if (form != null) {
-                if (firstForm == null)
+                if (firstForm == null) {
                     firstForm = form;
+                }
                 jsonWidgets.addAll(listTypedWidget(form));
             }
         }
@@ -113,11 +116,29 @@ public class UiSchemaGenerator {
         }
         // For the properties which not in the form(hidden properties)
         for (Properties properties : propertiesList) {
+
             String propName = properties.getName();
-            if (!order.values().contains(propName)) {
-                orderSchema.add(propName);
-                schema.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
+
+            // if this is a reference let's consider it as a String and mark it as hidden
+            if (properties instanceof ReferenceProperties<?>) {
+                if (!order.values().contains(propName)) {
+                    orderSchema.add(propName);
+                    schema.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
+                }
             }
+            // otherwise, let's get all the sub properties and mark them as hidden
+            else {
+                orderSchema.add(propName);
+
+                final List<Property> subProperties = getSubProperty(properties);
+                final ObjectNode subPropertyNode = JsonNodeFactory.instance.objectNode();
+                for (Property subProperty: subProperties) {
+                    final String subPropertyName = subProperty.getName();
+                    subPropertyNode.set(subPropertyName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
+                }
+                schema.set(propName, subPropertyNode);
+            }
+
         }
 
         return schema;
