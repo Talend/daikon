@@ -79,6 +79,11 @@ public class Widget implements ToStringIndent {
     public static final String BUTTON_WIDGET_TYPE = "widget.type.button";
 
     /**
+     * A group of tabs
+     */
+    public static final String TABS_WIDGET_TYPE = "widget.type.tabs";
+
+    /**
      * A table, the widget content shall be a {@link Properties} that will provide a MAIN form (see {@link Form#MAIN}). The main
      * form shall contain a list of widget that will represent each table column and
      * which content should be a Property. Each Property is going to be used as the column definition, the
