@@ -36,7 +36,7 @@ public class I18nDefinition extends SimpleNamedThing {
     }
 
     /**
-     * return the I18N title matching the <b>definition.<name>.title<b> key in the associaated .properties message where <name> is
+     * return the I18N title matching the <b>definition.[name].title</b> key in the associated .properties message where [name] is
      * the value returned by {@link I18nDefinition#getName()}.
      * If no I18N was found then the {@link #getDisplayName()} is used is any is provided.
      */
