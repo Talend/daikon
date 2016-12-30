@@ -100,6 +100,11 @@ public class Widget implements ToStringIndent {
     public static final String FILE_WIDGET_TYPE = "widget.type.file";
 
     /**
+     * a directory widget with button select directory from local system
+     */
+    public static final String DIRECTORY_WIDGET_TYPE = "widget.type.directory";
+
+    /**
      * Tell the client that the property possible values ({@link Property#getPossibleValues()} must be used as
      * unique choice for the value of the property.
      **/
@@ -109,6 +114,7 @@ public class Widget implements ToStringIndent {
 
     /**
      * A table widget which use json as input. Below is a sample:
+     * 
      * <pre>
      * {
      *  "columnNames": [
@@ -135,13 +141,15 @@ public class Widget implements ToStringIndent {
      *  ]
      * }
      * </pre>
-     * Notes: The "columnNames" is a column names array. If there is not this element table will use "Column 1, Column 2, ..." as column names by default.
+     * 
+     * Notes: The "columnNames" is a column names array. If there is not this element table will use "Column 1, Column 2, ..." as
+     * column names by default.
      * The "data" is a data array. Every subset is a row of table.
      */
     public static final String JSON_TABLE_WIDGET_TYPE = "widget.type.jsonTable";
 
     /*
-    Widget configurations
+     * Widget configurations
      */
 
     /**
@@ -398,7 +406,8 @@ public class Widget implements ToStringIndent {
     }
 
     /**
-     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because it may not be serialized.
+     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because it may not
+     * be serialized.
      *
      * @param key, key to store the object with
      * @param value, any object.
