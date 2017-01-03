@@ -94,13 +94,13 @@ public class Widget implements ToStringIndent {
      */
     public static final String HIDDEN_TEXT_WIDGET_TYPE = "widget.type.hidden.text";
 
-    /*
-     * a File widget.
+    /**
+     * A file widget with button select file from local system. The widget content shall be a {@link Property}<{@link String}>
      */
     public static final String FILE_WIDGET_TYPE = "widget.type.file";
 
     /**
-     * a directory widget with button select directory from local system
+     * A directory widget with button select directory from local system. The widget content shall be a {@link Property}<{@link String}>
      */
     public static final String DIRECTORY_WIDGET_TYPE = "widget.type.directory";
 
