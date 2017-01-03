@@ -36,6 +36,13 @@ public class RuntimeUtil {
         try {
             new URL("mvn:foo/bar");
         } catch (MalformedURLException e) {
+
+            // handles mvn local repository
+            String mvnLocalRepo = System.getProperty("maven.repo.local");
+            if (mvnLocalRepo != null) {
+                System.setProperty("org.ops4j.pax.url.mvn.localRepository", mvnLocalRepo);
+            }
+
             // If the URL above failed, the mvn protocol needs to be installed.
             URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
 
