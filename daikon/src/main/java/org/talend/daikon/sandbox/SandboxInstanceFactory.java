@@ -56,7 +56,6 @@ public class SandboxInstanceFactory {
         if (classToInstanciate == null) {
             throw new IllegalArgumentException("classToInstanciate should not be null");
         }
-        ClassLoaderIsolatedSystemProperties isolatedSystemProperties = ClassLoaderIsolatedSystemProperties.getInstance();
 
         // the following classloader is closeable so there is a possible resource leak.
         // if the returned SandboxInstance is properly closed this classLoader shall be closed too.
