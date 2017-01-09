@@ -12,7 +12,12 @@
 // ============================================================================
 package org.talend.daikon.sandbox;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -100,6 +105,7 @@ public class SandboxedInstanceTest {
         URLClassLoader urlClassLoader = URLClassLoader
                 .newInstance(Collections.singleton(this.getClass().getResource("zeLib-0.0.1.jar")).toArray(new URL[1]));
         SandboxedInstance sandboxedInstance = new SandboxedInstance(TEST_CLASS_NAME, false, urlClassLoader);
+        Object instance = null;
         try {
             assertNull(sandboxedInstance.isolatedThread);
             assertNull(sandboxedInstance.previousContextClassLoader);
@@ -107,7 +113,7 @@ public class SandboxedInstanceTest {
             ClassLoader previousClassLoader = Thread.currentThread().getContextClassLoader();
             assertNotEquals(urlClassLoader, previousClassLoader);
             assertFalse(ClassLoaderIsolatedSystemProperties.getInstance().isIsolated(urlClassLoader));
-            Object instance = sandboxedInstance.getInstance();
+            instance = sandboxedInstance.getInstance();
             assertTrue(ClassLoaderIsolatedSystemProperties.getInstance().isIsolated(urlClassLoader));
             assertNotNull(instance);
             assertEquals(Thread.currentThread(), sandboxedInstance.isolatedThread);
@@ -118,7 +124,7 @@ public class SandboxedInstanceTest {
             sandboxedInstance.close();
         }
         // check that null is returned once the close is called.
-        assertNull(sandboxedInstance.getInstance());
+        assertEquals(instance, sandboxedInstance.getInstance());
     }
 
     public Object createNewInstanceWithNewClassLoader()
