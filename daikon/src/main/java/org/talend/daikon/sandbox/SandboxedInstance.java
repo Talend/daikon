@@ -53,6 +53,7 @@ public class SandboxedInstance implements AutoCloseable {
     /**
      * this will reset the thread used to get the instance contextClassLoader to it's inital value before the call to
      * {@link #getInstance()}. <br>
+     * However, it will keep the instance untouched, in order to be used in the cache mechanism.<br>
      * This will also turn off the classloader system properties isolation<br>
      * This will also release the ClassLoader so the instance shall not be used anymore after the call to close (if the
      * classloader is {@link AutoCloseable}
@@ -62,7 +63,6 @@ public class SandboxedInstance implements AutoCloseable {
      */
     @Override
     public void close() {
-        instance = null;
         if (isolatedThread != null) {
             isolatedThread.setContextClassLoader(previousContextClassLoader);
         } // else getInstance was not called so no need to reset context classloader.
@@ -89,7 +89,7 @@ public class SandboxedInstance implements AutoCloseable {
      * @throws TalendRuntimeException is the class failed to be instanciated
      */
     public Object getInstance() {
-        if (isolatedThread == null) {
+        if (instance == null && isolatedThread == null) {
             isolatedThread = Thread.currentThread();
             previousContextClassLoader = isolatedThread.getContextClassLoader();
             Properties isolatedProperties = useCurrentJvmProperties
@@ -98,9 +98,8 @@ public class SandboxedInstance implements AutoCloseable {
             ClassLoaderIsolatedSystemProperties.getInstance().startIsolateClassLoader(sandboxClassLoader, isolatedProperties);
             isolatedThread.setContextClassLoader(sandboxClassLoader);
             LOGGER.info("creating class '" + classToInstanciate + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-            Class<?> clazz;
             try {
-                clazz = sandboxClassLoader.loadClass(classToInstanciate);
+                Class<?> clazz = sandboxClassLoader.loadClass(classToInstanciate);
                 instance = clazz.newInstance();
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);

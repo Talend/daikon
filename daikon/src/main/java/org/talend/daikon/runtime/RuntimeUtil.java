@@ -12,17 +12,25 @@
 // ============================================================================
 package org.talend.daikon.runtime;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.ops4j.pax.url.mvn.Handler;
 import org.ops4j.pax.url.mvn.ServiceConstants;
 import org.talend.daikon.sandbox.SandboxInstanceFactory;
 import org.talend.daikon.sandbox.SandboxedInstance;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
-
 public class RuntimeUtil {
+
+    /**
+     * TODO: This hashmap is currently containing a small amount of object.
+     * However, as the development is going to create more and more components, we need to add a purge mechnaism.
+     */
+    private static Map<RuntimeInfo, SandboxedInstance> classLoaderCache = new HashMap<>();
 
     static {
         // The mvn: protocol is always necessary for the methods in this class.
@@ -68,8 +76,14 @@ public class RuntimeUtil {
      * isolation, please read carefully the {@link SandboxedInstance} javadoc.
      */
     public static SandboxedInstance createRuntimeClass(RuntimeInfo runtimeInfo, ClassLoader parentClassLoader) {
-        return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo.getRuntimeClassName(),
+        if (classLoaderCache.containsKey(runtimeInfo) && classLoaderCache.get(runtimeInfo) != null) {
+            return classLoaderCache.get(runtimeInfo);
+        }
+
+        SandboxedInstance newInstance = SandboxInstanceFactory.createSandboxedInstance(runtimeInfo.getRuntimeClassName(),
                 runtimeInfo.getMavenUrlDependencies(), parentClassLoader, false);
+        classLoaderCache.put(runtimeInfo, newInstance);
+        return newInstance;
     }
 
     public static SandboxedInstance createRuntimeClassWithCurrentJVMProperties(RuntimeInfo runtimeInfo,
