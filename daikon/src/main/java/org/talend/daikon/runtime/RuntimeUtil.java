@@ -12,15 +12,17 @@
 // ============================================================================
 package org.talend.daikon.runtime;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
+
 import org.ops4j.pax.url.mvn.Handler;
 import org.ops4j.pax.url.mvn.ServiceConstants;
 import org.talend.daikon.sandbox.SandboxInstanceFactory;
 import org.talend.daikon.sandbox.SandboxedInstance;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
 
 public class RuntimeUtil {
 
@@ -42,7 +44,15 @@ public class RuntimeUtil {
                 @Override
                 public URLStreamHandler createURLStreamHandler(String protocol) {
                     if (ServiceConstants.PROTOCOL.equals(protocol)) {
-                        return new Handler();
+                        return new Handler() {
+
+                            @Override
+                            protected URLConnection openConnection(URL url) throws IOException {
+                                URLConnection conn = super.openConnection(url);
+                                conn.setUseCaches(false);// to avoid concurent thread to have an IllegalStateException.
+                                return conn;
+                            }
+                        };
                     } else {
                         return null;
                     }

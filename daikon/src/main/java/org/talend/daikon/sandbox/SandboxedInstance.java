@@ -44,6 +44,8 @@ public class SandboxedInstance implements AutoCloseable {
 
     private Object instance;
 
+    private boolean isClosed;
+
     SandboxedInstance(String classToInstanciate, boolean useCurrentJvmProperties, ClassLoader sandboxClassLoader) {
         this.classToInstanciate = classToInstanciate;
         this.useCurrentJvmProperties = useCurrentJvmProperties;
@@ -74,6 +76,10 @@ public class SandboxedInstance implements AutoCloseable {
                 new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }
         }
+        sandboxClassLoader = null;
+        previousContextClassLoader = null;
+        isolatedThread = null;
+        isClosed = true;
     }
 
     /**
@@ -89,6 +95,9 @@ public class SandboxedInstance implements AutoCloseable {
      * @throws TalendRuntimeException is the class failed to be instanciated
      */
     public Object getInstance() {
+        if (isClosed) {
+            throw new IllegalStateException("Object closed");
+        }
         if (isolatedThread == null) {
             isolatedThread = Thread.currentThread();
             previousContextClassLoader = isolatedThread.getContextClassLoader();
@@ -97,11 +106,12 @@ public class SandboxedInstance implements AutoCloseable {
                     : StandardPropertiesStrategyFactory.create().getStandardProperties();
             ClassLoaderIsolatedSystemProperties.getInstance().startIsolateClassLoader(sandboxClassLoader, isolatedProperties);
             isolatedThread.setContextClassLoader(sandboxClassLoader);
-            LOGGER.info("creating class '" + classToInstanciate + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+            LOGGER.debug("creating instance of class '" + classToInstanciate + "...'"); //$NON-NLS-1$ //$NON-NLS-2$
             Class<?> clazz;
             try {
                 clazz = sandboxClassLoader.loadClass(classToInstanciate);
                 instance = clazz.newInstance();
+                LOGGER.debug("done creating class '" + classToInstanciate + "'"); //$NON-NLS-1$ //$NON-NLS-2$
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }

@@ -21,10 +21,15 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
 
 public class SandboxedInstanceTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     private static final String TEST_CLASS_NAME = "org.talend.test.MyClass1";
 
@@ -117,8 +122,9 @@ public class SandboxedInstanceTest {
         } finally {
             sandboxedInstance.close();
         }
-        // check that null is returned once the close is called.
-        assertNull(sandboxedInstance.getInstance());
+        // check that an exception is thrown once the close is called.
+        thrown.expect(IllegalStateException.class);
+        sandboxedInstance.getInstance();
     }
 
     public Object createNewInstanceWithNewClassLoader()
