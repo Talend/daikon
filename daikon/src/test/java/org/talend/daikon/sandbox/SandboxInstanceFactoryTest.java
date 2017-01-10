@@ -12,10 +12,7 @@
 // ============================================================================
 package org.talend.daikon.sandbox;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.runtime.RuntimeInfo;
 import org.talend.daikon.runtime.RuntimeUtil;
+import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
 
 public class SandboxInstanceFactoryTest {
 
@@ -151,6 +149,27 @@ public class SandboxInstanceFactoryTest {
         }
     }
 
+    private class ThreadIsolationRunnableTest implements Runnable {
+
+        private boolean success;
+
+        @Override
+        public void run() {
+            try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime(), null,
+                    false)) {
+                Object obj = sandboxedInstance.getInstance();
+                // check that the thread is correctly sandboxed
+                success = obj != null && ClassLoaderIsolatedSystemProperties.getInstance()
+                        .isIsolated(Thread.currentThread().getContextClassLoader());
+            }
+        }
+
+        public void assertSuccess() {
+            assertTrue(success);
+        }
+
+    }
+
     private static final String TEST_CLASS_NAME = "org.talend.test.MyClass1";
 
     private Properties previous;
@@ -190,6 +209,8 @@ public class SandboxInstanceFactoryTest {
             assertNotNull(instance);
             assertEquals(TEST_CLASS_NAME, instance.getClass().getCanonicalName());
             ClassLoader instanceClassLoader = instance.getClass().getClassLoader();
+            // WARNING the following test may fail from Eclipse or IntelliJ cause the
+            // runtime jar is on the classpath for the tests and should not (see pom.xml)
             assertNotEquals(this.getClass().getClassLoader(), instanceClassLoader);
             // make sure the parent classloader is the one we gave
             assertEquals(parent, instanceClassLoader.getParent());
@@ -216,6 +237,8 @@ public class SandboxInstanceFactoryTest {
             assertNotNull(sandboxedInstance);
             Object instance = sandboxedInstance.getInstance();
             assertNotNull(instance);
+            // WARNING the following test may fail from Eclipse or IntelliJ cause the
+            // runtime jar is on the classpath for the tests and should not (see pom.xml)
             assertEquals(TEST_CLASS_NAME, instance.getClass().getCanonicalName());
             ClassLoader instanceClassLoader = instance.getClass().getClassLoader();
             assertNotEquals(this.getClass().getClassLoader(), instanceClassLoader);
@@ -275,6 +298,20 @@ public class SandboxInstanceFactoryTest {
         thread2.join();
         runnable1.assertSuccess();
         runnable2.assertSuccess();
+    }
+
+    @Test
+    public void test2ThreadHaveProperIsolation() throws InterruptedException {
+        ThreadIsolationRunnableTest isol1 = new ThreadIsolationRunnableTest();
+        Thread thread1 = new Thread(isol1);
+        ThreadIsolationRunnableTest isol2 = new ThreadIsolationRunnableTest();
+        Thread thread2 = new Thread(isol2);
+        thread1.start();
+        thread2.start();
+        thread1.join();
+        thread2.join();
+        isol1.assertSuccess();
+        isol2.assertSuccess();
     }
 
     private void waitTrue(final AtomicBoolean valuetoWaitForTrue, String mess) {
