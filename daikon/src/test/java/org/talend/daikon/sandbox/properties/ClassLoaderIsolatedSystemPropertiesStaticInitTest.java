@@ -15,13 +15,16 @@ package org.talend.daikon.sandbox.properties;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.talend.daikon.runtime.RuntimeInfo;
 import org.talend.daikon.sandbox.SandboxInstanceFactory;
 
 public class ClassLoaderIsolatedSystemPropertiesStaticInitTest {
@@ -29,6 +32,25 @@ public class ClassLoaderIsolatedSystemPropertiesStaticInitTest {
     public static final int TEST_TIMES = 5;
 
     private Properties previous;
+
+    private class TestRuntime implements RuntimeInfo {
+
+        private String name;
+
+        public TestRuntime(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getRuntimeClassName() {
+            return name;
+        }
+
+        @Override
+        public List<URL> getMavenUrlDependencies() {
+            return Collections.EMPTY_LIST;
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -46,7 +68,7 @@ public class ClassLoaderIsolatedSystemPropertiesStaticInitTest {
     public void testSetupJVMIsolationProperties() {
         assertFalse(System.getProperties() instanceof ClassLoaderIsolatedSystemProperties);
         // just do the call to have the static initializer called
-        SandboxInstanceFactory.createSandboxedInstance(this.getClass().getCanonicalName(), Collections.EMPTY_LIST,
+        SandboxInstanceFactory.createSandboxedInstance(new TestRuntime(this.getClass().getCanonicalName()),
                 this.getClass().getClassLoader(), true);
         assertTrue(System.getProperties() instanceof ClassLoaderIsolatedSystemProperties);
     }

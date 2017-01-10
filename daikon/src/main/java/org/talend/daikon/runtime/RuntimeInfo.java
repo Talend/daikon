@@ -28,4 +28,22 @@ public interface RuntimeInfo {
     List<URL> getMavenUrlDependencies();
 
     String getRuntimeClassName();
+
+    /**
+     * Override the default equals() computation to be compatible with cache system on {@link RuntimeControllerImpl}
+     */
+    @Override
+    boolean equals(Object obj);
+
+    /**
+     * Override the default toString() computation to be compatible with cache system on {@link RuntimeControllerImpl}
+     */
+    @Override
+    String toString();
+
+    /**
+     * Override the default hashCode() computation to be compatible with cache system on {@link RuntimeControllerImpl}
+     */
+    @Override
+    public int hashCode();
 }

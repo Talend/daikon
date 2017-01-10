@@ -12,11 +12,15 @@
 // ============================================================================
 package org.talend.daikon.sandbox;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,9 +30,51 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.daikon.runtime.RuntimeInfo;
 import org.talend.daikon.runtime.RuntimeUtil;
 
 public class SandboxInstanceFactoryTest {
+
+    private class TestRuntime implements RuntimeInfo {
+
+        private String cacheSufix = "";
+
+        public TestRuntime() {
+        }
+
+        public TestRuntime(String cacheSufix) {
+            this.cacheSufix = cacheSufix;
+        }
+
+        @Override
+        public String getRuntimeClassName() {
+            return TEST_CLASS_NAME;
+        }
+
+        @Override
+        public List<URL> getMavenUrlDependencies() {
+            try {
+                return Collections.singletonList(new URL("mvn:org.talend.test/zeLib/0.0.1"));
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return TEST_CLASS_NAME + cacheSufix;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (TEST_CLASS_NAME + cacheSufix).equals(obj.toString());
+        }
+
+        @Override
+        public int hashCode() {
+            return toString().hashCode();
+        }
+    }
 
     static final Logger LOG = LoggerFactory.getLogger(SandboxInstanceFactoryTest.class);
 
@@ -50,20 +96,14 @@ public class SandboxInstanceFactoryTest {
 
         @Override
         public void run() {
-            URL libUrl;
-            try {
-                libUrl = new URL("mvn:org.talend.test/zeLib/0.0.1");
-                try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(TEST_CLASS_NAME,
-                        Collections.singletonList(libUrl), null, false)) {
-                    this.firstSandBCreated.set(true);
-                    Object obj = sandboxedInstance.getInstance();
-                    waitTrue(this.secondSandBCreated, "secondSandBCreated");
-                    success = true;
-                } finally {
-                    this.firstSandBClosed.set(true);
-                }
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+            try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime(), null,
+                    false);) {
+                this.firstSandBCreated.set(true);
+                Object obj = sandboxedInstance.getInstance();
+                waitTrue(this.secondSandBCreated, "secondSandBCreated");
+                success = true;
+            } finally {
+                this.firstSandBClosed.set(true);
             }
         }
 
@@ -93,22 +133,16 @@ public class SandboxInstanceFactoryTest {
         public void run() {
             // wait the first sandbox is created
             waitTrue(this.firstSandBCreated, "firstSandBCreated");
-            URL libUrl;
-            try {
-                libUrl = new URL("mvn:org.talend.test/zeLib/0.0.1");
-                try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(TEST_CLASS_NAME,
-                        Collections.singletonList(libUrl), null, false)) {
-                    Object obj = sandboxedInstance.getInstance();
-                    this.secondSandBCreated.set(true);
-                    waitTrue(this.firstSandBClosed, "firstSandBClosed");
-                    // the next line will throw an IllegalStateException if classloader caches jars.
-                    obj.getClass().getClassLoader().loadClass("foo");
-                } catch (ClassNotFoundException e) {
-                    // expected
-                    success = true;
-                }
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+            try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime(), null,
+                    false)) {
+                Object obj = sandboxedInstance.getInstance();
+                this.secondSandBCreated.set(true);
+                waitTrue(this.firstSandBClosed, "firstSandBClosed");
+                // the next line will throw an IllegalStateException if classloader caches jars.
+                obj.getClass().getClassLoader().loadClass("foo");
+            } catch (ClassNotFoundException e) {
+                // expected
+                success = true;
             }
         }
 
@@ -149,9 +183,8 @@ public class SandboxInstanceFactoryTest {
         ClassLoader parent = new ClassLoader(this.getClass().getClassLoader()) {
             // abstract class but without anything to implement
         };
-        URL libUrl = this.getClass().getResource("zeLib-0.0.1.jar");
-        try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(TEST_CLASS_NAME,
-                Collections.singletonList(libUrl), parent, true)) {
+        try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime("test1"),
+                parent, true)) {
             assertNotNull(sandboxedInstance);
             Object instance = sandboxedInstance.getInstance();
             assertNotNull(instance);
@@ -167,15 +200,56 @@ public class SandboxInstanceFactoryTest {
     /**
      * Test method for
      * {@link org.talend.daikon.sandbox.SandboxInstanceFactory#createSandboxedInstance(java.lang.String, java.util.Set, java.lang.ClassLoader)}
-     * .
+     * . Create two sandboxed instance and check if they are correctly sharing the same ClassLoader.
      * 
      * @throws Exception
      */
     @Test
+    public void testCreate2SandboxedInstance() throws Exception {
+        // we will check that the created instance object is created properly and created with another class loader.
+        ClassLoader parent = new ClassLoader(this.getClass().getClassLoader()) {
+            // abstract class but without anything to implement
+        };
+        ClassLoader classLoader = null;
+        try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime("test2"),
+                parent, true)) {
+            assertNotNull(sandboxedInstance);
+            Object instance = sandboxedInstance.getInstance();
+            assertNotNull(instance);
+            assertEquals(TEST_CLASS_NAME, instance.getClass().getCanonicalName());
+            ClassLoader instanceClassLoader = instance.getClass().getClassLoader();
+            assertNotEquals(this.getClass().getClassLoader(), instanceClassLoader);
+            // make sure the parent classloader is the one we gave
+            assertEquals(parent, instanceClassLoader.getParent());
+            classLoader = sandboxedInstance.getSandboxClassLoader();
+            try (SandboxedInstance sandboxedInstance2 = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime("test2"),
+                    parent, true)) {
+                assertNotNull(sandboxedInstance2);
+                Object instance2 = sandboxedInstance2.getInstance();
+                assertNotNull(instance2);
+                assertEquals(TEST_CLASS_NAME, instance2.getClass().getCanonicalName());
+                ClassLoader instanceClassLoader2 = instance2.getClass().getClassLoader();
+                assertNotEquals(this.getClass().getClassLoader(), instanceClassLoader2);
+                // make sure the parent classloader is the one we gave
+                assertEquals(parent, instanceClassLoader2.getParent());
+
+                assertEquals(classLoader, sandboxedInstance2.getSandboxClassLoader());
+            }
+
+        }
+    }
+
+    /**
+     * Test method for
+     * {@link org.talend.daikon.sandbox.SandboxInstanceFactory#createSandboxedInstance(java.lang.String, java.util.Set, java.lang.ClassLoader)}
+     * .
+     *
+     * @throws Exception
+     */
+    @Test
     public void testCreateSandboxedInstanceWithNullParenClassLoader() throws Exception {
-        URL libUrl = this.getClass().getResource("zeLib-0.0.1.jar");
-        try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(TEST_CLASS_NAME,
-                Collections.singletonList(libUrl), null, true)) {
+        try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime("test3"), null,
+                true)) {
             assertNotNull(sandboxedInstance);
             Object instance = sandboxedInstance.getInstance();
             assertNotNull(instance);

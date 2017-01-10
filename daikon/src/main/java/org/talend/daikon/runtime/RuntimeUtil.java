@@ -78,14 +78,12 @@ public class RuntimeUtil {
      * isolation, please read carefully the {@link SandboxedInstance} javadoc.
      */
     public static SandboxedInstance createRuntimeClass(RuntimeInfo runtimeInfo, ClassLoader parentClassLoader) {
-        return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo.getRuntimeClassName(),
-                runtimeInfo.getMavenUrlDependencies(), parentClassLoader, false);
+        return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo, parentClassLoader, false);
     }
 
     public static SandboxedInstance createRuntimeClassWithCurrentJVMProperties(RuntimeInfo runtimeInfo,
             ClassLoader parentClassLoader) {
-        return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo.getRuntimeClassName(),
-                runtimeInfo.getMavenUrlDependencies(), parentClassLoader, true);
+        return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo, parentClassLoader, true);
     }
 
 }

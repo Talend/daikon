@@ -14,17 +14,24 @@ package org.talend.daikon.sandbox;
 
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.daikon.runtime.RuntimeInfo;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
 import org.talend.daikon.sandbox.properties.StandardPropertiesStrategyFactory;
+import org.talend.java.util.ClosableLRUMap;
 
 /**
  * this will create class instances from specifc classloader that should not interact with global system properties.
  */
 public class SandboxInstanceFactory {
+
+    /**
+     * TODO: Add context variable to allow the user to configure the maximum size of the cache.
+     */
+    private static Map<RuntimeInfo, ClassLoader> classLoaderCache = new ClosableLRUMap<>(3, 10);
 
     // this swith the current JVM System Properties with our own so that it can handle Thread/ClassLoader isolation
     static {
@@ -51,17 +58,24 @@ public class SandboxInstanceFactory {
      * 
      * @return a SandboxedInstance object ready for System Properties isolation
      */
-    public static SandboxedInstance createSandboxedInstance(String classToInstanciate, List<URL> classPathUrls,
-            ClassLoader parentClassLoader, boolean useCurrentJvmProperties) {
-        if (classToInstanciate == null) {
+    public static SandboxedInstance createSandboxedInstance(RuntimeInfo runtimeInfo, ClassLoader parentClassLoader,
+            boolean useCurrentJvmProperties) {
+        if (runtimeInfo.getRuntimeClassName() == null) {
             throw new IllegalArgumentException("classToInstanciate should not be null");
         }
 
-        // the following classloader is closeable so there is a possible resource leak.
-        // if the returned SandboxInstance is properly closed this classLoader shall be closed too.
-        ClassLoader sandboxClassLoader = new URLClassLoader(classPathUrls.toArray(new URL[classPathUrls.size()]),
-                parentClassLoader);
-        return new SandboxedInstance(classToInstanciate, useCurrentJvmProperties, sandboxClassLoader);
+        if (classLoaderCache.containsKey(runtimeInfo) && classLoaderCache.get(runtimeInfo) != null) {
+            return new SandboxedInstance(runtimeInfo.getRuntimeClassName(), useCurrentJvmProperties,
+                    classLoaderCache.get(runtimeInfo));
+        } else {
+            // the following classloader is closeable so there is a possible resource leak.
+            // if the returned SandboxInstance is properly closed this classLoader shall be closed too.
+            ClassLoader sandboxClassLoader = new URLClassLoader(
+                    runtimeInfo.getMavenUrlDependencies().toArray(new URL[runtimeInfo.getMavenUrlDependencies().size()]),
+                    parentClassLoader);
+            classLoaderCache.put(runtimeInfo, sandboxClassLoader);
+            return new SandboxedInstance(runtimeInfo.getRuntimeClassName(), useCurrentJvmProperties, sandboxClassLoader);
+        }
     }
 
 }
