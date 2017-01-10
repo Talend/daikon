@@ -68,7 +68,6 @@ public class SandboxedInstance implements AutoCloseable {
         if (isolatedThread != null) {
             isolatedThread.setContextClassLoader(previousContextClassLoader);
         } // else getInstance was not called so no need to reset context classloader.
-        ClassLoaderIsolatedSystemProperties.getInstance().stopIsolateClassLoader(sandboxClassLoader);
         sandboxClassLoader = null;
         previousContextClassLoader = null;
         isolatedThread = null;

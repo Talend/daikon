@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.daikon.sandbox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
@@ -33,7 +34,7 @@ public class SandboxInstanceFactory {
      * TODO: Add context variable to allow the user to configure the maximum size of the cache.
      * Maybe using a CacheBuilder.
      */
-    private static Map<RuntimeInfo, ClassLoader> classLoaderCache = Collections
+    static Map<RuntimeInfo, ClassLoader> classLoaderCache = Collections
             .synchronizedMap(new ClosableLRUMap<RuntimeInfo, ClassLoader>(3, 10));
 
     // this swith the current JVM System Properties with our own so that it can handle Thread/ClassLoader isolation
@@ -75,11 +76,22 @@ public class SandboxInstanceFactory {
                 // if the returned SandboxInstance is properly closed this classLoader shall be closed too.
                 ClassLoader sandboxClassLoader = new URLClassLoader(
                         runtimeInfo.getMavenUrlDependencies().toArray(new URL[runtimeInfo.getMavenUrlDependencies().size()]),
-                        parentClassLoader);
+                        parentClassLoader) {
+
+                    @Override
+                    public void close() throws IOException {
+                        super.close();
+                        ClassLoaderIsolatedSystemProperties.getInstance().stopIsolateClassLoader(this);
+                    }
+                };
                 classLoaderCache.put(runtimeInfo, sandboxClassLoader);
                 return new SandboxedInstance(runtimeInfo.getRuntimeClassName(), useCurrentJvmProperties, sandboxClassLoader);
             }
         }
+    }
+
+    public static void clearCache() {
+        classLoaderCache.clear();
     }
 
 }

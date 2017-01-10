@@ -26,13 +26,7 @@ public class ClosableLRUMap<K, V> extends LinkedHashMap<K, V> {
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
         boolean removeOldest = size() > _maxEntries;
         if (removeOldest) {
-            if (eldest.getValue() instanceof AutoCloseable) {
-                try {
-                    ((AutoCloseable) eldest.getValue()).close();
-                } catch (Exception e) {
-                    new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-                }
-            }
+            closeValue(eldest.getValue());
         }
         return removeOldest;
     }
@@ -45,18 +39,25 @@ public class ClosableLRUMap<K, V> extends LinkedHashMap<K, V> {
     @Override
     public V remove(Object key) {
         V value = get(key);
-        if (value instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) value).close();
-            } catch (Exception e) {
-                new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-        }
+        closeValue(value);
         return super.remove(key);
     }
 
     @Override
     public boolean remove(Object key, Object value) {
+        closeValue(value);
+        return super.remove(key, value);
+    }
+
+    @Override
+    public void clear() {
+        for (V value : values()) {
+            closeValue(value);
+        }
+        super.clear();
+    }
+
+    private void closeValue(Object value) {
         if (value instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) value).close();
@@ -64,7 +65,5 @@ public class ClosableLRUMap<K, V> extends LinkedHashMap<K, V> {
                 new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }
         }
-        return super.remove(key, value);
     }
-
 }

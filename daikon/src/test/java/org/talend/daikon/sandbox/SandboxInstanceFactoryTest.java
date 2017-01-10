@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.talend.daikon.runtime.RuntimeInfo;
 import org.talend.daikon.runtime.RuntimeUtil;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
+import org.talend.java.util.ClosableLRUMap;
 
 public class SandboxInstanceFactoryTest {
 
@@ -159,8 +160,13 @@ public class SandboxInstanceFactoryTest {
                     false)) {
                 Object obj = sandboxedInstance.getInstance();
                 // check that the thread is correctly sandboxed
-                success = obj != null && ClassLoaderIsolatedSystemProperties.getInstance()
+                boolean objOk = obj != null;
+                boolean isIsolated = ClassLoaderIsolatedSystemProperties.getInstance()
                         .isIsolated(Thread.currentThread().getContextClassLoader());
+                success = objOk && isIsolated;
+                if (!success) {
+                    LOG.error("Thread isolation test failed [objOk:" + objOk + ",isIsolated:" + isIsolated + "]");
+                }
             }
         }
 
@@ -182,6 +188,8 @@ public class SandboxInstanceFactoryTest {
     @Before
     public void setUp() throws Exception {
         previous = System.getProperties();
+        SandboxInstanceFactory.clearCache();
+
     }
 
     @After
@@ -262,6 +270,36 @@ public class SandboxInstanceFactoryTest {
         }
     }
 
+    @Test
+    public void testCacheClassLoaderClosedAndNotIsolated() throws Exception {
+        try {
+            SandboxInstanceFactory.classLoaderCache = Collections
+                    .synchronizedMap(new ClosableLRUMap<RuntimeInfo, ClassLoader>(1, 1));
+            // we will check that the created instance object is created properly and created with another class loader.
+            ClassLoader parent = new ClassLoader(this.getClass().getClassLoader()) {
+                // abstract class but without anything to implement
+            };
+            ClassLoader classLoader = null;
+            try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime("test2"),
+                    parent, true)) {
+                assertNotNull(sandboxedInstance);
+                sandboxedInstance.getInstance();// start isolation
+                try (SandboxedInstance sandboxedInstance2 = SandboxInstanceFactory
+                        .createSandboxedInstance(new TestRuntime("test1"), parent, true)) {
+                    sandboxedInstance2.getInstance();// start isolation
+                    assertFalse(ClassLoaderIsolatedSystemProperties.getInstance()
+                            .isIsolated(sandboxedInstance.getSandboxClassLoader()));
+                    assertTrue(ClassLoaderIsolatedSystemProperties.getInstance()
+                            .isIsolated(sandboxedInstance2.getSandboxClassLoader()));
+
+                }
+            }
+        } finally {
+            SandboxInstanceFactory.classLoaderCache = Collections
+                    .synchronizedMap(new ClosableLRUMap<RuntimeInfo, ClassLoader>(3, 10));
+        }
+    }
+
     /**
      * Test method for
      * {@link org.talend.daikon.sandbox.SandboxInstanceFactory#createSandboxedInstance(java.lang.String, java.util.Set, java.lang.ClassLoader)}
@@ -307,8 +345,8 @@ public class SandboxInstanceFactoryTest {
         ThreadIsolationRunnableTest isol2 = new ThreadIsolationRunnableTest();
         Thread thread2 = new Thread(isol2);
         thread1.start();
-        thread2.start();
         thread1.join();
+        thread2.start();
         thread2.join();
         isol1.assertSuccess();
         isol2.assertSuccess();

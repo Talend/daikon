@@ -66,7 +66,7 @@ public class SandboxedInstanceTest {
         assertTrue(ClassLoaderIsolatedSystemProperties.getInstance().isIsolated(instance.getClass().getClassLoader()));
         sandboxedInstance.close();
         assertEquals(previousClassLoader, Thread.currentThread().getContextClassLoader());
-        assertFalse(ClassLoaderIsolatedSystemProperties.getInstance().isIsolated(instance.getClass().getClassLoader()));
+        assertTrue(ClassLoaderIsolatedSystemProperties.getInstance().isIsolated(instance.getClass().getClassLoader()));
     }
 
     /**
