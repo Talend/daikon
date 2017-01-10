@@ -30,6 +30,7 @@ public class SandboxInstanceFactory {
 
     /**
      * TODO: Add context variable to allow the user to configure the maximum size of the cache.
+     * Maybe using a CacheBuilder.
      */
     private static Map<RuntimeInfo, ClassLoader> classLoaderCache = new ClosableLRUMap<>(3, 10);
 
