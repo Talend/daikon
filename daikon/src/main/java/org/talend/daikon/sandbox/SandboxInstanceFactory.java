@@ -61,7 +61,7 @@ public class SandboxInstanceFactory {
     public static SandboxedInstance createSandboxedInstance(RuntimeInfo runtimeInfo, ClassLoader parentClassLoader,
             boolean useCurrentJvmProperties) {
         if (runtimeInfo.getRuntimeClassName() == null) {
-            throw new IllegalArgumentException("classToInstanciate should not be null");
+            throw new IllegalArgumentException("classToInstantiate should not be null");
         }
 
         if (classLoaderCache.containsKey(runtimeInfo) && classLoaderCache.get(runtimeInfo) != null) {
