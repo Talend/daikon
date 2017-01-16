@@ -12,8 +12,10 @@
 // ============================================================================
 package org.talend.daikon.runtime;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
@@ -24,16 +26,40 @@ import org.talend.daikon.sandbox.SandboxedInstance;
 
 public class RuntimeUtil {
 
-    static {// install the mvn protocol handler if not already installed.
+    static {
+        // The mvn: protocol is always necessary for the methods in this class.
+        registerMavenUrlHandler();
+    }
+
+    /**
+     * Install the mvn protocol handler for URLs.
+     */
+    public static void registerMavenUrlHandler() {
         try {
             new URL("mvn:foo/bar");
-        } catch (MalformedURLException e) {// mvn protocal not installed so do it now
+        } catch (MalformedURLException e) {
+
+            // handles mvn local repository
+            String mvnLocalRepo = System.getProperty("maven.repo.local");
+            if (mvnLocalRepo != null) {
+                System.setProperty("org.ops4j.pax.url.mvn.localRepository", mvnLocalRepo);
+            }
+
+            // If the URL above failed, the mvn protocol needs to be installed.
             URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
 
                 @Override
                 public URLStreamHandler createURLStreamHandler(String protocol) {
                     if (ServiceConstants.PROTOCOL.equals(protocol)) {
-                        return new Handler();
+                        return new Handler() {
+
+                            @Override
+                            protected URLConnection openConnection(URL url) throws IOException {
+                                URLConnection conn = super.openConnection(url);
+                                conn.setUseCaches(false);// to avoid concurent thread to have an IllegalStateException.
+                                return conn;
+                            }
+                        };
                     } else {
                         return null;
                     }
@@ -52,14 +78,12 @@ public class RuntimeUtil {
      * isolation, please read carefully the {@link SandboxedInstance} javadoc.
      */
     public static SandboxedInstance createRuntimeClass(RuntimeInfo runtimeInfo, ClassLoader parentClassLoader) {
-        return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo.getRuntimeClassName(),
-                runtimeInfo.getMavenUrlDependencies(), parentClassLoader, false);
+        return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo, parentClassLoader, false);
     }
 
     public static SandboxedInstance createRuntimeClassWithCurrentJVMProperties(RuntimeInfo runtimeInfo,
             ClassLoader parentClassLoader) {
-        return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo.getRuntimeClassName(),
-                runtimeInfo.getMavenUrlDependencies(), parentClassLoader, true);
+        return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo, parentClassLoader, true);
     }
 
 }

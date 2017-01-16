@@ -2,23 +2,26 @@ package org.talend.daikon.avro;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.avro.Schema;
+import org.apache.avro.Schema.Field;
+import org.apache.avro.Schema.Type;
 import org.apache.avro.SchemaBuilder;
 import org.junit.Test;
-import org.talend.daikon.avro.AvroUtils;
-import org.talend.daikon.avro.SchemaConstants;
 
 /**
- * Unit tests for {AvroUtils}.
+ * Unit tests for {@link AvroUtils}.
  */
 public class AvroUtilsTest {
 
@@ -93,6 +96,22 @@ public class AvroUtilsTest {
         assertTrue(AvroUtils.isIncludeAllFields(s));
         s = AvroUtils.setIncludeAllFields(s, false);
         assertFalse(AvroUtils.isIncludeAllFields(s));
+    }
+
+    @Test
+    public void testIsSchemaEmpty() {
+        Schema s = null;
+        assertTrue(AvroUtils.isSchemaEmpty(s));
+
+        s = SchemaBuilder.record("test").fields().endRecord();
+        assertTrue(AvroUtils.isSchemaEmpty(s));
+
+        s = AvroUtils.setIncludeAllFields(s, true);
+        assertFalse(AvroUtils.isSchemaEmpty(s));
+
+        s = SchemaBuilder.record("test").fields().name("field1").type().booleanType().noDefault().name("field2").type()
+                .stringType().noDefault().endRecord();
+        assertFalse(AvroUtils.isSchemaEmpty(s));
     }
 
     @Test
@@ -176,5 +195,25 @@ public class AvroUtilsTest {
     public void isSameType() throws Exception {
         assertTrue(AvroUtils.isSameType(AvroUtils._string(), AvroUtils._string()));
         assertTrue(!AvroUtils.isSameType(AvroUtils._string(), AvroUtils._character()));
+    }
+
+    /**
+     * Checks {@link AvroUtils#createEmptySchema()} returns not null avro {@link Schema},
+     * which type is {@link Type#RECORD}, name is "EmptySchema" and it has no fields
+     */
+    @Test
+    public void testCreateEmptySchema() {
+        Type expectedType = Type.RECORD;
+        String expectedName = "EmptySchema";
+
+        Schema emptySchema = AvroUtils.createEmptySchema();
+
+        assertNotNull(emptySchema);
+        Type actualType = emptySchema.getType();
+        assertEquals(expectedType, actualType);
+        String actualName = emptySchema.getName();
+        assertEquals(expectedName, actualName);
+        List<Field> fields = emptySchema.getFields();
+        assertThat(fields, empty());
     }
 }

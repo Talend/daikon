@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
@@ -147,6 +147,19 @@ public class PropertiesTest {
         Form restoreTest = props.getForm("restoreTest");
         assertTrue(restoreTest == props.restoreForm);
         assertEquals("restoreTest", restoreTest.getName());
+    }
+
+    @Test
+    public void testGetPreferredForm() {
+        TestProperties props = (TestProperties) new TestProperties("test").init();
+        // Test fallback
+        Form main = props.getPreferredForm(Form.CITIZEN_USER);
+        assertTrue(main == props.mainForm);
+        // Test actual
+        main = props.getPreferredForm(Form.MAIN);
+        assertTrue(main == props.mainForm);
+        Form restoreTest = props.getPreferredForm("restoreTest");
+        assertTrue(restoreTest == props.restoreForm);
     }
 
     @Test
@@ -542,8 +555,7 @@ public class PropertiesTest {
             super(name);
         }
 
-        public final Property<String> password = PropertyFactory.newString("password").setFlags(EnumSet.of(Flags.ENCRYPT))
-                .setDisplayName("");
+        public final Property<String> password = PropertyFactory.newString("password").setFlags(EnumSet.of(Flags.ENCRYPT));
     }
 
     static public class TestCryptedProperty extends PropertiesImpl {

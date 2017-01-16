@@ -14,6 +14,8 @@ package org.talend.daikon.sandbox;
 
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
@@ -28,7 +30,7 @@ import org.talend.daikon.sandbox.properties.StandardPropertiesStrategyFactory;
  */
 public class SandboxedInstance implements AutoCloseable {
 
-    private Object instance;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SandboxedInstance.class);
 
     ClassLoader previousContextClassLoader;
 
@@ -38,8 +40,14 @@ public class SandboxedInstance implements AutoCloseable {
 
     private ClassLoader sandboxClassLoader;
 
-    SandboxedInstance(Object instance, boolean useCurrentJvmProperties, ClassLoader sandboxClassLoader) {
-        this.instance = instance;
+    private String classToInstanciate;
+
+    private Object instance;
+
+    private boolean isClosed;
+
+    SandboxedInstance(String classToInstanciate, boolean useCurrentJvmProperties, ClassLoader sandboxClassLoader) {
+        this.classToInstanciate = classToInstanciate;
         this.useCurrentJvmProperties = useCurrentJvmProperties;
         this.sandboxClassLoader = sandboxClassLoader;
     }
@@ -57,17 +65,13 @@ public class SandboxedInstance implements AutoCloseable {
     @Override
     public void close() {
         instance = null;
-        if (isolatedThread != null) {// in case getInstance was not called.
+        if (isolatedThread != null) {
             isolatedThread.setContextClassLoader(previousContextClassLoader);
-        }
-        ClassLoaderIsolatedSystemProperties.getInstance().stopIsolateClassLoader(sandboxClassLoader);
-        if (sandboxClassLoader instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) sandboxClassLoader).close();
-            } catch (Exception e) {
-                new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-            }
-        }
+        } // else getInstance was not called so no need to reset context classloader.
+        sandboxClassLoader = null;
+        previousContextClassLoader = null;
+        isolatedThread = null;
+        isClosed = true;
     }
 
     /**
@@ -80,8 +84,12 @@ public class SandboxedInstance implements AutoCloseable {
      * threads (assuming they use the same contextClassLoader).
      *
      * @return the instance or null if the {@link #close()} method has been called.
+     * @throws TalendRuntimeException is the class failed to be instanciated
      */
     public Object getInstance() {
+        if (isClosed) {
+            throw new IllegalStateException("Object closed");
+        }
         if (isolatedThread == null) {
             isolatedThread = Thread.currentThread();
             previousContextClassLoader = isolatedThread.getContextClassLoader();
@@ -90,8 +98,20 @@ public class SandboxedInstance implements AutoCloseable {
                     : StandardPropertiesStrategyFactory.create().getStandardProperties();
             ClassLoaderIsolatedSystemProperties.getInstance().startIsolateClassLoader(sandboxClassLoader, isolatedProperties);
             isolatedThread.setContextClassLoader(sandboxClassLoader);
-        }
+            LOGGER.debug("creating instance of class '" + classToInstanciate + "...'"); //$NON-NLS-1$ //$NON-NLS-2$
+            Class<?> clazz;
+            try {
+                clazz = sandboxClassLoader.loadClass(classToInstanciate);
+                instance = clazz.newInstance();
+                LOGGER.debug("done creating class '" + classToInstanciate + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+            }
+        } // else getInstance has already been called
         return this.instance;
     }
 
+    public ClassLoader getSandboxClassLoader() {
+        return sandboxClassLoader;
+    }
 }

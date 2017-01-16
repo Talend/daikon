@@ -33,6 +33,8 @@ import org.apache.avro.Schema;
 // FIXME - move this back to TCOMP, see TDKN-66
 public class SchemaProperty extends Property<Schema> {
 
+    private static final long serialVersionUID = 381787688468063761L;
+
     public SchemaProperty(String name) {
         super(Schema.class, name);
     }

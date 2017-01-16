@@ -32,18 +32,25 @@ public class UiSchemaConstants {
      */
     public static final String TAG_TRIGGER = "ui:trigger";
 
-    public static final String TRIGGER_AFTER = "after";
+    /** @deprecated please use PropertyTrigger#AFTER */
+    @Deprecated
+    public static final String TRIGGER_AFTER = PropertyTrigger.AFTER.name();
 
-    public static final String TRIGGER_BEFORE_PRESENT = "beforePresent";
+    /** @deprecated please use PropertyTrigger#BEFORE_PRESENT */
+    @Deprecated
+    public static final String TRIGGER_BEFORE_PRESENT = PropertyTrigger.BEFORE_PRESENT.name();
 
-    public static final String TRIGGER_BEFORE_ACTIVATE = "beforeActive";
+    /** @deprecated please use PropertyTrigger#BEFORE_ACTIVE */
+    @Deprecated
+    public static final String TRIGGER_BEFORE_ACTIVATE = PropertyTrigger.BEFORE_ACTIVE.name();
 
-    public static final String TRIGGER_VALIDATE = "validate";
+    /** @deprecated please use PropertyTrigger#VALIDATE */
+    @Deprecated
+    public static final String TRIGGER_VALIDATE = PropertyTrigger.VALIDATE.name();
 
-    /**
-     * Custom tag. Represent the widget(normally a button) which can open a new form
-     */
-    public static final String TRIGGER_SHOW_FORM = "showForm";
+    /** @deprecated please use PropertyTrigger#SHOW_FORM */
+    @Deprecated
+    public static final String TRIGGER_SHOW_FORM = PropertyTrigger.SHOW_FORM.name();
 
     /**
      * Built-in widget type. Display the character as * to hidden the actually character

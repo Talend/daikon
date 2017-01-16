@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;
 import org.apache.avro.SchemaBuilder;
@@ -41,8 +42,21 @@ public class AvroUtils {
 
     private static final ConvertDate DATE_TYPE = new ConvertDate();
 
+    // FIXME - remove this one, this is not the date representation we ultimately want to use
     public static Schema _date() {
         return DATE_TYPE.getSchema();
+    }
+
+    public static Schema _logicalDate() {
+        return LogicalTypes.date().addToSchema(Schema.create(Schema.Type.INT));
+    }
+
+    public static Schema _logicalTime() {
+        return LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
+    }
+
+    public static Schema _logicalTimestamp() {
+        return LogicalTypes.timestampMillis().addToSchema(Schema.create(Schema.Type.LONG));
     }
 
     public static Schema _double() {
@@ -164,6 +178,7 @@ public class AvroUtils {
 
     /**
      * Schema don't support overwrite property's value, so have to clone it then put the new value
+     *
      * @return schema with the new value for the property: key
      */
     public static Schema setProperty(Schema schema, String key, String value) {
@@ -206,6 +221,37 @@ public class AvroUtils {
      */
     public static Schema setIncludeAllFields(Schema schema, boolean value) {
         return setProperty(schema, SchemaConstants.INCLUDE_ALL_FIELDS, String.valueOf(value));
+    }
+
+    /**
+     * check if schema is empty before using it. If empty, return true, if not, return false.
+     * 
+     * @param schema
+     * @return
+     */
+    public static boolean isSchemaEmpty(Schema schema) {
+        if (schema == null) {
+            return true;
+        }
+
+        if (isIncludeAllFields(schema)) {
+            return false;
+        }
+
+        List<Schema.Field> fields = schema.getFields();
+
+        return fields == null || fields.isEmpty();
+    }
+
+    /**
+     * Creates empty record schema, i.e. record schema, which has no fields.
+     * "EmptyRecord" name is used for this schema
+     * 
+     * @return empty record schema
+     */
+    public static Schema createEmptySchema() {
+        Schema emptySchema = SchemaBuilder.builder().record("EmptySchema").fields().endRecord(); //$NON-NLS-1$
+        return emptySchema;
     }
 
 }

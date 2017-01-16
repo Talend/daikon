@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.serialize.FullExampleProperties;
+import org.talend.daikon.serialize.FullExampleTestUtil;
 import shaded.org.apache.commons.io.IOUtils;
 
 public class JsonSchemaUtilTest {
@@ -29,7 +32,7 @@ public class JsonSchemaUtilTest {
     @Test
     public void testUnserializeWithInstance() throws ParseException, JsonProcessingException, IOException {
         // create a json string of a setup properties
-        FullExampleProperties fep = JsonDataGeneratorTest.createASetupFullExampleProperties();
+        FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
         ObjectNode propertiesData = new JsonDataGenerator().processTPropertiesData(fep);
         FullExampleProperties deserFep = JsonSchemaUtil.fromJson(propertiesData.toString(),
                 (FullExampleProperties) new FullExampleProperties("fullexample").init());
@@ -43,7 +46,7 @@ public class JsonSchemaUtilTest {
         DefinitionRegistryService defRegServ = getRegistryWithDef1();
 
         // create a json string of a setup properties
-        FullExampleProperties fep = JsonDataGeneratorTest.createASetupFullExampleProperties();
+        FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
         String json = new JsonDataGenerator().processTPropertiesData(fep).toString();
 
         // check instance is deserialized properly
@@ -82,7 +85,7 @@ public class JsonSchemaUtilTest {
     @Test
     public void testUnserializeWithDefinitionName()
             throws ParseException, JsonProcessingException, IOException, URISyntaxException {
-        FullExampleProperties fep = JsonDataGeneratorTest.createASetupFullExampleProperties();
+        FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
         String json = new JsonDataGenerator().genData(fep, "def1").toString();
         FullExampleProperties deserFep = (FullExampleProperties) JsonSchemaUtil.fromJson(json, getRegistryWithDef1());
         // compare them
@@ -91,7 +94,7 @@ public class JsonSchemaUtilTest {
 
     @Test
     public void testUnserializeWithDefinitionNameAndStream() throws ParseException, JsonProcessingException, IOException {
-        FullExampleProperties fep = JsonDataGeneratorTest.createASetupFullExampleProperties();
+        FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
         ObjectNode jsonNode = new JsonDataGenerator().genData(fep, "def1");
         try (InputStream is = IOUtils.toInputStream(jsonNode.toString())) {
             FullExampleProperties deserFep = (FullExampleProperties) JsonSchemaUtil.fromJson(is, getRegistryWithDef1());
@@ -112,7 +115,8 @@ public class JsonSchemaUtilTest {
     @Test
     public void testSerializeWithDefinitionName() throws URISyntaxException, IOException, ClassNotFoundException,
             NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        String propertiesJsonStr = JsonSchemaUtil.toJson(new FullExampleProperties("fullexample").init(), "ZeDefinitionName");
+        String propertiesJsonStr = JsonSchemaUtil.toJson(new FullExampleProperties("fullexample").init(), Form.MAIN,
+                "ZeDefinitionName");
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(propertiesJsonStr);
         ObjectNode jsonData = (ObjectNode) jsonNode.get(JsonSchemaUtil.TAG_JSON_DATA);

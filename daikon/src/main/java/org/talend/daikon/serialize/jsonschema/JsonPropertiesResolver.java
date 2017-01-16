@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.avro.Schema;
+import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.property.Property;
@@ -70,7 +71,11 @@ public class JsonPropertiesResolver {
         } else if (Boolean.class.equals(type)) {
             return dataNode.booleanValue();
         } else if (Schema.class.equals(type)) {
-            return new Schema.Parser().parse(dataNode.textValue());
+            if (StringUtils.isNotBlank(dataNode.textValue())) {
+                return new Schema.Parser().parse(dataNode.textValue());
+            } else {
+                return null;
+            }
         } else if (type.isEnum()) {
             return Enum.valueOf(type, dataNode.textValue());
         } else if (Date.class.equals(type)) {

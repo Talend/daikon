@@ -15,6 +15,8 @@ import org.talend.daikon.exception.TalendRuntimeException;
  */
 public class EnumListProperty<T extends Enum<T>> extends Property<List<T>> {
 
+    private static final long serialVersionUID = -8815508005750292147L;
+
     public EnumListProperty(TypeLiteral<List<T>> type, String name) {
         super(type, name, null);
         // set the possible values accoording with all the enum types.

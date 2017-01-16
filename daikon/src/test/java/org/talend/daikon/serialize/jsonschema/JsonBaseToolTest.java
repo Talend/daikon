@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.serialize.FullExampleProperties;
 
 public class JsonBaseToolTest {
 

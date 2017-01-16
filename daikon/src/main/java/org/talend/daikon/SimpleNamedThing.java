@@ -12,18 +12,22 @@
 // ============================================================================
 package org.talend.daikon;
 
+import java.io.Serializable;
+
 import org.talend.daikon.i18n.TranslatableImpl;
 
 /**
  * Simple implementation of {@link NamedThing}
  */
-public class SimpleNamedThing extends TranslatableImpl implements NamedThing {
+public class SimpleNamedThing extends TranslatableImpl implements NamedThing, Serializable {
+
+    private static final long serialVersionUID = 6570117916097073559L;
 
     protected String name;
 
-    protected String displayName;
+    protected transient String displayName;
 
-    protected String title;
+    protected transient String title;
 
     public SimpleNamedThing() {
         this(null, null, null);

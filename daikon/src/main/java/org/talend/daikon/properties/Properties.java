@@ -172,8 +172,16 @@ public interface Properties extends AnyProperty, ToStringIndent {
 
     /**
      * Gets a particular {@link Form} object.
+     * @param formName the wanted form name. If null, the default form will be {@link org.talend.daikon.properties.presentation.Form.MAIN}
      */
     Form getForm(String formName);
+
+    /**
+     * Returns the requested {@link Form} object, but if that's not defined for this object, returns
+     * the first defined form that exists. For example, the {@code Form.CITIZEN_USER} might be requested,
+     * but not defined, so the {@code Form.MAIN} is returned instead.
+     */
+    Form getPreferredForm(String formName);
 
     /**
      * Adds a {@link Form} object to this object.

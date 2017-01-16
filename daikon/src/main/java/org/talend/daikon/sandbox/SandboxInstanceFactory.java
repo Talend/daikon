@@ -12,21 +12,30 @@
 // ============================================================================
 package org.talend.daikon.sandbox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.List;
+import java.util.Collections;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.daikon.exception.TalendRuntimeException;
-import org.talend.daikon.exception.error.CommonErrorCodes;
+import org.talend.daikon.runtime.RuntimeInfo;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
 import org.talend.daikon.sandbox.properties.StandardPropertiesStrategyFactory;
+import org.talend.java.util.ClosableLRUMap;
 
 /**
  * this will create class instances from specifc classloader that should not interact with global system properties.
  */
 public class SandboxInstanceFactory {
+
+    /**
+     * TODO: Add context variable to allow the user to configure the maximum size of the cache.
+     * Maybe using a CacheBuilder.
+     */
+    static Map<RuntimeInfo, ClassLoader> classLoaderCache = Collections
+            .synchronizedMap(new ClosableLRUMap<RuntimeInfo, ClassLoader>(3, 10));
 
     // this swith the current JVM System Properties with our own so that it can handle Thread/ClassLoader isolation
     static {
@@ -45,7 +54,7 @@ public class SandboxInstanceFactory {
      * All the isolation constraints are to be found in the {@link SandboxedInstance} javadoc, please make sure you read it
      * carefully.
      * 
-     * @param classToInstanciated name of the class to instantiate
+     * @param classToInstanciate name of the class to instantiate
      * @param classPathUrls set of URLs to be used for creating a new {@link ClassLoader}.
      * @param parentClassLoader used a parent ClassLoader for the newly created classloader, may be null.
      * @param useCurrentJvmProperties if true, a copy of the current jvm system properties will be used, if false then a default
@@ -53,27 +62,36 @@ public class SandboxInstanceFactory {
      * 
      * @return a SandboxedInstance object ready for System Properties isolation
      */
-    public static SandboxedInstance createSandboxedInstance(String classToInstanciated, List<URL> classPathUrls,
-            ClassLoader parentClassLoader, boolean useCurrentJvmProperties) {
-        if (classToInstanciated == null) {
-            throw new IllegalArgumentException("classToInstanciate should not be null");
+    public static SandboxedInstance createSandboxedInstance(RuntimeInfo runtimeInfo, ClassLoader parentClassLoader,
+            boolean useCurrentJvmProperties) {
+        if (runtimeInfo.getRuntimeClassName() == null) {
+            throw new IllegalArgumentException("classToInstantiate should not be null");
         }
-        ClassLoaderIsolatedSystemProperties isolatedSystemProperties = ClassLoaderIsolatedSystemProperties.getInstance();
+        synchronized (classLoaderCache) {
+            if (classLoaderCache.containsKey(runtimeInfo) && classLoaderCache.get(runtimeInfo) != null) {
+                return new SandboxedInstance(runtimeInfo.getRuntimeClassName(), useCurrentJvmProperties,
+                        classLoaderCache.get(runtimeInfo));
+            } else {
+                // the following classloader is closeable so there is a possible resource leak.
+                // if the returned SandboxInstance is properly closed this classLoader shall be closed too.
+                ClassLoader sandboxClassLoader = new URLClassLoader(
+                        runtimeInfo.getMavenUrlDependencies().toArray(new URL[runtimeInfo.getMavenUrlDependencies().size()]),
+                        parentClassLoader) {
 
-        try {
-
-            LOGGER.info("creating class '" + classToInstanciated + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-
-            // the following classloader is closeable so there is a possible resource leak.
-            // if the returned SandboxInstance is properly closed this classLoader shall be closed too.
-            ClassLoader sandboxClassLoader = new URLClassLoader(classPathUrls.toArray(new URL[classPathUrls.size()]),
-                    parentClassLoader);
-
-            Class<?> clazz = sandboxClassLoader.loadClass(classToInstanciated);
-            return new SandboxedInstance(clazz.newInstance(), useCurrentJvmProperties, sandboxClassLoader);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                    @Override
+                    public void close() throws IOException {
+                        super.close();
+                        ClassLoaderIsolatedSystemProperties.getInstance().stopIsolateClassLoader(this);
+                    }
+                };
+                classLoaderCache.put(runtimeInfo, sandboxClassLoader);
+                return new SandboxedInstance(runtimeInfo.getRuntimeClassName(), useCurrentJvmProperties, sandboxClassLoader);
+            }
         }
+    }
+
+    public static void clearCache() {
+        classLoaderCache.clear();
     }
 
 }

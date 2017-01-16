@@ -21,4 +21,8 @@ public class TestServiceImpl implements TestService {
         return "Hi from implementation: " + name;
     }
 
+    @Override
+    public String sayHiWithMyNameAndValue(String name, String value, String body) {
+        return "Hi " + name + " " + value + " " + body;
+    }
 }

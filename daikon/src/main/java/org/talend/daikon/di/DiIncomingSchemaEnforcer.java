@@ -16,12 +16,15 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
@@ -223,10 +226,18 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
 
         Object datum = null;
 
+        boolean isLogicalDate = false;
+        LogicalType logicalType = fieldSchema.getLogicalType();
+        if (logicalType != null) {
+            if (logicalType == LogicalTypes.date() || logicalType == LogicalTypes.timestampMillis()) {
+                isLogicalDate = true;
+            }
+        }
+
         // TODO(rskraba): This is pretty rough -- fix with a general type conversion strategy.
         String talendType = f.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
-        if ("id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) {
+        if (isLogicalDate || "id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) {
             if (v instanceof Date) {
                 datum = v;
             } else if (v instanceof Long) {
@@ -235,7 +246,7 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
                 String pattern = f.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
                 String vs = (String) v;
 
-                if (pattern.equals("yyyy-MM-dd'T'HH:mm:ss'000Z'")) {
+                if (pattern == null || pattern.equals("yyyy-MM-dd'T'HH:mm:ss'000Z'")) {
                     if (!vs.endsWith("000Z")) {
                         throw new RuntimeException("Unparseable date: \"" + vs + "\""); //$NON-NLS-1$ //$NON-NLS-2$
                     }

@@ -237,6 +237,34 @@ public class DiIncomingSchemaEnforcerTest {
     }
 
     @Test
+    public void testTypeConversion_toLogicalDate() {
+        // The expected schema after enforcement.
+        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields().name("field").type(AvroUtils._logicalDate())
+                .noDefault() //
+                .endRecord();
+
+        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3");
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
+
+        // No dynamic columns, the schema is available.
+        assertThat(enforcer.getDesignSchema(), is(talend6Schema));
+        assertThat(enforcer.needsInitDynamicColumns(), is(false));
+        assertThat(enforcer.getRuntimeSchema(), is(talend6Schema));
+
+        // Put values into the enforcer and get them as an IndexedRecord.
+        enforcer.put(0, new Date(1234567891011L));
+        assertThat(enforcer.createIndexedRecord().get(0), is((Object) new Date(1234567891011L)));
+
+        // 2016-05-02T17:30:38.000Z
+        enforcer.put(0, "2009-02-13T23:31:31.000Z");
+        // "yyyy-MM-dd'T'HH:mm:ss'000Z'"
+        IndexedRecord adapted = enforcer.createIndexedRecord();
+        assertThat(adapted.getSchema(), sameInstance(enforcer.getRuntimeSchema()));
+        assertThat(adapted.get(0), is((Object) new Date(1234567891000L)));
+    }
+
+    @Test
     public void testDynamicColumnALLSupportedType() {
         Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
                 .name("valid").type().booleanType().noDefault() //

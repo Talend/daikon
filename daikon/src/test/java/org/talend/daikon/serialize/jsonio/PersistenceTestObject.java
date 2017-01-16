@@ -1,8 +1,13 @@
-package org.talend.daikon.serialize;
 
-import static org.junit.Assert.*;
+package org.talend.daikon.serialize.jsonio;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.talend.daikon.serialize.DeserializeDeletedFieldHandler;
+import org.talend.daikon.serialize.PostDeserializeHandler;
+import org.talend.daikon.serialize.PostDeserializeSetup;
+import org.talend.daikon.serialize.SerializeSetVersion;
+
+import static org.junit.Assert.assertEquals;
 
 public class PersistenceTestObject implements DeserializeDeletedFieldHandler, PostDeserializeHandler, SerializeSetVersion {
 

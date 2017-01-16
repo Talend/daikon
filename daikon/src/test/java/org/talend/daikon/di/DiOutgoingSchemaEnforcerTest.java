@@ -38,11 +38,18 @@ public class DiOutgoingSchemaEnforcerTest {
      */
     private static IndexedRecord record;
 
+    private static int NUM_DAYS = 1000;
+
+    /**
+     * 1000 days after 1970-01-01, equal to 1972-09-27.
+     */
+    private static Date DATE_COMPARE = new Date(NUM_DAYS * 60 * 60 * 24 * 1000L);
+
     /**
      * Creates runtime schema, design schema and record, which is used as test arguments
      */
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
         runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
                 .name("id").type().intType().noDefault() //
                 .name("name").type().stringType().noDefault() //
@@ -51,6 +58,9 @@ public class DiOutgoingSchemaEnforcerTest {
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType() //
                 .noDefault() //
+                .name("logicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("logicalTime").type(AvroUtils._logicalTime()).noDefault() //
+                .name("logicalTimestamp").type(AvroUtils._logicalTimestamp()).noDefault() //
                 .endRecord(); //
 
         talend6Schema = SchemaBuilder.builder().record("Record").fields() //
@@ -61,6 +71,9 @@ public class DiOutgoingSchemaEnforcerTest {
                 .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
                 .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType()
                 .noDefault() //
+                .name("logicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("logicalTime").type(AvroUtils._logicalTime()).noDefault() //
+                .name("logicalTimestamp").type(AvroUtils._logicalTimestamp()).noDefault() //
                 .endRecord(); //
 
         record = new GenericData.Record(runtimeSchema);
@@ -69,6 +82,9 @@ public class DiOutgoingSchemaEnforcerTest {
         record.put(2, 100);
         record.put(3, true);
         record.put(4, new Date(1467170137872L));
+        record.put(5, NUM_DAYS);
+        record.put(6, 1000);
+        record.put(7, 1467170137872L);
     }
 
     /**
@@ -99,6 +115,9 @@ public class DiOutgoingSchemaEnforcerTest {
         assertThat(enforcer.get(2), equalTo((Object) 100));
         assertThat(enforcer.get(3), equalTo((Object) true));
         assertThat(enforcer.get(4), equalTo((Object) new Date(1467170137872L)));
+        assertThat(enforcer.get(5), equalTo((Object) DATE_COMPARE));
+        assertThat(enforcer.get(6), equalTo((Object) 1000));
+        assertThat(enforcer.get(7), equalTo((Object) new Date(1467170137872L)));
     }
 
     /**
@@ -139,7 +158,7 @@ public class DiOutgoingSchemaEnforcerTest {
         DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
         enforcer.setWrapped(record);
 
-        enforcer.get(5);
+        enforcer.get(10);
     }
 
     /**

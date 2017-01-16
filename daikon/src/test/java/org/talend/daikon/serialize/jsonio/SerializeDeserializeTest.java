@@ -1,6 +1,7 @@
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.jsonio;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +11,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.daikon.serialize.SerializerDeserializer.Deserialized;
 
 import com.cedarsoftware.util.io.JsonWriter;
@@ -20,7 +22,7 @@ public class SerializeDeserializeTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SerializeDeserializeTest.class);
 
-    static final String oldSer1 = "{\"@type\":\"org.talend.daikon.serialize.PersistenceTestObject\",\"string1\":\"string1\",\"string2\":\"string2\",\"string3\":\"string3\",\"inner\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject2\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject3\":{\"string1\":\"string1\",\"string2\":\"string2\"}}}}";
+    static final String oldSer1 = "{\"@type\":\"org.talend.daikon.serialize.jsonio.PersistenceTestObject\",\"string1\":\"string1\",\"string2\":\"string2\",\"string3\":\"string3\",\"inner\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject2\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject3\":{\"string1\":\"string1\",\"string2\":\"string2\"}}}}";
 
     @Test
     public void testSimple() {
@@ -126,7 +128,7 @@ public class SerializeDeserializeTest {
 
     @Test
     public void testDeserializeMissingFieldTyped() {
-        String serTyped = "{\"@type\":\"org.talend.daikon.serialize.PersistenceTestObject\",\"string1\":\"string1\",\"string2\":\"string2\",\"string3\":\"string3\",\"inner\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject2\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject3\":{\"@type\": \"org.talend.daikon.serialize.PersistenceTestObjectInner3\",\"string1\":\"string1\",\"string2\":\"string2\"}}}}";
+        String serTyped = "{\"@type\":\"org.talend.daikon.serialize.jsonio.PersistenceTestObject\",\"string1\":\"string1\",\"string2\":\"string2\",\"string3\":\"string3\",\"inner\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject2\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject3\":{\"@type\": \"org.talend.daikon.serialize.PersistenceTestObjectInner3\",\"string1\":\"string1\",\"string2\":\"string2\"}}}}";
         Deserialized<PersistenceTestObject> deser = SerializerDeserializer.fromSerializedPersistent(serTyped,
                 PersistenceTestObject.class);
         assertFalse(deser.object.inner.innerObject2.hasNullDeleteInner3);

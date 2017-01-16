@@ -15,17 +15,24 @@ package org.talend.daikon.properties.test;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.rules.ErrorCollector;
+import org.ops4j.pax.url.mvn.ServiceConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.definition.Definition;
+import org.talend.daikon.definition.service.DefinitionRegistryService;
 import org.talend.daikon.properties.AnyPropertyVisitor;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -37,6 +44,20 @@ import org.talend.daikon.serialize.SerializerDeserializer;
 public class PropertiesTestUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesTestUtils.class);
+
+    /**
+     * if we are running from maven and a local repo is used, we also configure pax url to use this local repos.
+     */
+    public static void setupPaxUrlFromMavenLaunch() {
+        String localRepo = System.getProperty("maven.repo.local", "");
+        if (!"".equals(localRepo)) {// local repo set
+            if (!new File(localRepo).isAbsolute()) {// must be absolute.
+                throw new RuntimeException("maven.repo.local system properties must be absolute.");
+            } else {
+                System.setProperty(ServiceConstants.PID + "." + ServiceConstants.PROPERTY_LOCAL_REPOSITORY, localRepo);
+            }
+        } // no local repo set so do nothing
+    }
 
     public static Properties checkSerialize(Properties props, ErrorCollector errorCollector) {
         String s = props.toSerialized();
@@ -75,6 +96,67 @@ public class PropertiesTestUtils {
         }
         return deserProps;
 
+    }
+
+    /**
+     * check all properties of a component for i18n, check form i18n, check ComponentProperties title is i18n
+     * 
+     * @param componentService where to get all the components
+     * @param errorCollector used to collect all errors at once. @see
+     *            <a href="http://junit.org/apidocs/org/junit/rules/ErrorCollector.html">ErrorCollector</a>
+     */
+    static public void assertAlli18nAreSetup(DefinitionRegistryService defRegistry, ErrorCollector errorCollector) {
+        Collection<Definition> allDefs = defRegistry.getDefinitionsMapByType(Definition.class).values();
+        for (Definition def : allDefs) {
+            Class propertiesClass = def.getPropertiesClass();
+            if (propertiesClass == null) {// log it but do not consider it as a error caus tComp Wizard ses it with null(this is
+                                              // bad)
+                LOGGER.error("Properties class for definition [" + def.getName() + "] should never be null.");
+                continue;
+            }
+            Properties props = PropertiesImpl.createNewInstance(propertiesClass, "root").init();
+            // check all properties
+            if (props != null) {
+                checkAllI18N(props, errorCollector);
+            } else {
+                LOGGER.info("No properties to check fo I18n for :" + def.getName());
+            }
+            // check definition name
+            errorCollector.checkThat("displayName for definition [" + def.getClass().getName() + "] must not be null",
+                    def.getDisplayName(), notNullValue());
+            errorCollector.checkThat(
+                    "missing I18n displayName [" + def.getDisplayName() + "] for definition [" + def.getClass().getName() + "]",
+                    def.getDisplayName(), not(endsWith(Definition.I18N_DISPLAY_NAME_SUFFIX)));
+            // check definition title
+            errorCollector.checkThat("title for definition [" + def.getClass().getName() + "] must not be null", def.getTitle(),
+                    notNullValue());
+            errorCollector.checkThat(
+                    "missing I18n title [" + def.getTitle() + "] for definition [" + def.getClass().getName() + "]",
+                    def.getTitle(), not(endsWith(Definition.I18N_TITLE_NAME_SUFFIX)));
+        }
+    }
+
+    /**
+     * check that all Components and Wizards have theirs images properly set.
+     * 
+     * @param componentService service to get the components to be checked.
+     */
+    public static void assertAllImagesAreSetup(DefinitionRegistryService defRegistry, ErrorCollector errorCollector) {
+        Collection<Definition> allDefs = defRegistry.getDefinitionsMapByType(Definition.class).values();
+        for (Definition def : allDefs) {
+            String imagePath = def.getImagePath();
+            errorCollector.checkThat("the definition [" + def.getName() + "] must return an image path.", imagePath,
+                    notNullValue());
+            if (imagePath != null) {// check that the image resource exists
+                InputStream resourceAsStream = def.getClass().getResourceAsStream(imagePath);
+                errorCollector
+                        .checkThat(
+                                "Failed to find the image for path [" + imagePath + "] for the definition [" + def.getName()
+                                        + "].\nIt should be located at ["
+                                        + def.getClass().getPackage().getName().replace('.', '/') + "/" + imagePath + "]",
+                                resourceAsStream, notNullValue());
+            }
+        }
     }
 
     /**

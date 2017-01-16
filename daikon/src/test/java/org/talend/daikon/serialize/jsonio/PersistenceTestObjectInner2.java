@@ -1,4 +1,10 @@
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.jsonio;
+
+import org.talend.daikon.serialize.DeserializeDeletedFieldHandler;
+import org.talend.daikon.serialize.PersistenceTestObjectInner3;
+import org.talend.daikon.serialize.PostDeserializeHandler;
+import org.talend.daikon.serialize.PostDeserializeSetup;
+import org.talend.daikon.serialize.SerializeSetVersion;
 
 public class PersistenceTestObjectInner2 implements DeserializeDeletedFieldHandler, PostDeserializeHandler, SerializeSetVersion {
 
@@ -63,9 +69,9 @@ public class PersistenceTestObjectInner2 implements DeserializeDeletedFieldHandl
 
     public void assertMigrateOk() {
         if (deserializeMigration) {
-            assert("XXXstring1".equals(string1));
+            assert ("XXXstring1".equals(string1));
         }
-        assert("string2".equals(string2a));
+        assert ("string2".equals(string2a));
     }
 
 }

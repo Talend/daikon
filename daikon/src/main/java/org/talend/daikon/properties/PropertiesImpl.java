@@ -15,14 +15,9 @@ package org.talend.daikon.properties;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.talend.daikon.NamedThing;
@@ -48,9 +43,11 @@ import com.cedarsoftware.util.io.JsonWriter;
  */
 public class PropertiesImpl extends TranslatableImpl implements Properties, AnyProperty, PostDeserializeHandler, ToStringIndent {
 
+    private static final long serialVersionUID = -7970336622844281900L;
+
     private String name;
 
-    private List<Form> forms = new ArrayList<>();
+    private transient List<Form> forms = new ArrayList<>();
 
     ValidationResult validationResult;
 
@@ -236,15 +233,8 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
     @Override
     public String toSerialized() {
         handleAllPropertyEncryption(ENCRYPT);
-        // remove form from serialization for storing the properties
-        // FIXME - move this to use the SerializeFieldOmitter
-        Map<Class<?>, List<String>> fieldBlackLists = new HashMap<>();
-        List<String> fields = new ArrayList<>();
-        fields.add("forms");
-        fieldBlackLists.put(PropertiesImpl.class, fields);
         try {
-            return JsonWriter.objectToJson(this,
-                    Collections.singletonMap(JsonWriter.FIELD_NAME_BLACK_LIST, (Object) fieldBlackLists));
+            return JsonWriter.objectToJson(this);
         } finally {
             handleAllPropertyEncryption(!ENCRYPT);
         }
@@ -283,12 +273,39 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     @Override
     public Form getForm(String formName) {
+
+        final String wantedFormName;
+
+        // default to Form.Main if the formName is blank
+        if (StringUtils.isBlank(formName)) {
+            wantedFormName = Form.MAIN;
+        } else {
+            wantedFormName = formName;
+        }
+
         for (Form f : forms) {
-            if (f.getName().equals(formName)) {
+            if (f.getName().equals(wantedFormName)) {
                 return f;
             }
         }
+
         return null;
+    }
+
+    @Override
+    public Form getPreferredForm(String formName) {
+        Form form = getForm(formName);
+        if (form != null) {
+            return form;
+        }
+
+        // This is the only fallback case at present. If there are other fallback cases,
+        // they can be included here.
+        if (formName.equals(Form.CITIZEN_USER)) {
+            return getForm(Form.MAIN);
+        }
+
+        return form;
     }
 
     @Override
@@ -601,7 +618,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     @Override
     public String getDisplayName() {
-        return getName() != null ? getI18nMessage("properties." + getName() + ".displayName") : "";
+        return getName() != null ? getI18nMessage("properties." + getName() + I18N_DISPLAY_NAME_SUFFIX) : "";
     }
 
     @Override
@@ -632,8 +649,10 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
             }
         }
         sb.append("\n " + is + "  Forms:");
-        for (Form form : getForms()) {
-            sb.append("\n" + form.toStringIndent(indent + 6));
+        if (getForms() != null) {
+            for (Form form : getForms()) {
+                sb.append("\n" + form.toStringIndent(indent + 6));
+            }
         }
         return sb.toString();
     }
