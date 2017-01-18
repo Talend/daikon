@@ -271,5 +271,6 @@ public class AvroUtilsTest {
         assertFalse(AvroUtils.isString(Schema.Type.NULL));
         assertFalse(AvroUtils.isString(Schema.Type.RECORD));
         assertTrue(AvroUtils.isString(Schema.Type.STRING));
-        assertFalse(AvroUtils.isString(Schema.Type.UNION));    }
+        assertFalse(AvroUtils.isString(Schema.Type.UNION));
+    }
 }
