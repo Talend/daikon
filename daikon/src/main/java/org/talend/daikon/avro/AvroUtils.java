@@ -299,7 +299,7 @@ public class AvroUtils {
      * @param type The type of a field
      * @return true if the type is String
      */
-    public static Boolean isString(Schema.Type type) {
+    public static boolean isString(Schema.Type type) {
         return Schema.Type.STRING.equals(type);
     }
 
@@ -310,7 +310,7 @@ public class AvroUtils {
      * @param type The type of a field
      * @return true if the type is String
      */
-    public static Boolean isNumerical(Schema.Type type) {
+    public static boolean isNumerical(Schema.Type type) {
         return Schema.Type.INT.equals(type) || Schema.Type.LONG.equals(type) //
                 || Schema.Type.DOUBLE.equals(type) || Schema.Type.FLOAT.equals(type);
     }

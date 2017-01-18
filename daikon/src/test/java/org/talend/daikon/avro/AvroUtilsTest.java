@@ -240,16 +240,36 @@ public class AvroUtilsTest {
 
     @Test
     public void testIsNumerical() throws Exception {
+        assertFalse(AvroUtils.isNumerical(Schema.Type.ARRAY));
+        assertFalse(AvroUtils.isNumerical(Schema.Type.BOOLEAN));
+        assertFalse(AvroUtils.isNumerical(Schema.Type.BYTES));
+        assertTrue(AvroUtils.isNumerical(Schema.Type.DOUBLE));
+        assertFalse(AvroUtils.isNumerical(Schema.Type.ENUM));
+        assertFalse(AvroUtils.isNumerical(Schema.Type.FIXED));
+        assertTrue(AvroUtils.isNumerical(Schema.Type.FLOAT));
         assertTrue(AvroUtils.isNumerical(Schema.Type.INT));
         assertTrue(AvroUtils.isNumerical(Schema.Type.LONG));
-        assertTrue(AvroUtils.isNumerical(Schema.Type.DOUBLE));
-        assertTrue(AvroUtils.isNumerical(Schema.Type.FLOAT));
+        assertFalse(AvroUtils.isNumerical(Schema.Type.MAP));
+        assertFalse(AvroUtils.isNumerical(Schema.Type.NULL));
+        assertFalse(AvroUtils.isNumerical(Schema.Type.RECORD));
         assertFalse(AvroUtils.isNumerical(Schema.Type.STRING));
+        assertFalse(AvroUtils.isNumerical(Schema.Type.UNION));
     }
 
     @Test
     public void testIsString() throws Exception {
+        assertFalse(AvroUtils.isString(Schema.Type.ARRAY));
+        assertFalse(AvroUtils.isString(Schema.Type.BOOLEAN));
+        assertFalse(AvroUtils.isString(Schema.Type.BYTES));
+        assertFalse(AvroUtils.isString(Schema.Type.DOUBLE));
+        assertFalse(AvroUtils.isString(Schema.Type.ENUM));
+        assertFalse(AvroUtils.isString(Schema.Type.FIXED));
+        assertFalse(AvroUtils.isString(Schema.Type.FLOAT));
         assertFalse(AvroUtils.isString(Schema.Type.INT));
+        assertFalse(AvroUtils.isString(Schema.Type.LONG));
+        assertFalse(AvroUtils.isString(Schema.Type.MAP));
+        assertFalse(AvroUtils.isString(Schema.Type.NULL));
+        assertFalse(AvroUtils.isString(Schema.Type.RECORD));
         assertTrue(AvroUtils.isString(Schema.Type.STRING));
-    }
+        assertFalse(AvroUtils.isString(Schema.Type.UNION));    }
 }
