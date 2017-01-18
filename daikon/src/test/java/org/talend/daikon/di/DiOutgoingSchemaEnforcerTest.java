@@ -1,6 +1,7 @@
 package org.talend.daikon.di;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
@@ -88,8 +89,8 @@ public class DiOutgoingSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingSchemaEnforcer#getSchema()} returns design schema, which was passed to constructor without
-     * any changes
+     * Checks {@link DiOutgoingSchemaEnforcer#getSchema()} returns design schema, which was passed to constructor
+     * without any changes
      */
     @Test
     public void testGetSchema() {
@@ -101,8 +102,8 @@ public class DiOutgoingSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} returns correct values retrieved from wrapped {@link IndexedRecord}
-     * in case design and runtime schema have same order of the fields
+     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} returns correct values retrieved from wrapped
+     * {@link IndexedRecord} in case design and runtime schema have same order of the fields
      */
     @Test
     public void testGetByIndex() {
@@ -121,8 +122,8 @@ public class DiOutgoingSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} returns correct values retrieved from wrapped {@link IndexedRecord}
-     * in case design and runtime schema have different order of the fields
+     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} returns correct values retrieved from wrapped
+     * {@link IndexedRecord} in case design and runtime schema have different order of the fields
      */
     @Test
     public void testGetByName() {
@@ -148,9 +149,8 @@ public class DiOutgoingSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} throws {@link IndexOutOfBoundsException} in case of incoming index less
-     * than 0
-     * or more than (designSchemaSize - 1)
+     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} throws {@link IndexOutOfBoundsException} in case of incoming
+     * index less than 0 or more than (designSchemaSize - 1)
      */
     @Test(expected = IndexOutOfBoundsException.class)
     public void testGetOutOfBounds() {
@@ -201,8 +201,8 @@ public class DiOutgoingSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link BigDecimal} value correctly
-     * using Java class
+     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link BigDecimal} value
+     * correctly using Java class
      */
     @Test
     public void testTransformValueToDecimal() {
@@ -219,8 +219,8 @@ public class DiOutgoingSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Character} value correctly
-     * using Java class
+     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Character} value
+     * correctly using Java class
      */
     @Test
     public void testTransformValueToCharacter() {
@@ -236,4 +236,25 @@ public class DiOutgoingSchemaEnforcerTest {
         assertThat(transformedValue, equalTo((Object) expectedChar));
     }
 
+    /**
+     * Checks case when designSchema and runtimeSchema are different
+     */
+    @Test
+    public void testSetWrapped() throws Exception {
+        int[] expectedIndexMap = { 0 };
+
+        Schema designSchema = SchemaBuilder.builder().record("Record").fields().name("col0").type(AvroUtils._date()).noDefault()
+                .endRecord();
+
+        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields().name("field0").type().longType().noDefault()
+                .endRecord();
+
+        IndexedRecord indexedRecord = new GenericData.Record(runtimeSchema);
+        indexedRecord.put(0, 1467170137872L);
+
+        DiOutgoingSchemaEnforcer enforcer = EnforcerCreator.createOutgoingEnforcer(designSchema, false);
+        enforcer.setWrapped(indexedRecord);
+        int[] actualIndexMap = enforcer.indexMap;
+        assertArrayEquals(expectedIndexMap, actualIndexMap);
+    }
 }
