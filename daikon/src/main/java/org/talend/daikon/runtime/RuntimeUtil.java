@@ -31,6 +31,8 @@ import org.talend.daikon.sandbox.SandboxedInstance;
 
 public class RuntimeUtil {
 
+    static private final Logger LOG = LoggerFactory.getLogger(RuntimeUtil.class);
+
     public static final class MavenUrlStreamHandler extends URLStreamHandler {
 
         @Override
@@ -47,8 +49,6 @@ public class RuntimeUtil {
             return conn;
         }
     }
-
-    static final Logger LOG = LoggerFactory.getLogger(RuntimeUtil.class);
 
     static {
         // The mvn: protocol is always necessary for the methods in this class.
