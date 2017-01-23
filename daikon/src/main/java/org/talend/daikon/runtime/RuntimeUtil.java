@@ -19,12 +19,36 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
-import org.ops4j.pax.url.mvn.Handler;
+import org.ops4j.pax.url.mvn.MavenResolver;
+import org.ops4j.pax.url.mvn.MavenResolvers;
 import org.ops4j.pax.url.mvn.ServiceConstants;
+import org.ops4j.pax.url.mvn.internal.Connection;
+import org.ops4j.pax.url.mvn.internal.Parser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.daikon.sandbox.SandboxInstanceFactory;
 import org.talend.daikon.sandbox.SandboxedInstance;
 
 public class RuntimeUtil {
+
+    public static final class MavenUrlStreamHandler extends URLStreamHandler {
+
+        @Override
+        public URLConnection openConnection(URL url) throws IOException {
+            // check for URL to not have library name instead of version see (TCOMP-402)
+            // unfortunately we need to use an pax mvn internal api (Parser).
+            if (new Parser(url.getPath()).getVersion().endsWith(".jar")) {
+                LOG.debug("Ignor this artifact : " + url.toString());
+                throw new IOException("Ignoring supposedly wrong URL :" + url.toString());
+            }
+            MavenResolver resolver = MavenResolvers.createMavenResolver(null, ServiceConstants.PID);
+            Connection conn = new Connection(url, resolver);
+            conn.setUseCaches(false);// to avoid concurent thread to have an IllegalStateException.
+            return conn;
+        }
+    }
+
+    static final Logger LOG = LoggerFactory.getLogger(RuntimeUtil.class);
 
     static {
         // The mvn: protocol is always necessary for the methods in this class.
@@ -51,15 +75,7 @@ public class RuntimeUtil {
                 @Override
                 public URLStreamHandler createURLStreamHandler(String protocol) {
                     if (ServiceConstants.PROTOCOL.equals(protocol)) {
-                        return new Handler() {
-
-                            @Override
-                            protected URLConnection openConnection(URL url) throws IOException {
-                                URLConnection conn = super.openConnection(url);
-                                conn.setUseCaches(false);// to avoid concurent thread to have an IllegalStateException.
-                                return conn;
-                            }
-                        };
+                        return new MavenUrlStreamHandler();
                     } else {
                         return null;
                     }
@@ -69,13 +85,12 @@ public class RuntimeUtil {
     }
 
     /**
-     * this will create a {@link SandboxedInstance} class based on the RuntimeInfo and using <code>parentClassLoader</code> if any
-     * is provided.
-     * If you want to cast the sandboxed instance to some existing classes you are strongly advised to use the Properties
-     * classloader used to determine the <code>runtimeInfo<code>.
-     * The sandboxed instance will be created in a new ClassLoader and isolated from the current JVM system properties. You must
-     * not forget to call {@link SandboxedInstance#close()} in order to release the classloader and remove the System properties
-     * isolation, please read carefully the {@link SandboxedInstance} javadoc.
+     * this will create a {@link SandboxedInstance} class based on the RuntimeInfo and using
+     * <code>parentClassLoader</code> if any is provided. If you want to cast the sandboxed instance to some existing
+     * classes you are strongly advised to use the Properties classloader used to determine the <code>runtimeInfo<code>.
+     * The sandboxed instance will be created in a new ClassLoader and isolated from the current JVM system properties.
+     * You must not forget to call {@link SandboxedInstance#close()} in order to release the classloader and remove the
+     * System properties isolation, please read carefully the {@link SandboxedInstance} javadoc.
      */
     public static SandboxedInstance createRuntimeClass(RuntimeInfo runtimeInfo, ClassLoader parentClassLoader) {
         return SandboxInstanceFactory.createSandboxedInstance(runtimeInfo, parentClassLoader, false);
