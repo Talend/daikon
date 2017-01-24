@@ -110,7 +110,7 @@ public class PropertiesServiceTest {
         assertEquals((Integer) 20, props.decimal.getValue());
 
         assertEquals(savedProps, props);
-        assertTrue(props.nestedProps == savedNested);
+        assertEquals(savedNested, props.nestedProps);
 
         props = (TestProperties) propService.cancelFormValues(props, "restoreTest");
 

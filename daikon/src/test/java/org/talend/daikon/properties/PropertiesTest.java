@@ -22,6 +22,8 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
+import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -37,7 +39,6 @@ import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.Property.Flags;
-import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.properties.property.StringProperty;
 import org.talend.daikon.properties.test.PropertiesTestUtils;
@@ -54,7 +55,7 @@ public class PropertiesTest {
 
     private final class StringListProperties extends PropertiesImpl {
 
-        public Property<List<String>> listString = PropertyFactory.newProperty(new TypeLiteral<List<String>>() {
+        public Property<List<String>> listString = newProperty(new TypeLiteral<List<String>>() {
         }, "listString");
 
         private StringListProperties(String name) {
@@ -64,7 +65,7 @@ public class PropertiesTest {
 
     private final class AnotherNestedProperties extends PropertiesImpl {
 
-        public StringProperty stringProp = PropertyFactory.newProperty("stringProp");
+        public StringProperty stringProp = newProperty("stringProp");
 
         private AnotherNestedProperties(String name) {
             super(name);
@@ -386,7 +387,7 @@ public class PropertiesTest {
 
     @Test
     public void testTaggedValue() {
-        Property<String> property = PropertyFactory.newString("haha"); //$NON-NLS-1$
+        Property<String> property = newString("haha"); //$NON-NLS-1$
         assertNull(property.getTaggedValue("foo"));
         assertNull(property.getTaggedValue("bar"));
         property.setTaggedValue("foo", "fooValue");
@@ -561,7 +562,7 @@ public class PropertiesTest {
             super(name);
         }
 
-        public final Property<String> password = PropertyFactory.newString("password").setFlags(EnumSet.of(Flags.ENCRYPT));
+        public final Property<String> password = newString("password").setFlags(EnumSet.of(Flags.ENCRYPT));
     }
 
     static public class TestCryptedProperty extends PropertiesImpl {
@@ -590,7 +591,7 @@ public class PropertiesTest {
 
         public static class NestProps extends PropertiesImpl {
 
-            public StringProperty stringProp = PropertyFactory.newProperty("stringProp");
+            public StringProperty stringProp = newProperty("stringProp");
 
             /**
              * @param name
