@@ -26,6 +26,10 @@ import org.apache.commons.lang3.reflect.TypeLiteral;
  */
 public class PropertyFactory {
 
+    public static TypeLiteral<List<String>> LIST_STRING_ELEMENT = new TypeLiteral<List<String>>() {
+        // This object is here to define the type used in the next property
+    };
+
     private PropertyFactory() {
     }
 
@@ -98,10 +102,6 @@ public class PropertyFactory {
         return new Property<>(new TypeLiteral<Date>() {// left empty on purpose
         }, name);
     }
-
-    public static TypeLiteral<List<String>> LIST_STRING_ELEMENT = new TypeLiteral<List<String>>() {
-        // This object is here to define the type used in the next property
-    };
 
     public static Property<List<String>> newStringListProperty(String name) {
         return new Property<>(LIST_STRING_ELEMENT, name).setValue(new ArrayList<String>());
