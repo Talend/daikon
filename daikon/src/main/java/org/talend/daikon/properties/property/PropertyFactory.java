@@ -103,11 +103,11 @@ public class PropertyFactory {
         }, name);
     }
 
-    public static Property<List<String>> newStringListProperty(String name) {
+    public static Property<List<String>> newStringList(String name) {
         return new Property<>(LIST_STRING_ELEMENT, name).setValue(new ArrayList<String>());
     }
 
-    public static <T> Property<List<T>> newListProperty(String name, Class<T> zeEnumType) {
+    public static <T> Property<List<T>> newList(String name, Class<T> zeListElementType) {
         TypeLiteral<List<T>> literalType = new TypeLiteral<List<T>>() {
             // This object is here to define the type used in the next property
         };

@@ -199,7 +199,7 @@ public class PropertyFactoryTest {
 
     @Test
     public void testNewStringList() {
-        Property<List<String>> element = PropertyFactory.newStringListProperty("testProperty");
+        Property<List<String>> element = PropertyFactory.newStringList("testProperty");
         assertEquals("testProperty", element.getName());
         assertThat(element.getValue(), is(empty()));
         assertNull(element.getTitle());
@@ -208,14 +208,14 @@ public class PropertyFactoryTest {
 
     @Test
     public void testNewList() {
-        Property<List<Double>> elementDouble = PropertyFactory.newListProperty("testProperty", Double.class);
+        Property<List<Double>> elementDouble = PropertyFactory.newList("testProperty", Double.class);
         assertEquals("testProperty", elementDouble.getName());
         assertThat(elementDouble.getValue(), is(empty()));
         assertNull(elementDouble.getTitle());
         elementDouble.getValue().add(22d);
         assertEquals((Double) 22d, elementDouble.getValue().get(0));
 
-        Property<List<String>> elementString = PropertyFactory.newListProperty("testProperty", String.class);
+        Property<List<String>> elementString = PropertyFactory.newList("testProperty", String.class);
         assertEquals("testProperty", elementString.getName());
         assertThat(elementString.getValue(), is(empty()));
         assertNull(elementString.getTitle());
