@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.daikon.properties.property;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -96,6 +97,21 @@ public class PropertyFactory {
     public static Property<Date> newDate(String name) {
         return new Property<>(new TypeLiteral<Date>() {// left empty on purpose
         }, name);
+    }
+
+    public static TypeLiteral<List<String>> LIST_STRING_ELEMENT = new TypeLiteral<List<String>>() {
+        // This object is here to define the type used in the next property
+    };
+
+    public static Property<List<String>> newStringListProperty(String name) {
+        return new Property<>(LIST_STRING_ELEMENT, name).setValue(new ArrayList<String>());
+    }
+
+    public static <T> Property<List<T>> newListProperty(String name, Class<T> zeEnumType) {
+        TypeLiteral<List<T>> literalType = new TypeLiteral<List<T>>() {
+            // This object is here to define the type used in the next property
+        };
+        return new Property<>(literalType, name).setValue(new ArrayList<T>());
     }
 
     public static <T extends Enum<T>> EnumProperty<T> newEnum(String name, Class<T> zeEnumType) {
