@@ -10,11 +10,11 @@ import org.talend.daikon.serialize.FullExampleProperties;
 
 public class JsonWidgetTest {
 
-    FullExampleProperties properties = new FullExampleProperties("fullexample");
+    private FullExampleProperties properties = new FullExampleProperties("fullexample");
 
-    Form mainForm;
+    private Form mainForm;
 
-    Form advancedForm;
+    private Form advancedForm;
 
     @Before
     public void init() {

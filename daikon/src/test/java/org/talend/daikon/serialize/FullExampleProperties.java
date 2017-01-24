@@ -1,7 +1,14 @@
 package org.talend.daikon.serialize;
 
-import static org.talend.daikon.properties.presentation.Widget.*;
-import static org.talend.daikon.properties.property.PropertyFactory.*;
+import static org.talend.daikon.properties.presentation.Widget.widget;
+import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
+import static org.talend.daikon.properties.property.PropertyFactory.newDate;
+import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
+import static org.talend.daikon.properties.property.PropertyFactory.newEnumList;
+import static org.talend.daikon.properties.property.PropertyFactory.newInteger;
+import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
+import static org.talend.daikon.properties.property.PropertyFactory.newSchema;
+import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,7 +27,6 @@ import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.EnumListProperty;
 import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
-import org.talend.daikon.properties.property.PropertyFactory;
 
 /**
  * TODO This is a duplicate one by org.talend.components.fullexample.FullExampleProperties, but for test json schema
@@ -66,7 +72,7 @@ public class FullExampleProperties extends PropertiesImpl {
     /** use the default widget for this Integer type */
     public final Property<Integer> integerProp = newInteger("integerProp").setRequired();
 
-    public final Property<Long> longProp = PropertyFactory.newProperty(Long.class, "longProp");
+    public final Property<Long> longProp = newProperty(Long.class, "longProp");
 
     /** use the default widget for this Date type */
     public final Property<Date> dateProp = newDate("dateProp").setRequired();

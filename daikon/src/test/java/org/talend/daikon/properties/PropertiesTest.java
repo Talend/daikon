@@ -14,14 +14,20 @@ package org.talend.daikon.properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.lang3.reflect.TypeLiteral;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -576,8 +582,8 @@ public class PropertiesTest {
         props.setValue("nestedPassword.password", "myPassword");
         Properties newProps = PropertiesTestUtils.checkSerialize(props, errorCollector);
 
-        Assert.assertEquals("myPassword", props.getValuedProperty("nestedPassword.password").getValue());
-        Assert.assertEquals("myPassword", newProps.getValuedProperty("nestedPassword.password").getValue());
+        assertEquals("myPassword", props.getValuedProperty("nestedPassword.password").getValue());
+        assertEquals("myPassword", newProps.getValuedProperty("nestedPassword.password").getValue());
     }
 
     private static final class SomePropertiesWithNested extends PropertiesImpl {
@@ -611,6 +617,7 @@ public class PropertiesTest {
         prop2.nested.stringProp.setValue("foo");
         SomePropertiesWithNested prop3 = new SomePropertiesWithNested("prop3");
         prop3.nested.stringProp.setValue("bar");
+        SomePropertiesWithNested propNull = null;
 
         /* Reflexive */
         assertThat(prop1.equals(prop1), is(Boolean.TRUE));
@@ -621,8 +628,8 @@ public class PropertiesTest {
         assertThat(prop2.equals(prop1), is(Boolean.TRUE));
 
         /* Transitive */
-        assertThat(prop1.equals(null), is(Boolean.FALSE));
-        assertThat(prop2.equals(null), is(Boolean.FALSE));
+        assertThat(prop1.equals(propNull), is(Boolean.FALSE));
+        assertThat(prop2.equals(propNull), is(Boolean.FALSE));
 
         assertThat(prop1.equals(prop3), is(Boolean.FALSE));
 

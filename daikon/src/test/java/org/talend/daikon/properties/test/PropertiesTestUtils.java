@@ -12,8 +12,13 @@
 // ============================================================================
 package org.talend.daikon.properties.test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;
@@ -231,7 +236,7 @@ public class PropertiesTestUtils {
 
             @Override
             public void visit(Properties properties, Properties parent) {
-                if (properties != prop) {
+                if (!properties.equals(prop)) {
                     classSet.add(properties.getClass().getSimpleName() + ".class");
                 } // else do not list the prop class itself
             }
