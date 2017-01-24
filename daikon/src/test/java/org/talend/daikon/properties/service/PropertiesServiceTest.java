@@ -32,7 +32,7 @@ import org.talend.daikon.properties.testproperties.TestProperties;
 
 public class PropertiesServiceTest {
 
-    PropertiesService<Properties> propService;
+    private PropertiesService<Properties> propService;
 
     @Before
     public void init() {

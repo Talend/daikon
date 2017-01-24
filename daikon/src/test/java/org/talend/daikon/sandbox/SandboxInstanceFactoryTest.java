@@ -12,7 +12,11 @@
 // ============================================================================
 package org.talend.daikon.sandbox;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,6 +37,8 @@ import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
 import org.talend.java.util.ClosableLRUMap;
 
 public class SandboxInstanceFactoryTest {
+
+    static final private Logger LOG = LoggerFactory.getLogger(SandboxInstanceFactoryTest.class);
 
     private class TestRuntime implements RuntimeInfo {
 
@@ -74,8 +80,6 @@ public class SandboxInstanceFactoryTest {
             return toString().hashCode();
         }
     }
-
-    static final Logger LOG = LoggerFactory.getLogger(SandboxInstanceFactoryTest.class);
 
     private class Runnable1 implements Runnable {
 

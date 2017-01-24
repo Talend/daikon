@@ -58,9 +58,9 @@ public class PersistenceTestObjectInner2 implements DeserializeDeletedFieldHandl
     // Migrate to new string2a which replaces string2
     @Override
     public boolean deletedField(String fieldName, Object value) {
-        if (fieldName.equals("string2")) {
+        if ("string2".equals(fieldName)) {
             string2a = (String) value;
-        } else if (fieldName.equals("innerObject3")) {
+        } else if ("innerObject3".equals(fieldName)) {
             hasNullDeleteInner3 = value == null;
             hasValuedDeleteInner3 = value instanceof PersistenceTestObjectInner3;
         }

@@ -39,7 +39,7 @@ public class FullExampleProperties extends PropertiesImpl {
     /**
      * table property to use with table widget.
      */
-    static final String POPUP_FORM_NAME = "popup";
+    private static final String POPUP_FORM_NAME = "popup";
 
     /** use the default widget for this String type */
     public final Property<String> stringProp = newString("stringProp", "initialValue");

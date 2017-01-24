@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -251,7 +250,6 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
                         throw new RuntimeException("Unparseable date: \"" + vs + "\""); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                     pattern = "yyyy-MM-dd'T'HH:mm:ss";
-                    vs.substring(0, vs.lastIndexOf("000Z"));
                 }
 
                 SimpleDateFormat df = dateFormatCache.get(pattern);

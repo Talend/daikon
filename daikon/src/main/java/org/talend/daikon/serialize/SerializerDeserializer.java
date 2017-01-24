@@ -58,7 +58,7 @@ public class SerializerDeserializer {
 
     private static class CustomReader implements JsonReader.JsonClassReaderEx {
 
-        Map<PostDeserializeHandler, Integer> postDeserializeHandlers;
+        private Map<PostDeserializeHandler, Integer> postDeserializeHandlers;
 
         CustomReader(Map<PostDeserializeHandler, Integer> handlers) {
             postDeserializeHandlers = handlers;
