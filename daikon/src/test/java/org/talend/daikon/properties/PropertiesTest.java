@@ -558,11 +558,11 @@ public class PropertiesTest {
 
     static public class NestedCryptedProperty extends PropertiesImpl {
 
+        public final Property<String> password = newString("password").setFlags(EnumSet.of(Flags.ENCRYPT));
+
         public NestedCryptedProperty(String name) {
             super(name);
         }
-
-        public final Property<String> password = newString("password").setFlags(EnumSet.of(Flags.ENCRYPT));
     }
 
     static public class TestCryptedProperty extends PropertiesImpl {
