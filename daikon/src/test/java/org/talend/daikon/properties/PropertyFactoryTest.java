@@ -12,11 +12,13 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 import java.util.List;
@@ -195,6 +197,32 @@ public class PropertyFactoryTest {
         assertEquals(TypeUtils.toString(Date.class), element.getType());
     }
 
+    @Test
+    public void testNewStringList() {
+        Property<List<String>> element = PropertyFactory.newStringList("testProperty");
+        assertEquals("testProperty", element.getName());
+        assertThat(element.getValue(), is(empty()));
+        assertNull(element.getTitle());
+        assertEquals(TypeUtils.toString(PropertyFactory.LIST_STRING_ELEMENT.getType()), element.getType());
+    }
+
+    @Test
+    public void testNewList() {
+        Property<List<Double>> elementDouble = PropertyFactory.newList("testProperty", Double.class);
+        assertEquals("testProperty", elementDouble.getName());
+        assertThat(elementDouble.getValue(), is(empty()));
+        assertNull(elementDouble.getTitle());
+        elementDouble.getValue().add(22d);
+        assertEquals((Double) 22d, elementDouble.getValue().get(0));
+
+        Property<List<String>> elementString = PropertyFactory.newList("testProperty", String.class);
+        assertEquals("testProperty", elementString.getName());
+        assertThat(elementString.getValue(), is(empty()));
+        assertNull(elementString.getTitle());
+        elementString.getValue().add("toto");
+        assertEquals("toto", elementString.getValue().get(0));
+    }
+
     enum Foo {
         foo,
         bar,
@@ -211,5 +239,4 @@ public class PropertyFactoryTest {
         element.setValue(Foo.foo);
         assertEquals(Foo.foo, element.getValue());
     }
-
 }

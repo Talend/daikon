@@ -32,11 +32,11 @@ public class SandboxedInstance implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SandboxedInstance.class);
 
-    ClassLoader previousContextClassLoader;
+    protected ClassLoader previousContextClassLoader;
 
-    Thread isolatedThread;
+    protected Thread isolatedThread;
 
-    boolean useCurrentJvmProperties;
+    protected boolean useCurrentJvmProperties;
 
     private ClassLoader sandboxClassLoader;
 

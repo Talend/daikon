@@ -22,7 +22,7 @@ public class SerializeDeserializeTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SerializeDeserializeTest.class);
 
-    static final String oldSer1 = "{\"@type\":\"org.talend.daikon.serialize.jsonio.PersistenceTestObject\",\"string1\":\"string1\",\"string2\":\"string2\",\"string3\":\"string3\",\"inner\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject2\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject3\":{\"string1\":\"string1\",\"string2\":\"string2\"}}}}";
+    static final private String oldSer1 = "{\"@type\":\"org.talend.daikon.serialize.jsonio.PersistenceTestObject\",\"string1\":\"string1\",\"string2\":\"string2\",\"string3\":\"string3\",\"inner\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject2\":{\"string1\":\"string1\",\"string2\":\"string2\",\"innerObject3\":{\"string1\":\"string1\",\"string2\":\"string2\"}}}}";
 
     @Test
     public void testSimple() {

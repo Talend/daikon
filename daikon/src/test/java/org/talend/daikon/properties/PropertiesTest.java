@@ -14,14 +14,22 @@ package org.talend.daikon.properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
+import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.lang3.reflect.TypeLiteral;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -31,7 +39,6 @@ import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.Property.Flags;
-import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.properties.property.StringProperty;
 import org.talend.daikon.properties.test.PropertiesTestUtils;
@@ -48,7 +55,7 @@ public class PropertiesTest {
 
     private final class StringListProperties extends PropertiesImpl {
 
-        public Property<List<String>> listString = PropertyFactory.newProperty(new TypeLiteral<List<String>>() {
+        public Property<List<String>> listString = newProperty(new TypeLiteral<List<String>>() {
         }, "listString");
 
         private StringListProperties(String name) {
@@ -58,7 +65,7 @@ public class PropertiesTest {
 
     private final class AnotherNestedProperties extends PropertiesImpl {
 
-        public StringProperty stringProp = PropertyFactory.newProperty("stringProp");
+        public StringProperty stringProp = newProperty("stringProp");
 
         private AnotherNestedProperties(String name) {
             super(name);
@@ -380,7 +387,7 @@ public class PropertiesTest {
 
     @Test
     public void testTaggedValue() {
-        Property<String> property = PropertyFactory.newString("haha"); //$NON-NLS-1$
+        Property<String> property = newString("haha"); //$NON-NLS-1$
         assertNull(property.getTaggedValue("foo"));
         assertNull(property.getTaggedValue("bar"));
         property.setTaggedValue("foo", "fooValue");
@@ -551,11 +558,11 @@ public class PropertiesTest {
 
     static public class NestedCryptedProperty extends PropertiesImpl {
 
+        public final Property<String> password = newString("password").setFlags(EnumSet.of(Flags.ENCRYPT));
+
         public NestedCryptedProperty(String name) {
             super(name);
         }
-
-        public final Property<String> password = PropertyFactory.newString("password").setFlags(EnumSet.of(Flags.ENCRYPT));
     }
 
     static public class TestCryptedProperty extends PropertiesImpl {
@@ -576,15 +583,15 @@ public class PropertiesTest {
         props.setValue("nestedPassword.password", "myPassword");
         Properties newProps = PropertiesTestUtils.checkSerialize(props, errorCollector);
 
-        Assert.assertEquals("myPassword", props.getValuedProperty("nestedPassword.password").getValue());
-        Assert.assertEquals("myPassword", newProps.getValuedProperty("nestedPassword.password").getValue());
+        assertEquals("myPassword", props.getValuedProperty("nestedPassword.password").getValue());
+        assertEquals("myPassword", newProps.getValuedProperty("nestedPassword.password").getValue());
     }
 
     private static final class SomePropertiesWithNested extends PropertiesImpl {
 
         public static class NestProps extends PropertiesImpl {
 
-            public StringProperty stringProp = PropertyFactory.newProperty("stringProp");
+            public StringProperty stringProp = newProperty("stringProp");
 
             /**
              * @param name
@@ -611,6 +618,7 @@ public class PropertiesTest {
         prop2.nested.stringProp.setValue("foo");
         SomePropertiesWithNested prop3 = new SomePropertiesWithNested("prop3");
         prop3.nested.stringProp.setValue("bar");
+        SomePropertiesWithNested propNull = null;
 
         /* Reflexive */
         assertThat(prop1.equals(prop1), is(Boolean.TRUE));
@@ -621,8 +629,8 @@ public class PropertiesTest {
         assertThat(prop2.equals(prop1), is(Boolean.TRUE));
 
         /* Transitive */
-        assertThat(prop1.equals(null), is(Boolean.FALSE));
-        assertThat(prop2.equals(null), is(Boolean.FALSE));
+        assertThat(prop1.equals(propNull), is(Boolean.FALSE));
+        assertThat(prop2.equals(propNull), is(Boolean.FALSE));
 
         assertThat(prop1.equals(prop3), is(Boolean.FALSE));
 

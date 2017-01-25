@@ -41,6 +41,8 @@ import org.talend.java.util.ClosableLRUMap;
 
 public class SandboxInstanceFactoryTest {
 
+    static final private Logger LOG = LoggerFactory.getLogger(SandboxInstanceFactoryTest.class);
+
     private class TestRuntime implements RuntimeInfo {
 
         private String cacheSufix = "";
@@ -81,8 +83,6 @@ public class SandboxInstanceFactoryTest {
             return toString().hashCode();
         }
     }
-
-    static final Logger LOG = LoggerFactory.getLogger(SandboxInstanceFactoryTest.class);
 
     private class Runnable1 implements Runnable {
 

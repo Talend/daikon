@@ -1,13 +1,13 @@
 
 package org.talend.daikon.serialize.jsonio;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.talend.daikon.serialize.DeserializeDeletedFieldHandler;
 import org.talend.daikon.serialize.PostDeserializeHandler;
 import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.serialize.SerializeSetVersion;
-
-import static org.junit.Assert.assertEquals;
 
 public class PersistenceTestObject implements DeserializeDeletedFieldHandler, PostDeserializeHandler, SerializeSetVersion {
 
@@ -75,7 +75,7 @@ public class PersistenceTestObject implements DeserializeDeletedFieldHandler, Po
     @Override
     public boolean deletedField(String fieldName, Object value) {
         if (testMigrate) {
-            if (fieldName.equals("string2")) {
+            if ("string2".equals(fieldName)) {
                 string2a = (String) value;
                 return true;
             }

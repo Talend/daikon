@@ -26,7 +26,7 @@ import org.talend.daikon.properties.property.PropertyVisitor;
 
 public class PropertiesVisitorTest {
 
-    Properties foo = new PropertiesImpl("foo") {
+    private Properties foo = new PropertiesImpl("foo") {
 
         public Property one = PropertyFactory.newString("one");
 
@@ -64,7 +64,7 @@ public class PropertiesVisitorTest {
             public void visit(Property property, Properties parent) {
                 propertyCount.incrementAndGet();
                 String name = property.getName();
-                if (!name.equals("one") && !name.equals("three")) {
+                if (!"one".equals(name) && !"three".equals(name)) {
                     fail("visitor should not visit this :" + property);
                 }
             }
@@ -82,7 +82,7 @@ public class PropertiesVisitorTest {
             public void visit(Property property, Properties parent) {
                 propertyCount.incrementAndGet();
                 String name = property.getName();
-                if (!name.equals("one") && !name.equals("three")) {
+                if (!"one".equals(name) && !"three".equals(name)) {
                     fail("visitor should not visit this :" + property);
                 }
             }
@@ -100,7 +100,7 @@ public class PropertiesVisitorTest {
             public void visit(Properties properties, Properties parent) {
                 propertiesCount.incrementAndGet();
                 String name = properties.getName();
-                if (!name.equals("foo") && !name.equals("onea") && !name.equals("two") && !name.equals("four")) {
+                if (!"foo".equals(name) && !"onea".equals(name) && !"two".equals(name) && !"four".equals(name)) {
                     fail("visitor should not visit this :" + properties);
                 }
                 if (visited.contains(properties))

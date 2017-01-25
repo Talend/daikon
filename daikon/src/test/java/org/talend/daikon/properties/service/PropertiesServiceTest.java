@@ -12,7 +12,11 @@
 // ============================================================================
 package org.talend.daikon.properties.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,7 +32,7 @@ import org.talend.daikon.properties.testproperties.TestProperties;
 
 public class PropertiesServiceTest {
 
-    PropertiesService<Properties> propService;
+    private PropertiesService<Properties> propService;
 
     @Before
     public void init() {
@@ -105,8 +109,8 @@ public class PropertiesServiceTest {
         assertEquals((Integer) 10, props.integer.getValue());
         assertEquals((Integer) 20, props.decimal.getValue());
 
-        assertTrue(props == savedProps);
-        assertTrue(props.nestedProps == savedNested);
+        assertEquals(savedProps, props);
+        assertEquals(savedNested, props.nestedProps);
 
         props = (TestProperties) propService.cancelFormValues(props, "restoreTest");
 

@@ -12,13 +12,6 @@
 // ============================================================================
 package org.talend.daikon.i18n;
 
-import org.talend.daikon.i18n.ClassBasedI18nMessages;
-import org.talend.daikon.i18n.ClassLoaderBasedI18nMessages;
-import org.talend.daikon.i18n.I18nMessages;
-import org.talend.daikon.i18n.LocaleProvider;
-
-import java.util.ResourceBundle;
-
 /**
  * Provides I18n service according to the local provider service
  */

@@ -1,7 +1,11 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,15 +20,15 @@ import org.talend.daikon.definition.service.DefinitionRegistryService;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.properties.TestEmptyProperties;
+import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.serialize.FullExampleProperties;
+import org.talend.daikon.serialize.FullExampleTestUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import org.talend.daikon.properties.presentation.Form;
-import org.talend.daikon.serialize.FullExampleProperties;
-import org.talend.daikon.serialize.FullExampleTestUtil;
 import shaded.org.apache.commons.io.IOUtils;
 
 public class JsonSchemaUtilTest {
@@ -65,7 +69,7 @@ public class JsonSchemaUtilTest {
             deserFep = (FullExampleProperties) JsonSchemaUtil.fromJsonNode(defRegServ, jsonData);
             fail("should have thrown an exception");
         } catch (TalendRuntimeException e) {
-            assertTrue(e.getCode() == CommonErrorCodes.UNABLE_TO_PARSE_JSON);
+            assertEquals(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e.getCode());
         }
 
         // check that if wrong definition found we have the right exception
