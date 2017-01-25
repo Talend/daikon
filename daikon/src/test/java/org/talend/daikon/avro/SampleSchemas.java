@@ -35,8 +35,8 @@ public class SampleSchemas {
             Boolean.class, ByteBuffer.class };
 
     /** The expected classes for datum generated for the fields in recordComposites* schemas. */
-    public static final Class[] recordCompositesClasses = { IndexedRecord.class, Map.class, List.class, GenericEnumSymbol.class,
-            GenericFixed.class };
+    public static final Class[] recordCompositesClasses = { IndexedRecord.class, Map.class, List.class, GenericFixed.class,
+            GenericEnumSymbol.class, };
 
     private SampleSchemas() {
     }
