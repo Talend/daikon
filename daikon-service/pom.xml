@@ -28,6 +28,8 @@
         <enunciate-version>2.5.0</enunciate-version>
         <servlet-version>3.1.0</servlet-version>
         <talend_snapshots_deployment>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
+		<!-- override jetty version which comes from spring-boot-dependencies -->
+		<jetty.version>9.2.19.v20160908</jetty.version>
     </properties>
 
     <dependencyManagement>
