@@ -1,6 +1,7 @@
 package org.talend.daikon.avro.converter;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.talend.daikon.java8.Function;
@@ -20,7 +21,7 @@ public class WrappedList<InT, OutT> extends AbstractList<OutT> {
     private final Function<OutT, InT> mOutFunction;
 
     WrappedList(List<InT> wrapped, Function<InT, OutT> inFunction, Function<OutT, InT> outFunction) {
-        this.mWrapped = wrapped;
+        this.mWrapped = wrapped == null ? new ArrayList<InT>(0) : wrapped;
         this.mInFunction = inFunction;
         this.mOutFunction = outFunction;
     }
