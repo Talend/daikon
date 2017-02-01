@@ -68,8 +68,9 @@ public abstract class AbstractPropertiesTest {
      */
     public void assertComponentIsRegistered(Class<? extends Definition> requestClass, String definitionName,
             Class<? extends Definition> definitionClass) {
-        assertThat("Could not find the definition [" + definitionName + ", " + definitionClass + "]", getDefinitionRegistry()
-                .getDefinitionsMapByType(requestClass), hasEntry(is(definitionName), instanceOf(definitionClass)));
+        assertThat("Could not find the definition [" + definitionName + ", " + definitionClass + "]",
+                getDefinitionRegistry().getDefinitionsMapByType(requestClass),
+                hasEntry(is(definitionName), instanceOf(definitionClass)));
     }
 
 }
