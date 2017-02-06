@@ -48,7 +48,7 @@ public class JsonSchemaGenerator {
             Form form = cProperties.getPreferredForm(formName);
             if (form != null) {
                 if (displayCurrentForm) {
-                    schema.put(JsonSchemaConstants.TAG_TITLE, form.getTitle());
+                    schema.put(JsonSchemaConstants.TAG_TITLE, form.getDisplayName());
                 } else {
                     // Hide the current element on the UI schema
                     schema.put(JsonSchemaConstants.TAG_TITLE, "");
