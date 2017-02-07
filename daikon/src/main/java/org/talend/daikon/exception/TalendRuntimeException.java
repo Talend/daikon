@@ -221,7 +221,7 @@ public class TalendRuntimeException extends RuntimeException {
 
     public static class TalendRuntimeExceptionBuilder {
 
-        ExceptionContextBuilder ecb = ExceptionContext.withBuilder();
+        private ExceptionContextBuilder ecb = ExceptionContext.withBuilder();
 
         private ErrorCode errorCode;
 

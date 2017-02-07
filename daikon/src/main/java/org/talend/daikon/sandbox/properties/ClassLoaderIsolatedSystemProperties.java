@@ -133,7 +133,7 @@ public class ClassLoaderIsolatedSystemProperties extends Properties {
      * @param thread A {@link Thread} instance.
      * @return Returns current thread {@link Properties} instance.
      */
-    Properties getThreadProperties(Thread thread) {
+    public Properties getThreadProperties(Thread thread) {
         synchronized (classLoaderProperties) {
             if (thread == null) {
                 return defaultSystemProperties;
@@ -169,7 +169,7 @@ public class ClassLoaderIsolatedSystemProperties extends Properties {
     /**
      * @return Returns current running thread {@link Properties} instance.
      */
-    Properties getThreadProperties() {
+    public Properties getThreadProperties() {
         return getThreadProperties(Thread.currentThread());
     }
 

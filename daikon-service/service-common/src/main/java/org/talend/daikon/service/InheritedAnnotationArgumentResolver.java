@@ -118,9 +118,9 @@ class InheritedAnnotationArgumentResolver implements HandlerMethodArgumentResolv
 
     class Resolution {
 
-        final MethodParameter parameter;
+        final private MethodParameter parameter;
 
-        final HandlerMethodArgumentResolver resolver;
+        final private HandlerMethodArgumentResolver resolver;
 
         Resolution(MethodParameter parameter, HandlerMethodArgumentResolver resolver) {
             this.parameter = parameter;

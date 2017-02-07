@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.daikon.i18n;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -38,7 +38,7 @@ public class I18nMessagesTest {
 
     class MutableLocalProvider implements LocaleProvider {
 
-        Locale locale;
+        private Locale locale;
 
         @Override
         public Locale getLocale() {

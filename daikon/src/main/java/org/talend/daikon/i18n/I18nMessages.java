@@ -22,9 +22,9 @@ import java.util.ResourceBundle;
  */
 public abstract class I18nMessages {
 
-    transient MessageFormat formatter = new MessageFormat(""); //$NON-NLS-1$
+    private transient MessageFormat formatter = new MessageFormat(""); //$NON-NLS-1$
 
-    transient LocaleProvider localeProvider;
+    protected transient LocaleProvider localeProvider;
 
     public I18nMessages(LocaleProvider localeProvider) {
         this.localeProvider = localeProvider;

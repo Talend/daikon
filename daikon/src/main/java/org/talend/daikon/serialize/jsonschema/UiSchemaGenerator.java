@@ -146,7 +146,7 @@ public class UiSchemaGenerator {
 
     private ObjectNode processTWidget(Widget widget, ObjectNode schema) {
         if (widget.isHidden()) {
-            schema = setHiddenWidget(schema);
+            return setHiddenWidget(schema);
         } else {
             String widgetType = UiSchemaConstants.getWidgetMapping().get(widget.getWidgetType());
             if (widgetType != null) {
@@ -157,9 +157,8 @@ public class UiSchemaGenerator {
                     schema.put(UiSchemaConstants.TAG_CUSTOM_WIDGET, widgetType);
                 } // else null, null means default, and do not add type tag in schema
             }
-            schema = addTriggerTWidget(widget, schema);
+            return addTriggerTWidget(widget, schema);
         }
-        return schema;
     }
 
     private ObjectNode addTriggerTWidget(Widget widget, ObjectNode schema) {

@@ -27,9 +27,9 @@ import org.talend.daikon.properties.service.Repository;
  */
 public class PropertiesDynamicMethodHelper {
 
-    static boolean REQUIRED = true;
+    static private boolean REQUIRED = true;
 
-    static Method findMethod(Object obj, String type, String propertyName, boolean required) {
+    static private Method findMethod(Object obj, String type, String propertyName, boolean required) {
         if (propertyName == null || "".equals(propertyName)) {
             throw new IllegalArgumentException(
                     "The ComponentService was used to access a property with a null(or empty) property name. Type: " + type
@@ -49,7 +49,7 @@ public class PropertiesDynamicMethodHelper {
         return null;
     }
 
-    static void doInvoke(Properties props, Method m) throws Throwable {
+    static private void doInvoke(Properties props, Method m) throws Throwable {
         try {
             m.setAccessible(true);
             Object result = m.invoke(props);

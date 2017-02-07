@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class JsonSchemaUtil {
 
-    static final Logger LOG = LoggerFactory.getLogger(JsonSchemaUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonSchemaUtil.class);
 
     public static final String TAG_JSON_SCHEMA = "jsonSchema";
 

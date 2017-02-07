@@ -322,6 +322,7 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
                 break;
             case NULL:
                 datum = null;
+                break;
             case RECORD:
                 break;
             case STRING:

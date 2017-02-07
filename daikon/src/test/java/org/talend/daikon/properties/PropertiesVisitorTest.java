@@ -55,7 +55,7 @@ public class PropertiesVisitorTest {
             public void visit(Properties properties, Properties parent) {
                 propertiesCount.incrementAndGet();
                 String name = properties.getName();
-                if (!name.equals("foo") && !name.equals("onea") && !name.equals("two") && !name.equals("four")) {
+                if (!"foo".equals(name) && !"onea".equals(name) && !"two".equals(name) && !"four".equals(name)) {
                     fail("visitor should not visit this :" + properties);
                 }
             }
