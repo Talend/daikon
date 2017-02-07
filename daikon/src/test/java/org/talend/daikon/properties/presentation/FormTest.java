@@ -29,7 +29,7 @@ public class FormTest {
         Form form = new Form(new PropertiesImpl("bar") { //$NON-NLS-1$
         }, "foo"); //$NON-NLS-1$
         assertEquals("foo", form.getName()); //$NON-NLS-1$
-        assertEquals("foo", form.getDisplayName()); //$NON-NLS-1$
+        assertEquals("Ze Form DisplayName", form.getDisplayName()); //$NON-NLS-1$
     }
 
     @Test

@@ -126,7 +126,7 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
      */
     public Form(Properties props, String name) {
         // 2nd arg is displayName which is not used for a form
-        super(name, name);
+        super(name, null);
         widgetMap = new LinkedHashMap<>();
         props.addForm(this);
         properties = props;
@@ -151,6 +151,15 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     public Form setName(String name) {
         this.name = name;
         return this;
+    }
+
+    /**
+     * Get the internationnalized version of the displayName, with {@link Form#I18N_FORM_PREFIX} +
+     * {@link Form#getName()} + {@link NamedThing#I18N_DISPLAY_NAME_SUFFIX} to find the value from the i18n.
+     */
+    @Override
+    public String getDisplayName() {
+        return displayName != null ? displayName : getI18nMessage(I18N_FORM_PREFIX + name + NamedThing.I18N_DISPLAY_NAME_SUFFIX);
     }
 
     /**
@@ -206,8 +215,8 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     }
 
     /**
-     * Used to add a {@link Property}, {@link Properties}, or {@link Form} as a {@link Widget} in this form in the next row and
-     * first column.
+     * Used to add a {@link Property}, {@link Properties}, or {@link Form} as a {@link Widget} in this form in the next
+     * row and first column.
      */
     public Form addRow(NamedThing child) {
         addRow(Widget.widget(child));
@@ -215,8 +224,8 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     }
 
     /**
-     * Used to add a {@link Property}, {@link Properties}, or {@link Form} as a {@link Widget} in this form as the next column of
-     * the current row.
+     * Used to add a {@link Property}, {@link Properties}, or {@link Form} as a {@link Widget} in this form as the next
+     * column of the current row.
      */
     public Form addColumn(NamedThing child) {
         addColumn(Widget.widget(child));
