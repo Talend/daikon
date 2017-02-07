@@ -1,10 +1,6 @@
 package org.talend.daikon.client.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.netflix.ribbon.RibbonClientSpecification;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
@@ -20,9 +16,6 @@ class RemoteServiceFinder implements ServiceFinder {
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    @Autowired(required = false)
-    private List<RibbonClientSpecification> configurations = new ArrayList<>();
 
     @Override
     public <T> T find(Class<T> serviceClass) {
