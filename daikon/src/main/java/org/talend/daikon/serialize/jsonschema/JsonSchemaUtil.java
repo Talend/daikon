@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.talend.daikon.definition.Definition;
 import org.talend.daikon.definition.service.DefinitionRegistryService;
 import org.talend.daikon.exception.TalendRuntimeException;
@@ -20,8 +18,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * Util for round trip between ComponentProperties and JSONSchema/UISchema/JSONData
  */
 public class JsonSchemaUtil {
-
-    private static final Logger LOG = LoggerFactory.getLogger(JsonSchemaUtil.class);
 
     public static final String TAG_JSON_SCHEMA = "jsonSchema";
 
