@@ -125,7 +125,6 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
      * @param name name of the form, not for display
      */
     public Form(Properties props, String name) {
-        // 2nd arg is displayName which is not used for a form
         super(name, null);
         widgetMap = new LinkedHashMap<>();
         props.addForm(this);
@@ -154,7 +153,7 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     }
 
     /**
-     * Get the internationnalized version of the displayName, with {@link Form#I18N_FORM_PREFIX} +
+     * Get the internationalized version of the displayName, with {@link Form#I18N_FORM_PREFIX} +
      * {@link Form#getName()} + {@link NamedThing#I18N_DISPLAY_NAME_SUFFIX} to find the value from the i18n.
      */
     @Override
