@@ -43,12 +43,6 @@ public class JsonErrorCode implements ErrorCode {
     private int httpStatus;
 
     /**
-     * Default empty constructor needed for json parsing.
-     */
-    public JsonErrorCode() {
-    }
-
-    /**
      * @return the error code product.
      */
     @Override

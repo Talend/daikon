@@ -18,8 +18,6 @@ import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.talend.daikon.runtime.RuntimeInfo;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
 import org.talend.daikon.sandbox.properties.StandardPropertiesStrategyFactory;
@@ -44,8 +42,6 @@ public class SandboxInstanceFactory {
             System.setProperties(isolatedSystemProperties);
         }
     }
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SandboxInstanceFactory.class);
 
     /**
      * This will create a new class instance base on an URLClassLoader using the <code>classPathUrls</code> and the

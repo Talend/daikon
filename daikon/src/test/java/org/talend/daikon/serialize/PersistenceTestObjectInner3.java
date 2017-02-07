@@ -10,8 +10,4 @@ public class PersistenceTestObjectInner3 {
 
     // replaces deleted string2
     public String string2a;
-
-    public PersistenceTestObjectInner3() {
-    }
-
 }

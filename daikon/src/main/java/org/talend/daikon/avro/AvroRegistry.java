@@ -341,9 +341,6 @@ public class AvroRegistry {
 
         private Schema mSchema;
 
-        public UnconvertedIndexedRecordConverter() {
-        }
-
         @Override
         public Schema getSchema() {
             return mSchema;

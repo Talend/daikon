@@ -51,7 +51,7 @@ public class DynamicIndexMapperByNameTest {
                 .name("col3").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchemaWithoutIncludeAllFields);
+        new DynamicIndexMapperByName(designSchemaWithoutIncludeAllFields);
     }
 
     /**
@@ -71,7 +71,7 @@ public class DynamicIndexMapperByNameTest {
                 .name("col3").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchemaWithoutDynamicColumnPosition);
+        new DynamicIndexMapperByName(designSchemaWithoutDynamicColumnPosition);
     }
 
     /**
@@ -90,7 +90,7 @@ public class DynamicIndexMapperByNameTest {
                 .name("col3").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchemaWithoutDynamic);
+        new DynamicIndexMapperByName(designSchemaWithoutDynamic);
     }
 
     /**

@@ -25,9 +25,6 @@ public class PersistenceTestObjectInner2 implements DeserializeDeletedFieldHandl
 
     public transient boolean hasValuedDeleteInner3 = false;
 
-    public PersistenceTestObjectInner2() {
-    }
-
     public void setup() {
         string1 = "string1";
         // string2 = "string2";

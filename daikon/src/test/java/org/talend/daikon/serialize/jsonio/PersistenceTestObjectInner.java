@@ -8,9 +8,6 @@ public class PersistenceTestObjectInner {
 
     public PersistenceTestObjectInner2 innerObject2;
 
-    public PersistenceTestObjectInner() {
-    }
-
     public void setup() {
         string1 = "string1";
         string2 = "string2";

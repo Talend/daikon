@@ -105,7 +105,7 @@ public class SandboxInstanceFactoryTest {
             try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime(), null,
                     false);) {
                 this.firstSandBCreated.set(true);
-                Object obj = sandboxedInstance.getInstance();
+                sandboxedInstance.getInstance();
                 waitTrue(this.secondSandBCreated, "secondSandBCreated");
                 success = true;
             } finally {
@@ -286,7 +286,6 @@ public class SandboxInstanceFactoryTest {
             ClassLoader parent = new ClassLoader(this.getClass().getClassLoader()) {
                 // abstract class but without anything to implement
             };
-            ClassLoader classLoader = null;
             try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime("test2"),
                     parent, true)) {
                 assertNotNull(sandboxedInstance);

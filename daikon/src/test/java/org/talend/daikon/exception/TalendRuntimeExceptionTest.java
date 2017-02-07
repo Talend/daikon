@@ -12,7 +12,11 @@
 // ============================================================================
 package org.talend.daikon.exception;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -119,15 +123,14 @@ public class TalendRuntimeExceptionTest {
     public void testExceptionBuilderWithPutWrongParams() {
         // fewer param
         try {
-            TalendRuntimeException talendRuntimeException = TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT)
-                    .put("argument", "foo").create();
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT).put("argument", "foo").create();
         } catch (IllegalArgumentException iae) {
             // this is expected so do nothing
         }
         // more params
         try {
-            TalendRuntimeException talendRuntimeException = TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT)
-                    .put("argument", "foo").put("value", "bar").put("unknow", "xx").create();
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT).put("argument", "foo").put("value", "bar")
+                    .put("unknow", "xx").create();
         } catch (IllegalArgumentException iae) {
             // this is expected so do nothing
         }

@@ -19,9 +19,6 @@ import java.io.InputStreamReader;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Implementation of {@link StandardPropertiesStrategy} for Sun/Oracle JVM (tested on 1.6)
  */
@@ -32,8 +29,6 @@ class SunOracleStandardPropertiesStrategy implements StandardPropertiesStrategy 
     private static final String SUN_BOOT_CLASS_PATH = "sun.boot.class.path"; //$NON-NLS-1$
 
     private static final String JAVA_CLASS_PATH = "java.class.path"; //$NON-NLS-1$
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SunOracleStandardPropertiesStrategy.class);
 
     @Override
     public Properties getStandardProperties() {
