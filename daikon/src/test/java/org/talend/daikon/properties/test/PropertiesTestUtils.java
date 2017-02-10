@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.definition.Definition;
+import org.talend.daikon.definition.DefinitionImageType;
 import org.talend.daikon.definition.service.DefinitionRegistryService;
 import org.talend.daikon.properties.AnyPropertyVisitor;
 import org.talend.daikon.properties.Properties;
@@ -106,16 +107,17 @@ public class PropertiesTestUtils {
     /**
      * check all properties of a component for i18n, check form i18n, check ComponentProperties title is i18n
      * 
-     * @param componentService where to get all the components
-     * @param errorCollector used to collect all errors at once. @see
-     *            <a href="http://junit.org/apidocs/org/junit/rules/ErrorCollector.html">ErrorCollector</a>
+     * @param defRegistry where to get all the definitions
+     * @param errorCollector used to collect all errors at once. @see <a
+     * href="http://junit.org/apidocs/org/junit/rules/ErrorCollector.html">ErrorCollector</a>
      */
     static public void assertAlli18nAreSetup(DefinitionRegistryService defRegistry, ErrorCollector errorCollector) {
         Collection<Definition> allDefs = defRegistry.getDefinitionsMapByType(Definition.class).values();
         for (Definition def : allDefs) {
             Class propertiesClass = def.getPropertiesClass();
-            if (propertiesClass == null) {// log it but do not consider it as a error caus tComp Wizard ses it with null(this is
-                                              // bad)
+            if (propertiesClass == null) {// log it but do not consider it as a error caus tComp Wizard ses it with
+                                              // null(this is
+                                          // bad)
                 LOGGER.error("Properties class for definition [" + def.getName() + "] should never be null.");
                 continue;
             }
@@ -142,25 +144,41 @@ public class PropertiesTestUtils {
     }
 
     /**
-     * check that all Components and Wizards have theirs images properly set.
+     * Check that all Components and Wizards have at least one icon image set.
      * 
-     * @param componentService service to get the components to be checked.
+     * @param defRegistry service to get the components to be checked.
      */
-    public static void assertAllImagesAreSetup(DefinitionRegistryService defRegistry, ErrorCollector errorCollector) {
+    public static void assertAnIconIsSetup(DefinitionRegistryService defRegistry, ErrorCollector errorCollector) {
         Collection<Definition> allDefs = defRegistry.getDefinitionsMapByType(Definition.class).values();
         for (Definition def : allDefs) {
-            String imagePath = def.getImagePath();
-            errorCollector.checkThat("the definition [" + def.getName() + "] must return an image path.", imagePath,
-                    notNullValue());
-            if (imagePath != null) {// check that the image resource exists
-                InputStream resourceAsStream = def.getClass().getResourceAsStream(imagePath);
+            String pngImagePath = def.getImagePath(DefinitionImageType.PALETTE_ICON_32X32);
+            String svgImagePath = def.getImagePath(DefinitionImageType.SVG_ICON);
+            String iconKey = def.getIconKey();
+            // At least one of the icon resources must be present.
+            if (pngImagePath == null && svgImagePath == null && iconKey == null) {
+                errorCollector
+                        .addError(new Throwable("the definition [" + def.getName() + "] must have at least one icon resource."));
+            }
+            if (pngImagePath != null) {// check that the image resource exists
+                InputStream resourceAsStream = def.getClass().getResourceAsStream(pngImagePath);
                 errorCollector
                         .checkThat(
-                                "Failed to find the image for path [" + imagePath + "] for the definition [" + def.getName()
+                                "Failed to find the image for path [" + pngImagePath + "] for the definition [" + def.getName()
                                         + "].\nIt should be located at ["
-                                        + def.getClass().getPackage().getName().replace('.', '/') + "/" + imagePath + "]",
+                                        + def.getClass().getPackage().getName().replace('.', '/') + "/" + pngImagePath + "]",
                                 resourceAsStream, notNullValue());
             }
+            if (svgImagePath != null) {// check that the image resource exists
+                InputStream resourceAsStream = def.getClass().getResourceAsStream(svgImagePath);
+                errorCollector
+                        .checkThat(
+                                "Failed to find the image for path [" + svgImagePath + "] for the definition [" + def.getName()
+                                        + "].\nIt should be located at ["
+                                        + def.getClass().getPackage().getName().replace('.', '/') + "/" + svgImagePath + "]",
+                                resourceAsStream, notNullValue());
+            }
+            // There is no test for iconKey -- the product is responsible for obtaining the icon corresponding to this
+            // value.
         }
     }
 

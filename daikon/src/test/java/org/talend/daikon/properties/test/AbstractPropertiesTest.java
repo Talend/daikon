@@ -46,7 +46,7 @@ public abstract class AbstractPropertiesTest {
      */
     @Test
     public void testAllImages() {
-        PropertiesTestUtils.assertAllImagesAreSetup(getDefinitionRegistry(), errorCollector);
+        PropertiesTestUtils.assertAnIconIsSetup(getDefinitionRegistry(), errorCollector);
     }
 
     /**

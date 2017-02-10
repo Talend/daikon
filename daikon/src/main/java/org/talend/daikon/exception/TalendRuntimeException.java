@@ -114,7 +114,7 @@ public class TalendRuntimeException extends RuntimeException {
     /**
      * Called when something unexpected happens.
      * 
-     * @param cause the unexpected exception.
+     * @param message the unexpected exception.
      * @deprecated cause the IDEs do not know this throws an exception please use {@link #createUnexpectedException(String)}
      */
     @Deprecated
