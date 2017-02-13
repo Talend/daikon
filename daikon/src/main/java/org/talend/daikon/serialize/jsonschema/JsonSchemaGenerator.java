@@ -53,7 +53,13 @@ public class JsonSchemaGenerator {
                     // Hide the current element on the UI schema
                     schema.put(JsonSchemaConstants.TAG_TITLE, "");
                 }
+            } else {
+                // Hide the current element on the UI schema
+                schema.put(JsonSchemaConstants.TAG_TITLE, "");
             }
+        } else {
+            // Hide the current element on the UI schema
+            schema.put(JsonSchemaConstants.TAG_TITLE, "");
         }
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
         schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
