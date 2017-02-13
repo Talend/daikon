@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -89,6 +91,7 @@ public class TestPropertiesTestUtils {
 
         ErrorCollector errorCollector = spy(new ErrorCollector());
         // check when everything is fine
+        assertThat(repDef, notNullValue());
         when(repDef.getDisplayName()).thenReturn("foo");
         when(repDef.getTitle()).thenReturn("bar");
 
@@ -124,6 +127,7 @@ public class TestPropertiesTestUtils {
         when(defRegServ.getDefinitionsMapByType(Definition.class)).thenReturn(Collections.singletonMap("NAME", repDef));
 
         // check when everything is fine
+        assertThat(repDef, notNullValue());
 
         // There is a PNG icon available.
         ErrorCollector errorCollector = spy(new ErrorCollector());
