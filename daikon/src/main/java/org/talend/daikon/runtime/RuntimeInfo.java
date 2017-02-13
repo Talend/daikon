@@ -31,7 +31,7 @@ import java.util.List;
 public interface RuntimeInfo {
 
     /**
-     * list all the dependencies required for this component to be executed at runtime
+     * list all the dependencies required for this component to be executed at runtime.
      * 
      * @return a set of maven uri following the pax-maven uri scheme @see <a
      * href="https://ops4j1.jira.com/wiki/display/paxurl/Mvn+Protocol">https://ops4j1.jira.com/wiki/display/paxurl/

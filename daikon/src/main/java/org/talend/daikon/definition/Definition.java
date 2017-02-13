@@ -56,7 +56,7 @@ public interface Definition<P extends Properties> extends NamedThing {
      *
      * <pre>
      * {@code
-     *    this.getClass().getResourceAsStream(getImagePath())
+     *    this.getClass().getResourceAsStream(getImagePath(DefinitionImageType.SVG_ICON))
      * }
      * </pre>
      *

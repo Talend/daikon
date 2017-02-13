@@ -115,9 +115,9 @@ public class PropertiesTestUtils {
         Collection<Definition> allDefs = defRegistry.getDefinitionsMapByType(Definition.class).values();
         for (Definition def : allDefs) {
             Class propertiesClass = def.getPropertiesClass();
-            if (propertiesClass == null) {// log it but do not consider it as a error caus tComp Wizard ses it with
-                                              // null(this is
-                                          // bad)
+            if (propertiesClass == null) {
+                // log it but do not consider it as a error because
+                // tComp Wizard ses it with null (this is bad)
                 LOGGER.error("Properties class for definition [" + def.getName() + "] should never be null.");
                 continue;
             }
