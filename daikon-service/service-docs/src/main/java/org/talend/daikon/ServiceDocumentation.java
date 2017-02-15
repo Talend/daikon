@@ -39,7 +39,7 @@ public class ServiceDocumentation extends SpringWebModule {
 
     @Override
     public void call(EnunciateContext context) {
-        EnunciateSpringWebContext springContext = new EnunciateSpringWebContext(context);
+        EnunciateSpringWebContext springContext = new EnunciateSpringWebContext(context, true);
 
         ApiRegistryProviderModule.DataTypeDetectionStrategy detectionStrategy = getDataTypeDetectionStrategy();
         if (detectionStrategy != passive) {

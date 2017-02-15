@@ -17,7 +17,6 @@
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<enunciate-version>2.5.0</enunciate-version>
 		<talend_snapshots>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
 	</properties>
 	<dependencies>
@@ -38,7 +37,7 @@
 			<version>${servlet-version}</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
+        <dependency>
 			<groupId>com.webcohesion.enunciate</groupId>
 			<artifactId>enunciate-core-annotations</artifactId>
 			<version>${enunciate-version}</version>
