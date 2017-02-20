@@ -135,4 +135,18 @@ public class SerializeDeserializeTest {
         assertTrue(deser.object.inner.innerObject2.hasValuedDeleteInner3);
 
     }
+
+    @Test
+    public void testDeserializeMissingFieldTypedWithComplexTypeWithRef() {
+        String serTyped = "{\"@type\":\"org.talend.daikon.serialize.jsonio.PersistenceObjectForFieldRemoved\",\"persObjStr\":\"persObjStrValue\",\"in1\":{\"@id\":1,\"inner1Str\":\"inner1Str\"},\"in2Old\":{\"@type\":\"org.talend.daikon.serialize.jsonio.PersistenceObjectForFieldRemoved$InnerClass2\",\"inner2Str\":\"inner2Str\",\"in1inIn2\":{\"@ref\":1}},\"isdeletedFieldIn2_right_type\":false}";
+        // generate the above serialized string, but it is then manually altered to rename a field
+        // PersistenceObjectForFieldRemoved persistenceObjectForFieldRemoved = new PersistenceObjectForFieldRemoved();
+        // String ser = SerializerDeserializer.toSerializedPersistent(persistenceObjectForFieldRemoved);
+        // LOGGER.info(ser);
+
+        Deserialized<PersistenceObjectForFieldRemoved> deser = SerializerDeserializer.fromSerializedPersistent(serTyped,
+                PersistenceObjectForFieldRemoved.class);
+        assertTrue(deser.object.isdeletedFieldIn2_right_type);
+    }
+
 }
