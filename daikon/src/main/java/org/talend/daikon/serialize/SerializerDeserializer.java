@@ -11,6 +11,10 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.serialize.migration.DeserializeDeletedFieldHandler;
+import org.talend.daikon.serialize.migration.DeserializeMarker;
+import org.talend.daikon.serialize.migration.PostDeserializeHandler;
+import org.talend.daikon.serialize.migration.SerializeSetVersion;
 
 import com.cedarsoftware.util.io.JsonObject;
 import com.cedarsoftware.util.io.JsonReader;

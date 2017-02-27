@@ -1,4 +1,4 @@
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.migration;
 
 /**
  * Used to specify a version number when required for serialization.

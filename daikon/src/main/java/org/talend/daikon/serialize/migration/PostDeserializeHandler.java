@@ -1,4 +1,7 @@
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.migration;
+
+import org.talend.daikon.serialize.PostDeserializeSetup;
+import org.talend.daikon.serialize.SerializerDeserializer;
 
 /**
  * Used to provide code to update the state of an object when it is deserialized.
