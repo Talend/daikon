@@ -19,7 +19,7 @@
         <java.version>1.7</java.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
-        <talend_snapshots>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
+        <talend_snapshots>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
     </properties>
     <modules>
         <module>daikon</module>
@@ -38,19 +38,19 @@
         <repository>
             <id>talend-opensource-release</id>
             <name>talend-opensource-release</name>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>talend-opensource-snapshot</id>
             <name>talend-opensource-snapshot</name>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
         </pluginRepository>
         <pluginRepository>
             <id>talend-opensource-release</id>
             <name>talend-opensource-release</name>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
         </pluginRepository>
     </pluginRepositories>
     <distributionManagement>
@@ -60,7 +60,7 @@
         </snapshotRepository>
         <repository>
             <id>talend_nexus_deployment</id>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
         </repository>
     </distributionManagement>
     <dependencyManagement>
