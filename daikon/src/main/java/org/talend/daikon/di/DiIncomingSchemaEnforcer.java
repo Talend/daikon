@@ -12,24 +12,31 @@
 // ============================================================================
 package org.talend.daikon.di;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
+import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
+import org.talend.daikon.di.Transformer.BigDecimalTransformer;
+import org.talend.daikon.di.Transformer.BooleanTransformer;
+import org.talend.daikon.di.Transformer.BytesTransformer;
+import org.talend.daikon.di.Transformer.DoubleTransformer;
+import org.talend.daikon.di.Transformer.EmptyTransformer;
+import org.talend.daikon.di.Transformer.FloatTransformer;
+import org.talend.daikon.di.Transformer.IntTransformer;
+import org.talend.daikon.di.Transformer.LongTransformer;
+import org.talend.daikon.di.Transformer.SmartDateTimeTransformer;
+import org.talend.daikon.di.Transformer.StringTransformer;
 
 /**
  * <b>You should almost certainly not be using this class.</b>
@@ -76,6 +83,8 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
      * complicates the logic of dynamic columns quite a bit.
      */
     private final Map<String, Integer> columnToFieldIndex = new HashMap<>();
+
+    private Transformer[] transformers;
 
     // TODO(rskraba): fix with a general type conversion strategy.
     private final Map<String, SimpleDateFormat> dateFormatCache = new HashMap<>();
@@ -210,6 +219,8 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
         put(columnToFieldIndex.get(name), v);
     }
 
+    public long timeToConvert = 0;
+
     public void put(int i, Object v) {
         if (wrapped == null)
             wrapped = new GenericData.Record(getRuntimeSchema());
@@ -219,12 +230,24 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
             return;
         }
 
+        long startConvert = System.nanoTime();
+
+        if (transformers == null) {
+            List<Field> fields = getRuntimeSchema().getFields();
+            transformers = new Transformer[fields.size()];
+            for (int j = 0; j < fields.size(); j++) {
+                transformers[j] = createTransformer(fields.get(j));
+            }
+        }
+        wrapped.put(i, transformers[i].transform(v));
+        timeToConvert += (System.nanoTime() - startConvert);
+    }
+
+    private Transformer createTransformer(Schema.Field f) {
         // TODO(rskraba): check type validation for correctness with studio objects.
-        Schema.Field f = incomingRuntimeSchema.getFields().get(i);
         Schema fieldSchema = AvroUtils.unwrapIfNullable(f.schema());
 
-        Object datum = null;
-
+        Transformer transformer = new EmptyTransformer();
         boolean isLogicalDate = false;
         LogicalType logicalType = fieldSchema.getLogicalType();
         if (logicalType != null) {
@@ -237,105 +260,49 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
         String talendType = f.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
         if (isLogicalDate || "id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) {
-            if (v instanceof Date) {
-                datum = v;
-            } else if (v instanceof Long) {
-                datum = new Date((long) v);
-            } else if (v instanceof String) {
-                String pattern = f.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
-                String vs = (String) v;
-
-                if (pattern == null || pattern.equals("yyyy-MM-dd'T'HH:mm:ss'000Z'")) {
-                    if (!vs.endsWith("000Z")) {
-                        throw new RuntimeException("Unparseable date: \"" + vs + "\""); //$NON-NLS-1$ //$NON-NLS-2$
-                    }
-                    pattern = "yyyy-MM-dd'T'HH:mm:ss";
-                }
-
-                SimpleDateFormat df = dateFormatCache.get(pattern);
-                if (df == null) {
-                    df = new SimpleDateFormat(pattern);
-                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                    dateFormatCache.put(pattern, df);
-                }
-
-                try {
-                    datum = df.parse((String) v);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            transformer = new SmartDateTimeTransformer(f.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN), dateFormatCache);
         }
 
         if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {
-            if (v instanceof BigDecimal) {
-                datum = v;
-            } else if (v instanceof String) {
-                datum = new BigDecimal((String) v);
-            }
+            transformer = new BigDecimalTransformer();
         }
 
-        if (datum == null) {
+        if (transformer instanceof EmptyTransformer) {
             switch (fieldSchema.getType()) {
-            case ARRAY:
-                break;
             case BOOLEAN:
-                if (v instanceof Boolean)
-                    datum = v;
-                else
-                    datum = Boolean.valueOf(String.valueOf(v));
+                transformer = new BooleanTransformer();
                 break;
             case FIXED:
             case BYTES:
-                if (v instanceof byte[])
-                    datum = v;
-                else
-                    datum = String.valueOf(v).getBytes();
+                transformer = new BytesTransformer();
                 break;
             case DOUBLE:
-                if (v instanceof Number)
-                    datum = ((Number) v).doubleValue();
-                else
-                    datum = Double.valueOf(String.valueOf(v));
-                break;
-            case ENUM:
+                transformer = new DoubleTransformer();
                 break;
             case FLOAT:
-                if (v instanceof Number)
-                    datum = ((Number) v).floatValue();
-                else
-                    datum = Float.valueOf(String.valueOf(v));
+                transformer = new FloatTransformer();
                 break;
             case INT:
-                if (v instanceof Number)
-                    datum = ((Number) v).intValue();
-                else
-                    datum = Integer.valueOf(String.valueOf(v));
+                transformer = new IntTransformer();
                 break;
             case LONG:
-                if (v instanceof Number)
-                    datum = ((Number) v).longValue();
-                else
-                    datum = Long.valueOf(String.valueOf(v));
-                break;
-            case MAP:
-                break;
-            case NULL:
-                datum = null;
-                break;
-            case RECORD:
+                transformer = new LongTransformer();
                 break;
             case STRING:
-                datum = String.valueOf(v);
+                transformer = new StringTransformer();
                 break;
+            case ARRAY:
+            case ENUM:
+            case MAP:
+            case NULL:
+            case RECORD:
             case UNION:
-                break;
             default:
                 break;
             }
         }
 
-        wrapped.put(i, datum);
+        return transformer;
     }
 
     /**

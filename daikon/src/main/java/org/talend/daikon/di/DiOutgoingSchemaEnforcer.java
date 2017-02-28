@@ -14,11 +14,7 @@ package org.talend.daikon.di;
 
 import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
 
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
@@ -28,6 +24,15 @@ import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapterException;
+import org.talend.daikon.di.Transformer.BigDecimalTransformer;
+import org.talend.daikon.di.Transformer.ByteTransformer;
+import org.talend.daikon.di.Transformer.CharacterTransformer;
+import org.talend.daikon.di.Transformer.DateTransformer;
+import org.talend.daikon.di.Transformer.EmptyTransformer;
+import org.talend.daikon.di.Transformer.LogicalDateTransformer;
+import org.talend.daikon.di.Transformer.ShortTransformer;
+import org.talend.daikon.di.Transformer.TimeMillisTransformer;
+import org.talend.daikon.di.Transformer.TimestampMillisTransformer;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to coerce the output type to the exact
@@ -127,11 +132,13 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      */
     private boolean firstRecordProcessed = false;
 
+    protected Transformer[] transformers;
+
     /**
      * Constructor sets design schema and {@link IndexMapper} instance
      *
      * @param designSchema design schema specified by user
-     * @param indexMapper  tool, which computes correspondence between design and runtime fields
+     * @param indexMapper tool, which computes correspondence between design and runtime fields
      */
     public DiOutgoingSchemaEnforcer(Schema designSchema, IndexMapper indexMapper) {
         this.designSchema = designSchema;
@@ -150,6 +157,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
         wrappedRecord = record;
         if (!firstRecordProcessed) {
             indexMap = indexMapper.computeIndexMap(record.getSchema());
+            transformers = createTransformers(record.getSchema());
             firstRecordProcessed = true;
         }
     }
@@ -184,57 +192,61 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      */
     @Override
     public Object get(int pojoIndex) {
-        Field outField = designFields.get(pojoIndex);
+        Transformer transformer = transformers[indexMap[pojoIndex]];
         Object value = wrappedRecord.get(indexMap[pojoIndex]);
-        return transformValue(value, outField);
+        return transformer.transform(value);
     }
 
     /**
-     * Transforms record column value from Avro type to Talend type
-     *
-     * @param value      record column value, which should be transformed into Talend compatible value.
-     *                   It can be null when null
-     *                   corresponding wrapped field.
-     * @param valueField field, which contain information about value's Talend type. It mustn't be null
+     * Creates transformers to transform record columns values from Avro type to Talend type
+     * 
+     * @param schema runtime schema of the component.
      */
-    protected Object transformValue(Object value, Field valueField) {
-        if (null == value) {
-            return null;
+    protected Transformer[] createTransformers(Schema schema) {
+        List<Field> fields = schema.getFields();
+        Transformer[] transformers = new Transformer[fields.size()];
+        for (int i = 0; i < fields.size(); i++) {
+            transformers[i] = createTransformer(fields.get(i));
         }
+        return transformers;
+    }
 
-        Schema nonnull = AvroUtils.unwrapIfNullable(valueField.schema());
+    /**
+     * Creates transformer to transform record column value from Avro type to Talend type
+     *
+     * @param field field, which contain information about value's Talend type. It mustn't be null
+     */
+    protected Transformer createTransformer(Field field) {
+        Schema nonnull = AvroUtils.unwrapIfNullable(field.schema());
         LogicalType logicalType = nonnull.getLogicalType();
         if (logicalType != null) {
             if (logicalType == LogicalTypes.date()) {
-                Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-                c.setTimeInMillis(0L);
-                c.add(Calendar.DATE, (Integer) value);
-                return c.getTime();
+                return new LogicalDateTransformer();
             } else if (logicalType == LogicalTypes.timeMillis()) {
-                return value;
+                return new TimeMillisTransformer();
             } else if (logicalType == LogicalTypes.timestampMillis()) {
-                return new Date((Long) value);
+                return new TimestampMillisTransformer();
             }
         }
 
         // This might not always have been specified.
-        String talendType = valueField.getProp(TALEND6_COLUMN_TALEND_TYPE);
+        String talendType = field.getProp(TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = nonnull.getProp(SchemaConstants.JAVA_CLASS_FLAG);
 
         // TODO(rskraba): A full list of type conversion to coerce to Talend-compatible types.
         if ("id_Short".equals(talendType)) { //$NON-NLS-1$
-            return value instanceof Number ? ((Number) value).shortValue() : Short.parseShort(String.valueOf(value));
+            return new ShortTransformer();
         } else if ("id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) { //$NON-NLS-1$
             // FIXME - remove this mapping in favor of using Avro logical types
-            return value instanceof Date ? value : new Date((Long) value);
+            return new DateTransformer();
         } else if ("id_Byte".equals(talendType)) { //$NON-NLS-1$
-            return value instanceof Number ? ((Number) value).byteValue() : Byte.parseByte(String.valueOf(value));
+            return new ByteTransformer();
         } else if ("id_Character".equals(talendType) || "java.lang.Character".equals(javaClass)) {
-            return value instanceof Character ? value : ((String) value).charAt(0);
+            return new CharacterTransformer();
         } else if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {
-            return value instanceof BigDecimal ? value : new BigDecimal(String.valueOf(value));
+            return new BigDecimalTransformer();
         }
-        return value;
+        return new EmptyTransformer();
     }
 
 }

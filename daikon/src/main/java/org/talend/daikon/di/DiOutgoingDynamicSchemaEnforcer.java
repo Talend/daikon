@@ -105,9 +105,8 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
             return getDynamicValues();
         }
 
-        Field designField = pojoIndex > dynamicFieldPosition ? designFields.get(pojoIndex - 1) : designFields.get(pojoIndex);
         Object value = wrappedRecord.get(runtimeIndex);
-        return transformValue(value, designField);
+        return transformers[runtimeIndex].transform(value);
     }
 
     /**
@@ -119,10 +118,6 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     @Override
     public void setWrapped(IndexedRecord record) {
         super.setWrapped(record);
-        // wrappedRecord = record;
-        // if (indexMap == null) {
-        // indexMap = indexMapper.computeIndexMap(record.getSchema());
-        // }
         if (!firstRecordProcessed) {
             Schema runtimeSchema = record.getSchema();
             this.runtimeFields = runtimeSchema.getFields();

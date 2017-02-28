@@ -176,7 +176,7 @@ public class DiOutgoingSchemaEnforcerTest {
         dateField.addProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date");
         dateField.addProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'");
 
-        Object transformedValue = enforcer.transformValue(1L, dateField);
+        Object transformedValue = enforcer.createTransformer(dateField).transform(1L);
 
         assertThat(transformedValue, equalTo((Object) expectedDate));
     }
@@ -195,7 +195,7 @@ public class DiOutgoingSchemaEnforcerTest {
         Field dateField = new Field("createdDate", Schema.create(Schema.Type.LONG), null, null);
         dateField.schema().addProp(SchemaConstants.JAVA_CLASS_FLAG, "java.util.Date");
 
-        Object transformedValue = enforcer.transformValue(1L, dateField);
+        Object transformedValue = enforcer.createTransformer(dateField).transform(1L);
 
         assertThat(transformedValue, equalTo((Object) expectedDate));
     }
@@ -213,7 +213,7 @@ public class DiOutgoingSchemaEnforcerTest {
 
         Field decimalField = new Field("decimal", AvroUtils._decimal(), null, null);
 
-        Object transformedValue = enforcer.transformValue("10.20", decimalField);
+        Object transformedValue = enforcer.createTransformer(decimalField).transform("10.20");
 
         assertThat(transformedValue, equalTo((Object) expectedDecimal));
     }
@@ -231,7 +231,7 @@ public class DiOutgoingSchemaEnforcerTest {
 
         Field characterField = new Field("character", AvroUtils._character(), null, null);
 
-        Object transformedValue = enforcer.transformValue("A", characterField);
+        Object transformedValue = enforcer.createTransformer(characterField).transform("A");
 
         assertThat(transformedValue, equalTo((Object) expectedChar));
     }
