@@ -158,8 +158,8 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
     }
 
     /**
-     * Called when dynamic columns have finished being initialized. After this call, the {@link #getDesignSchema()} can be
-     * used to get the runtime schema.
+     * Called when dynamic columns have finished being initialized. After this call, the {@link #getDesignSchema()} can
+     * be used to get the runtime schema.
      */
     public void initDynamicColumnsFinished() {
         if (!needsInitDynamicColumns())
@@ -219,8 +219,6 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
         put(columnToFieldIndex.get(name), v);
     }
 
-    public long timeToConvert = 0;
-
     public void put(int i, Object v) {
         if (wrapped == null)
             wrapped = new GenericData.Record(getRuntimeSchema());
@@ -230,8 +228,6 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
             return;
         }
 
-        long startConvert = System.nanoTime();
-
         if (transformers == null) {
             List<Field> fields = getRuntimeSchema().getFields();
             transformers = new Transformer[fields.size()];
@@ -240,7 +236,6 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
             }
         }
         wrapped.put(i, transformers[i].transform(v));
-        timeToConvert += (System.nanoTime() - startConvert);
     }
 
     private Transformer createTransformer(Schema.Field f) {
