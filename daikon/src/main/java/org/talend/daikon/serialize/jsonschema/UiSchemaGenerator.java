@@ -28,7 +28,8 @@ public class UiSchemaGenerator {
     }
 
     /**
-     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider the requested form and Advanced Form
+     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider the requested form and
+     * Advanced Form
      */
     private ObjectNode processTPropertiesWidget(Properties cProperties, String formName) {
         Form mainForm = cProperties.getPreferredForm(formName);
@@ -42,9 +43,9 @@ public class UiSchemaGenerator {
      * Properties/Property
      */
     private ObjectNode processTPropertiesWidget(Form... forms) {
-        ObjectNode schema = JsonNodeFactory.instance.objectNode();
+        ObjectNode emptyNode = JsonNodeFactory.instance.objectNode();
         if (forms.length <= 0) {
-            return schema;
+            return emptyNode;
         }
 
         Form firstForm = null;
@@ -71,7 +72,7 @@ public class UiSchemaGenerator {
             if (propertyList.contains(content) || content instanceof PresentationItem) {
                 ObjectNode jsonNodes = processTWidget(jsonWidget.getWidget(), JsonNodeFactory.instance.objectNode());
                 if (jsonNodes.size() != 0) {
-                    schema.set(jsonWidget.getName(), jsonNodes);
+                    emptyNode.set(jsonWidget.getName(), jsonNodes);
                 }
                 order.put(jsonWidget.getOrder(), jsonWidget.getName());
             } else { // nested Form or Properties
@@ -83,8 +84,9 @@ public class UiSchemaGenerator {
                     checkProperties = resolveForm.getProperties();
                 } else {
                     checkProperties = (Properties) content;
-                    resolveForm = checkProperties.getForm(firstForm.getName());// It's possible to add Properties in widget, so
-                    // find the first form default
+                    resolveForm = checkProperties.getForm(firstForm.getName());// It's possible to add Properties in
+                                                                               // widget, so
+                                                                               // find the first form default
                 }
                 if (propertiesList.contains(checkProperties) && resolveForm != null) {
                     ObjectNode jsonNodes = processTPropertiesWidget(resolveForm);
@@ -93,13 +95,13 @@ public class UiSchemaGenerator {
                                                                                   // type
                     order.put(jsonWidget.getOrder(), jsonWidget.getName());
                     if (jsonNodes.size() != 0) {
-                        schema.set(jsonWidget.getName(), jsonNodes);
+                        emptyNode.set(jsonWidget.getName(), jsonNodes);
                     }
                 }
             }
         }
 
-        ArrayNode orderSchema = schema.putArray(UiSchemaConstants.TAG_ORDER);
+        ArrayNode orderSchema = emptyNode.putArray(UiSchemaConstants.TAG_ORDER);
         // Consider merge Main and Advanced in together, advanced * 100 as default, make sure widget in Advanced will
         // after widget in Main
         for (Integer i : order.keySet()) {
@@ -111,7 +113,7 @@ public class UiSchemaGenerator {
             String propName = property.getName();
             if (!order.values().contains(propName)) {
                 orderSchema.add(propName);
-                schema.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
+                emptyNode.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
             }
         }
         // For the properties which not in the form(hidden properties)
@@ -123,25 +125,23 @@ public class UiSchemaGenerator {
             if (properties instanceof ReferenceProperties<?>) {
                 if (!order.values().contains(propName)) {
                     orderSchema.add(propName);
-                    schema.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
+                    emptyNode.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
                 }
             }
             // otherwise, let's get all the sub properties and mark them as hidden
             else {
-                orderSchema.add(propName);
-
                 final List<Property> subProperties = getSubProperty(properties);
                 final ObjectNode subPropertyNode = JsonNodeFactory.instance.objectNode();
                 for (Property subProperty : subProperties) {
                     final String subPropertyName = subProperty.getName();
                     subPropertyNode.set(subPropertyName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
                 }
-                schema.set(propName, subPropertyNode);
+                emptyNode.set(propName, subPropertyNode);
             }
 
         }
 
-        return schema;
+        return emptyNode;
     }
 
     private ObjectNode processTWidget(Widget widget, ObjectNode schema) {

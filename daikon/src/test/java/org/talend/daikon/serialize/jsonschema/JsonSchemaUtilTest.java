@@ -157,4 +157,5 @@ public class JsonSchemaUtilTest {
                 TestEmptyProperties.createASetupOptionalProperties());
         assertEquals(properties, propertiesNoData);
     }
+
 }
