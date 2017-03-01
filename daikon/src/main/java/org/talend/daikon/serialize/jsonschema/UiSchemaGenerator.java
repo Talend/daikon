@@ -33,8 +33,7 @@ public class UiSchemaGenerator {
      */
     private ObjectNode processTPropertiesWidget(Properties cProperties, String formName) {
         Form mainForm = cProperties.getPreferredForm(formName);
-        Form advancedForm = cProperties.getPreferredForm(Form.ADVANCED);
-        return processTPropertiesWidget(mainForm, advancedForm);
+        return processTPropertiesWidget(mainForm);
     }
 
     /**
@@ -42,28 +41,20 @@ public class UiSchemaGenerator {
      * instance. ComponentProperties could has Properties/Property which are not in Form, treat it as hidden
      * Properties/Property
      */
-    private ObjectNode processTPropertiesWidget(Form... forms) {
+    private ObjectNode processTPropertiesWidget(Form form) {
         ObjectNode emptyNode = JsonNodeFactory.instance.objectNode();
-        if (forms.length <= 0) {
+        if (form == null) {
             return emptyNode;
         }
 
-        Form firstForm = null;
         List<JsonWidget> jsonWidgets = new ArrayList<>();
-        for (Form form : forms) {
-            if (form != null) {
-                if (firstForm == null) {
-                    firstForm = form;
-                }
-                jsonWidgets.addAll(listTypedWidget(form));
-            }
-        }
+        jsonWidgets.addAll(listTypedWidget(form));
 
         // Merge widget in Main and Advanced form together, need the merged order.
         Map<Integer, String> order = new TreeMap<>();
 
         // all the forms should in same ComponentProperties, so use the first form to get the ComponentProperties is ok.
-        Properties cProperties = forms[0].getProperties();
+        Properties cProperties = form.getProperties();
         List<Property> propertyList = getSubProperty(cProperties);
         List<Properties> propertiesList = getSubProperties(cProperties);
 
@@ -82,17 +73,20 @@ public class UiSchemaGenerator {
                     // ComponentProperties could contains multiple type of Form, form in widget is the current used
                     resolveForm = (Form) content;
                     checkProperties = resolveForm.getProperties();
-                } else {
+                } else {// Properties as been added as widget (it is likely associated with a special widget)
                     checkProperties = (Properties) content;
-                    resolveForm = checkProperties.getForm(firstForm.getName());// It's possible to add Properties in
-                                                                               // widget, so
-                                                                               // find the first form default
+                    resolveForm = null;
                 }
-                if (propertiesList.contains(checkProperties) && resolveForm != null) {
-                    ObjectNode jsonNodes = processTPropertiesWidget(resolveForm);
-                    jsonNodes = processTWidget(jsonWidget.getWidget(), jsonNodes);// add the current
-                                                                                  // ComponentProperties/Form widget
-                                                                                  // type
+                if (propertiesList.contains(checkProperties)) {
+                    ObjectNode jsonNodes = null;
+                    if (resolveForm != null) {// Properties associated with a form
+                        jsonNodes = processTPropertiesWidget(resolveForm);
+                        jsonNodes = processTWidget(jsonWidget.getWidget(), jsonNodes);// add the current
+                    } else {// Properties is associated with a widget
+                        jsonNodes = processTWidget(jsonWidget.getWidget(), JsonNodeFactory.instance.objectNode());// add
+                                                                                                                  // the
+                                                                                                                  // current
+                    }
                     order.put(jsonWidget.getOrder(), jsonWidget.getName());
                     if (jsonNodes.size() != 0) {
                         emptyNode.set(jsonWidget.getName(), jsonNodes);

@@ -7,6 +7,7 @@ import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.ReferenceExampleProperties;
 import org.talend.daikon.properties.ReferenceExampleProperties.TestAProperties;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.serialize.FullExampleProperties;
@@ -29,7 +30,7 @@ public class UiSchemaGeneratorTest {
         public void setupLayout() {
             super.setupLayout();
             Form form = new Form(this, "MyNestedForm");
-            form.addRow(myNestedStr);
+            form.addRow(Widget.widget(myNestedStr).setWidgetType("BAR"));
         }
     }
 
@@ -41,6 +42,14 @@ public class UiSchemaGeneratorTest {
 
         public final NestedProperties np = new NestedProperties("np");
 
+        public final NestedProperties np2 = new NestedProperties("np2");
+
+        public final NestedProperties np3 = new NestedProperties("np3");
+
+        public final NestedProperties np4 = new NestedProperties("np4");
+
+        public final NestedProperties np5 = new NestedProperties("np5");
+
         public AProperties(String name) {
             super(name);
         }
@@ -51,6 +60,11 @@ public class UiSchemaGeneratorTest {
             Form form = new Form(this, "MyForm");
             form.addRow(myStr);
             form.addRow(np.getForm("MyNestedForm"));
+            form.addRow(Widget.widget(np2).setWidgetType("FOO"));
+            form.addRow(Widget.widget(np4.getForm("MyNestedForm")).setVisible(false));
+            form.addRow(Widget.widget(np5).setVisible(false));
+            Form anotherForm = new Form(this, "anotherForm");
+            anotherForm.addRow(np3);
         }
     }
 
@@ -60,7 +74,6 @@ public class UiSchemaGeneratorTest {
         FullExampleProperties properties = new FullExampleProperties("fullexample");
         properties.init();
         UiSchemaGenerator generator = new UiSchemaGenerator();
-        System.out.println(generator.genWidget(properties, Form.MAIN).toString());
         assertEquals(jsonStr, generator.genWidget(properties, Form.MAIN).toString());
     }
 
@@ -82,8 +95,18 @@ public class UiSchemaGeneratorTest {
         aProperties.init();
         UiSchemaGenerator generator = new UiSchemaGenerator();
         ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
-        String expectedPartial = "{\"ui:order\":[\"myStr\",\"np\"]}";
+        String expectedPartial = "{\"ui:order\":[\"myStr\",\"np\",\"np2\",\"np4\",\"np5\"]}";
         assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
     }
 
+    @Test
+    public void testHidden() throws Exception {
+        AProperties aProperties = new AProperties("foo");
+        aProperties.init();
+        UiSchemaGenerator generator = new UiSchemaGenerator();
+        ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
+        System.out.println(uiSchemaJsonObj.toString());
+        String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:widget\":\"BAR\"}},\"np4\":{\"myNestedStr\":{\"ui:widget\":\"hidden\"}},\"np5\":{\"myNestedStr\":{\"ui:widget\":\"hidden\"}},\"np2\":{\"ui:widget\":\"FOO\"},\"np3\":{\"myNestedStr\":{\"ui:widget\":\"hidden\"}}}";
+        assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
+    }
 }
