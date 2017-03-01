@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.net.InetAddress;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.daikon.security.CryptoHelper;
 
@@ -16,7 +15,6 @@ public class TokenGeneratorTest {
         TokenGenerator.generateMachineToken(null);
     }
 
-    @Ignore
     @Test
     public void testTokenGeneration() throws Exception {
         // When

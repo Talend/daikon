@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.talend.daikon.exception.TalendRuntimeException;
+
 public interface Transformer {
 
     public Object transform(Object value);
@@ -131,7 +133,7 @@ public interface Transformer {
 
                 if (pattern == null || pattern.equals("yyyy-MM-dd'T'HH:mm:ss'000Z'")) {
                     if (!vs.endsWith("000Z")) {
-                        throw new RuntimeException("Unparseable date: \"" + vs + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+                        throw TalendRuntimeException.createUnexpectedException("Unparseable date: \"" + vs + "\""); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                     patt = "yyyy-MM-dd'T'HH:mm:ss";
                 }
@@ -146,7 +148,7 @@ public interface Transformer {
                 try {
                     datum = df.parse((String) v);
                 } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                    throw TalendRuntimeException.createUnexpectedException(e);
                 }
             }
             return datum;
