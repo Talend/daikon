@@ -1,9 +1,8 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.ReferenceExampleProperties;
 import org.talend.daikon.properties.ReferenceExampleProperties.TestAProperties;
@@ -84,7 +83,7 @@ public class UiSchemaGeneratorTest {
         UiSchemaGenerator generator = new UiSchemaGenerator();
         ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
         String expectedPartial = "{\"ui:order\":[\"myStr\",\"np\"]}";
-        JSONAssert.assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
+        assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
     }
 
 }

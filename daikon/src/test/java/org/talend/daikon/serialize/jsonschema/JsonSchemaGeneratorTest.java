@@ -6,7 +6,6 @@ import org.json.JSONException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
@@ -16,6 +15,8 @@ import org.talend.daikon.properties.test.PropertiesTestUtils;
 import org.talend.daikon.serialize.FullExampleProperties;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 public class JsonSchemaGeneratorTest {
 
@@ -98,7 +99,7 @@ public class JsonSchemaGeneratorTest {
         ObjectNode genSchema = generator.genSchema(aProperties, "MyForm");
         String expectedPartial = "{\"properties\": {\"np\": {\"title\": \"form.MyNestedForm.displayName\"},\"np2\": {\"title\": \"properties.np2.displayName\"},\"np3\": {\"title\": \"\"},\"np4\": {\"title\": \"\"},\"np5\": {\"title\": \"\"}},\"title\": \"form.MyForm.displayName\"}";
         System.out.println(genSchema.toString());
-        JSONAssert.assertEquals(expectedPartial, genSchema.toString(), false);
+        assertEquals(expectedPartial, genSchema.toString(), false);
     }
 
 }
