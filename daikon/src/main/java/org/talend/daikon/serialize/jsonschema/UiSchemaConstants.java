@@ -87,6 +87,11 @@ public class UiSchemaConstants {
      */
     public static final String CUSTOM_TYPE_BUTTON = "button";
 
+    /**
+     * Custom widget type. Display a group of tabs
+     */
+    public static final String CUSTOM_TYPE_TABS = "tabs";
+
     // Mapping between Widget type and ui-schema type
     private static Map<String, String> WIDGET_MAPPING = new HashMap<>();
 
@@ -99,6 +104,7 @@ public class UiSchemaConstants {
         CUSTOM_WIDGET_MAPPING.put(Widget.SCHEMA_EDITOR_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
         CUSTOM_WIDGET_MAPPING.put(Widget.SCHEMA_REFERENCE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
         CUSTOM_WIDGET_MAPPING.put(Widget.BUTTON_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_BUTTON);
+        CUSTOM_WIDGET_MAPPING.put(Widget.TABS_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_TABS);
 
         WIDGET_MAPPING.put(Widget.HIDDEN_TEXT_WIDGET_TYPE, UiSchemaConstants.TYPE_PASSWORD);
         WIDGET_MAPPING.put(Widget.FILE_WIDGET_TYPE, UiSchemaConstants.TYPE_FILE);
