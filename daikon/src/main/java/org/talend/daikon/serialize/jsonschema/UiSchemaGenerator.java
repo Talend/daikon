@@ -1,7 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -42,9 +40,9 @@ public class UiSchemaGenerator {
      * Properties/Property
      */
     private ObjectNode processTPropertiesWidget(Form form) {
-        ObjectNode emptyNode = JsonNodeFactory.instance.objectNode();
+        ObjectNode jsonToReturn = JsonNodeFactory.instance.objectNode();
         if (form == null) {
-            return emptyNode;
+            return jsonToReturn;
         }
 
         List<JsonWidget> jsonWidgets = new ArrayList<>();
@@ -63,7 +61,7 @@ public class UiSchemaGenerator {
             if (propertyList.contains(content) || content instanceof PresentationItem) {
                 ObjectNode jsonNodes = processTWidget(jsonWidget.getWidget(), JsonNodeFactory.instance.objectNode());
                 if (jsonNodes.size() != 0) {
-                    emptyNode.set(jsonWidget.getName(), jsonNodes);
+                    jsonToReturn.set(jsonWidget.getName(), jsonNodes);
                 }
                 order.put(jsonWidget.getOrder(), jsonWidget.getName());
             } else { // nested Form or Properties
@@ -89,13 +87,13 @@ public class UiSchemaGenerator {
                     }
                     order.put(jsonWidget.getOrder(), jsonWidget.getName());
                     if (jsonNodes.size() != 0) {
-                        emptyNode.set(jsonWidget.getName(), jsonNodes);
+                        jsonToReturn.set(jsonWidget.getName(), jsonNodes);
                     }
                 }
             }
         }
 
-        ArrayNode orderSchema = emptyNode.putArray(UiSchemaConstants.TAG_ORDER);
+        ArrayNode orderSchema = jsonToReturn.putArray(UiSchemaConstants.TAG_ORDER);
         // Consider merge Main and Advanced in together, advanced * 100 as default, make sure widget in Advanced will
         // after widget in Main
         for (Integer i : order.keySet()) {
@@ -107,49 +105,41 @@ public class UiSchemaGenerator {
             String propName = property.getName();
             if (!order.values().contains(propName)) {
                 orderSchema.add(propName);
-                emptyNode.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
+                jsonToReturn.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
             }
         }
         // For the properties which not in the form(hidden properties)
         for (Properties properties : propertiesList) {
 
             String propName = properties.getName();
-
-            // if this is a reference let's consider it as a String and mark it as hidden
-            if (properties instanceof ReferenceProperties<?>) {
-                if (!order.values().contains(propName)) {
-                    orderSchema.add(propName);
-                    emptyNode.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
-                }
-            }
-            // otherwise, let's get all the sub properties and mark them as hidden
-            else {
-                final List<Property> subProperties = getSubProperty(properties);
-                final ObjectNode subPropertyNode = JsonNodeFactory.instance.objectNode();
-                for (Property subProperty : subProperties) {
-                    final String subPropertyName = subProperty.getName();
-                    subPropertyNode.set(subPropertyName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
-                }
-                emptyNode.set(propName, subPropertyNode);
+            if (!order.values().contains(propName)) {
+                jsonToReturn.set(propName, setHiddenWidget(JsonNodeFactory.instance.objectNode()));
+                orderSchema.add(propName);
             }
 
         }
 
-        return emptyNode;
+        return jsonToReturn;
     }
 
     private ObjectNode processTWidget(Widget widget, ObjectNode schema) {
         if (widget.isHidden()) {
-            return setHiddenWidget(schema);
+            NamedThing content = widget.getContent();
+            if (content != null) {
+                return setHiddenWidget(schema);
+            } else {// no content so ignors it
+                return schema;
+            }
         } else {
             String widgetType = UiSchemaConstants.getWidgetMapping().get(widget.getWidgetType());
             if (widgetType != null) {
                 schema.put(UiSchemaConstants.TAG_WIDGET, widgetType);
-            } else {
-                widgetType = UiSchemaConstants.getCustomWidgetMapping().get(widget.getWidgetType());
-                if (widgetType != null) {
-                    schema.put(UiSchemaConstants.TAG_CUSTOM_WIDGET, widgetType);
-                } // else null, null means default, and do not add type tag in schema
+            } else {//no supported widget for this, so if Properties then hide 
+                NamedThing content = widget.getContent();
+                if (content instanceof Properties) {
+                    // hide the Properties that do not have a Widget to render it.
+                    return setHiddenWidget(schema);
+                } // else for primitive it means default, and do not add type tag in schema
             }
             return addTriggerTWidget(widget, schema);
         }

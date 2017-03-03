@@ -12,11 +12,6 @@ import org.talend.daikon.properties.presentation.Widget;
 public class UiSchemaConstants {
 
     /**
-     * Build-in tag. Represent the widget type is custom
-     */
-    public static final String TAG_CUSTOM_WIDGET = "ui:field";
-
-    /**
      * Build-in tag. Represent the widget type is build-in
      */
     public static final String TAG_WIDGET = "ui:widget";
@@ -90,16 +85,13 @@ public class UiSchemaConstants {
     // Mapping between Widget type and ui-schema type
     private static Map<String, String> WIDGET_MAPPING = new HashMap<>();
 
-    // Mapping between Widget type and ui-schema custom type, which is not supported out-of-box
-    private static Map<String, String> CUSTOM_WIDGET_MAPPING = new HashMap<>();
-
     static {
-        // table is a custom widget type for UISchema
-        CUSTOM_WIDGET_MAPPING.put(Widget.TABLE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_TABLE);
-        CUSTOM_WIDGET_MAPPING.put(Widget.SCHEMA_EDITOR_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
-        CUSTOM_WIDGET_MAPPING.put(Widget.SCHEMA_REFERENCE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
-        CUSTOM_WIDGET_MAPPING.put(Widget.BUTTON_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_BUTTON);
-
+        // custom widget type for UISchema
+        WIDGET_MAPPING.put(Widget.TABLE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_TABLE);
+        WIDGET_MAPPING.put(Widget.SCHEMA_EDITOR_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
+        WIDGET_MAPPING.put(Widget.SCHEMA_REFERENCE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
+        WIDGET_MAPPING.put(Widget.BUTTON_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_BUTTON);
+        // default widget type for UISchema
         WIDGET_MAPPING.put(Widget.HIDDEN_TEXT_WIDGET_TYPE, UiSchemaConstants.TYPE_PASSWORD);
         WIDGET_MAPPING.put(Widget.FILE_WIDGET_TYPE, UiSchemaConstants.TYPE_FILE);
         WIDGET_MAPPING.put(Widget.TEXT_AREA_WIDGET_TYPE, UiSchemaConstants.TYPE_TEXT_AREA);
@@ -110,14 +102,10 @@ public class UiSchemaConstants {
         // WIDGET_MAPPING.put(Widget.COMPONENT_REFERENCE_WIDGET_TYPE, null);
         // WIDGET_MAPPING.put(Widget.ENUMERATION_WIDGET_TYPE, null);
         WIDGET_MAPPING = Collections.unmodifiableMap(WIDGET_MAPPING);
-        CUSTOM_WIDGET_MAPPING = Collections.unmodifiableMap(CUSTOM_WIDGET_MAPPING);
     }
 
     public static Map<String, String> getWidgetMapping() {
         return WIDGET_MAPPING;
     }
 
-    public static Map<String, String> getCustomWidgetMapping() {
-        return CUSTOM_WIDGET_MAPPING;
-    }
 }

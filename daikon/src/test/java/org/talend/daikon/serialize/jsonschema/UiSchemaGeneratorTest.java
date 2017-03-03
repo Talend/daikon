@@ -1,6 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
@@ -13,6 +13,8 @@ import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.serialize.FullExampleProperties;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 public class UiSchemaGeneratorTest {
 
@@ -30,7 +32,7 @@ public class UiSchemaGeneratorTest {
         public void setupLayout() {
             super.setupLayout();
             Form form = new Form(this, "MyNestedForm");
-            form.addRow(Widget.widget(myNestedStr).setWidgetType("BAR"));
+            form.addRow(Widget.widget(myNestedStr).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
         }
     }
 
@@ -60,7 +62,7 @@ public class UiSchemaGeneratorTest {
             Form form = new Form(this, "MyForm");
             form.addRow(myStr);
             form.addRow(np.getForm("MyNestedForm"));
-            form.addRow(Widget.widget(np2).setWidgetType("FOO"));
+            form.addRow(Widget.widget(np2).setWidgetType(Widget.TABLE_WIDGET_TYPE));
             form.addRow(Widget.widget(np4.getForm("MyNestedForm")).setVisible(false));
             form.addRow(Widget.widget(np5).setVisible(false));
             Form anotherForm = new Form(this, "anotherForm");
@@ -95,7 +97,7 @@ public class UiSchemaGeneratorTest {
         aProperties.init();
         UiSchemaGenerator generator = new UiSchemaGenerator();
         ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
-        String expectedPartial = "{\"ui:order\":[\"myStr\",\"np\",\"np2\",\"np4\",\"np5\"]}";
+        String expectedPartial = "{\"ui:order\":[\"myStr\",\"np\",\"np2\",\"np4\",\"np5\",\"np3\"]}";
         assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
     }
 
@@ -106,7 +108,7 @@ public class UiSchemaGeneratorTest {
         UiSchemaGenerator generator = new UiSchemaGenerator();
         ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
         System.out.println(uiSchemaJsonObj.toString());
-        String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:widget\":\"BAR\"}},\"np4\":{\"myNestedStr\":{\"ui:widget\":\"hidden\"}},\"np5\":{\"myNestedStr\":{\"ui:widget\":\"hidden\"}},\"np2\":{\"ui:widget\":\"FOO\"},\"np3\":{\"myNestedStr\":{\"ui:widget\":\"hidden\"}}}";
+        String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:widget\":\"textarea\"}},\"np4\":{\"ui:widget\":\"hidden\"},\"np5\":{\"ui:widget\":\"hidden\"},\"np2\":{\"ui:widget\":\"table\"},\"np3\":{\"ui:widget\":\"hidden\"}}";
         assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
     }
 }
