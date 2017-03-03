@@ -26,6 +26,7 @@
         <module>daikon-spring</module>
         <module>daikon-service</module>
         <module>reporting</module>
+        <module>daikon-content-service</module>
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
