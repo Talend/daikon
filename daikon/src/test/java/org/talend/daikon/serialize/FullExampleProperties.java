@@ -80,6 +80,12 @@ public class FullExampleProperties extends PropertiesImpl {
     /** checking {@link WidgetType#TEXT_AREA} */
     public final Property<String> textareaProp = newString("textareaProp");
 
+    /** checking {@link WidgetType#RADIO} */
+    public final Property<String> radioProp = newString("radioProp");
+
+    /** checking {@link WidgetType#SELECT} */
+    public final Property<String> selectProp = newString("selectProp");
+
     /**
      * uses 2 widgets, {@link WidgetType#SCHEMA_EDITOR} in the Main form and {@link WidgetType#SCHEMA_REFERENCE} on the
      * REFERENCE form
@@ -108,6 +114,18 @@ public class FullExampleProperties extends PropertiesImpl {
         multipleSelectableList.add(new SimpleNamedThing("bar"));
         multipleSelectableList.add(new SimpleNamedThing("foobar"));
         multipleSelectionProp.setPossibleValues(multipleSelectableList);
+
+        List<String> values4Radio = new ArrayList<>();
+        values4Radio.add("option1");
+        values4Radio.add("option2");
+        values4Radio.add("option3");
+        radioProp.setPossibleValues(values4Radio);
+
+        List<String> values4Select = new ArrayList<>();
+        values4Select.add("table1");
+        values4Select.add("table2");
+        values4Select.add("table3");
+        selectProp.setPossibleValues(values4Select);
     }
 
     @Override
@@ -129,8 +147,12 @@ public class FullExampleProperties extends PropertiesImpl {
         mainForm.addRow(longProp);
         mainForm.addRow(dateProp);
         mainForm.addRow(widget(tableProp).setWidgetType(Widget.TABLE_WIDGET_TYPE));
+
         Form advancedForm = new Form(this, Form.ADVANCED);
         advancedForm.addRow(widget(textareaProp).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
+
+        advancedForm.addRow(widget(radioProp).setWidgetType(Widget.RADIO_WIDGET_TYPE));
+        advancedForm.addRow(widget(selectProp).setWidgetType(Widget.SELECT_WIDGET_TYPE));
     }
 
     @Override

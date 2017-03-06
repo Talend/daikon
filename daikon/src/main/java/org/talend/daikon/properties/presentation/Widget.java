@@ -100,7 +100,8 @@ public class Widget implements ToStringIndent {
     public static final String FILE_WIDGET_TYPE = "widget.type.file";
 
     /**
-     * A directory widget with button select directory from local system. The widget content shall be a {@link Property}<{@link String}>
+     * A directory widget with button select directory from local system. The widget content shall be a {@link Property}<
+     * {@link String}>
      */
     public static final String DIRECTORY_WIDGET_TYPE = "widget.type.directory";
 
@@ -113,7 +114,18 @@ public class Widget implements ToStringIndent {
     public static final String TEXT_AREA_WIDGET_TYPE = "widget.type.textArea";
 
     /**
+     * now it works for dataprep only
+     */
+    public static final String RADIO_WIDGET_TYPE = "widget.type.radio";
+
+    /**
+     * now it works for dataprep only
+     */
+    public static final String SELECT_WIDGET_TYPE = "widget.type.select";
+
+    /**
      * A table widget which use json as input. Below is a sample:
+     * 
      * <pre>
      * {
      *  "columnNames": [
@@ -140,13 +152,15 @@ public class Widget implements ToStringIndent {
      *  ]
      * }
      * </pre>
-     * Notes: The "columnNames" is a column names array. If there is not this element table will use "Column 1, Column 2, ..." as column names by default.
+     * 
+     * Notes: The "columnNames" is a column names array. If there is not this element table will use "Column 1, Column 2, ..." as
+     * column names by default.
      * The "data" is a data array. Every subset is a row of table.
      */
     public static final String JSON_TABLE_WIDGET_TYPE = "widget.type.jsonTable";
 
     /*
-    Widget configurations
+     * Widget configurations
      */
 
     /**
@@ -403,7 +417,8 @@ public class Widget implements ToStringIndent {
     }
 
     /**
-     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because it may not be serialized.
+     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because it may not
+     * be serialized.
      *
      * @param key, key to store the object with
      * @param value, any object.

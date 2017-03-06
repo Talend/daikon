@@ -28,7 +28,8 @@ public class UiSchemaGenerator {
     }
 
     /**
-     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider the requested form and Advanced Form
+     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider the requested form and Advanced
+     * Form
      */
     private ObjectNode processTPropertiesWidget(Properties cProperties, String formName) {
         Form mainForm = cProperties.getPreferredForm(formName);
@@ -151,6 +152,16 @@ public class UiSchemaGenerator {
             String widgetType = UiSchemaConstants.getWidgetMapping().get(widget.getWidgetType());
             if (widgetType != null) {
                 schema.put(UiSchemaConstants.TAG_WIDGET, widgetType);
+                Map<String, String> optionsMap = UiSchemaConstants.getWidgetOptionsMapping().get(widget.getWidgetType());
+                if (optionsMap != null) {
+                    ObjectNode options = JsonNodeFactory.instance.objectNode();
+
+                    for (Map.Entry<String, String> entry : optionsMap.entrySet()) {
+                        options.put(entry.getKey(), entry.getValue());
+                    }
+
+                    schema.set(UiSchemaConstants.TAG_OPTIONS, options);
+                }
             } else {
                 widgetType = UiSchemaConstants.getCustomWidgetMapping().get(widget.getWidgetType());
                 if (widgetType != null) {
