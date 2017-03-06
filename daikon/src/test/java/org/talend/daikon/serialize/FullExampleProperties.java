@@ -1,14 +1,7 @@
 package org.talend.daikon.serialize;
 
-import static org.talend.daikon.properties.presentation.Widget.widget;
-import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
-import static org.talend.daikon.properties.property.PropertyFactory.newDate;
-import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
-import static org.talend.daikon.properties.property.PropertyFactory.newEnumList;
-import static org.talend.daikon.properties.property.PropertyFactory.newInteger;
-import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
-import static org.talend.daikon.properties.property.PropertyFactory.newSchema;
-import static org.talend.daikon.properties.property.PropertyFactory.newString;
+import static org.talend.daikon.properties.presentation.Widget.*;
+import static org.talend.daikon.properties.property.PropertyFactory.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -110,9 +103,9 @@ public class FullExampleProperties extends PropertiesImpl {
         super.setupProperties();
         // setup multipleSelectionProp
         ArrayList<NamedThing> multipleSelectableList = new ArrayList<NamedThing>();
-        multipleSelectableList.add(new SimpleNamedThing("foo"));
-        multipleSelectableList.add(new SimpleNamedThing("bar"));
-        multipleSelectableList.add(new SimpleNamedThing("foobar"));
+        multipleSelectableList.add(new SimpleNamedThing("foo", "fooo"));
+        multipleSelectableList.add(new SimpleNamedThing("bar", "barr"));
+        multipleSelectableList.add(new SimpleNamedThing("foobar", "foobarr"));
         multipleSelectionProp.setPossibleValues(multipleSelectableList);
 
         List<String> values4Radio = new ArrayList<>();
@@ -147,12 +140,12 @@ public class FullExampleProperties extends PropertiesImpl {
         mainForm.addRow(longProp);
         mainForm.addRow(dateProp);
         mainForm.addRow(widget(tableProp).setWidgetType(Widget.TABLE_WIDGET_TYPE));
+        mainForm.addRow(widget(radioProp).setWidgetType(Widget.RADIO_WIDGET_TYPE));
+        mainForm.addRow(widget(selectProp).setWidgetType(Widget.SELECT_WIDGET_TYPE));
 
         Form advancedForm = new Form(this, Form.ADVANCED);
         advancedForm.addRow(widget(textareaProp).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
 
-        advancedForm.addRow(widget(radioProp).setWidgetType(Widget.RADIO_WIDGET_TYPE));
-        advancedForm.addRow(widget(selectProp).setWidgetType(Widget.SELECT_WIDGET_TYPE));
     }
 
     @Override
