@@ -16,7 +16,6 @@ import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
-import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.EnumListProperty;
 import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
@@ -126,25 +125,25 @@ public class FullExampleProperties extends PropertiesImpl {
         super.setupLayout();
         Form mainForm = new Form(this, Form.MAIN);
         mainForm.addRow(stringProp);
-        mainForm.addRow(widget(schema).setWidgetType(Widget.SCHEMA_EDITOR_WIDGET_TYPE));
-        mainForm.addRow(widget(schema).setWidgetType(Widget.SCHEMA_REFERENCE_WIDGET_TYPE));
-        mainForm.addRow(widget(multipleSelectionProp).setWidgetType(Widget.NAME_SELECTION_AREA_WIDGET_TYPE));
-        mainForm.addRow(widget(multipleSelectionProp).setWidgetType(Widget.NAME_SELECTION_REFERENCE_WIDGET_TYPE));
-        mainForm.addRow(widget(showNewForm).setWidgetType(Widget.BUTTON_WIDGET_TYPE));
+        mainForm.addRow(widget(schema).setWidgetType(SCHEMA_EDITOR_WIDGET_TYPE));
+        mainForm.addRow(widget(schema).setWidgetType(SCHEMA_REFERENCE_WIDGET_TYPE));
+        mainForm.addRow(widget(multipleSelectionProp).setWidgetType(NAME_SELECTION_AREA_WIDGET_TYPE));
+        mainForm.addRow(widget(multipleSelectionProp).setWidgetType(NAME_SELECTION_REFERENCE_WIDGET_TYPE));
+        mainForm.addRow(widget(showNewForm).setWidgetType(BUTTON_WIDGET_TYPE));
         Form popUpForm = new Form(this, POPUP_FORM_NAME);
         showNewForm.setFormtoShow(popUpForm);
         mainForm.addColumn(commonProp);
-        mainForm.addColumn(widget(hiddenTextProp).setWidgetType(Widget.HIDDEN_TEXT_WIDGET_TYPE));
-        mainForm.addColumn(widget(filepathProp).setWidgetType(Widget.FILE_WIDGET_TYPE));
+        mainForm.addColumn(widget(hiddenTextProp).setWidgetType(HIDDEN_TEXT_WIDGET_TYPE));
+        mainForm.addColumn(widget(filepathProp).setWidgetType(FILE_WIDGET_TYPE));
         mainForm.addRow(integerProp);
         mainForm.addRow(longProp);
         mainForm.addRow(dateProp);
-        mainForm.addRow(widget(tableProp).setWidgetType(Widget.TABLE_WIDGET_TYPE));
-        mainForm.addRow(widget(radioProp).setWidgetType(Widget.RADIO_WIDGET_TYPE));
-        mainForm.addRow(widget(selectProp).setWidgetType(Widget.SELECT_WIDGET_TYPE));
+        mainForm.addRow(widget(tableProp).setWidgetType(TABLE_WIDGET_TYPE));
+        mainForm.addRow(widget(radioProp).setWidgetType(RADIO_WIDGET_TYPE));
+        mainForm.addRow(widget(selectProp).setWidgetType(SELECT_WIDGET_TYPE));
 
         Form advancedForm = new Form(this, Form.ADVANCED);
-        advancedForm.addRow(widget(textareaProp).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
+        advancedForm.addRow(widget(textareaProp).setWidgetType(TEXT_AREA_WIDGET_TYPE));
 
     }
 
