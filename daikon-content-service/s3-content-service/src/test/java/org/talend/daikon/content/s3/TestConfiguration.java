@@ -1,21 +1,7 @@
 package org.talend.daikon.content.s3;
 
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Date;
-import java.util.List;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.AmazonWebServiceRequest;
-import com.amazonaws.HttpMethod;
-import com.amazonaws.regions.*;
-import com.amazonaws.services.s3.S3ClientOptions;
-import com.amazonaws.services.s3.S3ResponseMetadata;
-import com.amazonaws.services.s3.model.*;
-import com.amazonaws.services.s3.model.Region;
-import org.assertj.core.internal.cglib.proxy.Proxy;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cloud.aws.core.io.s3.PathMatchingSimpleStorageResourcePatternResolver;

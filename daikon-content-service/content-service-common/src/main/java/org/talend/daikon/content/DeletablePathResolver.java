@@ -1,11 +1,11 @@
 package org.talend.daikon.content;
 
+import static java.util.Arrays.stream;
+
 import java.io.IOException;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
-
-import static java.util.Arrays.stream;
 
 public interface DeletablePathResolver extends ResourcePatternResolver {
 
