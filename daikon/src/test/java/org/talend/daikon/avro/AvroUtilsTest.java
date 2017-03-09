@@ -90,7 +90,8 @@ public class AvroUtilsTest {
     public void testAppendFields() {
         Schema s = SchemaBuilder.record("test").fields().name("field1").type().booleanType().noDefault().name("field2").type()
                 .stringType().noDefault().endRecord();
-        s = AvroUtils.appendFields(s, new Field("a1", SchemaBuilder.builder().stringType(),null, null), new Field("a2", SchemaBuilder.builder().intType(), null, null));
+        s = AvroUtils.appendFields(s, new Field("a1", SchemaBuilder.builder().stringType(), null, null),
+                new Field("a2", SchemaBuilder.builder().intType(), null, null));
         assertEquals(4, s.getFields().size());
         assertEquals("a1", s.getFields().get(2).name());
         assertEquals("a2", s.getFields().get(3).name());
@@ -99,7 +100,8 @@ public class AvroUtilsTest {
     @Test
     public void testRemoveFields() {
         Schema s = SchemaBuilder.record("test").fields().name("field1").type().booleanType().noDefault().name("field2").type()
-                .stringType().noDefault().name("a1").type().stringType().noDefault().name("a2").type().intType().noDefault().endRecord();
+                .stringType().noDefault().name("a1").type().stringType().noDefault().name("a2").type().intType().noDefault()
+                .endRecord();
         Set<String> columns = new HashSet<>();
         columns.add("field1");
         columns.add("a1");
