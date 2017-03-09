@@ -241,7 +241,7 @@ public class ClassLoaderIsolatedSystemProperties extends Properties {
 
     @Override
     public synchronized Object clone() {
-        throw new UnsupportedOperationException();
+        return getThreadProperties().clone();
     }
 
     @Override

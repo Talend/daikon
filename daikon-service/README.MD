@@ -17,8 +17,8 @@ To create a new service you may simply declare *service-parent* as your parent:
       <parent>
           <groupId>org.talend.daikon</groupId>
           <artifactId>service-parent</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
-          <relativePath/> <!-- look in repository -->
+          <version>0.16.0-SNAPSHOT</version>
+          <relativePath/> <!-- look in storage -->
       </parent>
       <!-- omitted content -->
     </project>

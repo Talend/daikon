@@ -10,7 +10,7 @@ http://www.talend.com
 
 ## Contents
 
-This repository contains commonly used classes that are expected to be shared across all Talend products.
+This storage contains commonly used classes that are expected to be shared across all Talend products.
 It contains:
 * daikon: The core library with a restricted set of dependencies.
 * daikon-spring: Spring specific classes that can be shared by projects.

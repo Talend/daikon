@@ -6,7 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.4.1.RELEASE</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <relativePath /> <!-- lookup parent from storage -->
     </parent>
 
     <groupId>org.talend.daikon</groupId>

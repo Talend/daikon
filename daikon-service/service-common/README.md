@@ -7,7 +7,7 @@ http://www.talend.com
 
 ## Contents
 
-This repository contains common code to build services, it offers:
+This storage contains common code to build services, it offers:
 * A generic service client: allow service code to depend on other service and don't worry whether the service is running in current JVM or remotely.
 
 ## Support

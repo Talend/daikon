@@ -25,6 +25,7 @@
         <module>daikon</module>
         <module>daikon-spring</module>
         <module>daikon-service</module>
+        <module>daikon-version-repository</module>
         <module>reporting</module>
     </modules>
     <scm>

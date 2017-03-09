@@ -51,7 +51,12 @@ class InheritedAnnotationArgumentResolver implements HandlerMethodArgumentResolv
             WebDataBinderFactory binderFactory) throws Exception {
         final Resolution resolution = findContextResolver(parameter);
         if (resolution != null) {
-            return resolution.resolver.resolveArgument(resolution.parameter, mavContainer, webRequest, binderFactory);
+            try {
+                return resolution.resolver.resolveArgument(resolution.parameter, mavContainer, webRequest, binderFactory);
+            } catch (Exception e) {
+                LOGGER.error("Unable to resolve parameter {} of {}.", resolution.parameter, parameter, e);
+                return null;
+            }
         } else {
             return null;
         }
