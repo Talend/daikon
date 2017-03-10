@@ -298,6 +298,9 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     @Override
     public Form getPreferredForm(String formName) {
+        if (formName == null) {
+            return null;
+        }
         Form form = getForm(formName);
         if (form != null) {
             return form;
@@ -356,7 +359,8 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     @Override
     public void accept(AnyPropertyVisitor visitor, Properties parent) {
-        // uses a set that uses reference-equality instead of instance-equality to avoid stackoveflow with hashcode() using a
+        // uses a set that uses reference-equality instead of instance-equality to avoid stackoveflow with hashcode()
+        // using a
         // visitor.
         Set<Properties> visited = Collections.newSetFromMap(new IdentityHashMap<Properties, Boolean>());
         acceptInternal(visitor, parent, visited);
@@ -390,7 +394,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     /**
      * @return a Namething from a property path wich allow to recurse into nested properties using the . as a separator
-     *         for Properties names and the final Property. Or null if none found
+     * for Properties names and the final Property. Or null if none found
      */
     @Override
     public NamedThing getProperty(String propPath) {
