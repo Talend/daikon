@@ -1,6 +1,7 @@
 package org.talend.daikon.content.local;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.springframework.test.context.TestPropertySource;
 import org.talend.daikon.content.DeletableResourceTest;
@@ -9,27 +10,27 @@ import org.talend.daikon.content.DeletableResourceTest;
 public class LocalDeletableResourceTest extends DeletableResourceTest {
 
     @Override
-    public void getURL() throws Exception {
-        assertEquals("file", resource.getURL().getProtocol());
+    public String getUrlProtocol() {
+        return "file";
     }
 
     @Override
-    public void getURI() throws Exception {
-        assertEquals("file", resource.getURI().getScheme());
+    public String getURIScheme() {
+        return "file";
     }
 
     @Override
-    public void getFile() throws Exception {
+    public void shouldGetFile() throws Exception {
         assertNotNull(resource.getFile());
     }
 
     @Override
-    public void lastModified() throws Exception {
+    public void lastModifiedShouldBeComputed() throws Exception {
         assertTrue(resource.lastModified() > 0);
     }
 
     @Override
-    public void getDescription() throws Exception {
+    public void shouldGetDescription() throws Exception {
         assertTrue(resource.getDescription().contains("file.txt"));
     }
 

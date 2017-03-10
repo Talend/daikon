@@ -1,5 +1,10 @@
 package org.talend.daikon.content;
 
+import static org.talend.daikon.content.ContentErrorCode.UNABLE_TO_CLEAR_CONTENT;
+import static org.talend.daikon.content.ContentErrorCode.UNABLE_TO_DELETE_CONTENT;
+import static org.talend.daikon.content.ContentErrorCode.UNABLE_TO_GET_CONTENT;
+import static org.talend.daikon.content.ContentErrorCode.UNABLE_TO_PUT_CONTENT;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,13 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.talend.daikon.annotation.ServiceImplementation;
+import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.services.ContentService;
 
 @ServiceImplementation
 public class ContentServiceImpl implements ContentService {
 
     @Autowired
-    DeletablePathResolver deletableResourceLoader;
+    private DeletablePathResolver deletableResourceLoader;
 
     private DeletableResource getResource(@PathVariable("location") String location) {
         return deletableResourceLoader.getResource(location);
@@ -25,7 +31,7 @@ public class ContentServiceImpl implements ContentService {
         try {
             return getResource(location).getOutputStream();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TalendRuntimeException(UNABLE_TO_GET_CONTENT, e);
         }
     }
 
@@ -34,7 +40,7 @@ public class ContentServiceImpl implements ContentService {
         try {
             return getResource(location).getInputStream();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TalendRuntimeException(UNABLE_TO_PUT_CONTENT, e);
         }
     }
 
@@ -43,7 +49,7 @@ public class ContentServiceImpl implements ContentService {
         try {
             getResource(location).delete();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TalendRuntimeException(UNABLE_TO_DELETE_CONTENT, e);
         }
     }
 
@@ -52,7 +58,7 @@ public class ContentServiceImpl implements ContentService {
         try {
             deletableResourceLoader.clear("/**");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TalendRuntimeException(UNABLE_TO_CLEAR_CONTENT, e);
         }
     }
 }

@@ -24,28 +24,28 @@ public class S3DeletableResourceTest extends DeletableResourceTest {
         assertEquals("1234", IOUtils.toString(resource.getInputStream()));
     }
 
-    @Test
-    public void getURL() throws Exception {
-        assertEquals("https", resource.getURL().getProtocol());
+    @Override
+    public String getUrlProtocol() {
+        return "https";
     }
 
-    @Test
-    public void getURI() throws Exception {
-        assertEquals("https", resource.getURI().getScheme());
+    @Override
+    public String getURIScheme() {
+        return "https";
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void getFile() throws Exception {
+    public void shouldGetFile() throws Exception {
         resource.getFile(); // Not supported on S3
     }
 
     @Test
-    public void lastModified() throws Exception {
+    public void lastModifiedShouldBeComputed() throws Exception {
         assertEquals(0, resource.lastModified()); // Not implemented by S3 mock.
     }
 
     @Test
-    public void getDescription() throws Exception {
+    public void shouldGetDescription() throws Exception {
         assertEquals("Amazon s3 resource [bucket='s3-content-service' and object='file.txt']", resource.getDescription());
     }
 

@@ -35,7 +35,7 @@ class S3DeletableResource implements DeletableResource {
 
     private boolean isDeleted;
 
-    S3DeletableResource(WritableResource resource, AmazonS3 amazonS3, String location, String bucket) {
+    protected S3DeletableResource(WritableResource resource, AmazonS3 amazonS3, String location, String bucket) {
         this.resource = resource;
         this.amazonS3 = amazonS3;
         this.location = location;
@@ -66,7 +66,7 @@ class S3DeletableResource implements DeletableResource {
 
     @Override
     public boolean exists() {
-        return isDeleted || resource.exists();
+        return !isDeleted && resource.exists();
     }
 
     @Override

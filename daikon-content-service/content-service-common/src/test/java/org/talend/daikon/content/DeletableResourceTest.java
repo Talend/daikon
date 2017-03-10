@@ -1,6 +1,9 @@
 package org.talend.daikon.content;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,45 +37,59 @@ public abstract class DeletableResourceTest extends DeletableLoaderResourceTests
     }
 
     @Test
-    public void delete() throws Exception {
+    public void shouldDelete() throws Exception {
+        //given
+        assertTrue(resource.exists());
+        // when
         resource.delete();
+        // then
         assertFalse(resolver.getResource(LOCATION).exists());
+        assertFalse(resource.exists());
     }
 
     @Test
-    public void move() throws Exception {
-        // When
+    public void shouldMoveResource() throws Exception {
+        // when
         resource.move("newLocation.txt");
 
-        // Then
+        // then
         assertFalse(resolver.getResource(LOCATION).exists());
         assertTrue(resolver.getResource("newLocation.txt").exists());
         assertEquals("test", IOUtils.toString(resolver.getResource("newLocation.txt").getInputStream()));
     }
 
     @Test
-    public void exists() throws Exception {
+    public void shouldExist() throws Exception {
         assertTrue(resource.exists());
     }
 
     @Test
-    public void isReadable() throws Exception {
+    public void shouldBeReadable() throws Exception {
         assertTrue(resource.isReadable());
     }
 
     @Test
-    public void isOpen() throws Exception {
+    public void shouldNotBeOpened() throws Exception {
         assertFalse(resource.isOpen());
     }
 
     @Test
-    public abstract void getURL() throws Exception;
+    public void urlProtocolShouldMatch() throws Exception {
+        assertEquals(getUrlProtocol(), resource.getURL().getProtocol());
+    }
+
+    public abstract String getUrlProtocol();
 
     @Test
-    public abstract void getURI() throws Exception;
+    public void uriSchemeShouldMatch() throws Exception {
+        assertEquals(getURIScheme(), resource.getURL().getProtocol());
+    }
+
+    public abstract String getURIScheme();
+
 
     @Test
-    public abstract void getFile() throws Exception;
+    public abstract void shouldGetFile() throws Exception;
 
     @Test
     public void contentLength() throws Exception {
@@ -86,7 +103,7 @@ public abstract class DeletableResourceTest extends DeletableLoaderResourceTests
     }
 
     @Test
-    public abstract void lastModified() throws Exception;
+    public abstract void lastModifiedShouldBeComputed() throws Exception;
 
     @Test
     public void createRelative() throws Exception {
@@ -108,7 +125,7 @@ public abstract class DeletableResourceTest extends DeletableLoaderResourceTests
     }
 
     @Test
-    public abstract void getDescription() throws Exception;
+    public abstract void shouldGetDescription() throws Exception;
 
     @Test
     public void getInputStream() throws Exception {

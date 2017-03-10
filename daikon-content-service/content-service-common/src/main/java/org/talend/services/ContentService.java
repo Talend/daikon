@@ -20,7 +20,7 @@ public interface ContentService {
      * Returns an {@link OutputStream} to the resource at given <code>location</code>.
      * @param location A non-null, non-empty location for the resource.
      * @return An {@link OutputStream} that can be used to write to resource at <code>location</code>.
-     * @see org.talend.daikon.content.DeletableResourceLoader#getResource(String)
+     * @see org.talend.daikon.content.DeletablePathResolver#getResource(String)
      */
     @RequestMapping(path = "/content/{location}", method = GET)
     OutputStream get(@PathVariable("location") String location);

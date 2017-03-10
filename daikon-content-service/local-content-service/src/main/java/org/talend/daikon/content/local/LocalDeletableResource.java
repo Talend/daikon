@@ -52,7 +52,7 @@ class LocalDeletableResource implements DeletableResource {
 
     @Override
     public boolean exists() {
-        return isDeleted || resource.exists();
+        return !isDeleted && resource.exists();
     }
 
     @Override
