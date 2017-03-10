@@ -1,9 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
 
 import java.util.Date;
 import java.util.List;
@@ -12,6 +9,7 @@ import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.EnumListProperty;
 import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
@@ -42,20 +40,29 @@ public class JsonSchemaGenerator {
         return processTProperties(properties, formName, true);
     }
 
-    private ObjectNode processTProperties(Properties cProperties, String formName, boolean displayCurrentForm) {
+    /**
+     * create a json ObjectNode for a given Properties and recurse into nested Properties. <br>
+     * either the Properties is not visible -> it's title shall be set to "".<br>
+     * either the Properties is added to form the with a special widget -> it's title shall be the Properties
+     * DisplayName, except it the widget is hidden<br>
+     * either the Properties is added to the form using one of it's forms -> it's title shall be the DisplayName of the
+     * form except if the form is hidden.<br>
+     * 
+     */
+    private ObjectNode processTProperties(Properties cProperties, String formName, boolean visible) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
-        if (formName != null) {
-            Form form = cProperties.getPreferredForm(formName);
-            if (form != null) {
-                if (displayCurrentForm) {
+        if (visible) {
+            if (formName != null) {
+                Form form = cProperties.getPreferredForm(formName);
+                if (form != null) {
                     schema.put(JsonSchemaConstants.TAG_TITLE, form.getDisplayName());
-                } else {
+                } else {// wrong form name so hide it.
                     // Hide the current element on the UI schema
                     schema.put(JsonSchemaConstants.TAG_TITLE, "");
                 }
             } else {
-                // Hide the current element on the UI schema
-                schema.put(JsonSchemaConstants.TAG_TITLE, "");
+                // no associated form but visible so use the Properties display Name
+                schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getDisplayName());
             }
         } else {
             // Hide the current element on the UI schema
@@ -73,6 +80,7 @@ public class JsonSchemaGenerator {
             ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperty(property));
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
+        Form form = cProperties.getPreferredForm(formName);
         for (Properties properties : propertiesList) {
             String name = properties.getName();
             // if this is a reference then just store it as a string and only store the definition
@@ -81,11 +89,17 @@ public class JsonSchemaGenerator {
                 ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name,
                         processReferenceProperties(referenceProperties));
             } else {
-                // check if the element is active
-                Form form = cProperties.getPreferredForm(formName);
+                // compute if the properties is visible, meaning it was added to the current form
+                Widget widget = form.getWidget(properties.getName());
+                boolean isVisible = widget != null && widget.isVisible();
+                // compute the formName is one of the properties form was added as a subform
+                String propertiesFormName = null;
+                if (isVisible && widget.getContent() instanceof Form) {
+                    propertiesFormName = widget.getContent().getName();
+                }
                 boolean componentPresentInCurrentForm = form != null && form.getWidget(properties.getName()) != null;
                 ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name,
-                        processTProperties(properties, formName, componentPresentInCurrentForm));
+                        processTProperties(properties, propertiesFormName, isVisible));
             }
         }
         return schema;
@@ -112,6 +126,7 @@ public class JsonSchemaGenerator {
             } else {
                 schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
                 ArrayNode enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
+                ArrayNode enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
                 List possibleValues = property.getPossibleValues();
                 for (Object possibleValue : possibleValues) {
                     String value = possibleValue.toString();
@@ -119,6 +134,7 @@ public class JsonSchemaGenerator {
                         value = ((NamedThing) possibleValue).getName();
                     }
                     enumList.add(value);
+                    enumNames.add(property.getPossibleValuesDisplayName(possibleValue));
                 }
             }
         } else if (isListClass(property.getType())) {

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class DocumentationController {
 
     @RequestMapping("/docs")
-    String documentation() {
+    String enunciateDocumentation() {
         return "redirect:/docs/apidocs/index.html";
     }
 

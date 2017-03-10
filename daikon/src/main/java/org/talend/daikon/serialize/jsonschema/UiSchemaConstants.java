@@ -32,6 +32,11 @@ public class UiSchemaConstants {
      */
     public static final String TAG_TRIGGER = "ui:trigger";
 
+    /**
+     * Build-in tag. Represent the widget options is build-in
+     */
+    public static final String TAG_OPTIONS = "ui:options";
+
     /** @deprecated please use PropertyTrigger#AFTER */
     @Deprecated
     public static final String TRIGGER_AFTER = PropertyTrigger.AFTER.name();
@@ -68,6 +73,16 @@ public class UiSchemaConstants {
     public static final String TYPE_HIDDEN = "hidden";
 
     /**
+     * Radio field
+     */
+    public static final String TYPE_RADIO = "radio";
+
+    /**
+     * Select field
+     */
+    public static final String TYPE_SELECT = "select";
+
+    /**
      * Built-in widget type. Multiple lines text field
      */
     public static final String TYPE_TEXT_AREA = "textarea";
@@ -90,19 +105,26 @@ public class UiSchemaConstants {
     // Mapping between Widget type and ui-schema type
     private static Map<String, String> WIDGET_MAPPING = new HashMap<>();
 
-    // Mapping between Widget type and ui-schema custom type, which is not supported out-of-box
-    private static Map<String, String> CUSTOM_WIDGET_MAPPING = new HashMap<>();
+    // Mapping between Widget type and ui:options type
+    private static Map<String, Map<String, String>> WIDGET_OPTIONS_MAPPING = new HashMap<>();
 
     static {
-        // table is a custom widget type for UISchema
-        CUSTOM_WIDGET_MAPPING.put(Widget.TABLE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_TABLE);
-        CUSTOM_WIDGET_MAPPING.put(Widget.SCHEMA_EDITOR_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
-        CUSTOM_WIDGET_MAPPING.put(Widget.SCHEMA_REFERENCE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
-        CUSTOM_WIDGET_MAPPING.put(Widget.BUTTON_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_BUTTON);
-
+        // custom widget type for UISchema
+        WIDGET_MAPPING.put(Widget.TABLE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_TABLE);
+        WIDGET_MAPPING.put(Widget.SCHEMA_EDITOR_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
+        WIDGET_MAPPING.put(Widget.SCHEMA_REFERENCE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_SCHEMA);
+        WIDGET_MAPPING.put(Widget.BUTTON_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_BUTTON);
+        // default widget type for UISchema
         WIDGET_MAPPING.put(Widget.HIDDEN_TEXT_WIDGET_TYPE, UiSchemaConstants.TYPE_PASSWORD);
         WIDGET_MAPPING.put(Widget.FILE_WIDGET_TYPE, UiSchemaConstants.TYPE_FILE);
         WIDGET_MAPPING.put(Widget.TEXT_AREA_WIDGET_TYPE, UiSchemaConstants.TYPE_TEXT_AREA);
+
+        WIDGET_MAPPING.put(Widget.RADIO_WIDGET_TYPE, UiSchemaConstants.TYPE_RADIO);
+        Map<String, String> options = new HashMap<>();
+        options.put("inline", "true");
+        WIDGET_OPTIONS_MAPPING.put(Widget.RADIO_WIDGET_TYPE, options);
+
+        WIDGET_MAPPING.put(Widget.SELECT_WIDGET_TYPE, UiSchemaConstants.TYPE_SELECT);
         // null means use the default
         // WIDGET_MAPPING.put(Widget.DEFAULT_WIDGET_TYPE, null);
         // WIDGET_MAPPING.put(Widget.NAME_SELECTION_AREA_WIDGET_TYPE, null);
@@ -110,14 +132,14 @@ public class UiSchemaConstants {
         // WIDGET_MAPPING.put(Widget.COMPONENT_REFERENCE_WIDGET_TYPE, null);
         // WIDGET_MAPPING.put(Widget.ENUMERATION_WIDGET_TYPE, null);
         WIDGET_MAPPING = Collections.unmodifiableMap(WIDGET_MAPPING);
-        CUSTOM_WIDGET_MAPPING = Collections.unmodifiableMap(CUSTOM_WIDGET_MAPPING);
     }
 
     public static Map<String, String> getWidgetMapping() {
         return WIDGET_MAPPING;
     }
 
-    public static Map<String, String> getCustomWidgetMapping() {
-        return CUSTOM_WIDGET_MAPPING;
+    public static Map<String, Map<String, String>> getWidgetOptionsMapping() {
+        return WIDGET_OPTIONS_MAPPING;
     }
+
 }

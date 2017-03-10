@@ -50,12 +50,12 @@ public class Widget implements ToStringIndent {
     public static final String SCHEMA_REFERENCE_WIDGET_TYPE = "widget.type.schema.reference";
 
     /**
-     * Provides a means of selecting a name or name/description from a set of names, possibly arranged in a
-     * hierarchy. This is to be used for a large number of names, as this has search capability.
+     * Provides a means of selecting a name or name/description from a set of names, possibly arranged in a hierarchy.
+     * This is to be used for a large number of names, as this has search capability.
      *
-     * The NAME_SELECTION_AREA will operate on a property whose occur max times is -1, and whose possible values can be picked
-     * in {@code List<NamedThing>} and that will set the values as another {@code List<NamedThing>}. It will show everything
-     * on the list and then once complete will set the values of the list only to those that are selected.
+     * The NAME_SELECTION_AREA will operate on a property whose occur max times is -1, and whose possible values can be
+     * picked in {@code List<NamedThing>} and that will set the values as another {@code List<NamedThing>}. It will show
+     * everything on the list and then once complete will set the values of the list only to those that are selected.
      */
     public static final String NAME_SELECTION_AREA_WIDGET_TYPE = "widget.type.name.selection.area";
 
@@ -79,12 +79,11 @@ public class Widget implements ToStringIndent {
     public static final String BUTTON_WIDGET_TYPE = "widget.type.button";
 
     /**
-     * A table, the widget content shall be a {@link Properties} that will provide a MAIN form (see {@link Form#MAIN}). The main
-     * form shall contain a list of widget that will represent each table column and
-     * which content should be a Property. Each Property is going to be used as the column definition, the
-     * {@link Property#getDisplayName()} shall be used as the Column header. Each Property (=column) has a value of
-     * type List<T> in which the first element is the first row element for this column and the second in the list
-     * is the second row value for this column.
+     * A table, the widget content shall be a {@link Properties} that will provide a MAIN form (see {@link Form#MAIN}).
+     * The main form shall contain a list of widget that will represent each table column and which content should be a
+     * Property. Each Property is going to be used as the column definition, the {@link Property#getDisplayName()} shall
+     * be used as the Column header. Each Property (=column) has a value of type List<T> in which the first element is
+     * the first row element for this column and the second in the list is the second row value for this column.
      *
      */
     public static final String TABLE_WIDGET_TYPE = "widget.type.table";
@@ -100,20 +99,32 @@ public class Widget implements ToStringIndent {
     public static final String FILE_WIDGET_TYPE = "widget.type.file";
 
     /**
-     * A directory widget with button select directory from local system. The widget content shall be a {@link Property}<{@link String}>
+     * A directory widget with button select directory from local system. The widget content shall be a {@link Property}<
+     * {@link String}>
      */
     public static final String DIRECTORY_WIDGET_TYPE = "widget.type.directory";
 
     /**
-     * Tell the client that the property possible values ({@link Property#getPossibleValues()} must be used as
-     * unique choice for the value of the property.
+     * Tell the client that the property possible values ({@link Property#getPossibleValues()} must be used as unique
+     * choice for the value of the property.
      **/
     public static final String ENUMERATION_WIDGET_TYPE = "widget.type.enumeration";
 
     public static final String TEXT_AREA_WIDGET_TYPE = "widget.type.textArea";
 
     /**
+     * now it works for dataprep only
+     */
+    public static final String RADIO_WIDGET_TYPE = "widget.type.radio";
+
+    /**
+     * now it works for dataprep only
+     */
+    public static final String SELECT_WIDGET_TYPE = "widget.type.select";
+
+    /**
      * A table widget which use json as input. Below is a sample:
+     * 
      * <pre>
      * {
      *  "columnNames": [
@@ -140,13 +151,14 @@ public class Widget implements ToStringIndent {
      *  ]
      * }
      * </pre>
-     * Notes: The "columnNames" is a column names array. If there is not this element table will use "Column 1, Column 2, ..." as column names by default.
-     * The "data" is a data array. Every subset is a row of table.
+     * 
+     * Notes: The "columnNames" is a column names array. If there is not this element table will use "Column 1, Column
+     * 2, ..." as column names by default. The "data" is a data array. Every subset is a row of table.
      */
     public static final String JSON_TABLE_WIDGET_TYPE = "widget.type.jsonTable";
 
     /*
-    Widget configurations
+     * Widget configurations
      */
 
     /**
@@ -155,7 +167,8 @@ public class Widget implements ToStringIndent {
     public static final String READ_ONLY_WIDGET_CONF = "widget.conf.readonly";
 
     /**
-     * Tell the client whether hide the toolbar or not. For example can set it as "true" to hide the toolbar of a table widget.
+     * Tell the client whether hide the toolbar or not. For example can set it as "true" to hide the toolbar of a table
+     * widget.
      */
     public static final String HIDE_TOOLBAR_WIDGET_CONF = "widget.conf.hide.toolbar";
 
@@ -403,7 +416,8 @@ public class Widget implements ToStringIndent {
     }
 
     /**
-     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because it may not be serialized.
+     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because it may not
+     * be serialized.
      *
      * @param key, key to store the object with
      * @param value, any object.
