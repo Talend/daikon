@@ -12,9 +12,12 @@
 // ============================================================================
 package org.talend.daikon.di;
 
+import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_PATTERN;
 import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -131,7 +134,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      * Constructor sets design schema and {@link IndexMapper} instance
      *
      * @param designSchema design schema specified by user
-     * @param indexMapper  tool, which computes correspondence between design and runtime fields
+     * @param indexMapper tool, which computes correspondence between design and runtime fields
      */
     public DiOutgoingSchemaEnforcer(Schema designSchema, IndexMapper indexMapper) {
         this.designSchema = designSchema;
@@ -192,9 +195,9 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
     /**
      * Transforms record column value from Avro type to Talend type
      *
-     * @param value      record column value, which should be transformed into Talend compatible value.
-     *                   It can be null when null
-     *                   corresponding wrapped field.
+     * @param value record column value, which should be transformed into Talend compatible value.
+     * It can be null when null
+     * corresponding wrapped field.
      * @param valueField field, which contain information about value's Talend type. It mustn't be null
      */
     protected Object transformValue(Object value, Field valueField) {
@@ -219,6 +222,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
 
         // This might not always have been specified.
         String talendType = valueField.getProp(TALEND6_COLUMN_TALEND_TYPE);
+        String pattern = valueField.getProp(TALEND6_COLUMN_PATTERN);
         String javaClass = nonnull.getProp(SchemaConstants.JAVA_CLASS_FLAG);
 
         // TODO(rskraba): A full list of type conversion to coerce to Talend-compatible types.
@@ -226,7 +230,18 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
             return value instanceof Number ? ((Number) value).shortValue() : Short.parseShort(String.valueOf(value));
         } else if ("id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) { //$NON-NLS-1$
             // FIXME - remove this mapping in favor of using Avro logical types
-            return value instanceof Date ? value : new Date((Long) value);
+            if (value instanceof Date) {
+                return value;
+            } else if (value instanceof Long) {
+                return new Date((Long) value);
+            } else if (value instanceof String && pattern != null && !pattern.isEmpty()) {
+                try {
+                    return new SimpleDateFormat(pattern).parse((String) value);
+                } catch (ParseException e) {
+                    // do nothing for the moment, and return the value without transformation
+                    return value;
+                }
+            }
         } else if ("id_Byte".equals(talendType)) { //$NON-NLS-1$
             return value instanceof Number ? ((Number) value).byteValue() : Byte.parseByte(String.valueOf(value));
         } else if ("id_Character".equals(talendType) || "java.lang.Character".equals(javaClass)) {
