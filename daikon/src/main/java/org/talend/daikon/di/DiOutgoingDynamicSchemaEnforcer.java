@@ -25,14 +25,15 @@ import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
- * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to transform output avro-styled values to the exact
- * Java objects expected by the Talend 6 Studio (which will copy the fields into a POJO in generated code).
+ * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to transform output avro-styled values to
+ * the exact Java objects expected by the Talend 6 Studio (which will copy the fields into a POJO in generated code).
  * <p>
  * A wrapper like this should be attached to an input component, for example, to ensure that its outgoing data meets the
  * Schema constraints imposed by the Studio, including:
  * <ul>
  * <li>Coercing the types of the returned objects to *exactly* the type required by the Talend POJO.</li>
- * <li>Placing all of the unresolved columns between the wrapped schema and the output schema in the Dynamic column.</li>
+ * <li>Placing all of the unresolved columns between the wrapped schema and the output schema in the Dynamic column.
+ * </li>
  * </ul>
  * <p>
  * It extends {@link DiOutgoingSchemaEnforcer} and provides handling for dynamic fields
@@ -50,24 +51,25 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     private final int dynamicFieldPosition;
 
     /**
-     * Contains indexes of dynamic fields (i.e. fields which are present in runtime schema, but are not present in design schema)
+     * Contains indexes of dynamic fields (i.e. fields which are present in runtime schema, but are not present in
+     * design schema)
      */
     private List<Integer> dynamicFieldsIndexes;
 
     /**
-     * {@link Schema}, which describes dynamic fields (i.e. fields which are present in runtime schema, but are not present in
-     * design schema)
+     * {@link Schema}, which describes dynamic fields (i.e. fields which are present in runtime schema, but are not
+     * present in design schema)
      */
     private Schema dynamicFieldsSchema;
 
     /**
-     * State field, which denotes whether first incoming {@link IndexedRecord} was processed
-     * (i.e. )
+     * State field, which denotes whether first incoming {@link IndexedRecord} was processed (i.e. )
      */
     private boolean firstRecordProcessed = false;
 
     /**
-     * Constructor sets design schema, its fields and size, runtime schema fields and values related to dynamic fields handling
+     * Constructor sets design schema, its fields and size, runtime schema fields and values related to dynamic fields
+     * handling
      * 
      * @param designSchema design schema (specified by user and provided by Di Studio)
      * @param indexMapper tool, which computes correspondence between design and runtime fields
@@ -82,8 +84,8 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     }
 
     /**
-     * Returns dynamic fields schema
-     * This method could be called only after {@ling DiOutgoingDynamicSchemaEnforcer#setWrapped(IndexedRecord)} was called
+     * Returns dynamic fields schema This method could be called only after
+     * {@ling DiOutgoingDynamicSchemaEnforcer#setWrapped(IndexedRecord)} was called
      * 
      * @return dynamic fields schema
      */
@@ -110,8 +112,8 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     }
 
     /**
-     * Wraps {@link IndexedRecord},
-     * creates map of correspondence between design and runtime fields, when first record is wrapped
+     * Wraps {@link IndexedRecord}, creates map of correspondence between design and runtime fields, when first record
+     * is wrapped
      * 
      * @param record {@link IndexedRecord} to be wrapped
      */
@@ -127,9 +129,8 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     }
 
     /**
-     * Retrieves dynamic fields values and returns them as map.
-     * Map key is dynamic field name
-     * Map value is dynamic field value, transformed to Talend type
+     * Retrieves dynamic fields values and returns them as map. Map key is dynamic field name Map value is dynamic field
+     * value, transformed to Talend type
      * 
      * @return map with dynamic values
      */
@@ -139,7 +140,8 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
             Field dynamicField = runtimeFields.get(dynamicIndex);
             String dynamicFieldName = dynamicField.name();
             Object value = wrappedRecord.get(dynamicIndex);
-            value = transformValue(value, runtimeFields.get(dynamicIndex));
+            Transformer transformer = transformers[dynamicIndex];
+            value = transformer.transform(value);
             dynamicValues.put(dynamicFieldName, value);
         }
         return dynamicValues;
