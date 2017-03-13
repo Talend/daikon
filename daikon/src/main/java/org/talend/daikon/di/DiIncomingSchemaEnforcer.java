@@ -35,7 +35,7 @@ import org.talend.daikon.di.Transformer.EmptyTransformer;
 import org.talend.daikon.di.Transformer.FloatTransformer;
 import org.talend.daikon.di.Transformer.IntTransformer;
 import org.talend.daikon.di.Transformer.LongTransformer;
-import org.talend.daikon.di.Transformer.SmartDateTimeTransformer;
+import org.talend.daikon.di.Transformer.DateTimeTransformer;
 import org.talend.daikon.di.Transformer.StringTransformer;
 
 /**
@@ -255,7 +255,7 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
         String talendType = f.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
         if (isLogicalDate || "id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) {
-            transformer = new SmartDateTimeTransformer(f.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN), dateFormatCache);
+            transformer = new DateTimeTransformer(f.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN), dateFormatCache);
         }
 
         if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {

@@ -21,11 +21,20 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 
+/**
+ * Transformer interface used in {@link DiOutgoingSchemaEnforcer} and {@link DiIncomingSchemaEnforcer}. In
+ * {@link DiOutgoingSchemaEnforcer} it is used to transform value while getting it from IndexedRecord. In
+ * {@link DiIncomingSchemaEnforcer} it is used to transform value before putting in to IndexedRecord.
+ */
 public interface Transformer {
 
     public Object transform(Object value);
 
+    /**
+     * Transformer used to transform date from logical avro date value.
+     */
     public static class LogicalDateTransformer implements Transformer {
 
         @Override
@@ -38,6 +47,9 @@ public interface Transformer {
 
     }
 
+    /**
+     * Transforms avro logical time milliseconds value.
+     */
     public static class TimeMillisTransformer implements Transformer {
 
         @Override
@@ -47,6 +59,9 @@ public interface Transformer {
 
     }
 
+    /**
+     * Transforms logical avro timestamp milliseconds value to date.
+     */
     public static class TimestampMillisTransformer implements Transformer {
 
         @Override
@@ -109,13 +124,17 @@ public interface Transformer {
         }
     }
 
-    public static class SmartDateTimeTransformer implements Transformer {
+    /**
+     * Transforms Date time studio value to Date object. Date time value can be represented with long, String or
+     * java.util.Date object.
+     */
+    public static class DateTimeTransformer implements Transformer {
 
         private final String pattern;
 
         private final Map<String, SimpleDateFormat> dateFormatCache;
 
-        public SmartDateTimeTransformer(String pattern, Map<String, SimpleDateFormat> dateFormatCache) {
+        public DateTimeTransformer(String pattern, Map<String, SimpleDateFormat> dateFormatCache) {
             this.pattern = pattern;
             this.dateFormatCache = dateFormatCache;
         }
@@ -133,7 +152,7 @@ public interface Transformer {
 
                 if (pattern == null || pattern.equals("yyyy-MM-dd'T'HH:mm:ss'000Z'")) {
                     if (!vs.endsWith("000Z")) {
-                        throw TalendRuntimeException.createUnexpectedException("Unparseable date: \"" + vs + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+                        TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT).setAndThrow("Date format", vs);
                     }
                     patt = "yyyy-MM-dd'T'HH:mm:ss";
                 }
@@ -148,7 +167,7 @@ public interface Transformer {
                 try {
                     datum = df.parse((String) v);
                 } catch (ParseException e) {
-                    throw TalendRuntimeException.createUnexpectedException(e);
+                    TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_ARGUMENT).setAndThrow("Date format", vs);
                 }
             }
             return datum;

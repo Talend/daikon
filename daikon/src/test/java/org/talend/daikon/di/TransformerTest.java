@@ -144,7 +144,7 @@ public class TransformerTest {
         String datePattern = "yyyy-MM-dd HH:mm:ss.SSS XXX";
         long value = System.currentTimeMillis();
         Date expected = new Date(value);
-        Transformer transformer = new Transformer.SmartDateTimeTransformer(datePattern, new HashMap<String, SimpleDateFormat>());
+        Transformer transformer = new Transformer.DateTimeTransformer(datePattern, new HashMap<String, SimpleDateFormat>());
         Object dateTransformed = transformer.transform(value);
         assertThat(dateTransformed, instanceOf(Date.class));
         assertThat((Date) dateTransformed, is(expected));
