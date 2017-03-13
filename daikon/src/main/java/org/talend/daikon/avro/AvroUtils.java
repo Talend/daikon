@@ -16,6 +16,8 @@ import org.talend.daikon.avro.converter.ConvertByte;
 import org.talend.daikon.avro.converter.ConvertCharacter;
 import org.talend.daikon.avro.converter.ConvertDate;
 import org.talend.daikon.avro.converter.ConvertShort;
+import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 
 /**
  * Helper methods for accessing Avro {@link Schema} and Avro-compatible objects.
@@ -236,7 +238,8 @@ public class AvroUtils {
                 newSchema.addProp(propKey, props.get(propKey));
             }
         } else {
-            throw new RuntimeException("Not support this type " + schema.getType() + ", only support record type");
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_EXCEPTION)
+                    .setAndThrow("Not support this type " + schema.getType() + ", only support record type");
         }
         return newSchema;
     }
@@ -265,7 +268,8 @@ public class AvroUtils {
                 newSchema.addProp(propKey, props.get(propKey));
             }
         } else {
-            throw new RuntimeException("Not support this type " + schema.getType() + ", only support record type");
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_EXCEPTION)
+                    .setAndThrow("Not support this type " + schema.getType() + ", only support record type");
         }
         return newSchema;
     }
