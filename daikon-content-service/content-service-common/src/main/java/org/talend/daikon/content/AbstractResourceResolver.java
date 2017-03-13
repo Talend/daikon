@@ -9,11 +9,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
-public abstract class AbstractDeletablePathResolver implements DeletablePathResolver {
+public abstract class AbstractResourceResolver implements ResourceResolver {
 
     private final ResourcePatternResolver delegate;
 
-    public AbstractDeletablePathResolver(ResourcePatternResolver delegate) {
+    public AbstractResourceResolver(ResourcePatternResolver delegate) {
         this.delegate = delegate;
     }
 

@@ -12,8 +12,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -86,6 +88,31 @@ public class AvroUtilsTest {
         assertThat(s.getProp("where"), is("here"));
         s = AvroUtils.setProperty(s, "where", "there");
         assertThat(s.getProp("where"), is("there"));
+    }
+
+    @Test
+    public void testAppendFields() {
+        Schema s = SchemaBuilder.record("test").fields().name("field1").type().booleanType().noDefault().name("field2").type()
+                .stringType().noDefault().endRecord();
+        s = AvroUtils.appendFields(s, new Field("a1", SchemaBuilder.builder().stringType(), null, null),
+                new Field("a2", SchemaBuilder.builder().intType(), null, null));
+        assertEquals(4, s.getFields().size());
+        assertEquals("a1", s.getFields().get(2).name());
+        assertEquals("a2", s.getFields().get(3).name());
+    }
+
+    @Test
+    public void testRemoveFields() {
+        Schema s = SchemaBuilder.record("test").fields().name("field1").type().booleanType().noDefault().name("field2").type()
+                .stringType().noDefault().name("a1").type().stringType().noDefault().name("a2").type().intType().noDefault()
+                .endRecord();
+        Set<String> columns = new HashSet<>();
+        columns.add("field1");
+        columns.add("a1");
+        s = AvroUtils.removeFields(s, columns);
+        assertEquals(2, s.getFields().size());
+        assertEquals("field2", s.getFields().get(0).name());
+        assertEquals("a2", s.getFields().get(1).name());
     }
 
     @Test

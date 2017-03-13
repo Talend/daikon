@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.talend.daikon.annotation.Service;
+import org.talend.daikon.content.ResourceResolver;
 
 /**
  * A service to manages raw content (using {@link InputStream in} and {@link OutputStream out} streams).
@@ -20,7 +21,7 @@ public interface ContentService {
      * Returns an {@link OutputStream} to the resource at given <code>location</code>.
      * @param location A non-null, non-empty location for the resource.
      * @return An {@link OutputStream} that can be used to write to resource at <code>location</code>.
-     * @see org.talend.daikon.content.DeletablePathResolver#getResource(String)
+     * @see ResourceResolver#getResource(String)
      */
     @RequestMapping(path = "/content/{location}", method = GET)
     OutputStream get(@PathVariable("location") String location);

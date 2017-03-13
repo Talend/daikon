@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
@@ -15,11 +16,23 @@ import org.talend.daikon.avro.converter.ConvertByte;
 import org.talend.daikon.avro.converter.ConvertCharacter;
 import org.talend.daikon.avro.converter.ConvertDate;
 import org.talend.daikon.avro.converter.ConvertShort;
+import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 
 /**
  * Helper methods for accessing Avro {@link Schema} and Avro-compatible objects.
  */
 public class AvroUtils {
+
+    private static final ConvertByte BYTE_TYPE = new ConvertByte();
+
+    private static final ConvertCharacter CHARACTER_TYPE = new ConvertCharacter();
+
+    private static final ConvertDate DATE_TYPE = new ConvertDate();
+
+    private static final ConvertShort SHORT_TYPE = new ConvertShort();
+
+    private static final ConvertBigDecimal DECIMAL_TYPE = new ConvertBigDecimal();
 
     public static String REJECT_FIELD_INPUT = "input";
 
@@ -29,8 +42,6 @@ public class AvroUtils {
         return Schema.create(Schema.Type.BOOLEAN);
     }
 
-    private static final ConvertByte BYTE_TYPE = new ConvertByte();
-
     public static Schema _byte() {
         return BYTE_TYPE.getSchema();
     }
@@ -39,13 +50,9 @@ public class AvroUtils {
         return Schema.create(Schema.Type.BYTES);
     }
 
-    private static final ConvertCharacter CHARACTER_TYPE = new ConvertCharacter();
-
     public static Schema _character() {
         return CHARACTER_TYPE.getSchema();
     }
-
-    private static final ConvertDate DATE_TYPE = new ConvertDate();
 
     // FIXME - remove this one, this is not the date representation we ultimately want to use
     public static Schema _date() {
@@ -80,8 +87,6 @@ public class AvroUtils {
         return Schema.create(Schema.Type.LONG);
     }
 
-    private static final ConvertShort SHORT_TYPE = new ConvertShort();
-
     public static Schema _short() {
         return SHORT_TYPE.getSchema();
     }
@@ -89,8 +94,6 @@ public class AvroUtils {
     public static Schema _string() {
         return Schema.create(Schema.Type.STRING);
     }
-
-    private static final ConvertBigDecimal DECIMAL_TYPE = new ConvertBigDecimal();
 
     public static Schema _decimal() {
         return DECIMAL_TYPE.getSchema();
@@ -209,6 +212,64 @@ public class AvroUtils {
             }
         } else {
             schema.addProp(key, value);
+        }
+        return newSchema;
+    }
+
+    /**
+     * Schema don't support overwrite field, so have to clone it then put the new value
+     *
+     * @return schema with the new fields
+     */
+    public static Schema appendFields(Schema schema, Schema.Field... fields) {
+        Schema newSchema = schema;
+        if (schema.getType() == Type.RECORD) {
+            newSchema = Schema.createRecord(schema.getName(), schema.getDoc(), schema.getNamespace(), schema.isError());
+            List<Schema.Field> copyFieldList = new ArrayList<>();
+            for (Schema.Field se : schema.getFields()) {
+                copyFieldList.add(new Schema.Field(se.name(), se.schema(), se.doc(), se.defaultVal()));
+            }
+            for (Schema.Field field : fields) {
+                copyFieldList.add(field);
+            }
+            newSchema.setFields(copyFieldList);
+            Map<String, Object> props = schema.getObjectProps();
+            for (String propKey : props.keySet()) {
+                newSchema.addProp(propKey, props.get(propKey));
+            }
+        } else {
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_EXCEPTION)
+                    .setAndThrow("Not support this type " + schema.getType() + ", only support record type");
+        }
+        return newSchema;
+    }
+
+    /**
+     * Schema is immutable, so have to clone it and do some changes
+     * 
+     * @param schema
+     * @param fieldNames
+     * @return schema without the fields which in fieldNames
+     */
+    public static Schema removeFields(Schema schema, Set<String> fieldNames) {
+        Schema newSchema = schema;
+        if (schema.getType() == Type.RECORD) {
+            newSchema = Schema.createRecord(schema.getName(), schema.getDoc(), schema.getNamespace(), schema.isError());
+            List<Schema.Field> copyFieldList = new ArrayList<>();
+            for (Schema.Field se : schema.getFields()) {
+                if (fieldNames.contains(se.name())) {
+                    continue;
+                }
+                copyFieldList.add(new Schema.Field(se.name(), se.schema(), se.doc(), se.defaultVal()));
+            }
+            newSchema.setFields(copyFieldList);
+            Map<String, Object> props = schema.getObjectProps();
+            for (String propKey : props.keySet()) {
+                newSchema.addProp(propKey, props.get(propKey));
+            }
+        } else {
+            TalendRuntimeException.build(CommonErrorCodes.UNEXPECTED_EXCEPTION)
+                    .setAndThrow("Not support this type " + schema.getType() + ", only support record type");
         }
         return newSchema;
     }
