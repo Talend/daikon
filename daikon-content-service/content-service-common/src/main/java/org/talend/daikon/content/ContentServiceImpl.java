@@ -20,7 +20,7 @@ import org.talend.services.ContentService;
 public class ContentServiceImpl implements ContentService {
 
     @Autowired
-    private DeletablePathResolver deletableResourceLoader;
+    private ResourceResolver deletableResourceLoader;
 
     private DeletableResource getResource(@PathVariable("location") String location) {
         return deletableResourceLoader.getResource(location);

@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.talend.daikon.content.DeletablePathResolver;
+import org.talend.daikon.content.ResourceResolver;
 import org.talend.daikon.content.DeletableResource;
 
 class LocalDeletableResource implements DeletableResource {
@@ -28,11 +28,11 @@ class LocalDeletableResource implements DeletableResource {
 
     private final WritableResource resource;
 
-    private final DeletablePathResolver resolver;
+    private final ResourceResolver resolver;
 
     private boolean isDeleted;
 
-    LocalDeletableResource(DeletablePathResolver resolver, WritableResource resource) {
+    LocalDeletableResource(ResourceResolver resolver, WritableResource resource) {
         this.resolver = resolver;
         this.resource = resource;
     }

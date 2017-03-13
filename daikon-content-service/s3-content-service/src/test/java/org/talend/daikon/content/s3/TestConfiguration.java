@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.SocketUtils;
-import org.talend.daikon.content.DeletablePathResolver;
+import org.talend.daikon.content.ResourceResolver;
 
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -36,12 +36,12 @@ public class TestConfiguration implements InitializingBean, DisposableBean {
     }
 
     @Bean
-    public DeletablePathResolver s3PathResolver(ResourcePatternResolver defaultResourcePatternResolver, //
-            SimpleStorageResourceLoader resolver, //
-            AmazonS3 amazonS3) {
+    public ResourceResolver s3PathResolver(ResourcePatternResolver defaultResourcePatternResolver, //
+                                           SimpleStorageResourceLoader resolver, //
+                                           AmazonS3 amazonS3) {
         final ResourcePatternResolver patternResolver = new PathMatchingSimpleStorageResourcePatternResolver(amazonS3, resolver,
                 defaultResourcePatternResolver);
-        return new S3DeletablePathResolver(patternResolver, amazonS3, "s3-content-service");
+        return new S3ResourceResolver(patternResolver, amazonS3, "s3-content-service");
     }
 
     @Bean
