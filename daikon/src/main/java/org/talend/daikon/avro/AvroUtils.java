@@ -236,7 +236,7 @@ public class AvroUtils {
                 newSchema.addProp(propKey, props.get(propKey));
             }
         } else {
-            throw new RuntimeException("Only support record type");
+            throw new RuntimeException("Not support this type " + schema.getType() + ", only support record type");
         }
         return newSchema;
     }
@@ -265,7 +265,7 @@ public class AvroUtils {
                 newSchema.addProp(propKey, props.get(propKey));
             }
         } else {
-            throw new RuntimeException("Only support record type");
+            throw new RuntimeException("Not support this type " + schema.getType() + ", only support record type");
         }
         return newSchema;
     }
