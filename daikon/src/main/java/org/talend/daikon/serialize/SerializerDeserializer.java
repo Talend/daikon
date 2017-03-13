@@ -95,15 +95,7 @@ public class SerializerDeserializer {
             if (!DeserializeDeletedFieldHandler.class.isAssignableFrom(object.getClass())) {
                 return;
             }
-            Object deserialized = value;
-            if (value instanceof JsonObject) {
-                // convert the JsonObject to a real object
-                deserialized = new com.cedarsoftware.util.io.JsonReader().jsonObjectsToJava((JsonObject) value);
-                if (deserialized instanceof JsonObject) {
-                    deserialized = null;
-                }
-            }
-            Boolean migrated = ((DeserializeDeletedFieldHandler) object).deletedField(fieldName, deserialized);
+            Boolean migrated = ((DeserializeDeletedFieldHandler) object).deletedField(fieldName, value);
             if (migrated) {
                 migratedDeleted.set(true);
             }

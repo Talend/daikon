@@ -139,7 +139,7 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
             Field dynamicField = runtimeFields.get(dynamicIndex);
             String dynamicFieldName = dynamicField.name();
             Object value = wrappedRecord.get(dynamicIndex);
-            // TODO(igonchar): Should we transform dynamic values to Talend types
+            value = transformValue(value, runtimeFields.get(dynamicIndex));
             dynamicValues.put(dynamicFieldName, value);
         }
         return dynamicValues;

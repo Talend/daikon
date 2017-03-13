@@ -26,6 +26,7 @@
         <module>daikon-spring</module>
         <module>daikon-service</module>
         <module>reporting</module>
+        <module>daikon-content-service</module>
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
@@ -86,7 +87,8 @@
             <dependency>
                 <groupId>com.cedarsoftware</groupId>
                 <artifactId>json-io</artifactId>
-                <version>4.5.0</version>
+                 <!-- using a specific Talend artifact version until the next official release, the PR has been merge into master but not yet release. -->
+                <version>4.9.9-TALEND</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

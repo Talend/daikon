@@ -40,7 +40,28 @@ public class StringPropertyTest {
         assertThat((List<String>) stringProperty.getPossibleValues(), contains("foo", "bar", "a null"));
         assertEquals("fo o", stringProperty.getPossibleValuesDisplayName("foo"));
         assertEquals("ba r", stringProperty.getPossibleValuesDisplayName("bar"));
-        assertEquals(null, stringProperty.getPossibleValuesDisplayName("a null"));
+        assertEquals("a null", stringProperty.getPossibleValuesDisplayName("a null"));
+        // test that with unknown value, an execption is thrown
+        try {
+            stringProperty.getPossibleValuesDisplayName("not existing value");
+            fail("exception should have been thrown.");
+        } catch (TalendRuntimeException e) {
+            assertEquals(CommonErrorCodes.UNEXPECTED_ARGUMENT, e.getCode());
+        }
+    }
+
+    @Test
+    public void testSetPossibleValuesWithNamedThingDefaultMethod() {
+        StringProperty stringProperty = new StringProperty("foo");
+        ArrayList<NamedThing> namedThings = new ArrayList<>();
+        namedThings.add(new SimpleNamedThing("foo", "fo o"));
+        namedThings.add(new SimpleNamedThing("bar", "ba r"));
+        namedThings.add(new SimpleNamedThing("a null", null));
+        stringProperty.setPossibleValues(namedThings);
+        assertThat((List<String>) stringProperty.getPossibleValues(), contains("foo", "bar", "a null"));
+        assertEquals("fo o", stringProperty.getPossibleValuesDisplayName("foo"));
+        assertEquals("ba r", stringProperty.getPossibleValuesDisplayName("bar"));
+        assertEquals("a null", stringProperty.getPossibleValuesDisplayName("a null"));
         // test that with unknown value, an execption is thrown
         try {
             stringProperty.getPossibleValuesDisplayName("not existing value");
