@@ -1,12 +1,21 @@
 package org.talend.daikon.avro;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;
 import org.apache.avro.SchemaBuilder;
-import org.talend.daikon.avro.converter.*;
+import org.talend.daikon.avro.converter.ConvertBigDecimal;
+import org.talend.daikon.avro.converter.ConvertByte;
+import org.talend.daikon.avro.converter.ConvertCharacter;
+import org.talend.daikon.avro.converter.ConvertDate;
+import org.talend.daikon.avro.converter.ConvertShort;
 
 /**
  * Helper methods for accessing Avro {@link Schema} and Avro-compatible objects.
@@ -226,14 +235,15 @@ public class AvroUtils {
             for (String propKey : props.keySet()) {
                 newSchema.addProp(propKey, props.get(propKey));
             }
-        } else {// FIXME for other type
-            throw new RuntimeException("Not support this type " + newSchema.getType() + " now, need to implement");
+        } else {
+            throw new RuntimeException("Only support record type");
         }
         return newSchema;
     }
 
     /**
      * Schema is immutable, so have to clone it and do some changes
+     * 
      * @param schema
      * @param fieldNames
      * @return schema without the fields which in fieldNames
@@ -254,8 +264,8 @@ public class AvroUtils {
             for (String propKey : props.keySet()) {
                 newSchema.addProp(propKey, props.get(propKey));
             }
-        } else {// FIXME for other type
-            throw new RuntimeException("Not support this type " + newSchema.getType() + " now, need to implement");
+        } else {
+            throw new RuntimeException("Only support record type");
         }
         return newSchema;
     }
