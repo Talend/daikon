@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.talend.daikon.content.ContentServiceEnabled;
-import org.talend.daikon.content.DeletablePathResolver;
+import org.talend.daikon.content.ResourceResolver;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -73,12 +73,12 @@ public class S3ContentServiceConfiguration implements ContentServiceEnabled {
     }
 
     @Bean
-    public DeletablePathResolver s3PathResolver(ResourcePatternResolver resolver, //
-            AmazonS3 amazonS3, //
-            @Value("${content-service.store.s3.bucket}") String bucket, //
-            SimpleStorageResourceLoader resourceLoader, //
-            PathMatchingSimpleStorageResourcePatternResolver patternResolver) {
-        return new S3DeletablePathResolver(patternResolver, amazonS3, bucket);
+    public ResourceResolver s3PathResolver(ResourcePatternResolver resolver, //
+                                           AmazonS3 amazonS3, //
+                                           @Value("${content-service.store.s3.bucket}") String bucket, //
+                                           SimpleStorageResourceLoader resourceLoader, //
+                                           PathMatchingSimpleStorageResourcePatternResolver patternResolver) {
+        return new S3ResourceResolver(patternResolver, amazonS3, bucket);
     }
 
     @Bean

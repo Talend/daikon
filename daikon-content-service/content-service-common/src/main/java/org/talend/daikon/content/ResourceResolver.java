@@ -11,7 +11,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  * @see org.springframework.core.io.support.ResourcePatternResolver
  * @see org.springframework.core.io.ResourceLoader
  */
-public interface DeletablePathResolver extends ResourcePatternResolver {
+public interface ResourceResolver extends ResourcePatternResolver {
 
     @Override
     DeletableResource[] getResources(String locationPattern) throws IOException;

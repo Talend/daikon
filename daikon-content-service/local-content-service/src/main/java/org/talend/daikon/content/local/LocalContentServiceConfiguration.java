@@ -14,7 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.talend.daikon.content.ContentServiceEnabled;
 import org.talend.daikon.content.ContextualPatternResolver;
-import org.talend.daikon.content.DeletablePathResolver;
+import org.talend.daikon.content.ResourceResolver;
 
 @Configuration
 @SuppressWarnings("InsufficientBranchCoverage")
@@ -24,7 +24,7 @@ public class LocalContentServiceConfiguration implements ContentServiceEnabled {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalContentServiceConfiguration.class);
 
     @Bean
-    public DeletablePathResolver localResourceResolver(Environment environment) {
+    public ResourceResolver localResourceResolver(Environment environment) {
         final Boolean useAbsolutePath = environment.getProperty("content-service.store.local.absolute", Boolean.class,
                 Boolean.TRUE);
         final FileSystemResourceLoader resourceLoader;
@@ -43,7 +43,7 @@ public class LocalContentServiceConfiguration implements ContentServiceEnabled {
         final String localPath = environment.getProperty("content-service.store.local.path", StringUtils.EMPTY);
         LOGGER.info("Files stored to '{}'", localPath);
 
-        return new LocalDeletablePathResolver(new ContextualPatternResolver(delegate, localPath));
+        return new LocalResourceResolver(new ContextualPatternResolver(delegate, localPath));
     }
 
     /**
