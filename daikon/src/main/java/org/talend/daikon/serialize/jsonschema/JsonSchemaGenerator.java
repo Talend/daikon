@@ -1,9 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
 
 import java.util.Date;
 import java.util.List;
@@ -129,6 +126,7 @@ public class JsonSchemaGenerator {
             } else {
                 schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
                 ArrayNode enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
+                ArrayNode enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
                 List possibleValues = property.getPossibleValues();
                 for (Object possibleValue : possibleValues) {
                     String value = possibleValue.toString();
@@ -136,6 +134,7 @@ public class JsonSchemaGenerator {
                         value = ((NamedThing) possibleValue).getName();
                     }
                     enumList.add(value);
+                    enumNames.add(property.getPossibleValuesDisplayName(possibleValue));
                 }
             }
         } else if (isListClass(property.getType())) {

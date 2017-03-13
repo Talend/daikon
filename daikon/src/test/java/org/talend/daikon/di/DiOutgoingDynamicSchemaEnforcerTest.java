@@ -26,6 +26,7 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
 
 /**
@@ -49,6 +50,9 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
     @BeforeClass
     public static void setup() {
         runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("logicalTime").type(AvroUtils._logicalTime()).noDefault() //
+                .name("logicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("logicalTimestamp").type(AvroUtils._logicalTimestamp()).noDefault() //
                 .name("id").type().intType().noDefault() //
                 .name("name").type().stringType().noDefault() //
                 .name("age").type().intType().noDefault() //
@@ -61,18 +65,22 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .endRecord(); //
 
         record = new GenericData.Record(runtimeSchema);
-        record.put(0, 1);
-        record.put(1, "User");
-        record.put(2, 100);
-        record.put(3, true);
-        record.put(4, "Main Street");
-        record.put(5, "This is a record with six columns.");
-        record.put(6, new Date(1467170137872L));
+        record.put(0, 11111);
+        record.put(1, 12345);
+        record.put(2, 1489061653L);
+
+        record.put(3, 1);
+        record.put(4, "User");
+        record.put(5, 100);
+        record.put(6, true);
+        record.put(7, "Main Street");
+        record.put(8, "This is a record with nine columns.");
+        record.put(9, new Date(1467170137872L));
     }
 
     /**
-     * Checks {@link DiOutgoingDynamicSchemaEnforcer#getSchema()} returns design schema, which was passed to constructor without
-     * any changes
+     * Checks {@link DiOutgoingDynamicSchemaEnforcer#getSchema()} returns design schema, which was passed to constructor
+     * without any changes
      */
     @Test
     public void testGetSchema() {
@@ -93,13 +101,16 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingDynamicSchemaEnforcer#getDynamicFieldsSchema()} returns schema, which contains only dynamic fields
-     * (i.e. fields which are present in runtime schema, but are not present in design schema)
+     * Checks {@link DiOutgoingDynamicSchemaEnforcer#getDynamicFieldsSchema()} returns schema, which contains only
+     * dynamic fields (i.e. fields which are present in runtime schema, but are not present in design schema)
      */
     @Test
     public void testGetDynamicFieldsSchema() {
 
         Schema expectedDynamicSchema = SchemaBuilder.builder().record("dynamic").fields() //
+                .name("logicalTime").type(AvroUtils._logicalTime()).noDefault() //
+                .name("logicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("logicalTimestamp").type(AvroUtils._logicalTimestamp()).noDefault() //
                 .name("id").type().intType().noDefault() //
                 .name("name").type().stringType().noDefault() //
                 .name("age").type().intType().noDefault() //
@@ -115,7 +126,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .name("createdDate").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         enforcer.setWrapped(record);
         Schema actualDynamicSchema = enforcer.getDynamicFieldsSchema();
@@ -123,8 +134,8 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values,
-     * when dynamic field is in the start of design schema
+     * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values, when dynamic
+     * field is in the start of design schema
      */
     @Test
     public void testGetDynamicAtStart() {
@@ -142,21 +153,29 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         enforcer.setWrapped(record);
 
+        // non-Dynamic fields
         assertThat(enforcer.get(1), equalTo((Object) "User"));
         assertThat(enforcer.get(2), equalTo((Object) true));
         assertThat(enforcer.get(3), equalTo((Object) new Date(1467170137872L)));
 
+        // Dynamic fields
         Map<String, Object> dynamicValues = (Map<String, Object>) enforcer.get(0);
-        assertThat(dynamicValues.size(), equalTo(4));
+        assertThat(dynamicValues.size(), equalTo(7));
+        assertThat(dynamicValues, hasEntry("logicalTime", (Object) 11111));
+        assertThat(dynamicValues, hasEntry("logicalDate", (Object) new Date(1066608000000L))); // Mon Oct 20 03:00:00
+        // EEST 2003 is
+        // 1066608000000 ms
+        assertThat(dynamicValues, hasEntry("logicalTimestamp", (Object) new Date(1489061653L)));
         assertThat(dynamicValues, hasEntry("id", (Object) 1));
         assertThat(dynamicValues, hasEntry("age", (Object) 100));
         assertThat(dynamicValues, hasEntry("address", (Object) "Main Street"));
-        assertThat(dynamicValues, hasEntry("comment", (Object) "This is a record with six columns."));
+        assertThat(dynamicValues, hasEntry("comment", (Object) "This is a record with nine columns."));
+
     }
 
     /**
-     * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values,
-     * when dynamic field is in the middle of design schema
+     * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values, when dynamic
+     * field is in the middle of design schema
      */
     @Test
     public void testGetDynamicAtMiddle() {
@@ -171,7 +190,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         enforcer.setWrapped(record);
 
@@ -180,16 +199,19 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         assertThat(enforcer.get(3), equalTo((Object) new Date(1467170137872L)));
 
         Map<String, Object> dynamicValues = (Map<String, Object>) enforcer.get(2);
-        assertThat(dynamicValues.size(), equalTo(4));
+        assertThat(dynamicValues.size(), equalTo(7));
+        assertThat(dynamicValues, hasEntry("logicalTime", (Object) 11111));
+        assertThat(dynamicValues, hasEntry("logicalDate", (Object) new Date(1066608000000L)));
+        assertThat(dynamicValues, hasEntry("logicalTimestamp", (Object) new Date(1489061653L)));
         assertThat(dynamicValues, hasEntry("age", (Object) 100));
         assertThat(dynamicValues, hasEntry("valid", (Object) true));
         assertThat(dynamicValues, hasEntry("address", (Object) "Main Street"));
-        assertThat(dynamicValues, hasEntry("comment", (Object) "This is a record with six columns."));
+        assertThat(dynamicValues, hasEntry("comment", (Object) "This is a record with nine columns."));
     }
 
     /**
-     * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values,
-     * when dynamic field is in the end of design schema
+     * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values, when dynamic
+     * field is in the end of design schema
      */
     @Test
     public void testGetDynamicAtEnd() {
@@ -203,7 +225,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .name("age").type().intType().noDefault() //
                 .endRecord(); //
 
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
         DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         enforcer.setWrapped(record);
 
@@ -212,16 +234,19 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         assertThat(enforcer.get(2), equalTo((Object) 100));
 
         Map<String, Object> dynamicValues = (Map<String, Object>) enforcer.get(3);
-        assertThat(dynamicValues.size(), equalTo(4));
+        assertThat(dynamicValues.size(), equalTo(7));
+        assertThat(dynamicValues, hasEntry("logicalTime", (Object) 11111));
+        assertThat(dynamicValues, hasEntry("logicalDate", (Object) new Date(1066608000000L)));
+        assertThat(dynamicValues, hasEntry("logicalTimestamp", (Object) new Date(1489061653L)));
         assertThat(dynamicValues, hasEntry("valid", (Object) true));
         assertThat(dynamicValues, hasEntry("address", (Object) "Main Street"));
-        assertThat(dynamicValues, hasEntry("comment", (Object) "This is a record with six columns."));
+        assertThat(dynamicValues, hasEntry("comment", (Object) "This is a record with nine columns."));
         assertThat(dynamicValues, hasEntry("createdDate", (Object) new Date(1467170137872L)));
     }
 
     /**
-     * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values,
-     * when dynamic field is in the end of design schema
+     * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} returns correct ordinary and dynamic values, when dynamic
+     * field is in the end of design schema
      */
     @Test(expected = IndexOutOfBoundsException.class)
     public void testGetOutOfBounds() {

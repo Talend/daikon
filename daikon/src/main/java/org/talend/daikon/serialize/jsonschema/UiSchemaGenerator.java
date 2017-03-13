@@ -1,6 +1,7 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -26,8 +28,8 @@ public class UiSchemaGenerator {
     }
 
     /**
-     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider the requested form and
-     * Advanced Form
+     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider the requested form and Advanced
+     * Form
      */
     private ObjectNode processTPropertiesWidget(Properties cProperties, String formName) {
         Form mainForm = cProperties.getPreferredForm(formName);
@@ -134,6 +136,16 @@ public class UiSchemaGenerator {
             String widgetType = UiSchemaConstants.getWidgetMapping().get(widget.getWidgetType());
             if (widgetType != null) {
                 schema.put(UiSchemaConstants.TAG_WIDGET, widgetType);
+                Map<String, String> optionsMap = UiSchemaConstants.getWidgetOptionsMapping().get(widget.getWidgetType());
+                if (optionsMap != null) {
+                    ObjectNode options = JsonNodeFactory.instance.objectNode();
+
+                    for (Map.Entry<String, String> entry : optionsMap.entrySet()) {
+                        options.put(entry.getKey(), entry.getValue());
+                    }
+
+                    schema.set(UiSchemaConstants.TAG_OPTIONS, options);
+                }
             } else {//no supported widget for this, so if Properties then hide 
                 NamedThing content = widget.getContent();
                 if (content instanceof Properties) {

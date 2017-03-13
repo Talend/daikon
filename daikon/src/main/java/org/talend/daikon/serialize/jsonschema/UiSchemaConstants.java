@@ -12,6 +12,11 @@ import org.talend.daikon.properties.presentation.Widget;
 public class UiSchemaConstants {
 
     /**
+     * Build-in tag. Represent the widget type is custom
+     */
+    public static final String TAG_CUSTOM_WIDGET = "ui:field";
+
+    /**
      * Build-in tag. Represent the widget type is build-in
      */
     public static final String TAG_WIDGET = "ui:widget";
@@ -26,6 +31,11 @@ public class UiSchemaConstants {
      * TRIGGER_AFTER/TRIGGER_BEFORE_PRESENT/TRIGGER_BEFORE_ACTIVATE/TRIGGER_VALIDATE
      */
     public static final String TAG_TRIGGER = "ui:trigger";
+
+    /**
+     * Build-in tag. Represent the widget options is build-in
+     */
+    public static final String TAG_OPTIONS = "ui:options";
 
     /** @deprecated please use PropertyTrigger#AFTER */
     @Deprecated
@@ -63,6 +73,16 @@ public class UiSchemaConstants {
     public static final String TYPE_HIDDEN = "hidden";
 
     /**
+     * Radio field
+     */
+    public static final String TYPE_RADIO = "radio";
+
+    /**
+     * Select field
+     */
+    public static final String TYPE_SELECT = "select";
+
+    /**
      * Built-in widget type. Multiple lines text field
      */
     public static final String TYPE_TEXT_AREA = "textarea";
@@ -85,6 +105,9 @@ public class UiSchemaConstants {
     // Mapping between Widget type and ui-schema type
     private static Map<String, String> WIDGET_MAPPING = new HashMap<>();
 
+    // Mapping between Widget type and ui:options type
+    private static Map<String, Map<String, String>> WIDGET_OPTIONS_MAPPING = new HashMap<>();
+
     static {
         // custom widget type for UISchema
         WIDGET_MAPPING.put(Widget.TABLE_WIDGET_TYPE, UiSchemaConstants.CUSTOM_TYPE_TABLE);
@@ -95,6 +118,13 @@ public class UiSchemaConstants {
         WIDGET_MAPPING.put(Widget.HIDDEN_TEXT_WIDGET_TYPE, UiSchemaConstants.TYPE_PASSWORD);
         WIDGET_MAPPING.put(Widget.FILE_WIDGET_TYPE, UiSchemaConstants.TYPE_FILE);
         WIDGET_MAPPING.put(Widget.TEXT_AREA_WIDGET_TYPE, UiSchemaConstants.TYPE_TEXT_AREA);
+
+        WIDGET_MAPPING.put(Widget.RADIO_WIDGET_TYPE, UiSchemaConstants.TYPE_RADIO);
+        Map<String, String> options = new HashMap<>();
+        options.put("inline", "true");
+        WIDGET_OPTIONS_MAPPING.put(Widget.RADIO_WIDGET_TYPE, options);
+
+        WIDGET_MAPPING.put(Widget.SELECT_WIDGET_TYPE, UiSchemaConstants.TYPE_SELECT);
         // null means use the default
         // WIDGET_MAPPING.put(Widget.DEFAULT_WIDGET_TYPE, null);
         // WIDGET_MAPPING.put(Widget.NAME_SELECTION_AREA_WIDGET_TYPE, null);
@@ -106,6 +136,10 @@ public class UiSchemaConstants {
 
     public static Map<String, String> getWidgetMapping() {
         return WIDGET_MAPPING;
+    }
+
+    public static Map<String, Map<String, String>> getWidgetOptionsMapping() {
+        return WIDGET_OPTIONS_MAPPING;
     }
 
 }
