@@ -123,6 +123,11 @@ public class Widget implements ToStringIndent {
     public static final String SELECT_WIDGET_TYPE = "widget.type.select";
 
     /**
+     * now it works for dataprep only
+     */
+    public static final String DATALIST_WIDGET_TYPE = "widget.type.datalist";
+
+    /**
      * A table widget which use json as input. Below is a sample:
      * 
      * <pre>
