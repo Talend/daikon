@@ -15,9 +15,9 @@ import org.talend.daikon.content.ContentServiceEnabled;
 import org.talend.daikon.content.ResourceResolver;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper;
-import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
@@ -41,8 +41,8 @@ public class S3ContentServiceConfiguration implements ContentServiceEnabled {
         LOGGER.info("Using Token authentication");
         final String key = environment.getProperty("content-service.store.s3.accessKey");
         final String secret = environment.getProperty("content-service.store.s3.secretKey");
-        AWSCredentials awsCredentials = new BasicAWSCredentials(key, secret);
-        return builder.withCredentials(new StaticCredentialsProvider(awsCredentials));
+        final AWSCredentials awsCredentials = new BasicAWSCredentials(key, secret);
+        return builder.withCredentials(new AWSStaticCredentialsProvider(awsCredentials));
     }
 
     @Bean
