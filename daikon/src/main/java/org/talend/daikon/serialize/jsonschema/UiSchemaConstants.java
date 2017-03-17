@@ -83,6 +83,11 @@ public class UiSchemaConstants {
     public static final String TYPE_SELECT = "select";
 
     /**
+     * Select field
+     */
+    public static final String TYPE_DATALIST = "datalist";
+
+    /**
      * Built-in widget type. Multiple lines text field
      */
     public static final String TYPE_TEXT_AREA = "textarea";
@@ -125,6 +130,7 @@ public class UiSchemaConstants {
         WIDGET_OPTIONS_MAPPING.put(Widget.RADIO_WIDGET_TYPE, options);
 
         WIDGET_MAPPING.put(Widget.SELECT_WIDGET_TYPE, UiSchemaConstants.TYPE_SELECT);
+        WIDGET_MAPPING.put(Widget.DATALIST_WIDGET_TYPE, UiSchemaConstants.TYPE_DATALIST);
         // null means use the default
         // WIDGET_MAPPING.put(Widget.DEFAULT_WIDGET_TYPE, null);
         // WIDGET_MAPPING.put(Widget.NAME_SELECTION_AREA_WIDGET_TYPE, null);

@@ -78,6 +78,9 @@ public class FullExampleProperties extends PropertiesImpl {
     /** checking {@link WidgetType#SELECT} */
     public final Property<String> selectProp = newString("selectProp");
 
+    /** checking {@link WidgetType#DATALIST} */
+    public final Property<String> datalistProp = newString("datalistProp");
+
     /**
      * uses 2 widgets, {@link WidgetType#SCHEMA_EDITOR} in the Main form and {@link WidgetType#SCHEMA_REFERENCE} on the
      * REFERENCE form
@@ -118,6 +121,12 @@ public class FullExampleProperties extends PropertiesImpl {
         values4Select.add("table2");
         values4Select.add("table3");
         selectProp.setPossibleValues(values4Select);
+
+        List<String> values4Datalist = new ArrayList<>();
+        values4Datalist.add("data1");
+        values4Datalist.add("data2");
+        values4Datalist.add("data3");
+        datalistProp.setPossibleValues(values4Datalist);
     }
 
     @Override
@@ -141,6 +150,7 @@ public class FullExampleProperties extends PropertiesImpl {
         mainForm.addRow(widget(tableProp).setWidgetType(TABLE_WIDGET_TYPE));
         mainForm.addRow(widget(radioProp).setWidgetType(RADIO_WIDGET_TYPE));
         mainForm.addRow(widget(selectProp).setWidgetType(SELECT_WIDGET_TYPE));
+        mainForm.addRow(widget(datalistProp).setWidgetType(DATALIST_WIDGET_TYPE));
 
         Form advancedForm = new Form(this, Form.ADVANCED);
         advancedForm.addRow(widget(textareaProp).setWidgetType(TEXT_AREA_WIDGET_TYPE));
