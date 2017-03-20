@@ -1,4 +1,4 @@
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.migration;
 
 /**
  * Used to provide code to translate from an older persisted version of an object into the current version of the

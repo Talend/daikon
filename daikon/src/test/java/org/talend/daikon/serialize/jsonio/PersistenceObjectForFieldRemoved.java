@@ -1,6 +1,6 @@
 package org.talend.daikon.serialize.jsonio;
 
-import org.talend.daikon.serialize.DeserializeDeletedFieldHandler;
+import org.talend.daikon.serialize.migration.DeserializeDeletedFieldHandler;
 
 public class PersistenceObjectForFieldRemoved implements DeserializeDeletedFieldHandler {
 

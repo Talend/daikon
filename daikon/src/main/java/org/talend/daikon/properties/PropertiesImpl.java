@@ -35,8 +35,8 @@ import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.Property.Flags;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.properties.property.PropertyVisitor;
-import org.talend.daikon.serialize.PostDeserializeHandler;
 import org.talend.daikon.serialize.PostDeserializeSetup;
+import org.talend.daikon.serialize.migration.PostDeserializeHandler;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
