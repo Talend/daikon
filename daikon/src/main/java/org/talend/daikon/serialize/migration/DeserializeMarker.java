@@ -1,4 +1,4 @@
-package org.talend.daikon.serialize;
+package org.talend.daikon.serialize.migration;
 
 /**
  * Marker interface for any objects being deserialized.

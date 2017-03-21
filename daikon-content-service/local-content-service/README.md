@@ -23,13 +23,15 @@ Doing so will bring all needed dependencies.
 content-service.store=local
 ```
 
-3. Add an `@Autowired` with `DeletableResourceLoader` type anywhere you want to use content service:
+3. Add an `@Autowired` with `org.talend.daikon.content.ResourceResolver` type anywhere you want to use content service:
 
 ```java
+import org.talend.daikon.content.ResourceResolver;
+
 @Component
 public class MyComponent {
     
     @Autowired
-    protected DeletableResourceLoader loader;
+    protected ResourceResolver loader;
 }
 ```
