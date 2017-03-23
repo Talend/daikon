@@ -24,7 +24,7 @@ import org.talend.daikon.avro.AvroUtils;
 /**
  * Converts String datum to avro logical type timestamp and vice versa
  */
-public class StringToTimestampConverter extends StringConverter<Long> {
+public class StringTimestampConverter extends StringConverter<Long> {
 
     private static final Schema TIMESTAMP_SCHEMA = AvroUtils._logicalTimestamp();
 
@@ -36,7 +36,7 @@ public class StringToTimestampConverter extends StringConverter<Long> {
      * Constructor sets default datePattern to be used during conversion from
      * string to timestamp
      */
-    public StringToTimestampConverter() {
+    public StringTimestampConverter() {
         this(DEFAULT_PATTERN);
     }
 
@@ -47,7 +47,7 @@ public class StringToTimestampConverter extends StringConverter<Long> {
      * @param datePattern
      *            date pattern, e.g. "dd-MM-yyyy hh:mm:ss:SSS"
      */
-    public StringToTimestampConverter(String datePattern) {
+    public StringTimestampConverter(String datePattern) {
         if (datePattern == null) {
             throw new IllegalArgumentException("Date pattern is missed");
         }

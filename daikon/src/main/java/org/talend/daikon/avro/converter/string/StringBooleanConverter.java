@@ -16,30 +16,30 @@ import org.apache.avro.Schema;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
- * Converts String datum to avro long type and vice versa
+ * Converts String datum to avro boolean type and vice versa
  */
-public class StringToLongConverter extends StringConverter<Long> {
+public class StringBooleanConverter extends StringConverter<Boolean> {
 
-    private static final Schema LONG_SCHEMA = AvroUtils._long();
+    private static final Schema BOOLEAN_SCHEMA = AvroUtils._boolean();
 
     /**
-     * Returns schema of long avro type
+     * Returns schema of boolean avro type
      * 
-     * @return schema of long avro type
+     * @return schema of boolean avro type
      */
     @Override
     public Schema getSchema() {
-        return LONG_SCHEMA;
+        return BOOLEAN_SCHEMA;
     }
 
     @Override
-    public String convertToDatum(Long value) {
+    public String convertToDatum(Boolean value) {
         return value.toString();
     }
 
     @Override
-    public Long convertToAvro(String value) {
-        return Long.parseLong(value);
+    public Boolean convertToAvro(String value) {
+        return Boolean.parseBoolean(value);
     }
 
 }

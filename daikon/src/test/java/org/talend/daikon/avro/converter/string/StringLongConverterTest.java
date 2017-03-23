@@ -19,54 +19,54 @@ import org.junit.Test;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
- * Unit tests for {@link StringToLongConverter}
+ * Unit tests for {@link StringLongConverter}
  */
-public class StringToLongConverterTest extends StringConverterTest {
+public class StringLongConverterTest extends StringConverterTest {
 
     @Override
-    StringToLongConverter createConverter() {
-        return new StringToLongConverter();
+    StringLongConverter createConverter() {
+        return new StringLongConverter();
     }
 
     /**
-     * Checks {@link StringToLongConverter#getSchema()} returns long schema
+     * Checks {@link StringLongConverter#getSchema()} returns long schema
      */
     @Test
     public void testGetSchema() {
-        StringToLongConverter converter = createConverter();
+        StringLongConverter converter = createConverter();
         Schema schema = converter.getSchema();
         assertEquals(AvroUtils._long(), schema);
     }
 
     /**
-     * Checks {@link StringToLongConverter#convertToDatum(Long)} returns
+     * Checks {@link StringLongConverter#convertToDatum(Long)} returns
      * "1234567890", when <code>1234567890<code> is passed
      */
     @Test
     public void testConvertToDatum() {
-        StringToLongConverter converter = createConverter();
+        StringLongConverter converter = createConverter();
         String value = converter.convertToDatum(1234567890l);
         assertEquals("1234567890", value);
     }
 
     /**
-     * Checks {@link StringToLongConverter#convertToAvro(String)} returns
+     * Checks {@link StringLongConverter#convertToAvro(String)} returns
      * <code>1234567890<code>, when "1234567890" is passed
      */
     @Test
     public void testConvertToAvro() {
-        StringToLongConverter converter = createConverter();
+        StringLongConverter converter = createConverter();
         long value = converter.convertToAvro("1234567890");
         assertEquals(1234567890l, value);
     }
 
     /**
-     * Checks {@link StringToLongConverter#convertToAvro(String)} throws
+     * Checks {@link StringLongConverter#convertToAvro(String)} throws
      * {@link NumberFormatException} if not a number string is passed
      */
     @Test(expected = NumberFormatException.class)
     public void testConvertToAvroNotLong() {
-        StringToLongConverter converter = createConverter();
+        StringLongConverter converter = createConverter();
         converter.convertToAvro("not an long");
     }
 }

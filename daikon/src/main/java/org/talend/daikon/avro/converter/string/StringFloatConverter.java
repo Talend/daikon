@@ -18,7 +18,7 @@ import org.talend.daikon.avro.AvroUtils;
 /**
  * Converts String datum to avro float type and vice versa
  */
-public class StringToFloatConverter extends StringConverter<Float> {
+public class StringFloatConverter extends StringConverter<Float> {
 
     private static final Schema FLOAT_SCHEMA = AvroUtils._float();
 

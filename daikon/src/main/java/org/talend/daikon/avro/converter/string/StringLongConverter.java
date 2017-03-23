@@ -16,30 +16,30 @@ import org.apache.avro.Schema;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
- * Converts String datum to avro double type and vice versa
+ * Converts String datum to avro long type and vice versa
  */
-public class StringToDoubleConverter extends StringConverter<Double> {
+public class StringLongConverter extends StringConverter<Long> {
 
-    private static final Schema DOUBLE_SCHEMA = AvroUtils._double();
+    private static final Schema LONG_SCHEMA = AvroUtils._long();
 
     /**
-     * Returns schema of double avro type
+     * Returns schema of long avro type
      * 
-     * @return schema of double avro type
+     * @return schema of long avro type
      */
     @Override
     public Schema getSchema() {
-        return DOUBLE_SCHEMA;
+        return LONG_SCHEMA;
     }
 
     @Override
-    public String convertToDatum(Double value) {
+    public String convertToDatum(Long value) {
         return value.toString();
     }
 
     @Override
-    public Double convertToAvro(String value) {
-        return Double.valueOf(value);
+    public Long convertToAvro(String value) {
+        return Long.parseLong(value);
     }
 
 }

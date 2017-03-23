@@ -18,7 +18,7 @@ import org.talend.daikon.avro.AvroUtils;
 /**
  * Converts String datum to avro int type and vice versa
  */
-public class StringToIntConverter extends StringConverter<Integer> {
+public class StringIntConverter extends StringConverter<Integer> {
 
     private static final Schema INT_SCHEMA = AvroUtils._int();
 

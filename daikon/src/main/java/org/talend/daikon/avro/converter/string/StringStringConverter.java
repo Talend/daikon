@@ -19,7 +19,7 @@ import org.talend.daikon.avro.AvroUtils;
  * Converts String datum to avro string type and vice versa Actually returns
  * arguments unchanged. So it is used as API implementation
  */
-public class StringToStringConverter extends StringConverter<String> {
+public class StringStringConverter extends StringConverter<String> {
 
     private static final Schema STRING_SCHEMA = AvroUtils._string();
 

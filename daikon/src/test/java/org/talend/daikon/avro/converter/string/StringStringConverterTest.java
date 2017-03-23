@@ -19,45 +19,45 @@ import org.junit.Test;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
- * Unit tests for {@link StringToStringConverter}
+ * Unit tests for {@link StringStringConverter}
  */
-public class StringToStringConverterTest extends StringConverterTest {
+public class StringStringConverterTest extends StringConverterTest {
 
     @Override
-    StringToStringConverter createConverter() {
-        return new StringToStringConverter();
+    StringStringConverter createConverter() {
+        return new StringStringConverter();
     }
 
     /**
-     * Checks {@link StringToStringConverter#getSchema()} returns string schema
+     * Checks {@link StringStringConverter#getSchema()} returns string schema
      */
     @Test
     public void testGetSchema() {
-        StringToStringConverter converter = createConverter();
+        StringStringConverter converter = createConverter();
         Schema schema = converter.getSchema();
         assertEquals(AvroUtils._string(), schema);
     }
 
     /**
-     * Checks {@link StringToStringConverter#convertToDatum(String)} returns
+     * Checks {@link StringStringConverter#convertToDatum(String)} returns
      * "abcd", when "abcd" is passed It should return input argument without any
      * modification
      */
     @Test
     public void testConvertToDatum() {
-        StringToStringConverter converter = createConverter();
+        StringStringConverter converter = createConverter();
         String value = converter.convertToDatum("abcd");
         assertEquals("abcd", value);
     }
 
     /**
-     * Checks {@link StringToStringConverter#convertToAvro(String)} returns
+     * Checks {@link StringStringConverter#convertToAvro(String)} returns
      * "abcd", when "abcd" is passed It should return input argument without any
      * modification
      */
     @Test
     public void testConvertToAvro() {
-        StringToStringConverter converter = createConverter();
+        StringStringConverter converter = createConverter();
         String value = converter.convertToAvro("abcd");
         assertEquals("abcd", value);
     }

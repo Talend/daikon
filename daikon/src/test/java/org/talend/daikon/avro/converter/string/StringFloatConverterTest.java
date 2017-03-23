@@ -19,55 +19,54 @@ import org.junit.Test;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
- * Unit tests for {@link StringToDoubleConverter}.
+ * Unit tests for {@link StringFloatConverter}.
  */
-public class StringToDoubleConverterTest extends StringConverterTest {
+public class StringFloatConverterTest extends StringConverterTest {
 
     @Override
-    StringToDoubleConverter createConverter() {
-        return new StringToDoubleConverter();
+    StringFloatConverter createConverter() {
+        return new StringFloatConverter();
     }
 
     /**
-     * Checks {@link StringToDoubleConverter#getSchema()} returns double schema
+     * Checks {@link StringFloatConverter#getSchema()} returns float schema
      */
     @Test
     public void testGetSchema() {
-        StringToDoubleConverter converter = createConverter();
+        StringFloatConverter converter = createConverter();
         Schema schema = converter.getSchema();
-        assertEquals(AvroUtils._double(), schema);
+        assertEquals(AvroUtils._float(), schema);
     }
 
     /**
-     * Checks {@link StringToDoubleConverter#convertToDatum(Double)} returns
-     * "12.34", when <code>12.34<code> is passed
+     * Checks {@link StringFloatConverter#convertToDatum(Float)} returns
+     * "12.34", when <code>12.34f<code> is passed
      */
     @Test
     public void testConvertToDatum() {
-        StringToDoubleConverter converter = createConverter();
-        String value = converter.convertToDatum(12.34);
+        StringFloatConverter converter = createConverter();
+        String value = converter.convertToDatum(12.34f);
         assertEquals("12.34", value);
     }
 
     /**
-     * Checks {@link StringToDoubleConverter#convertToAvro(String)} returns
+     * Checks {@link StringFloatConverter#convertToAvro(String)} returns
      * <code>12.34<code>, when "12.34" is passed
      */
     @Test
     public void testConvertToAvro() {
-        StringToDoubleConverter converter = createConverter();
-        double value = converter.convertToAvro("12.34");
-        assertEquals(12.34, value, 0D);
+        StringFloatConverter converter = createConverter();
+        float value = converter.convertToAvro("12.34");
+        assertEquals(12.34f, value, 0f);
     }
 
     /**
-     * Checks {@link StringToDoubleConverter#convertToAvro(String)} throws
+     * Checks {@link StringFloatConverter#convertToAvro(String)} throws
      * {@link NumberFormatException} if not a number string is passed
      */
     @Test(expected = NumberFormatException.class)
-    public void testConvertToAvroNotDouble() {
-        StringToDoubleConverter converter = createConverter();
-        converter.convertToAvro("not a double");
+    public void testConvertToAvroNotFloat() {
+        StringFloatConverter converter = createConverter();
+        converter.convertToAvro("not a float");
     }
-
 }

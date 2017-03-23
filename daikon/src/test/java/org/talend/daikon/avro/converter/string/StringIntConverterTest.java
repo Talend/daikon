@@ -19,54 +19,54 @@ import org.junit.Test;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
- * Unit tests for {@link StringToIntConverter}
+ * Unit tests for {@link StringIntConverter}
  */
-public class StringToIntConverterTest extends StringConverterTest {
+public class StringIntConverterTest extends StringConverterTest {
 
     @Override
-    StringToIntConverter createConverter() {
-        return new StringToIntConverter();
+    StringIntConverter createConverter() {
+        return new StringIntConverter();
     }
 
     /**
-     * Checks {@link StringToIntConverter#getSchema()} returns int schema
+     * Checks {@link StringIntConverter#getSchema()} returns int schema
      */
     @Test
     public void testGetSchema() {
-        StringToIntConverter converter = createConverter();
+        StringIntConverter converter = createConverter();
         Schema schema = converter.getSchema();
         assertEquals(AvroUtils._int(), schema);
     }
 
     /**
-     * Checks {@link StringToIntConverter#convertToDatum(Integer)} returns
+     * Checks {@link StringIntConverter#convertToDatum(Integer)} returns
      * "1234", when <code>1234<code> is passed
      */
     @Test
     public void testConvertToDatum() {
-        StringToIntConverter converter = createConverter();
+        StringIntConverter converter = createConverter();
         String value = converter.convertToDatum(1234);
         assertEquals("1234", value);
     }
 
     /**
-     * Checks {@link StringToIntConverter#convertToAvro(String)} returns
+     * Checks {@link StringIntConverter#convertToAvro(String)} returns
      * <code>1234<code>, when "1234" is passed
      */
     @Test
     public void testConvertToAvro() {
-        StringToIntConverter converter = createConverter();
+        StringIntConverter converter = createConverter();
         int value = converter.convertToAvro("1234");
         assertEquals(1234, value);
     }
 
     /**
-     * Checks {@link StringToIntConverter#convertToAvro(String)} throws
+     * Checks {@link StringIntConverter#convertToAvro(String)} throws
      * {@link NumberFormatException} if not a number string is passed
      */
     @Test(expected = NumberFormatException.class)
     public void testConvertToAvroNotInt() {
-        StringToIntConverter converter = createConverter();
+        StringIntConverter converter = createConverter();
         converter.convertToAvro("not an int");
     }
 

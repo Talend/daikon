@@ -19,66 +19,66 @@ import org.junit.Test;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
- * Unit tests for {@link StringToBooleanConverter}.
+ * Unit tests for {@link StringBooleanConverter}.
  */
-public class StringToBooleanConverterTest extends StringConverterTest {
+public class StringBooleanConverterTest extends StringConverterTest {
 
     @Override
-    StringToBooleanConverter createConverter() {
-        return new StringToBooleanConverter();
+    StringBooleanConverter createConverter() {
+        return new StringBooleanConverter();
     }
 
     /**
-     * Checks {@link StringToBooleanConverter#getSchema()} returns boolean
+     * Checks {@link StringBooleanConverter#getSchema()} returns boolean
      * schema
      */
     @Test
     public void testGetSchema() {
-        StringToBooleanConverter converter = createConverter();
+        StringBooleanConverter converter = createConverter();
         Schema schema = converter.getSchema();
         assertEquals(AvroUtils._boolean(), schema);
     }
 
     /**
-     * Checks {@link StringToBooleanConverter#convertToDatum(Boolean)} returns
+     * Checks {@link StringBooleanConverter#convertToDatum(Boolean)} returns
      * "true", when <code>true<code> is passed
      */
     @Test
     public void testConvertToDatumTrue() {
-        StringToBooleanConverter converter = createConverter();
+        StringBooleanConverter converter = createConverter();
         String value = converter.convertToDatum(true);
         assertEquals("true", value);
     }
 
     /**
-     * Checks {@link StringToBooleanConverter#convertToDatum(Boolean)} returns
+     * Checks {@link StringBooleanConverter#convertToDatum(Boolean)} returns
      * "false", when <code>false<code> is passed
      */
     @Test
     public void testConvertToDatumFalse() {
-        StringToBooleanConverter converter = createConverter();
+        StringBooleanConverter converter = createConverter();
         String value = converter.convertToDatum(false);
         assertEquals("false", value);
     }
 
     /**
-     * Checks {@link StringToBooleanConverter#convertToAvro(String)} returns
+     * Checks {@link StringBooleanConverter#convertToAvro(String)} returns
      * <code>true<code>, when "true" is passed
      */
     @Test
     public void testConvertToAvroTrue() {
-        StringToBooleanConverter converter = createConverter();
+        StringBooleanConverter converter = createConverter();
         boolean value = converter.convertToAvro("true");
         assertEquals(true, value);
     }
 
     /**
-     * Checks {@link StringToBooleanConverter#convertToAvro(String)} returns
+     * Checks {@link StringBooleanConverter#convertToAvro(String)} returns
      * <code>false<code>, when "false" is passed
      */
     @Test
     public void testConvertToAvroFalse() {
-        StringToBooleanConverter converter = createConverter();
+        StringBooleanConverter converter = createConverter();
         boolean value = converter.convertToAvro("false");
         assertEquals(false, value);
     }
