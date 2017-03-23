@@ -9,10 +9,6 @@ import org.springframework.boot.diagnostics.FailureAnalyzer;
  */
 public class IncorrectS3ConfigurationAnalyzer implements FailureAnalyzer {
 
-    public IncorrectS3ConfigurationAnalyzer() {
-        // For Spring initialization.
-    }
-
     @Override
     public FailureAnalysis analyze(Throwable failure) {
         final Throwable[] throwables = ExceptionUtils.getThrowables(failure);
