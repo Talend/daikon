@@ -12,7 +12,6 @@ class LocationUtils {
         // nothing to do
     }
 
-
     /**
      * Strips off the first '/' (if more characters than just a '/') to have proper tree structure in S3 bucket.
      * 
