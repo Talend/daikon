@@ -37,9 +37,21 @@ public class StringBooleanConverter extends StringConverter<Boolean> {
         return value.toString();
     }
 
+    /**
+     * Converts String <code>value</code> to Boolean
+     * For <code>null</code> incoming <code>value</code> {@link Boolean#FALSE} is returned
+     * For any input value besides <code>"true"</code> {@link Boolean#FALSE} is returned
+     * Extra spaces are omitted
+     * 
+     * @param value String input value to be converted
+     * @return converted Boolean value
+     */
     @Override
     public Boolean convertToAvro(String value) {
-        return Boolean.parseBoolean(value);
+        if (value == null) {
+            return false;
+        }
+        return Boolean.parseBoolean(value.trim());
     }
 
 }

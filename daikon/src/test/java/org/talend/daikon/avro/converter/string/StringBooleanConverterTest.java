@@ -82,4 +82,37 @@ public class StringBooleanConverterTest extends StringConverterTest {
         boolean value = converter.convertToAvro("false");
         assertEquals(false, value);
     }
+
+    /**
+     * Checks {@link StringBooleanConverter#convertToAvro(String)} returns
+     * <code>false<code>, when null is passed
+     */
+    @Test
+    public void testConvertToAvroNull() {
+        StringBooleanConverter converter = createConverter();
+        boolean value = converter.convertToAvro(null);
+        assertEquals(false, value);
+    }
+
+    /**
+     * Checks {@link StringBooleanConverter#convertToAvro(String)} omits extra spaces, thus
+     * <code>true<code> is returned, when "  true  " is passed
+     */
+    @Test
+    public void testConvertToAvroOmitSpaces() {
+        StringBooleanConverter converter = createConverter();
+        boolean value = converter.convertToAvro("  true  ");
+        assertEquals(true, value);
+    }
+
+    /**
+     * Checks {@link StringBooleanConverter#convertToAvro(String)} doesn't omit spaces inside word, thus
+     * <code>false<code> is returned, when "t rue" is passed
+     */
+    @Test
+    public void testConvertToAvroSpacesInside() {
+        StringBooleanConverter converter = createConverter();
+        boolean value = converter.convertToAvro("t rue");
+        assertEquals(false, value);
+    }
 }
