@@ -70,9 +70,7 @@ public final class LogicalTypeUtils {
         if (logicalType == null) {
             return false;
         }
-        Type type = schema.getType();
-        String logicalTypeName = logicalType.getName();
-        return type == Type.INT && "date".equals(logicalTypeName);
+        return Type.INT == schema.getType() && "date".equals(logicalType.getName());
     }
 
     /**
