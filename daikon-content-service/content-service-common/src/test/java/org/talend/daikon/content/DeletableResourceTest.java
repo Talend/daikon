@@ -1,9 +1,6 @@
 package org.talend.daikon.content;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,7 +12,7 @@ import org.junit.Test;
 
 public abstract class DeletableResourceTest extends DeletableLoaderResourceTests {
 
-    private static final String LOCATION = "file.txt";
+    protected static final String LOCATION = "file.txt";
 
     protected DeletableResource resource;
 

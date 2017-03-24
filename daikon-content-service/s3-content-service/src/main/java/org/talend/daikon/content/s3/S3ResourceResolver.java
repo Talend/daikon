@@ -9,6 +9,7 @@ import org.springframework.core.io.WritableResource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.talend.daikon.content.AbstractResourceResolver;
 import org.talend.daikon.content.DeletableResource;
+import org.talend.daikon.content.s3.provider.S3BucketProvider;
 
 import com.amazonaws.services.s3.AmazonS3;
 
@@ -16,9 +17,9 @@ class S3ResourceResolver extends AbstractResourceResolver {
 
     private final AmazonS3 amazonS3;
 
-    private final String bucket;
+    private final S3BucketProvider bucket;
 
-    S3ResourceResolver(ResourcePatternResolver delegate, AmazonS3 amazonS3, String bucket) {
+    S3ResourceResolver(ResourcePatternResolver delegate, AmazonS3 amazonS3, S3BucketProvider bucket) {
         super(delegate);
         this.amazonS3 = amazonS3;
         this.bucket = bucket;
@@ -26,7 +27,7 @@ class S3ResourceResolver extends AbstractResourceResolver {
 
     @Override
     public DeletableResource[] getResources(String locationPattern) throws IOException {
-        return super.getResources("s3://" + bucket + locationPattern);
+        return super.getResources("s3://" + bucket.getBucketName() + locationPattern);
     }
 
     @Override
@@ -39,11 +40,11 @@ class S3ResourceResolver extends AbstractResourceResolver {
             throw new IllegalArgumentException("Location can not be empty (was '" + location + "')");
         }
 
-        return super.getResource("s3://" + bucket + "/" + toS3Location(location));
+        return super.getResource("s3://" + bucket.getBucketName() + "/" + toS3Location(location));
     }
 
     @Override
     protected DeletableResource convert(WritableResource writableResource) {
-        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(), bucket);
+        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(), bucket.getBucketName());
     }
 }
