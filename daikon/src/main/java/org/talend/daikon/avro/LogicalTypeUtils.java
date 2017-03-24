@@ -26,22 +26,35 @@ public final class LogicalTypeUtils {
     }
 
     /**
-     * Checks whether specified schema has logical timestamp type.
+     * Checks whether specified schema has logical timestamp-millis type.
      * Its type should be LONG and
-     * Its logical type should be either "timestamp-millis" or "timestamp-micros"
+     * Its logical type should be "timestamp-millis"
      * 
      * @param schema avro schema
-     * @return true, if schema has logical timestamp type
+     * @return true, if schema has logical timestamp-millis type
      */
-    public static boolean isLogicalTimestamp(Schema schema) {
+    public static boolean isLogicalTimestampMillis(Schema schema) {
         LogicalType logicalType = schema.getLogicalType();
         if (logicalType == null) {
             return false;
         }
-        Type type = schema.getType();
-        String logicalTypeName = logicalType.getName();
-        return type == Type.LONG
-                && ("timestamp-millis".equals(logicalTypeName) || "timestamp-micros".equals(logicalType.getName()));
+        return Type.LONG == schema.getType() && "timestamp-millis".equals(logicalType.getName());
+    }
+
+    /**
+     * Checks whether specified schema has logical timestamp-micros type.
+     * Its type should be LONG and
+     * Its logical type should be "timestamp-micros"
+     * 
+     * @param schema avro schema
+     * @return true, if schema has logical timestamp-micros type
+     */
+    public static boolean isLogicalTimestampMicros(Schema schema) {
+        LogicalType logicalType = schema.getLogicalType();
+        if (logicalType == null) {
+            return false;
+        }
+        return Type.LONG == schema.getType() && "timestamp-micros".equals(logicalType.getName());
     }
 
     /**
@@ -63,26 +76,32 @@ public final class LogicalTypeUtils {
     }
 
     /**
-     * Checks whether specified schema has logical time type
-     * It should have type LONG and logical type "time-micros" or
-     * type INT and logical type "time-millis"
+     * Checks whether specified schema has logical time-millis type
+     * It should have type INT and logical type "time-millis"
      * 
      * @param schema avro schema
-     * @return true, if schema has logical time type
+     * @return true, if schema has logical time-millis type
      */
-    public static boolean isLogicalTime(Schema schema) {
+    public static boolean isLogicalTimeMillis(Schema schema) {
         LogicalType logicalType = schema.getLogicalType();
         if (logicalType == null) {
             return false;
         }
-        Type type = schema.getType();
-        String logicalTypeName = logicalType.getName();
-        if (type == Type.INT && "time-millis".equals(logicalTypeName)) {
-            return true;
-        } else if (type == Type.LONG && "time-micros".equals(logicalTypeName)) {
-            return true;
-        } else {
+        return Type.INT == schema.getType() && "time-millis".equals(logicalType.getName());
+    }
+
+    /**
+     * Checks whether specified schema has logical time-micros type
+     * It should have type LONG and logical type "time-micros"
+     * 
+     * @param schema avro schema
+     * @return true, if schema has logical time-micros type
+     */
+    public static boolean isLogicalTimeMicros(Schema schema) {
+        LogicalType logicalType = schema.getLogicalType();
+        if (logicalType == null) {
             return false;
         }
+        return Type.LONG == schema.getType() && "time-micros".equals(logicalType.getName());
     }
 }

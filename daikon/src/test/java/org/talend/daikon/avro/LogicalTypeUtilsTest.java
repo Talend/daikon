@@ -24,30 +24,43 @@ import org.junit.Test;
 public class LogicalTypeUtilsTest {
 
     /**
-     * Checks {@link LogicalTypeUtils#isLogicalTimestamp(Schema)} returns <code>true</code> if timestamp-millis schema is passed
+     * Checks {@link LogicalTypeUtils#isLogicalTimestampMillis(Schema)} returns <code>true</code> if timestamp-millis schema is
+     * passed
      */
     @Test
     public void testIsLogicalTimestampMillis() {
-        Schema timestampSchema = LogicalTypes.timestampMillis().addToSchema(Schema.create(Schema.Type.LONG));
-        assertTrue(LogicalTypeUtils.isLogicalTimestamp(timestampSchema));
+        Schema timestampMillisSchema = LogicalTypes.timestampMillis().addToSchema(Schema.create(Schema.Type.LONG));
+        assertTrue(LogicalTypeUtils.isLogicalTimestampMillis(timestampMillisSchema));
     }
 
     /**
-     * Checks {@link LogicalTypeUtils#isLogicalTimestamp(Schema)} returns <code>true</code> if timestamp-micros schema is passed
+     * Checks {@link LogicalTypeUtils#isLogicalTimestampMillis(Schema)} returns <code>false</code> if not timestamp-millis schema
+     * is passed
+     */
+    @Test
+    public void testIsLogicalTimestampMillisFalse() {
+        Schema notTimestampMillisSchema = LogicalTypes.timestampMicros().addToSchema(Schema.create(Schema.Type.LONG));
+        assertFalse(LogicalTypeUtils.isLogicalTimestampMillis(notTimestampMillisSchema));
+    }
+
+    /**
+     * Checks {@link LogicalTypeUtils#isLogicalTimestampMicros(Schema)} returns <code>true</code> if timestamp-micros schema is
+     * passed
      */
     @Test
     public void testIsLogicalTimestampMicros() {
-        Schema timestampSchema = LogicalTypes.timestampMicros().addToSchema(Schema.create(Schema.Type.LONG));
-        assertTrue(LogicalTypeUtils.isLogicalTimestamp(timestampSchema));
+        Schema timestampMicrosSchema = LogicalTypes.timestampMicros().addToSchema(Schema.create(Schema.Type.LONG));
+        assertTrue(LogicalTypeUtils.isLogicalTimestampMicros(timestampMicrosSchema));
     }
 
     /**
-     * Checks {@link LogicalTypeUtils#isLogicalTimestamp(Schema)} returns <code>false</code> if not timestamp schema is passed
+     * Checks {@link LogicalTypeUtils#isLogicalTimestampMicros(Schema)} returns <code>false</code> if not timestamp-micros schema
+     * is passed
      */
     @Test
-    public void testIsLogicalTimestampFalse() {
-        Schema longSchema = AvroUtils._long();
-        assertFalse(LogicalTypeUtils.isLogicalTimestamp(longSchema));
+    public void testIsLogicalTimestampMicrosFalse() {
+        Schema notTimestampMicrosSchema = LogicalTypes.timestampMillis().addToSchema(Schema.create(Schema.Type.LONG));
+        assertFalse(LogicalTypeUtils.isLogicalTimestampMicros(notTimestampMicrosSchema));
     }
 
     /**
@@ -69,30 +82,38 @@ public class LogicalTypeUtilsTest {
     }
 
     /**
-     * Checks {@link LogicalTypeUtils#isLogicalTime(Schema))} returns <code>true</code> if time-millis schema is passed
+     * Checks {@link LogicalTypeUtils#isLogicalTimeMillis(Schema)} returns <code>true</code> if time-millis schema is passed
      */
     @Test
     public void testIsLogicalTimeMillis() {
-        Schema timeSchema = LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
-        assertTrue(LogicalTypeUtils.isLogicalTime(timeSchema));
+        Schema timeMillisSchema = LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
+        assertTrue(LogicalTypeUtils.isLogicalTimeMillis(timeMillisSchema));
     }
 
     /**
-     * Checks {@link LogicalTypeUtils#isLogicalTime(Schema))} returns <code>true</code> if time-micros schema is passed
+     * Checks {@link LogicalTypeUtils#isLogicalTimeMillis(Schema)} returns <code>false</code> if not time-millis schema is passed
+     */
+    @Test
+    public void testIsLogicalTimeMillisFalse() {
+        Schema notTimeMillisSchema = LogicalTypes.timeMicros().addToSchema(Schema.create(Schema.Type.LONG));
+        assertFalse(LogicalTypeUtils.isLogicalTimeMillis(notTimeMillisSchema));
+    }
+
+    /**
+     * Checks {@link LogicalTypeUtils#isLogicalTimeMicros(Schema)} returns <code>true</code> if time-micros schema is passed
      */
     @Test
     public void testIsLogicalTimeMicros() {
-        Schema timeSchema = LogicalTypes.timeMicros().addToSchema(Schema.create(Schema.Type.LONG));
-        assertTrue(LogicalTypeUtils.isLogicalTime(timeSchema));
+        Schema timeMicrosSchema = LogicalTypes.timeMicros().addToSchema(Schema.create(Schema.Type.LONG));
+        assertTrue(LogicalTypeUtils.isLogicalTimeMicros(timeMicrosSchema));
     }
 
     /**
-     * Checks {@link LogicalTypeUtils#isLogicalTime(Schema))} returns <code>false</code> if not logical time schema is passed
+     * Checks {@link LogicalTypeUtils#isLogicalTimeMicros(Schema)} returns <code>false</code> if not time-micros schema is passed
      */
     @Test
-    public void testIsLogicalTimeFalse() {
-        Schema intSchema = AvroUtils._int();
-        assertFalse(LogicalTypeUtils.isLogicalTime(intSchema));
+    public void testIsLogicalTimeMicrosFalse() {
+        Schema notTimeMicrosSchema = LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
+        assertFalse(LogicalTypeUtils.isLogicalTimeMicros(notTimeMicrosSchema));
     }
-
 }
