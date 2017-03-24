@@ -23,20 +23,22 @@ Doing so will bring all needed dependencies.
 content-service.store=s3
 ```
 
-3. Add an `@Autowired` with `DeletableResourceLoader` type anywhere you want to use content service:
+3. Add an `@Autowired` with `org.talend.daikon.content.ResourceResolver` type anywhere you want to use content service:
 
 ```java
+import org.talend.daikon.content.ResourceResolver;
+
 @Component
 public class MyComponent {
     
     @Autowired
-    protected DeletableResourceLoader loader;
+    protected ResourceResolver loader;
 }
 ```
 
 ## Additional S3 configuration
 
-### Authentication modes
+### S3 client creation
 By default, AWS S3 client will authenticate using running EC2 instance credentials. Default behavior is same as:
 
 ```properties
@@ -51,6 +53,13 @@ content-service.store.s3.accessKey=<access_key>
 content-service.store.s3.secretKey=<secret_key>
 ```
 
+You may also use custom mode:
+ 
+```properties
+content-service.store.s3.authentication=CUSTOM
+```
+In this case, a bean of type `org.talend.daikon.content.s3.provider.AmazonS3Provider` is required in class path.
+
 ### Region
 
 When code runs in an EC2 context, AWS region is automatically detected. You may still specify/enforce it using an optional property.
@@ -58,3 +67,12 @@ When code runs in an EC2 context, AWS region is automatically detected. You may 
 ```properties
 content-service.store.s3.region=eu-west-1
 ```
+
+### Multi tenancy
+
+You can also enable multi tenancy for S3 (defaults to `false`):
+```properties
+multi-tenancy.s3.active=true
+```
+
+In this case you are required to provide an implementation of `org.talend.daikon.content.s3.provider.S3BucketProvider` that provide the current bucket name.
