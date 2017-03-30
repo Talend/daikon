@@ -132,7 +132,7 @@ public class LogicalTypeUtilsTest {
     @Test
     public void testGetLogicalTypeNameDate() {
         Schema logicalDateSchema = AvroUtils._logicalDate();
-        assertEquals("date", LogicalTypeUtils.getLogicalTypeName(logicalDateSchema));
+        assertEquals(LogicalTypeUtils.DATE, LogicalTypeUtils.getLogicalTypeName(logicalDateSchema));
     }
 
     /**
@@ -142,7 +142,27 @@ public class LogicalTypeUtilsTest {
     @Test
     public void testGetLogicalTypeNameTimestampMillis() {
         Schema timestampMillisSchema = LogicalTypes.timestampMillis().addToSchema(Schema.create(Schema.Type.LONG));
-        assertEquals("timestamp-millis", LogicalTypeUtils.getLogicalTypeName(timestampMillisSchema));
+        assertEquals(LogicalTypeUtils.TIMESTAMP_MILLIS, LogicalTypeUtils.getLogicalTypeName(timestampMillisSchema));
+    }
+
+    /**
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "timestamp-micros" if incoming schema has
+     * "timestamp-micros" logical type
+     */
+    @Test
+    public void testGetLogicalTypeNameTimestampMicros() {
+        Schema timestampMicrosSchema = LogicalTypes.timestampMicros().addToSchema(Schema.create(Schema.Type.LONG));
+        assertEquals(LogicalTypeUtils.TIMESTAMP_MICROS, LogicalTypeUtils.getLogicalTypeName(timestampMicrosSchema));
+    }
+
+    /**
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "time-millis" if incoming schema has "time-millis"
+     * logical type
+     */
+    @Test
+    public void testGetLogicalTypeNameTimeMillis() {
+        Schema timeMillisSchema = LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
+        assertEquals(LogicalTypeUtils.TIME_MILLIS, LogicalTypeUtils.getLogicalTypeName(timeMillisSchema));
     }
 
     /**
@@ -152,6 +172,6 @@ public class LogicalTypeUtilsTest {
     @Test
     public void testGetLogicalTypeNameTimeMicros() {
         Schema timeMicrosSchema = LogicalTypes.timeMicros().addToSchema(Schema.create(Schema.Type.LONG));
-        assertEquals("time-micros", LogicalTypeUtils.getLogicalTypeName(timeMicrosSchema));
+        assertEquals(LogicalTypeUtils.TIME_MICROS, LogicalTypeUtils.getLogicalTypeName(timeMicrosSchema));
     }
 }
