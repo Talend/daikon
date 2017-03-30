@@ -102,7 +102,7 @@ public final class LogicalTypeUtils {
         }
         return Type.LONG == schema.getType() && "time-micros".equals(logicalType.getName());
     }
-    
+
     /**
      * Returns name of schema logical type or null, if schema has no logical type
      * 

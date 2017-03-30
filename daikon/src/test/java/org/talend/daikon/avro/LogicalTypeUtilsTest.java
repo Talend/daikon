@@ -116,7 +116,7 @@ public class LogicalTypeUtilsTest {
         Schema notTimeMicrosSchema = LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
         assertFalse(LogicalTypeUtils.isLogicalTimeMicros(notTimeMicrosSchema));
     }
-    
+
     /**
      * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns <code>null</code> if incoming schema has no logical type
      */
@@ -125,7 +125,7 @@ public class LogicalTypeUtilsTest {
         Schema longSchema = AvroUtils._long();
         assertNull(LogicalTypeUtils.getLogicalTypeName(longSchema));
     }
-    
+
     /**
      * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "date" if incoming schema has "date" logical type
      */
@@ -134,18 +134,20 @@ public class LogicalTypeUtilsTest {
         Schema logicalDateSchema = AvroUtils._logicalDate();
         assertEquals("date", LogicalTypeUtils.getLogicalTypeName(logicalDateSchema));
     }
-    
+
     /**
-     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "timestamp-millis" if incoming schema has "timestamp-millis" logical type
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "timestamp-millis" if incoming schema has
+     * "timestamp-millis" logical type
      */
     @Test
     public void testGetLogicalTypeNameTimestampMillis() {
         Schema timestampMillisSchema = LogicalTypes.timestampMillis().addToSchema(Schema.create(Schema.Type.LONG));
         assertEquals("timestamp-millis", LogicalTypeUtils.getLogicalTypeName(timestampMillisSchema));
     }
-    
+
     /**
-     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "time-micros" if incoming schema has "time-micros" logical type
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "time-micros" if incoming schema has "time-micros"
+     * logical type
      */
     @Test
     public void testGetLogicalTypeNameTimeMicros() {
