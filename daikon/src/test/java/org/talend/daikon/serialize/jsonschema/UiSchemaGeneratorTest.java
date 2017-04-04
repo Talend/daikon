@@ -108,7 +108,7 @@ public class UiSchemaGeneratorTest {
         UiSchemaGenerator generator = new UiSchemaGenerator();
         ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
         System.out.println(uiSchemaJsonObj.toString());
-        String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:widget\":\"textarea\"}},\"np4\":{\"ui:widget\":\"hidden\"},\"np5\":{\"ui:widget\":\"hidden\"},\"np2\":{\"ui:widget\":\"table\"},\"np3\":{\"ui:widget\":\"hidden\"}}";
+        String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:widget\":\"textarea\"}},\"np4\":{\"ui:widget\":\"hidden\"},\"np5\":{\"ui:widget\":\"hidden\"},\"np2\":{\"ui:widget\":\"hidden\"},\"np3\":{\"ui:widget\":\"hidden\"}}";
         assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
     }
 }
