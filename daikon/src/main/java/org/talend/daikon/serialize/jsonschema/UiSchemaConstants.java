@@ -100,7 +100,10 @@ public class UiSchemaConstants {
     /**
      * Custom widget type. Display a schema editor, which let the user configure the Columns metadata
      */
-    public static final String CUSTOM_TYPE_SCHEMA = "schema";
+    // Disabled for products that create forms via JSON Schema.  Can be restored when Talend ui
+    // forms have a schema editor.
+    // public static final String CUSTOM_TYPE_SCHEMA = "schema";
+    public static final String CUSTOM_TYPE_SCHEMA = "hidden";
 
     /**
      * Custom widget type. Display a button
