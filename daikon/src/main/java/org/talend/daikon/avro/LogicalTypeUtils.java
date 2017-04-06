@@ -21,6 +21,16 @@ import org.apache.avro.Schema.Type;
  */
 public final class LogicalTypeUtils {
 
+    public static final String DATE = "date";
+
+    public static final String TIME_MILLIS = "time-millis";
+
+    public static final String TIME_MICROS = "time-micros";
+
+    public static final String TIMESTAMP_MILLIS = "timestamp-millis";
+
+    public static final String TIMESTAMP_MICROS = "timestamp-micros";
+
     private LogicalTypeUtils() {
         // Class provides static utility methods and shouldn't be instantiated
     }
@@ -38,7 +48,7 @@ public final class LogicalTypeUtils {
         if (logicalType == null) {
             return false;
         }
-        return Type.LONG == schema.getType() && "timestamp-millis".equals(logicalType.getName());
+        return Type.LONG == schema.getType() && TIMESTAMP_MILLIS.equals(logicalType.getName());
     }
 
     /**
@@ -54,7 +64,7 @@ public final class LogicalTypeUtils {
         if (logicalType == null) {
             return false;
         }
-        return Type.LONG == schema.getType() && "timestamp-micros".equals(logicalType.getName());
+        return Type.LONG == schema.getType() && TIMESTAMP_MICROS.equals(logicalType.getName());
     }
 
     /**
@@ -70,7 +80,7 @@ public final class LogicalTypeUtils {
         if (logicalType == null) {
             return false;
         }
-        return Type.INT == schema.getType() && "date".equals(logicalType.getName());
+        return Type.INT == schema.getType() && DATE.equals(logicalType.getName());
     }
 
     /**
@@ -85,7 +95,7 @@ public final class LogicalTypeUtils {
         if (logicalType == null) {
             return false;
         }
-        return Type.INT == schema.getType() && "time-millis".equals(logicalType.getName());
+        return Type.INT == schema.getType() && TIME_MILLIS.equals(logicalType.getName());
     }
 
     /**
@@ -100,6 +110,21 @@ public final class LogicalTypeUtils {
         if (logicalType == null) {
             return false;
         }
-        return Type.LONG == schema.getType() && "time-micros".equals(logicalType.getName());
+        return Type.LONG == schema.getType() && TIME_MICROS.equals(logicalType.getName());
+    }
+
+    /**
+     * Returns name of schema logical type or null, if schema has no logical type
+     * 
+     * @param schema avro schema
+     * @return logical type name
+     */
+    public static String getLogicalTypeName(Schema schema) {
+        LogicalType logicalType = schema.getLogicalType();
+        if (logicalType == null) {
+            return null;
+        } else {
+            return logicalType.getName();
+        }
     }
 }

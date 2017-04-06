@@ -116,4 +116,62 @@ public class LogicalTypeUtilsTest {
         Schema notTimeMicrosSchema = LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
         assertFalse(LogicalTypeUtils.isLogicalTimeMicros(notTimeMicrosSchema));
     }
+
+    /**
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns <code>null</code> if incoming schema has no logical type
+     */
+    @Test
+    public void testGetLogicalTypeNameNull() {
+        Schema longSchema = AvroUtils._long();
+        assertNull(LogicalTypeUtils.getLogicalTypeName(longSchema));
+    }
+
+    /**
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "date" if incoming schema has "date" logical type
+     */
+    @Test
+    public void testGetLogicalTypeNameDate() {
+        Schema logicalDateSchema = AvroUtils._logicalDate();
+        assertEquals(LogicalTypeUtils.DATE, LogicalTypeUtils.getLogicalTypeName(logicalDateSchema));
+    }
+
+    /**
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "timestamp-millis" if incoming schema has
+     * "timestamp-millis" logical type
+     */
+    @Test
+    public void testGetLogicalTypeNameTimestampMillis() {
+        Schema timestampMillisSchema = LogicalTypes.timestampMillis().addToSchema(Schema.create(Schema.Type.LONG));
+        assertEquals(LogicalTypeUtils.TIMESTAMP_MILLIS, LogicalTypeUtils.getLogicalTypeName(timestampMillisSchema));
+    }
+
+    /**
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "timestamp-micros" if incoming schema has
+     * "timestamp-micros" logical type
+     */
+    @Test
+    public void testGetLogicalTypeNameTimestampMicros() {
+        Schema timestampMicrosSchema = LogicalTypes.timestampMicros().addToSchema(Schema.create(Schema.Type.LONG));
+        assertEquals(LogicalTypeUtils.TIMESTAMP_MICROS, LogicalTypeUtils.getLogicalTypeName(timestampMicrosSchema));
+    }
+
+    /**
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "time-millis" if incoming schema has "time-millis"
+     * logical type
+     */
+    @Test
+    public void testGetLogicalTypeNameTimeMillis() {
+        Schema timeMillisSchema = LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
+        assertEquals(LogicalTypeUtils.TIME_MILLIS, LogicalTypeUtils.getLogicalTypeName(timeMillisSchema));
+    }
+
+    /**
+     * Checks {@link LogicalTypeUtils#getLogicalTypeName(Schema)} returns "time-micros" if incoming schema has "time-micros"
+     * logical type
+     */
+    @Test
+    public void testGetLogicalTypeNameTimeMicros() {
+        Schema timeMicrosSchema = LogicalTypes.timeMicros().addToSchema(Schema.create(Schema.Type.LONG));
+        assertEquals(LogicalTypeUtils.TIME_MICROS, LogicalTypeUtils.getLogicalTypeName(timeMicrosSchema));
+    }
 }
