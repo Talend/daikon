@@ -24,12 +24,12 @@ public class UiSchemaConstants {
     /**
      * Build-in tag. Represent the widget row order, do not support column order
      */
-    public static final String TAG_AUTO_FOCUS = "ui:autofocus";
+    public static final String TAG_ORDER = "ui:order";
 
     /**
      * Build-in tag. Represent the widget autofocus
      */
-    public static final String TAG_ORDER = "ui:order";
+    public static final String TAG_AUTO_FOCUS = "ui:autofocus";
 
     /**
      * Custom tag. Represent the widget trigger. It could be
