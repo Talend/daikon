@@ -32,7 +32,7 @@ public class UiSchemaGeneratorTest {
         public void setupLayout() {
             super.setupLayout();
             Form form = new Form(this, "MyNestedForm");
-            form.addRow(Widget.widget(myNestedStr).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
+            form.addRow(Widget.widget(myNestedStr).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE).setAutoFocus(true));
         }
     }
 
@@ -160,6 +160,16 @@ public class UiSchemaGeneratorTest {
             String expectedPartial = "{\"ui:widget\":\"hidden\"}";
             assertNotEquals(expectedPartial, uiSchema.toString(), false);
         }
+    }
+
+    @Test
+    public void testAutoFocus() throws Exception {
+        AProperties aProperties = new AProperties("foo");
+        aProperties.init();
+        UiSchemaGenerator generator = new UiSchemaGenerator();
+        ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
+        String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:autofocus\":true}}}";
+        assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
     }
 
 }

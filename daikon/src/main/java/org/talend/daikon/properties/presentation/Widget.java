@@ -172,6 +172,11 @@ public class Widget implements ToStringIndent {
     public static final String READ_ONLY_WIDGET_CONF = "widget.conf.readonly";
 
     /**
+     * Tell the client whether the widget is autofocus or not.
+     */
+    public static final String AUTO_FOCUS_WIDGET_CONF = "widget.conf.autofocus";
+
+    /**
      * Tell the client whether hide the toolbar or not. For example can set it as "true" to hide the toolbar of a table
      * widget.
      */
@@ -407,6 +412,15 @@ public class Widget implements ToStringIndent {
 
     public Widget setReadonly(boolean readonly) {
         setConfigurationValue(READ_ONLY_WIDGET_CONF, readonly);
+        return this;
+    }
+
+    public boolean isAutoFocus() {
+        return Boolean.valueOf(String.valueOf(getConfigurationValue(AUTO_FOCUS_WIDGET_CONF)));
+    }
+
+    public Widget setAutoFocus(boolean autoFocus) {
+        setConfigurationValue(AUTO_FOCUS_WIDGET_CONF, autoFocus);
         return this;
     }
 
