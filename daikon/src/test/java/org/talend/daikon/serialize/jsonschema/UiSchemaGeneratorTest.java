@@ -2,6 +2,7 @@ package org.talend.daikon.serialize.jsonschema;
 
 import static org.junit.Assert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.skyscreamer.jsonassert.JSONAssert.assertNotEquals;
 
 import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
@@ -111,12 +112,17 @@ public class UiSchemaGeneratorTest {
         assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
     }
 
+    /**
+     * Verify that when ALL of the top-level Property and Properties widgets are hidden on an AProperties form, the form
+     * itself will also be hidden.
+     */
     @Test
     public void testAllHidden() throws Exception {
-        // When all of the properties are hidden, the form will be hidden too.
         AProperties aProperties = new AProperties("foo");
         aProperties.init();
         Form f = aProperties.getForm("MyForm");
+
+        // When all of the properties are hidden, the form will be hidden too.
         for (Widget w : f.getWidgets()) {
             w.setHidden();
         }
@@ -127,6 +133,11 @@ public class UiSchemaGeneratorTest {
         assertEquals(expectedPartial, uiSchema.toString(), false);
     }
 
+    /**
+     * For one of the sub-properties of AProperties, turn all of its widgets into hidden. Verify that this
+     * sub-properties is now hidden, but AProperties is still visible (since not ALL of the top-level properties are
+     * hidden).
+     */
     @Test
     public void testSomeHidden() throws Exception {
         // When all of the properties are hidden, the form will be hidden too.
@@ -134,13 +145,21 @@ public class UiSchemaGeneratorTest {
         aProperties.init();
         Form f = aProperties.getForm("MyForm");
 
-        // Hide the only property on the nested form.
+        // Hide a sub-sub-property (two levels deep).
         ((Form) f.getWidget("np").getContent()).getWidget("myNestedStr").setHidden();
 
-        // When all of the widgets are hidden, there should be a ui:widget = hidden on the root uiSchema.
         ObjectNode uiSchema = new UiSchemaGenerator().genWidget(aProperties, f.getName());
-        String expectedPartial = "{\"np\": {\"ui:widget\":\"hidden\"}}";
-        assertEquals(expectedPartial, uiSchema.toString(), false);
+        // Since this is the only property of np, it will cause np to be hidden.
+        {
+            String expectedPartial = "{\"np\": {\"ui:widget\":\"hidden\"}}";
+            assertEquals(expectedPartial, uiSchema.toString(), false);
+        }
+
+        // However, there are still visible properties on aProperties, the root will NOT be hidden.
+        {
+            String expectedPartial = "{\"ui:widget\":\"hidden\"}";
+            assertNotEquals(expectedPartial, uiSchema.toString(), false);
+        }
     }
 
 }
