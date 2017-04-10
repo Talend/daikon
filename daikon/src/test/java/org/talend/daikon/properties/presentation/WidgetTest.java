@@ -37,7 +37,6 @@ public class WidgetTest {
         assertEquals(true,
                 desProps.getForm(Form.MAIN).getWidget("confProperty").getConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF));
 
-
     }
 
     @Test
@@ -71,10 +70,8 @@ public class WidgetTest {
         @Override
         public void setupLayout() {
             super.setupLayout();
-            getForm(Form.MAIN)
-                    .addRow(widget(confProperty)
-                            .setConfigurationValue(Widget.READ_ONLY_WIDGET_CONF, true)
-                            .setConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF, true));
+            getForm(Form.MAIN).addRow(widget(confProperty).setConfigurationValue(Widget.READ_ONLY_WIDGET_CONF, true)
+                    .setConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF, true));
         }
     }
 
