@@ -1,6 +1,7 @@
 package org.talend.daikon.serialize.jsonschema;
 
 import static org.junit.Assert.assertEquals;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
@@ -13,8 +14,6 @@ import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.serialize.FullExampleProperties;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 public class UiSchemaGeneratorTest {
 
@@ -111,4 +110,37 @@ public class UiSchemaGeneratorTest {
         String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:widget\":\"textarea\"}},\"np4\":{\"ui:widget\":\"hidden\"},\"np5\":{\"ui:widget\":\"hidden\"},\"np2\":{\"ui:widget\":\"hidden\"},\"np3\":{\"ui:widget\":\"hidden\"}}";
         assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
     }
+
+    @Test
+    public void testAllHidden() throws Exception {
+        // When all of the properties are hidden, the form will be hidden too.
+        AProperties aProperties = new AProperties("foo");
+        aProperties.init();
+        Form f = aProperties.getForm("MyForm");
+        for (Widget w : f.getWidgets()) {
+            w.setHidden();
+        }
+
+        // When all of the widgets are hidden, there should be a ui:widget = hidden on the root uiSchema.
+        ObjectNode uiSchema = new UiSchemaGenerator().genWidget(aProperties, f.getName());
+        String expectedPartial = "{\"ui:widget\":\"hidden\"}";
+        assertEquals(expectedPartial, uiSchema.toString(), false);
+    }
+
+    @Test
+    public void testSomeHidden() throws Exception {
+        // When all of the properties are hidden, the form will be hidden too.
+        AProperties aProperties = new AProperties("foo");
+        aProperties.init();
+        Form f = aProperties.getForm("MyForm");
+
+        // Hide the only property on the nested form.
+        ((Form) f.getWidget("np").getContent()).getWidget("myNestedStr").setHidden();
+
+        // When all of the widgets are hidden, there should be a ui:widget = hidden on the root uiSchema.
+        ObjectNode uiSchema = new UiSchemaGenerator().genWidget(aProperties, f.getName());
+        String expectedPartial = "{\"np\": {\"ui:widget\":\"hidden\"}}";
+        assertEquals(expectedPartial, uiSchema.toString(), false);
+    }
+
 }

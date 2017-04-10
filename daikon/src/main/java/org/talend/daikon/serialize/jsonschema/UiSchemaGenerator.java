@@ -4,6 +4,7 @@ import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperti
 import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,11 +13,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -28,8 +29,8 @@ public class UiSchemaGenerator {
     }
 
     /**
-     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider the requested form and Advanced
-     * Form
+     * Generate UISchema by the given ComponentProperties and relate Form/Widget Only consider the requested form and
+     * Advanced Form
      */
     private ObjectNode processTPropertiesWidget(Properties cProperties, String formName) {
         Form mainForm = cProperties.getPreferredForm(formName);
@@ -47,8 +48,7 @@ public class UiSchemaGenerator {
             return jsonToReturn;
         }
 
-        List<JsonWidget> jsonWidgets = new ArrayList<>();
-        jsonWidgets.addAll(listTypedWidget(form));
+        List<JsonWidget> jsonWidgets = listTypedWidget(form);
 
         // Merge widget in Main and Advanced form together, need the merged order.
         Map<Integer, String> order = new TreeMap<>();
@@ -60,6 +60,7 @@ public class UiSchemaGenerator {
 
         for (JsonWidget jsonWidget : jsonWidgets) {
             NamedThing content = jsonWidget.getContent();
+            // If it is a top-level property or PresentationItem, then add it directly to the output.
             if (propertyList.contains(content) || content instanceof PresentationItem) {
                 ObjectNode jsonNodes = processTWidget(jsonWidget.getWidget(), JsonNodeFactory.instance.objectNode());
                 if (jsonNodes.size() != 0) {
@@ -77,6 +78,7 @@ public class UiSchemaGenerator {
                     checkProperties = (Properties) content;
                     resolveForm = null;
                 }
+
                 if (propertiesList.contains(checkProperties)) {
                     ObjectNode jsonNodes = null;
                     if (resolveForm != null) {// Properties associated with a form
@@ -84,13 +86,29 @@ public class UiSchemaGenerator {
                         jsonNodes = processTWidget(jsonWidget.getWidget(), jsonNodes);// add the current
                     } else {// Properties is associated with a widget
                         jsonNodes = processTWidget(jsonWidget.getWidget(), JsonNodeFactory.instance.objectNode());// add
-                                                                                                                  // the
-                                                                                                                  // current
                     }
                     order.put(jsonWidget.getOrder(), jsonWidget.getName());
                     if (jsonNodes.size() != 0) {
                         jsonToReturn.set(jsonWidget.getName(), jsonNodes);
                     }
+
+                    // If nothing is visible in the properties, then this widget should also be hidden.
+                    Iterator<Map.Entry<String, JsonNode>> innerFields = jsonNodes.fields();
+                    boolean hasVisibleInnerField = false;
+                    while (innerFields.hasNext()) {
+                        Map.Entry<String, JsonNode> inner = innerFields.next();
+                        if (inner.getKey().startsWith("ui:"))
+                            continue;
+                        JsonNode innerWidget = inner.getValue().get("ui:widget");
+                        if (innerWidget == null || !"hidden".equals(innerWidget.asText())) {
+                            hasVisibleInnerField = true;
+                            break;
+                        }
+                    }
+                    if (!hasVisibleInnerField) {
+                        setHiddenWidget(jsonNodes);
+                    }
+
                 }
             }
         }
@@ -124,6 +142,13 @@ public class UiSchemaGenerator {
         return jsonToReturn;
     }
 
+    /**
+     * Process a top-level {@link Property} or {@link PresentationItem} in a form.
+     *
+     * @param widget The widget associated with the Property or Presentation item.
+     * @param schema The uiSchema currently being generated for the widget.
+     * @return The generated uiSchema.
+     */
     private ObjectNode processTWidget(Widget widget, ObjectNode schema) {
         if (widget.isHidden()) {
             NamedThing content = widget.getContent();
@@ -146,7 +171,7 @@ public class UiSchemaGenerator {
 
                     schema.set(UiSchemaConstants.TAG_OPTIONS, options);
                 }
-            } else {//no supported widget for this, so if Properties then hide 
+            } else {// no supported widget for this, so if Properties then hide
                 NamedThing content = widget.getContent();
                 if (content instanceof Properties) {
                     // hide the Properties that do not have a Widget to render it.
