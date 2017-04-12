@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.junit.Test;
-import org.talend.daikon.converter.TypeConverter;
 
 /**
  * To find more test, please refer to TypeCOnverterTest
@@ -21,6 +20,7 @@ public class BigDecimalConverterTest {
     private Byte inputByte = 3;
 
     private double inputdouble = 3.0d;
+    
 
     private Double inputDouble = 3.0D;
 
@@ -45,7 +45,7 @@ public class BigDecimalConverterTest {
     private Short inputShort = 3;
 
     @Test
-    public void test_asBigDecimal_scale() {
+    public void tesAsBigDecimalWithScale() {
         // the only one impacted by the scale value
         assertEquals(outputBigDecimalWithScale, TypeConverter.asBigDecimal().withScale(5).convert(inputBigDecimal));
 
@@ -66,7 +66,7 @@ public class BigDecimalConverterTest {
     }
 
     @Test
-    public void test_asBigDecimal_scale_roundingmode() {
+    public void testAsBigDecimalWithScaleAndRoundingmode() {
         // the only one impacted by the scale value
         assertEquals(outputBigDecimalWithScale,
                 TypeConverter.asBigDecimal().withScale(5).withRoundingMode(RoundingMode.CEILING).convert(inputBigDecimal));
@@ -101,7 +101,7 @@ public class BigDecimalConverterTest {
     }
 
     @Test
-    public void test_asBigDecimal_precision() {
+    public void testAsBigDecimalWithPrecision() {
         // the only one impacted by the precision value
         assertEquals(inputBigDecimal, TypeConverter.asBigDecimal().withPrecision(5).convert(inputBigDecimal));
 
@@ -122,7 +122,7 @@ public class BigDecimalConverterTest {
     }
 
     @Test
-    public void test_asBigDecimal_precision_roundingmode() {
+    public void testAsBigDecimalWithPrecisionAndRoundingmode() {
         // the only one impacted by the Precision value
         assertEquals(inputBigDecimal,
                 TypeConverter.asBigDecimal().withPrecision(5).withRoundingMode(RoundingMode.CEILING).convert(inputBigDecimal));
