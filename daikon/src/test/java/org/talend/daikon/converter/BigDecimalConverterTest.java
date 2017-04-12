@@ -20,7 +20,6 @@ public class BigDecimalConverterTest {
     private Byte inputByte = 3;
 
     private double inputdouble = 3.0d;
-    
 
     private Double inputDouble = 3.0D;
 
