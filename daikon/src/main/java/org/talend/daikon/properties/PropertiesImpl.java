@@ -28,7 +28,7 @@ import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
-import org.talend.daikon.i18n.TranslatableImpl;
+import org.talend.daikon.i18n.tag.TranslatableTaggedImpl;
 import org.talend.daikon.properties.error.PropertiesErrorCode;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
@@ -45,7 +45,8 @@ import com.cedarsoftware.util.io.JsonWriter;
 /**
  * Implementation of {@link Properties} which must be subclassed to define your properties.
  */
-public class PropertiesImpl extends TranslatableImpl implements Properties, AnyProperty, PostDeserializeHandler, ToStringIndent {
+public class PropertiesImpl extends TranslatableTaggedImpl
+        implements Properties, AnyProperty, PostDeserializeHandler, ToStringIndent {
 
     private static final long serialVersionUID = -7970336622844281900L;
 
