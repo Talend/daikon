@@ -26,7 +26,6 @@
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<daikon.version>0.16.0-SNAPSHOT</daikon.version>
 		<enunciate-version>2.8.0</enunciate-version>
 		<servlet-version>3.1.0</servlet-version>
 		<talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
@@ -44,34 +43,34 @@
 			<dependency>
 				<groupId>org.talend.daikon</groupId>
 				<artifactId>content-service-common</artifactId>
-				<version>${daikon.version}</version>
+				<version>${project.version}</version>
 				<classifier>lib</classifier>
 			</dependency>
 			<dependency>
 				<groupId>org.talend.daikon</groupId>
 				<artifactId>content-service-common</artifactId>
-				<version>${daikon.version}</version>
+				<version>${project.version}</version>
 				<type>test-jar</type>
 			</dependency>
 			<dependency>
 				<groupId>org.talend.daikon</groupId>
 				<artifactId>daikon</artifactId>
-				<version>${daikon.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.talend.daikon</groupId>
 				<artifactId>service-common</artifactId>
-				<version>${daikon.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.talend.daikon</groupId>
 				<artifactId>service-docs</artifactId>
-				<version>${daikon.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.talend.daikon</groupId>
 				<artifactId>weather-service</artifactId>
-				<version>${daikon.version}</version>
+				<version>${project.version}</version>
 				<classifier>service</classifier>
 			</dependency>
 		</dependencies>

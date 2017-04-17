@@ -90,7 +90,7 @@
 					<dependency>
 						<groupId>org.talend.daikon</groupId>
 						<artifactId>service-docs</artifactId>
-						<version>${daikon.version}</version>
+						<version>${project.version}</version>
 					</dependency>
 				</dependencies>
 			</plugin>
