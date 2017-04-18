@@ -193,7 +193,7 @@
 				<configuration>
 					<pushChanges>false</pushChanges>
 					<scmCommentPrefix>release:</scmCommentPrefix>
-					<tagNameFormat>@{project.artifactId}-@{project.version}</tagNameFormat>
+					<tagNameFormat>daikon-@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
         </plugins>
