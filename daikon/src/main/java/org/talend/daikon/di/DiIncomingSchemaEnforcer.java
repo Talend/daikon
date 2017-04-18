@@ -76,8 +76,10 @@ public class DiIncomingSchemaEnforcer {
      */
     private List<Schema.Field> dynamicFields = null;
 
-    /** The values wrapped by this object. */
-    private GenericData.Record wrapped = null;
+    /**
+     * The values wrapped by this object - current {@link IndexedRecord}
+     */
+    private GenericData.Record currentRecord = null;
 
     /**
      * Access the indexed fields by their name. We should prefer accessing them by index for performance, but this
@@ -291,11 +293,12 @@ public class DiIncomingSchemaEnforcer {
      * @param value data value
      */
     public void put(int index, Object value) {
-        if (wrapped == null)
-            wrapped = new GenericData.Record(getRuntimeSchema());
+        if (currentRecord == null) {
+            createNewRecord();
+        }
 
         if (value == null) {
-            wrapped.put(index, null);
+            currentRecord.put(index, null);
             return;
         }
 
@@ -415,7 +418,7 @@ public class DiIncomingSchemaEnforcer {
             }
         }
 
-        wrapped.put(index, datum);
+        currentRecord.put(index, datum);
     }
 
     /**
@@ -423,9 +426,27 @@ public class DiIncomingSchemaEnforcer {
      */
     public IndexedRecord createIndexedRecord() {
         // Send the data to a new instance of IndexedRecord and clear out the existing values.
-        IndexedRecord copy = wrapped;
-        wrapped = null;
+        IndexedRecord copy = currentRecord;
+        currentRecord = null;
         return copy;
+    }
+
+    /**
+     * Returns current {@link IndexedRecord}
+     * 
+     * @return current {@link IndexedRecord}
+     */
+    public IndexedRecord getCurrentRecord() {
+        return currentRecord;
+    }
+
+    /**
+     * Creates new instance for {@link IndexedRecord}
+     * This should be called before series of {@link this#put()} calls, which copies values from next DI data object into this
+     * enforcer
+     */
+    public void createNewRecord() {
+        currentRecord = new GenericData.Record(getRuntimeSchema());
     }
 
 }
