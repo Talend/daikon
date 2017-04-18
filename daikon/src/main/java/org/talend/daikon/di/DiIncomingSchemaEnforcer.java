@@ -46,7 +46,7 @@ import org.talend.daikon.avro.SchemaConstants;
  * <p>
  * One instance of this object can be created per incoming schema and reused.
  */
-public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
+public class DiIncomingSchemaEnforcer {
 
     /**
      * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
