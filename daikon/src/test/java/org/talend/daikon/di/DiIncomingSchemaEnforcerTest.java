@@ -17,6 +17,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -117,20 +119,34 @@ public class DiIncomingSchemaEnforcerTest {
         assertThat(enforcer.needsInitDynamicColumns(), is(false));
     }
 
+    /**
+     * Checks following {@link DiIncomingSchemaEnforcer} workflow:
+     * 1. Create instance of {@link DiIncomingSchemaEnforcer}
+     * 2. Check whether dynamic fields are initialized - should be false
+     * 3. Initialize/add several dynamic fields
+     * 4. Create runtime schema from dynamic fields and design schema
+     * 5. Check whether dynamic fields are initialized - should be true
+     * 6. Get runtime schema
+     * 7. Check DI data to IndexedRecord conversion for several data objects
+     * 
+     * in case dynamic column is on the 0 position
+     * This test uses old deprecated API
+     */
     @Test
-    public void testDynamicColumn_DynamicColumnAtStart() {
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
+    public void testDynamicColumnDynamicColumnAtStartOld() {
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
                 .name("valid").type().booleanType().noDefault() //
                 .name("address").type().stringType().noDefault() //
                 .name("comment").type().stringType().noDefault() //
                 .endRecord();
-        talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0");
 
-        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
 
         // The enforcer isn't usable yet.
-        assertThat(enforcer.getDesignSchema(), is(talend6Schema));
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
         assertThat(enforcer.needsInitDynamicColumns(), is(true));
         assertThat(enforcer.getRuntimeSchema(), nullValue());
 
@@ -142,27 +158,84 @@ public class DiIncomingSchemaEnforcerTest {
         assertThat(enforcer.needsInitDynamicColumns(), is(false));
 
         // Check the run-time schema was created.
-        assertThat(enforcer.getDesignSchema(), is(talend6Schema));
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
         assertThat(enforcer.getRuntimeSchema(), not(nullValue()));
 
         // Put values into the enforcer and get them as an IndexedRecord.
         checkEnforcerWithComponentRecordData(enforcer);
     }
 
+    /**
+     * Checks following {@link DiIncomingSchemaEnforcer} workflow:
+     * 1. Create instance of {@link DiIncomingSchemaEnforcer}
+     * 2. Check whether dynamic fields are initialized - should be false
+     * 3. Initialize/add several dynamic fields
+     * 4. Create runtime schema from dynamic fields and design schema
+     * 5. Check whether dynamic fields are initialized - should be true
+     * 6. Get runtime schema
+     * 7. Check DI data to IndexedRecord conversion for several data objects
+     * 
+     * in case dynamic column is on the 0 position
+     */
     @Test
-    public void testDynamicColumn_DynamicColumnAtMiddle() {
-        Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
+    public void testDynamicColumnDynamicColumnAtStart() {
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("valid").type().booleanType().noDefault() //
+                .name("address").type().stringType().noDefault() //
+                .name("comment").type().stringType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+
+        // The enforcer isn't usable yet.
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
+        assertFalse(enforcer.areDynamicFieldsInitialized());
+        assertThat(enforcer.getRuntimeSchema(), nullValue());
+
+        enforcer.addDynamicField("id", "id_Integer", null, null, false);
+        enforcer.addDynamicField("name", "id_String", null, null, false);
+        enforcer.addDynamicField("age", "id_Integer", null, null, false);
+        assertFalse(enforcer.areDynamicFieldsInitialized());
+        enforcer.recreateRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        // Check the run-time schema was created.
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
+        assertThat(enforcer.getRuntimeSchema(), not(nullValue()));
+
+        // Put values into the enforcer and get them as an IndexedRecord.
+        checkEnforcerWithComponentRecordData(enforcer);
+    }
+
+    /**
+     * Checks following {@link DiIncomingSchemaEnforcer} workflow:
+     * 1. Create instance of {@link DiIncomingSchemaEnforcer}
+     * 2. Check whether dynamic fields are initialized - should be false
+     * 3. Initialize/add several dynamic fields
+     * 4. Create runtime schema from dynamic fields and design schema
+     * 5. Check whether dynamic fields are initialized - should be true
+     * 6. Get runtime schema
+     * 7. Check DI data to IndexedRecord conversion for several data objects
+     * 
+     * in case dynamic column is in the middle position
+     */
+    @Test
+    public void testDynamicColumnDynamicColumnAtMiddleOld() {
+        Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
                 .name("id").type().intType().noDefault() //
                 .name("address").type().stringType().noDefault() //
                 .name("comment").type().stringType().noDefault() //
                 .endRecord();
-        talend6Schema = AvroUtils.setIncludeAllFields(talend6Schema, true);
-        talend6Schema = AvroUtils.setProperty(talend6Schema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
+        designSchema = AvroUtils.setIncludeAllFields(designSchema, true);
+        designSchema = AvroUtils.setProperty(designSchema, DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1");
 
-        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
 
         // The enforcer isn't usable yet.
-        assertThat(enforcer.getDesignSchema(), is(talend6Schema));
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
         assertThat(enforcer.needsInitDynamicColumns(), is(true));
         assertThat(enforcer.getRuntimeSchema(), nullValue());
 
@@ -174,15 +247,72 @@ public class DiIncomingSchemaEnforcerTest {
         assertThat(enforcer.needsInitDynamicColumns(), is(false));
 
         // Check the run-time schema was created.
-        assertThat(enforcer.getDesignSchema(), is(talend6Schema));
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
         assertThat(enforcer.getRuntimeSchema(), not(nullValue()));
 
         // Put values into the enforcer and get them as an IndexedRecord.
         checkEnforcerWithComponentRecordData(enforcer);
     }
 
+    /**
+     * Checks following {@link DiIncomingSchemaEnforcer} workflow:
+     * 1. Create instance of {@link DiIncomingSchemaEnforcer}
+     * 2. Check whether dynamic fields are initialized - should be false
+     * 3. Initialize/add several dynamic fields
+     * 4. Create runtime schema from dynamic fields and design schema
+     * 5. Check whether dynamic fields are initialized - should be true
+     * 6. Get runtime schema
+     * 7. Check DI data to IndexedRecord conversion for several data objects
+     * 
+     * in case dynamic column is in the middle position
+     */
     @Test
-    public void testDynamicColumn_DynamicColumnAtEnd() {
+    public void testDynamicColumnDynamicColumnAtMiddle() {
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "1") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("id").type().intType().noDefault() //
+                .name("address").type().stringType().noDefault() //
+                .name("comment").type().stringType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+
+        // The enforcer isn't usable yet.
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
+        assertFalse(enforcer.areDynamicFieldsInitialized());
+        assertThat(enforcer.getRuntimeSchema(), nullValue());
+
+        enforcer.addDynamicField("name", "id_String", null, null, false);
+        enforcer.addDynamicField("age", "id_Integer", null, null, false);
+        enforcer.addDynamicField("valid", "id_Boolean", null, null, false);
+        assertFalse(enforcer.areDynamicFieldsInitialized());
+        enforcer.recreateRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        // Check the run-time schema was created.
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
+        assertThat(enforcer.getRuntimeSchema(), not(nullValue()));
+
+        // Put values into the enforcer and get them as an IndexedRecord.
+        checkEnforcerWithComponentRecordData(enforcer);
+    }
+
+    /**
+     * Checks following {@link DiIncomingSchemaEnforcer} workflow:
+     * 1. Create instance of {@link DiIncomingSchemaEnforcer}
+     * 2. Check whether dynamic fields are initialized - should be false
+     * 3. Initialize/add several dynamic fields
+     * 4. Create runtime schema from dynamic fields and design schema
+     * 5. Check whether dynamic fields are initialized - should be true
+     * 6. Get runtime schema
+     * 7. Check DI data to IndexedRecord conversion for several data objects
+     * 
+     * in case dynamic column is in the last position
+     */
+    @Test
+    public void testDynamicColumnDynamicColumnAtEndOld() {
         // The expected schema after enforcement.
         Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
                 .name("id").type().intType().noDefault() //
@@ -208,6 +338,51 @@ public class DiIncomingSchemaEnforcerTest {
 
         // Check the run-time schema was created.
         assertThat(enforcer.getDesignSchema(), is(talend6Schema));
+        assertThat(enforcer.getRuntimeSchema(), not(nullValue()));
+
+        // Put values into the enforcer and get them as an IndexedRecord.
+        checkEnforcerWithComponentRecordData(enforcer);
+    }
+
+    /**
+     * Checks following {@link DiIncomingSchemaEnforcer} workflow:
+     * 1. Create instance of {@link DiIncomingSchemaEnforcer}
+     * 2. Check whether dynamic fields are initialized - should be false
+     * 3. Initialize/add several dynamic fields
+     * 4. Create runtime schema from dynamic fields and design schema
+     * 5. Check whether dynamic fields are initialized - should be true
+     * 6. Get runtime schema
+     * 7. Check DI data to IndexedRecord conversion for several data objects
+     * 
+     * in case dynamic column is in the last position
+     */
+    @Test
+    public void testDynamicColumnDynamicColumnAtEnd() {
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("age").type().intType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+
+        // The enforcer isn't usable yet.
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
+        assertFalse(enforcer.areDynamicFieldsInitialized());
+        assertThat(enforcer.getRuntimeSchema(), nullValue());
+
+        enforcer.addDynamicField("valid", "id_Boolean", null, null, false);
+        enforcer.addDynamicField("address", "id_String", null, null, false);
+        enforcer.addDynamicField("comment", "id_String", null, null, false);
+        assertFalse(enforcer.areDynamicFieldsInitialized());
+        enforcer.recreateRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        // Check the run-time schema was created.
+        assertThat(enforcer.getDesignSchema(), is(designSchema));
         assertThat(enforcer.getRuntimeSchema(), not(nullValue()));
 
         // Put values into the enforcer and get them as an IndexedRecord.

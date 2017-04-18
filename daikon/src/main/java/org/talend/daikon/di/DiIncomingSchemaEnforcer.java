@@ -243,7 +243,7 @@ public class DiIncomingSchemaEnforcer {
      */
     @Deprecated
     public boolean needsInitDynamicColumns() {
-        return areDynamicFieldsInitialized();
+        return !areDynamicFieldsInitialized();
     }
 
     /**
@@ -255,7 +255,7 @@ public class DiIncomingSchemaEnforcer {
      * @return true, if dynamic fields were initialized; false - otherwise
      */
     public boolean areDynamicFieldsInitialized() {
-        return dynamicFields != null;
+        return dynamicFields == null;
     }
 
     /**
