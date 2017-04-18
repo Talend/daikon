@@ -49,24 +49,32 @@ import org.talend.daikon.avro.SchemaConstants;
 public class DiIncomingSchemaEnforcer {
 
     /**
-     * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
+     * Dynamic column position possible value, which means schema doesn't have dynamic column
      */
-    private final Schema incomingDesignSchema;
+    private static final int NO_DYNAMIC_COLUMN = -1;
+
+    /**
+     * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
+     * This schema is retrieved from downstream component's properties
+     */
+    private final Schema designSchema;
 
     /**
      * The position of the dynamic column in the incoming schema. This is -1 if there is no dynamic column. There can be
      * a maximum of one dynamic column in the schema.
      */
-    private final int incomingDynamicColumn;
+    private final int dynamicColumnPosition;
 
     /**
      * The {@link Schema} of the actual runtime data that will be provided by this object. This will only be null if
      * dynamic columns exist, but they have not been finished initializing.
      */
-    private Schema incomingRuntimeSchema;
+    private Schema runtimeSchema;
 
-    /** The fields constructed from dynamic columns. This will only be non-null during construction. */
-    private List<Schema.Field> fieldsFromDynamicColumns = null;
+    /**
+     * Collection of fields constructed from dynamic columns. This will only be non-null during construction.
+     */
+    private List<Schema.Field> dynamicFields = null;
 
     /** The values wrapped by this object. */
     private GenericData.Record wrapped = null;
@@ -80,21 +88,27 @@ public class DiIncomingSchemaEnforcer {
     // TODO(rskraba): fix with a general type conversion strategy.
     private final Map<String, SimpleDateFormat> dateFormatCache = new HashMap<>();
 
+    /**
+     * Constructor
+     * 
+     * @param incoming design schema retrieved from downstream component properties
+     */
     public DiIncomingSchemaEnforcer(Schema incoming) {
-        this.incomingDesignSchema = incoming;
-        this.incomingRuntimeSchema = incoming;
+        designSchema = incoming;
 
         // Find the dynamic column, if any.
-        incomingDynamicColumn = AvroUtils.isIncludeAllFields(incoming)
-                ? Integer.valueOf(incoming.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : -1;
-        if (incomingDynamicColumn != -1) {
-            incomingRuntimeSchema = null;
-            fieldsFromDynamicColumns = new ArrayList<>();
+        dynamicColumnPosition = AvroUtils.isIncludeAllFields(designSchema)
+                ? Integer.valueOf(designSchema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : NO_DYNAMIC_COLUMN;
+        if (dynamicColumnPosition != NO_DYNAMIC_COLUMN) {
+            runtimeSchema = null;
+            dynamicFields = new ArrayList<>();
+        } else {
+            runtimeSchema = designSchema;
         }
 
         // Add all of the runtime columns except any dynamic column to the index map.
-        for (Schema.Field f : incoming.getFields()) {
-            if (f.pos() != incomingDynamicColumn) {
+        for (Schema.Field f : designSchema.getFields()) {
+            if (f.pos() != dynamicColumnPosition) {
                 columnToFieldIndex.put(f.name(), f.pos());
             }
         }
@@ -102,9 +116,25 @@ public class DiIncomingSchemaEnforcer {
 
     /**
      * Take all of the parameters from the dynamic metadata and adapt it to a field for the runtime Schema.
+     * 
+     * @deprecated because it was renamed. Use {@link this#addDynamicField(String, String, String, String, boolean)} instead
      */
+    @Deprecated
     public void initDynamicColumn(String name, String dbName, String type, String dbType, int dbTypeId, int length, int precision,
             String format, String description, boolean isKey, boolean isNullable, String refFieldName, String refModuleName) {
+        addDynamicField(name, type, format, description, isNullable);
+    }
+
+    /**
+     * Recreates dynamic field from parameters retrieved from DI dynamic metadata
+     * 
+     * @param name dynamic field name
+     * @param type dynamic field type
+     * @param format dynamic field date format
+     * @param description dynamic field description
+     * @param isNullable defines whether dynamic field may contain <code>null</code> value
+     */
+    public void addDynamicField(String name, String type, String format, String description, boolean isNullable) {
         if (!needsInitDynamicColumns())
             return;
 
@@ -145,24 +175,38 @@ public class DiIncomingSchemaEnforcer {
         if ("id_Date".equals(type) && format != null) {
             field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, format);
         }
-        fieldsFromDynamicColumns.add(field);
+        dynamicFields.add(field);
     }
 
     /**
      * Called when dynamic columns have finished being initialized. After this call, the {@link #getDesignSchema()} can be
      * used to get the runtime schema.
+     * 
+     * @deprecated because it was renamed. Use {@link this#recreateRuntimeSchema()} instead
      */
+    @Deprecated
     public void initDynamicColumnsFinished() {
+        recreateRuntimeSchema();
+    }
+
+    /**
+     * Recreates runtime schema from design schema and dynamic fields.
+     * Design schema is set in Constructor during enforcer initialization.
+     * Dynamic fields are recreated by calling {@link this#addDynamicField()} methods.
+     * This method should be called only after all dynamic fields are recreated.
+     * Also should be called before calling {@link this#put()} and {@link this#createIndexedRecord()} methods
+     */
+    public void recreateRuntimeSchema() {
         if (!needsInitDynamicColumns())
             return;
 
         // Copy all of the fields that were initialized from dynamic columns into the runtime Schema.
         boolean dynamicFieldsAdded = false;
         List<Schema.Field> fields = new ArrayList<Schema.Field>();
-        for (Schema.Field designField : incomingDesignSchema.getFields()) {
+        for (Schema.Field designField : designSchema.getFields()) {
             // Replace the dynamic column by all of its contents.
-            if (designField.pos() == incomingDynamicColumn) {
-                fields.addAll(fieldsFromDynamicColumns);
+            if (designField.pos() == dynamicColumnPosition) {
+                fields.addAll(dynamicFields);
                 dynamicFieldsAdded = true;
             }
             // Make a complete copy of the field (it can't be reused).
@@ -174,53 +218,89 @@ public class DiIncomingSchemaEnforcer {
             fields.add(designFieldCopy);
         }
         if (!dynamicFieldsAdded) {
-            fields.addAll(fieldsFromDynamicColumns);
+            fields.addAll(dynamicFields);
         }
 
-        incomingRuntimeSchema = Schema.createRecord(incomingDesignSchema.getName(), incomingDesignSchema.getDoc(),
-                incomingDesignSchema.getNamespace(), incomingDesignSchema.isError());
-        incomingRuntimeSchema.setFields(fields);
+        runtimeSchema = Schema.createRecord(designSchema.getName(), designSchema.getDoc(), designSchema.getNamespace(),
+                designSchema.isError());
+        runtimeSchema.setFields(fields);
 
         // Map all of the fields from the runtime Schema to their index.
-        for (Schema.Field f : incomingRuntimeSchema.getFields()) {
+        for (Schema.Field f : runtimeSchema.getFields()) {
             columnToFieldIndex.put(f.name(), f.pos());
         }
 
         // And indicate that initialization is finished.
-        fieldsFromDynamicColumns = null;
+        dynamicFields = null;
     }
 
     /**
+     * @deprecated because it was renamed. Use {@link this#areDynamicFieldsInitialized()} instead
      * @return true only if there is a dynamic column and they haven't been finished initializing yet. When this returns
      * true, the enforcer can't be used yet and {@link #getDesignSchema()} is guaranteed to return null.
      */
+    @Deprecated
     public boolean needsInitDynamicColumns() {
-        return fieldsFromDynamicColumns != null;
+        return areDynamicFieldsInitialized();
     }
 
+    /**
+     * Checks whether dynamic fields were already initialized.
+     * Dynamic fields are initialized using parameters from the first incoming data object.
+     * Thus, this method returns <code>false</code>, if dynamic fields were not initialized yet (before first data object).
+     * It returns <code>true</code>, if dynamic fields were initialized (after first data object)
+     * 
+     * @return true, if dynamic fields were initialized; false - otherwise
+     */
+    public boolean areDynamicFieldsInitialized() {
+        return dynamicFields != null;
+    }
+
+    /**
+     * Return runtime schema
+     * 
+     * @return runtime schema
+     */
     public Schema getRuntimeSchema() {
-        return incomingRuntimeSchema;
+        return runtimeSchema;
     }
 
+    /**
+     * Returns design schema
+     * 
+     * @return design schema
+     */
     public Schema getDesignSchema() {
-        return incomingDesignSchema;
+        return designSchema;
     }
 
-    public void put(String name, Object v) {
-        put(columnToFieldIndex.get(name), v);
+    /**
+     * Put record value by field name
+     * 
+     * @param name field name
+     * @param value data value
+     */
+    public void put(String name, Object value) {
+        put(columnToFieldIndex.get(name), value);
     }
 
-    public void put(int i, Object v) {
+    /**
+     * Put record value by field index
+     * 
+     * @param index field index to put in
+     * @param value data value
+     */
+    public void put(int index, Object value) {
         if (wrapped == null)
             wrapped = new GenericData.Record(getRuntimeSchema());
 
-        if (v == null) {
-            wrapped.put(i, null);
+        if (value == null) {
+            wrapped.put(index, null);
             return;
         }
 
         // TODO(rskraba): check type validation for correctness with studio objects.
-        Schema.Field f = incomingRuntimeSchema.getFields().get(i);
+        Schema.Field f = runtimeSchema.getFields().get(index);
         Schema fieldSchema = AvroUtils.unwrapIfNullable(f.schema());
 
         Object datum = null;
@@ -237,13 +317,13 @@ public class DiIncomingSchemaEnforcer {
         String talendType = f.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
         if (isLogicalDate || "id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) {
-            if (v instanceof Date) {
-                datum = v;
-            } else if (v instanceof Long) {
-                datum = new Date((long) v);
-            } else if (v instanceof String) {
+            if (value instanceof Date) {
+                datum = value;
+            } else if (value instanceof Long) {
+                datum = new Date((long) value);
+            } else if (value instanceof String) {
                 String pattern = f.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
-                String vs = (String) v;
+                String vs = (String) value;
 
                 if (pattern == null || pattern.equals("yyyy-MM-dd'T'HH:mm:ss'000Z'")) {
                     if (!vs.endsWith("000Z")) {
@@ -260,7 +340,7 @@ public class DiIncomingSchemaEnforcer {
                 }
 
                 try {
-                    datum = df.parse((String) v);
+                    datum = df.parse((String) value);
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
@@ -268,10 +348,10 @@ public class DiIncomingSchemaEnforcer {
         }
 
         if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {
-            if (v instanceof BigDecimal) {
-                datum = v;
-            } else if (v instanceof String) {
-                datum = new BigDecimal((String) v);
+            if (value instanceof BigDecimal) {
+                datum = value;
+            } else if (value instanceof String) {
+                datum = new BigDecimal((String) value);
             }
         }
 
@@ -280,43 +360,43 @@ public class DiIncomingSchemaEnforcer {
             case ARRAY:
                 break;
             case BOOLEAN:
-                if (v instanceof Boolean)
-                    datum = v;
+                if (value instanceof Boolean)
+                    datum = value;
                 else
-                    datum = Boolean.valueOf(String.valueOf(v));
+                    datum = Boolean.valueOf(String.valueOf(value));
                 break;
             case FIXED:
             case BYTES:
-                if (v instanceof byte[])
-                    datum = v;
+                if (value instanceof byte[])
+                    datum = value;
                 else
-                    datum = String.valueOf(v).getBytes();
+                    datum = String.valueOf(value).getBytes();
                 break;
             case DOUBLE:
-                if (v instanceof Number)
-                    datum = ((Number) v).doubleValue();
+                if (value instanceof Number)
+                    datum = ((Number) value).doubleValue();
                 else
-                    datum = Double.valueOf(String.valueOf(v));
+                    datum = Double.valueOf(String.valueOf(value));
                 break;
             case ENUM:
                 break;
             case FLOAT:
-                if (v instanceof Number)
-                    datum = ((Number) v).floatValue();
+                if (value instanceof Number)
+                    datum = ((Number) value).floatValue();
                 else
-                    datum = Float.valueOf(String.valueOf(v));
+                    datum = Float.valueOf(String.valueOf(value));
                 break;
             case INT:
-                if (v instanceof Number)
-                    datum = ((Number) v).intValue();
+                if (value instanceof Number)
+                    datum = ((Number) value).intValue();
                 else
-                    datum = Integer.valueOf(String.valueOf(v));
+                    datum = Integer.valueOf(String.valueOf(value));
                 break;
             case LONG:
-                if (v instanceof Number)
-                    datum = ((Number) v).longValue();
+                if (value instanceof Number)
+                    datum = ((Number) value).longValue();
                 else
-                    datum = Long.valueOf(String.valueOf(v));
+                    datum = Long.valueOf(String.valueOf(value));
                 break;
             case MAP:
                 break;
@@ -326,7 +406,7 @@ public class DiIncomingSchemaEnforcer {
             case RECORD:
                 break;
             case STRING:
-                datum = String.valueOf(v);
+                datum = String.valueOf(value);
                 break;
             case UNION:
                 break;
@@ -335,7 +415,7 @@ public class DiIncomingSchemaEnforcer {
             }
         }
 
-        wrapped.put(i, datum);
+        wrapped.put(index, datum);
     }
 
     /**
@@ -347,4 +427,5 @@ public class DiIncomingSchemaEnforcer {
         wrapped = null;
         return copy;
     }
+
 }
