@@ -76,3 +76,5 @@ multi-tenancy.s3.active=true
 ```
 
 In this case you are required to provide an implementation of `org.talend.daikon.content.s3.provider.S3BucketProvider` that provide the current bucket name.
+
+`S3BucketProvider` needs to implement two methods: one returns the S3 bucket name, the other the root directory for the tenant (might be empty string if all data is to be stored at root level of the S3 bucket).
