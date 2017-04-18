@@ -1,9 +1,23 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.daikon.di;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -22,7 +36,7 @@ import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
 
 /**
- * Unit tests for {DiIncomingSchemaEnforcer}.
+ * Unit tests for {@link DiIncomingSchemaEnforcer}.
  */
 @SuppressWarnings("nls")
 public class DiIncomingSchemaEnforcerTest {
@@ -368,4 +382,61 @@ public class DiIncomingSchemaEnforcerTest {
         assertThat(adapted.get(0), is((Object) new BigDecimal("630.1020")));
         assertThat(adapted.get(1), is((Object) new Date(1234567891011L)));
     }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#getDesignSchema()} returns design schema without any changes.
+     * DiIncomingSchemaEnforcer should not change design schema at all
+     */
+    @Test
+    public void testGetDesignSchema() {
+        Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("intField").type().intType().noDefault() //
+                .name("stringField").type().stringType().noDefault() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualDesignSchema = enforcer.getDesignSchema();
+        assertEquals(designSchema, actualDesignSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#getRuntimeSchema()} returns schema which equals to original design schema in case
+     * design schema doesn't
+     * contain dynamic field
+     */
+    @Test
+    public void testGetRuntimeSchemaNotDynamic() {
+        Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("intField").type().intType().noDefault() //
+                .name("stringField").type().stringType().noDefault() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema runtimeSchema = enforcer.getRuntimeSchema();
+        assertEquals(designSchema, runtimeSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#getRuntimeSchema()} returns null in case design schema doesn't contain dynamic field
+     * and dynamic fields
+     * were not initialized yet
+     */
+    @Test
+    public void testGetRuntimeSchemaDynamic() {
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("intField").type().intType().noDefault() //
+                .name("stringField").type().stringType().noDefault() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema runtimeSchema = enforcer.getRuntimeSchema();
+        assertNull(runtimeSchema);
+    }
+
 }
