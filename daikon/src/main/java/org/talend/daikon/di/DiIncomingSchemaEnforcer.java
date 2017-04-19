@@ -124,49 +124,51 @@ public class DiIncomingSchemaEnforcer {
     @Deprecated
     public void initDynamicColumn(String name, String dbName, String type, String dbType, int dbTypeId, int length, int precision,
             String format, String description, boolean isKey, boolean isNullable, String refFieldName, String refModuleName) {
-        addDynamicField(name, type, format, description, isNullable);
+        addDynamicField(name, type, null, format, description, isNullable);
     }
 
     /**
      * Recreates dynamic field from parameters retrieved from DI dynamic metadata
      * 
      * @param name dynamic field name
-     * @param type dynamic field type
-     * @param format dynamic field date format
+     * @param diType di column type
+     * @param logicalType dynamic field logical type; could be null
+     * @param fieldPattern dynamic field date format
      * @param description dynamic field description
      * @param isNullable defines whether dynamic field may contain <code>null</code> value
      */
-    public void addDynamicField(String name, String type, String format, String description, boolean isNullable) {
+    public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
+            boolean isNullable) {
         if (!needsInitDynamicColumns())
             return;
 
         // Add each column to the field index and the incoming runtime schema.
         // TODO(rskraba): validate all types coming from the studio and add annotations.
         Schema fieldSchema = null;
-        if ("id_String".equals(type)) {
+        if ("id_String".equals(diType)) {
             fieldSchema = Schema.create(Schema.Type.STRING);
-        } else if ("id_Boolean".equals(type)) {
+        } else if ("id_Boolean".equals(diType)) {
             fieldSchema = Schema.create(Schema.Type.BOOLEAN);
-        } else if ("id_Integer".equals(type)) {
+        } else if ("id_Integer".equals(diType)) {
             fieldSchema = Schema.create(Schema.Type.INT);
-        } else if ("id_Long".equals(type)) {
+        } else if ("id_Long".equals(diType)) {
             fieldSchema = Schema.create(Schema.Type.LONG);
-        } else if ("id_Double".equals(type)) {
+        } else if ("id_Double".equals(diType)) {
             fieldSchema = Schema.create(Schema.Type.DOUBLE);
-        } else if ("id_Float".equals(type)) {
+        } else if ("id_Float".equals(diType)) {
             fieldSchema = Schema.create(Schema.Type.FLOAT);
-        } else if ("id_Byte".equals(type)) {
+        } else if ("id_Byte".equals(diType)) {
             fieldSchema = AvroUtils._byte();
-        } else if ("id_Short".equals(type)) {
+        } else if ("id_Short".equals(diType)) {
             fieldSchema = AvroUtils._short();
-        } else if ("id_Character".equals(type)) {
+        } else if ("id_Character".equals(diType)) {
             fieldSchema = AvroUtils._character();
-        } else if ("id_BigDecimal".equals(type)) {
+        } else if ("id_BigDecimal".equals(diType)) {
             fieldSchema = AvroUtils._decimal();
-        } else if ("id_Date".equals(type)) {
+        } else if ("id_Date".equals(diType)) {
             fieldSchema = AvroUtils._date();
         } else {
-            throw new UnsupportedOperationException("Unrecognized type " + type);
+            throw new UnsupportedOperationException("Unrecognized type " + diType);
         }
 
         if (isNullable) {
@@ -174,8 +176,8 @@ public class DiIncomingSchemaEnforcer {
         }
         Schema.Field field = new Schema.Field(name, fieldSchema, description, (Object) null);
         // Set pattern for date type
-        if ("id_Date".equals(type) && format != null) {
-            field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, format);
+        if ("id_Date".equals(diType) && fieldPattern != null) {
+            field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
         }
         dynamicFields.add(field);
     }

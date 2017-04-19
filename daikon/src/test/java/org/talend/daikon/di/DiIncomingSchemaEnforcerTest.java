@@ -195,9 +195,9 @@ public class DiIncomingSchemaEnforcerTest {
         assertFalse(enforcer.areDynamicFieldsInitialized());
         assertThat(enforcer.getRuntimeSchema(), nullValue());
 
-        enforcer.addDynamicField("id", "id_Integer", null, null, false);
-        enforcer.addDynamicField("name", "id_String", null, null, false);
-        enforcer.addDynamicField("age", "id_Integer", null, null, false);
+        enforcer.addDynamicField("id", "id_Integer", null, null, null, false);
+        enforcer.addDynamicField("name", "id_String", null, null, null, false);
+        enforcer.addDynamicField("age", "id_Integer", null, null, null, false);
         assertFalse(enforcer.areDynamicFieldsInitialized());
         enforcer.recreateRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
@@ -284,9 +284,9 @@ public class DiIncomingSchemaEnforcerTest {
         assertFalse(enforcer.areDynamicFieldsInitialized());
         assertThat(enforcer.getRuntimeSchema(), nullValue());
 
-        enforcer.addDynamicField("name", "id_String", null, null, false);
-        enforcer.addDynamicField("age", "id_Integer", null, null, false);
-        enforcer.addDynamicField("valid", "id_Boolean", null, null, false);
+        enforcer.addDynamicField("name", "id_String", null, null, null, false);
+        enforcer.addDynamicField("age", "id_Integer", null, null, null, false);
+        enforcer.addDynamicField("valid", "id_Boolean", null, null, null, false);
         assertFalse(enforcer.areDynamicFieldsInitialized());
         enforcer.recreateRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
@@ -374,9 +374,9 @@ public class DiIncomingSchemaEnforcerTest {
         assertFalse(enforcer.areDynamicFieldsInitialized());
         assertThat(enforcer.getRuntimeSchema(), nullValue());
 
-        enforcer.addDynamicField("valid", "id_Boolean", null, null, false);
-        enforcer.addDynamicField("address", "id_String", null, null, false);
-        enforcer.addDynamicField("comment", "id_String", null, null, false);
+        enforcer.addDynamicField("valid", "id_Boolean", null, null, null, false);
+        enforcer.addDynamicField("address", "id_String", null, null, null, false);
+        enforcer.addDynamicField("comment", "id_String", null, null, null, false);
         assertFalse(enforcer.areDynamicFieldsInitialized());
         enforcer.recreateRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
@@ -556,6 +556,180 @@ public class DiIncomingSchemaEnforcerTest {
         adapted = enforcer.createIndexedRecord();
         assertThat(adapted.get(0), is((Object) new BigDecimal("630.1020")));
         assertThat(adapted.get(1), is((Object) new Date(1234567891011L)));
+    }
+
+    /**
+     * Checks whether enforcer can recreate dynamic fields of all AVRO types including logical types
+     * Note, this test duplicates {@link this#testDynamicColumnALLSupportedType()} but uses new API
+     * Old test will be removed after old API removal
+     */
+    @Test
+    public void testAddDynamicFieldAllTypes() {
+        Schema expectedRuntimeSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("Test_String").type().stringType().noDefault() //
+                .name("Test_Boolean").type().booleanType().noDefault() //
+                .name("Test_Integer").type().intType().noDefault() //
+                .name("Test_Long").type().longType().noDefault() //
+                .name("Test_Double").type().doubleType().noDefault() //
+                .name("Test_Float").type().floatType().noDefault() //
+                .name("Test_BigDecimal").type(AvroUtils._decimal()).noDefault() //
+                .name("Test_Date").prop(SchemaConstants.TALEND_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'")
+                .type(AvroUtils._date()).noDefault() //
+                .name("Test_Byte").type(AvroUtils._byte()).noDefault() //
+                .name("Test_Short").type(AvroUtils._short()).noDefault() //
+                .name("Test_Character").type(AvroUtils._character()).noDefault() //
+                .name("TestLogicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("TestLogicalTimeMillis").type(AvroUtils._logicalTime()).noDefault() //
+                .name("TestLogicalTimestampMillis").type(AvroUtils._logicalTimestamp()).noDefault() //
+                .name("valid").type().booleanType().noDefault() //
+                .endRecord(); //
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'") //
+                .fields() //
+                .name("valid").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+
+        enforcer.addDynamicField("Test_String", "id_String", null, null, null, false);
+        enforcer.addDynamicField("Test_Boolean", "id_Boolean", null, null, null, false);
+        enforcer.addDynamicField("Test_Integer", "id_Integer", null, null, null, false);
+        enforcer.addDynamicField("Test_Long", "id_Long", null, null, null, false);
+        enforcer.addDynamicField("Test_Double", "id_Double", null, null, null, false);
+        enforcer.addDynamicField("Test_Float", "id_Float", null, null, null, false);
+        enforcer.addDynamicField("Test_BigDecimal", "id_BigDecimal", null, null, null, false);
+        enforcer.addDynamicField("Test_Date", "id_Date", null, "yyyy-MM-dd'T'HH:mm:ss'000Z'", null, false);
+        enforcer.addDynamicField("Test_Byte", "id_Byte", null, null, null, false);
+        enforcer.addDynamicField("Test_Short", "id_Short", null, null, null, false);
+        enforcer.addDynamicField("Test_Character", "id_Character", null, null, null, false);
+        enforcer.addDynamicField("TestLogicalDate", "id_Date", "date", null, null, false);
+        enforcer.addDynamicField("TestLogicalTimeMillis", "id_Integer", "time-millis", null, null, false);
+        enforcer.addDynamicField("TestLogicalTimestampMillis", "id_Date", "timestamp-millis", null, null, false);
+
+        enforcer.recreateRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        Schema actualRuntimeSchema = enforcer.getRuntimeSchema();
+        assertEquals(expectedRuntimeSchema, actualRuntimeSchema);
+
+        enforcer.createNewRecord();
+        enforcer.put(0, "string value");
+        enforcer.put(1, true);
+        enforcer.put(2, 100);
+        enforcer.put(3, 1234567891011L);
+        enforcer.put(4, 2.15);
+        enforcer.put(5, 3.6f);
+        enforcer.put(6, new BigDecimal("630.1020"));
+        enforcer.put(7, new Date(1234567891011L));
+        enforcer.put(8, (byte) 20);
+        enforcer.put(9, (short) 2016);
+        enforcer.put(10, 'A');
+        enforcer.put(11, 1234567890);
+        enforcer.put(12, 123456789);
+        enforcer.put(13, 1234567891012L);
+        enforcer.put(14, false);
+
+        IndexedRecord record = enforcer.getCurrentRecord();
+
+        assertThat(record.get(0), is((Object) "string value"));
+        assertThat(record.get(1), is((Object) true));
+        assertThat(record.get(2), is((Object) 100));
+        assertThat(record.get(3), is((Object) 1234567891011L));
+        assertThat(record.get(4), is((Object) 2.15));
+        assertThat(record.get(5), is((Object) 3.6f));
+        assertThat(record.get(6), is((Object) new BigDecimal("630.1020")));
+        assertThat(record.get(7), is((Object) new Date(1234567891011L)));
+        assertThat(record.get(8), is((Object) 20));
+        assertThat(record.get(9), is((Object) 2016));
+        assertThat(record.get(10), is((Object) "A"));
+    }
+
+    /**
+     * Checks whether enforcer can recreate dynamic fields when nullable is true
+     */
+    @Test
+    public void testAddDynamicFieldNullable() {
+        Schema expectedRuntimeSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("Test_BigDecimal").type(AvroUtils.wrapAsNullable(AvroUtils._decimal())).noDefault() //
+                .name("Test_Date").prop(SchemaConstants.TALEND_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'")
+                .type(AvroUtils.wrapAsNullable(AvroUtils._date())).noDefault() //
+                .name("valid").type().booleanType().noDefault() //
+                .endRecord(); //
+
+        Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'") //
+                .fields() //
+                .name("valid").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+
+        enforcer.addDynamicField("Test_BigDecimal", "id_BigDecimal", null, null, null, true);
+        enforcer.addDynamicField("Test_Date", "id_Date", null, "yyyy-MM-dd'T'HH:mm:ss'000Z'", null, true);
+
+        enforcer.recreateRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        Schema actualRuntimeSchema = enforcer.getRuntimeSchema();
+        assertEquals(expectedRuntimeSchema, actualRuntimeSchema);
+
+        enforcer.createNewRecord();
+        enforcer.put(0, new BigDecimal("630.1020"));
+        enforcer.put(1, new Date(1234567891011L));
+
+        IndexedRecord record = enforcer.createIndexedRecord();
+        assertThat(record.get(0), is((Object) new BigDecimal("630.1020")));
+        assertThat(record.get(1), is((Object) new Date(1234567891011L)));
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#put()} converts string value to date according pattern specified in dynamic field
+     * TODO (iv.gonchar): this is incorrect behavior, because avro record should not contain java.util.Date value. It should store
+     * such value as Long
+     */
+    @Test
+    public void testPutDatePattern() {
+        Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'") //
+                .fields() //
+                .name("valid").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        enforcer.addDynamicField("Test_Date", "id_Date", null, "yyyy-MM-dd'T'HH:mm:ss'000Z'", null, true);
+        enforcer.recreateRuntimeSchema();
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+
+        enforcer.createNewRecord();
+        enforcer.put(0, "2009-02-13T23:31:31.000Z");
+        IndexedRecord record = enforcer.getCurrentRecord();
+        assertThat(record.get(0), is((Object) new Date(1234567891000L)));
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#addDynamicField()} throws {@link UnsupportedOperationException} in case of
+     * unsupported di type is passed
+     */
+    @Test
+    public void testAddDynamicFieldUnsupportedType() {
+        thrown.expect(UnsupportedOperationException.class);
+
+        Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'") //
+                .fields() //
+                .name("valid").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        enforcer.addDynamicField("Test_Unsupported", "id_Unsupported", null, null, null, false);
     }
 
     /**
