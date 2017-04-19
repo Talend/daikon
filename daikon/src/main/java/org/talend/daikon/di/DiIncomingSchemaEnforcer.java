@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.daikon.di;
 
-import static org.talend.daikon.avro.LogicalTypeUtils.*;
-
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +29,7 @@ import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
+import org.talend.daikon.avro.LogicalTypeUtils;
 import org.talend.daikon.avro.SchemaConstants;
 
 /**
@@ -165,26 +164,8 @@ public class DiIncomingSchemaEnforcer {
      * @throws {@link UnsupportedOperationException} in case of unsupported di type or logical type
      */
     Schema diToAvro(String diType, String logicalType) {
-        Schema fieldSchema = null;
-
-        if (logicalType != null) {
-            switch (logicalType) {
-            case DATE: {
-                fieldSchema = AvroUtils._logicalDate();
-                break;
-            }
-            case TIME_MILLIS: {
-                fieldSchema = AvroUtils._logicalTime();
-                break;
-            }
-            case TIMESTAMP_MILLIS: {
-                fieldSchema = AvroUtils._logicalTimestamp();
-                break;
-            }
-            default: {
-                throw new UnsupportedOperationException("Unrecognized type " + logicalType);
-            }
-            }
+        Schema fieldSchema = LogicalTypeUtils.getSchemaByLogicalType(logicalType);
+        if (fieldSchema != null) {
             return fieldSchema;
         }
 
