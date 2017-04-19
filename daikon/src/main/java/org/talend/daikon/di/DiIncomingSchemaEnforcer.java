@@ -183,6 +183,44 @@ public class DiIncomingSchemaEnforcer {
     }
 
     /**
+     * Converts DI type to Avro field schema
+     * 
+     * @param diType data integration native type
+     * @param logicalType avro logical type
+     * @return field schema
+     * @throws {@link UnsupportedOperationException} in case of unsupported di type or logical type
+     */
+    Schema diToAvro(String diType, String logicalType) {
+        Schema fieldSchema = null;
+        if ("id_String".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.STRING);
+        } else if ("id_Boolean".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.BOOLEAN);
+        } else if ("id_Integer".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.INT);
+        } else if ("id_Long".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.LONG);
+        } else if ("id_Double".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.DOUBLE);
+        } else if ("id_Float".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.FLOAT);
+        } else if ("id_Byte".equals(diType)) {
+            fieldSchema = AvroUtils._byte();
+        } else if ("id_Short".equals(diType)) {
+            fieldSchema = AvroUtils._short();
+        } else if ("id_Character".equals(diType)) {
+            fieldSchema = AvroUtils._character();
+        } else if ("id_BigDecimal".equals(diType)) {
+            fieldSchema = AvroUtils._decimal();
+        } else if ("id_Date".equals(diType)) {
+            fieldSchema = AvroUtils._date();
+        } else {
+            throw new UnsupportedOperationException("Unrecognized type " + diType);
+        }
+        return fieldSchema;
+    }
+
+    /**
      * Called when dynamic columns have finished being initialized. After this call, the {@link #getDesignSchema()} can be
      * used to get the runtime schema.
      * 

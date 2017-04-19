@@ -579,9 +579,9 @@ public class DiIncomingSchemaEnforcerTest {
                 .name("Test_Byte").type(AvroUtils._byte()).noDefault() //
                 .name("Test_Short").type(AvroUtils._short()).noDefault() //
                 .name("Test_Character").type(AvroUtils._character()).noDefault() //
-                .name("TestLogicalDate").type(AvroUtils._logicalDate()).noDefault() //
-                .name("TestLogicalTimeMillis").type(AvroUtils._logicalTime()).noDefault() //
-                .name("TestLogicalTimestampMillis").type(AvroUtils._logicalTimestamp()).noDefault() //
+                // .name("TestLogicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                // .name("TestLogicalTimeMillis").type(AvroUtils._logicalTime()).noDefault() //
+                // .name("TestLogicalTimestampMillis").type(AvroUtils._logicalTimestamp()).noDefault() //
                 .name("valid").type().booleanType().noDefault() //
                 .endRecord(); //
 
@@ -606,9 +606,9 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.addDynamicField("Test_Byte", "id_Byte", null, null, null, false);
         enforcer.addDynamicField("Test_Short", "id_Short", null, null, null, false);
         enforcer.addDynamicField("Test_Character", "id_Character", null, null, null, false);
-        enforcer.addDynamicField("TestLogicalDate", "id_Date", "date", null, null, false);
-        enforcer.addDynamicField("TestLogicalTimeMillis", "id_Integer", "time-millis", null, null, false);
-        enforcer.addDynamicField("TestLogicalTimestampMillis", "id_Date", "timestamp-millis", null, null, false);
+        // enforcer.addDynamicField("TestLogicalDate", "id_Date", "date", null, null, false);
+        // enforcer.addDynamicField("TestLogicalTimeMillis", "id_Integer", "time-millis", null, null, false);
+        // enforcer.addDynamicField("TestLogicalTimestampMillis", "id_Date", "timestamp-millis", null, null, false);
 
         enforcer.recreateRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
@@ -628,10 +628,11 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.put(8, (byte) 20);
         enforcer.put(9, (short) 2016);
         enforcer.put(10, 'A');
-        enforcer.put(11, 1234567890);
-        enforcer.put(12, 123456789);
-        enforcer.put(13, 1234567891012L);
-        enforcer.put(14, false);
+        enforcer.put(11, false);
+        // enforcer.put(11, 1234567890);
+        // enforcer.put(12, 123456789);
+        // enforcer.put(13, 1234567891012L);
+        // enforcer.put(14, false);
 
         IndexedRecord record = enforcer.getCurrentRecord();
 
@@ -786,6 +787,236 @@ public class DiIncomingSchemaEnforcerTest {
         DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
         Schema runtimeSchema = enforcer.getRuntimeSchema();
         assertNull(runtimeSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns String avro schema in case "id_String" di type is
+     * passed
+     */
+    @Test
+    public void testDiToAvroString() {
+        Schema expectedSchema = AvroUtils._string();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_String", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns Boolean avro schema in case "id_Boolean" di type
+     * is passed
+     */
+    @Test
+    public void testDiToAvroBoolean() {
+        Schema expectedSchema = AvroUtils._boolean();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_Boolean", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns Integer avro schema in case "id_Integer" di type
+     * is passed
+     */
+    @Test
+    public void testDiToAvroInteger() {
+        Schema expectedSchema = AvroUtils._int();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_Integer", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns Long avro schema in case "id_Long" di type is
+     * passed
+     */
+    @Test
+    public void testDiToAvroLong() {
+        Schema expectedSchema = AvroUtils._long();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_Long", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns Double avro schema in case "id_Double" di type is
+     * passed
+     */
+    @Test
+    public void testDiToAvroDouble() {
+        Schema expectedSchema = AvroUtils._double();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_Double", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns Float avro schema in case "id_Float" di type is
+     * passed
+     */
+    @Test
+    public void testDiToAvroFloat() {
+        Schema expectedSchema = AvroUtils._float();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_Float", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns Integer avro schema with
+     * "java-class"=java.lang.Byte
+     * in case "id_Byte" di type is passed
+     */
+    @Test
+    public void testDiToAvroByte() {
+        Schema expectedSchema = AvroUtils._byte();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_Byte", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns Integer avro schema with
+     * "java-class"=java.lang.Short
+     * in case "id_Short" di type is passed
+     */
+    @Test
+    public void testDiToAvroShort() {
+        Schema expectedSchema = AvroUtils._short();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_Short", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns String avro schema with
+     * "java-class"=java.lang.Character
+     * in case "id_Character" di type is passed
+     */
+    @Test
+    public void testDiToAvroCharacter() {
+        Schema expectedSchema = AvroUtils._character();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_Character", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns String avro schema with
+     * "java-class"=java.math.BigDecimal
+     * in case "id_BigDecimal" di type is passed
+     */
+    @Test
+    public void testDiToAvroBigDecimal() {
+        Schema expectedSchema = AvroUtils._decimal();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_BigDecimal", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns Long avro schema with "java-class"=java.util.Date
+     * in case "id_Date" di type is passed
+     */
+    @Test
+    public void testDiToAvroDate() {
+        Schema expectedSchema = AvroUtils._date();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro("id_Date", null);
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} throws {@link UnsupportedOperationException}
+     * in case unsupported type is passed
+     */
+    @Test
+    public void testDiToAvroNotSupporter() {
+        thrown.expect(UnsupportedOperationException.class);
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        enforcer.diToAvro("Unsupported", null);
     }
 
 }
