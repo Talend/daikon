@@ -1019,4 +1019,60 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.diToAvro("Unsupported", null);
     }
 
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns logical date avro schema with in case "date"
+     * logical type is passed
+     */
+    @Test
+    public void testDiToAvroLogicalDate() {
+        Schema expectedSchema = AvroUtils._logicalDate();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro(null, "date");
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns logical time-millis avro schema with in case
+     * "time-millis" logical type is passed
+     */
+    @Test
+    public void testDiToAvroLogicalTime() {
+        Schema expectedSchema = AvroUtils._logicalTime();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro(null, "time-millis");
+
+        assertEquals(expectedSchema, actualSchema);
+    }
+
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#diToAvro(String, String)} returns logical timestamp-millis avro schema with in case
+     * "timestamp-millis" logical type is passed
+     */
+    @Test
+    public void testDiToAvroLogicalTimestamp() {
+        Schema expectedSchema = AvroUtils._logicalTimestamp();
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("booleanField").type().booleanType().noDefault() //
+                .endRecord();
+
+        DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
+        Schema actualSchema = enforcer.diToAvro(null, "timestamp-millis");
+
+        assertEquals(expectedSchema, actualSchema);
+    }
 }
