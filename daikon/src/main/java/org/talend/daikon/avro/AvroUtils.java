@@ -55,6 +55,12 @@ public class AvroUtils {
     }
 
     // FIXME - remove this one, this is not the date representation we ultimately want to use
+    /**
+     * 
+     * @return
+     * @deprecated use {@link this#_logicalTimestamp()} instead
+     */
+    @Deprecated
     public static Schema _date() {
         return DATE_TYPE.getSchema();
     }
