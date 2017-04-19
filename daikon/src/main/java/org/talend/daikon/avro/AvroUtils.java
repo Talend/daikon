@@ -59,16 +59,49 @@ public class AvroUtils {
         return DATE_TYPE.getSchema();
     }
 
+    /**
+     * Returns schema for Avro Date logical type. It's Avro type is Int
+     * 
+     * @return Date logical type schema
+     */
     public static Schema _logicalDate() {
         return LogicalTypes.date().addToSchema(Schema.create(Schema.Type.INT));
     }
 
+    /**
+     * Returns schema for Avro Time-millis logical type. It's Avro type is Int
+     * 
+     * @return Time-millis logical type schema
+     */
     public static Schema _logicalTime() {
         return LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT));
     }
 
+    /**
+     * Returns schema for Avro Time-micros logical type. It's Avro type is Long
+     * 
+     * @return Time-micros logical type schema
+     */
+    public static Schema _logicalTimeMicros() {
+        return LogicalTypes.timeMicros().addToSchema(Schema.create(Schema.Type.LONG));
+    }
+
+    /**
+     * Returns schema for Avro Timestamp-millis logical type. It's Avro type is Long
+     * 
+     * @return Timestamp-millis logical type schema
+     */
     public static Schema _logicalTimestamp() {
         return LogicalTypes.timestampMillis().addToSchema(Schema.create(Schema.Type.LONG));
+    }
+
+    /**
+     * Returns schema for Avro Timestamp-micros logical type. It's Avro type is Long
+     * 
+     * @return Timestamp-micros logical type schema
+     */
+    public static Schema _logicalTimestampMicros() {
+        return LogicalTypes.timestampMicros().addToSchema(Schema.create(Schema.Type.LONG));
     }
 
     public static Schema _double() {

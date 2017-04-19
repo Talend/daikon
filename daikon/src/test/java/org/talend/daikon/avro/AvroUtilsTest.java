@@ -300,4 +300,44 @@ public class AvroUtilsTest {
         assertTrue(AvroUtils.isString(Schema.Type.STRING));
         assertFalse(AvroUtils.isString(Schema.Type.UNION));
     }
+
+    @Test
+    public void testLogicalDate() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"int\",\"logicalType\":\"date\"}");
+
+        Schema actual = AvroUtils._logicalDate();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLogicalTimeMillis() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"int\",\"logicalType\":\"time-millis\"}");
+
+        Schema actual = AvroUtils._logicalTime();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLogicalTimeMicros() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"long\",\"logicalType\":\"time-micros\"}");
+
+        Schema actual = AvroUtils._logicalTimeMicros();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLogicalTimestampMillis() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}");
+
+        Schema actual = AvroUtils._logicalTimestamp();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLogicalTimestampMicros() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}");
+
+        Schema actual = AvroUtils._logicalTimestampMicros();
+        assertEquals(expected, actual);
+    }
 }
