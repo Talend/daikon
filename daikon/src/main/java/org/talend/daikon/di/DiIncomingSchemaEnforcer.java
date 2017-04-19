@@ -141,35 +141,7 @@ public class DiIncomingSchemaEnforcer {
             boolean isNullable) {
         if (!needsInitDynamicColumns())
             return;
-
-        // Add each column to the field index and the incoming runtime schema.
-        // TODO(rskraba): validate all types coming from the studio and add annotations.
-        Schema fieldSchema = null;
-        if ("id_String".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.STRING);
-        } else if ("id_Boolean".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.BOOLEAN);
-        } else if ("id_Integer".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.INT);
-        } else if ("id_Long".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.LONG);
-        } else if ("id_Double".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.DOUBLE);
-        } else if ("id_Float".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.FLOAT);
-        } else if ("id_Byte".equals(diType)) {
-            fieldSchema = AvroUtils._byte();
-        } else if ("id_Short".equals(diType)) {
-            fieldSchema = AvroUtils._short();
-        } else if ("id_Character".equals(diType)) {
-            fieldSchema = AvroUtils._character();
-        } else if ("id_BigDecimal".equals(diType)) {
-            fieldSchema = AvroUtils._decimal();
-        } else if ("id_Date".equals(diType)) {
-            fieldSchema = AvroUtils._date();
-        } else {
-            throw new UnsupportedOperationException("Unrecognized type " + diType);
-        }
+        Schema fieldSchema = diToAvro(diType, logicalType);
 
         if (isNullable) {
             fieldSchema = SchemaBuilder.nullable().type(fieldSchema);
