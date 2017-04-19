@@ -12,6 +12,10 @@
 // ============================================================================
 package org.talend.daikon.avro;
 
+import static org.talend.daikon.avro.LogicalTypeUtils.DATE;
+import static org.talend.daikon.avro.LogicalTypeUtils.TIMESTAMP_MILLIS;
+import static org.talend.daikon.avro.LogicalTypeUtils.TIME_MILLIS;
+
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;
@@ -125,6 +129,40 @@ public final class LogicalTypeUtils {
             return null;
         } else {
             return logicalType.getName();
+        }
+    }
+
+    /**
+     * Returns schema of specified logical type
+     * Returns <code>null</code>, if <code>null</code> is logical type is passed
+     * 
+     * @param logicalType name of Avro logical type
+     * @return schema of specified logical type
+     * @throws {@link UnsupportedOperationException} if not supported logical type is passed
+     */
+    public static Schema getSchemaByLogicalType(String logicalType) {
+        if (logicalType == null) {
+            return null;
+        }
+        switch (logicalType) {
+        case DATE: {
+            return AvroUtils._logicalDate();
+        }
+        case TIME_MILLIS: {
+            return AvroUtils._logicalTime();
+        }
+        case TIME_MICROS: {
+            return AvroUtils._logicalTimeMicros();
+        }
+        case TIMESTAMP_MILLIS: {
+            return AvroUtils._logicalTimestamp();
+        }
+        case TIMESTAMP_MICROS: {
+            return AvroUtils._logicalTimestampMicros();
+        }
+        default: {
+            throw new UnsupportedOperationException("Unrecognized type " + logicalType);
+        }
         }
     }
 }
