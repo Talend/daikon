@@ -8,7 +8,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>weather-service</artifactId>
-    <version>0.16.0-SNAPSHOT</version>
     <name>weather-service</name>
     <description>Weather Service</description>
 </project>

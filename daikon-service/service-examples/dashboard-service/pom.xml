@@ -8,7 +8,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>dashboard-service</artifactId>
-    <version>0.16.0-SNAPSHOT</version>
     <name>dashboard-service</name>
     <description>Dashboard Service</description>
 
@@ -16,7 +15,6 @@
         <dependency>
             <groupId>org.talend.daikon</groupId>
             <artifactId>weather-service</artifactId>
-            <version>0.16.0-SNAPSHOT</version>
             <classifier>service</classifier>
         </dependency>
     </dependencies>
