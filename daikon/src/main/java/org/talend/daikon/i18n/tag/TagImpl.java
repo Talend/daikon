@@ -20,7 +20,7 @@ import org.talend.daikon.i18n.TranslatableImpl;
 /**
  * Default implementation of tag interface with internationalization and tags hierarchy support.
  */
-public class DefinitionTag extends TranslatableImpl implements Tag {
+public class TagImpl extends TranslatableImpl implements Tag {
 
     private final String name;
 
@@ -28,18 +28,32 @@ public class DefinitionTag extends TranslatableImpl implements Tag {
 
     private Tag parentTag;
 
-    public DefinitionTag(String name) {
+    /**
+     * This flag is used to check if this instance already has formatter set. We don't want to set a new formatter for
+     * tags, which are created in some other package, as their messages file can be present in some other place.
+     */
+    private boolean formatterSet = false;
+
+    public TagImpl(String name) {
         this(name, null);
     }
 
-    public DefinitionTag(String name, Tag parentTag) {
+    public TagImpl(String name, Tag parentTag) {
         this(name, parentTag, null);
     }
 
-    public DefinitionTag(String name, Tag parentTag, I18nMessages i18nMessages) {
+    public TagImpl(String name, Tag parentTag, I18nMessages i18nMessages) {
         this.name = name;
         this.parentTag = parentTag;
         setI18nMessageFormatter(i18nMessages);
+    }
+
+    @Override
+    public void setI18nMessageFormatter(I18nMessages i18nMessages) {
+        if (!formatterSet && (i18nMessages != null)) {
+            super.setI18nMessageFormatter(i18nMessages);
+            formatterSet = true;
+        }
     }
 
     public String getName() {
@@ -97,7 +111,7 @@ public class DefinitionTag extends TranslatableImpl implements Tag {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        DefinitionTag other = (DefinitionTag) obj;
+        TagImpl other = (TagImpl) obj;
         if (name == null) {
             if (other.name != null)
                 return false;
