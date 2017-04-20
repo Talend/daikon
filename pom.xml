@@ -192,7 +192,7 @@
 				<version>2.5.3</version>
 				<configuration>
 					<pushChanges>false</pushChanges>
-					<scmCommentPrefix>release:</scmCommentPrefix>
+					<scmCommentPrefix xml:space="preserve">release: </scmCommentPrefix>
 					<tagNameFormat>daikon-@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
