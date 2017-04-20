@@ -14,6 +14,7 @@ package org.talend.daikon.i18n.tag;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.daikon.i18n.ClassBasedI18nMessages;
@@ -74,6 +75,28 @@ public class TagImplTest {
 
         assertEquals("Common tag/child", childTag.getTranslatedValue());
         assertEquals("Common tag/nonExistentTag", childTag1.getTranslatedValue());
+    }
+
+    @Test
+    public void testHasTag() {
+        TagImpl tag = new TagImpl("testTag");
+        tag.setI18nMessageFormatter(i18nMessages);
+
+        Assert.assertTrue(tag.hasTag("Testing"));
+        Assert.assertTrue(tag.hasTag("sting tag"));
+        Assert.assertTrue(tag.hasTag("test"));
+    }
+
+    @Test
+    public void testHasParentTag() {
+        TagImpl tag = new TagImpl("testTag", CommonTestTags.COMMON_TAG);
+        tag.setI18nMessageFormatter(i18nMessages);
+
+        Assert.assertTrue(tag.hasTag("Common tag"));
+        Assert.assertTrue(tag.hasTag("Com"));
+        Assert.assertTrue(tag.hasTag("mon tag"));
+        Assert.assertTrue(tag.hasTag("Common tag/Testing"));
+        Assert.assertTrue(tag.hasTag("Testing"));
     }
 
 }
