@@ -15,7 +15,7 @@ import com.amazonaws.services.s3.S3ClientOptions;
 import com.amazonaws.services.s3.S3ResponseMetadata;
 import com.amazonaws.services.s3.model.*;
 
-class AmazonS3TestWrapper implements AmazonS3 {
+public class AmazonS3TestWrapper implements AmazonS3 {
 
     private final AmazonS3 delegate;
 
