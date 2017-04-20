@@ -99,4 +99,13 @@ public class TagImplTest {
         Assert.assertTrue(tag.hasTag("Testing"));
     }
 
+    @Test
+    public void testDoesntHaveTag() {
+        TagImpl tag = new TagImpl("testTag", CommonTestTags.COMMON_TAG);
+        tag.setI18nMessageFormatter(i18nMessages);
+
+        Assert.assertFalse(tag.hasTag("MySQL"));
+        Assert.assertFalse(tag.hasTag("Cloud"));
+    }
+
 }
