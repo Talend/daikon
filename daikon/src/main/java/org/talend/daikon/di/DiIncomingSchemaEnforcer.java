@@ -294,36 +294,38 @@ public class DiIncomingSchemaEnforcer {
     }
 
     /**
-     * Put record value by field name
+     * Converts DI data value to Avro format and put it into record by field name
      * 
      * @param name field name
-     * @param value data value
+     * @param diValue data value
      */
-    public void put(String name, Object value) {
-        put(columnToFieldIndex.get(name), value);
+    public void put(String name, Object diValue) {
+        put(columnToFieldIndex.get(name), diValue);
     }
 
     /**
-     * Put record value by field index
+     * Converts DI data value to Avro format and put it into record by field index
      * 
      * @param index field index to put in
-     * @param value data value
+     * @param diValue data value in DI format
      */
-    public void put(int index, Object value) {
+    public void put(int index, Object diValue) {
+        // TODO(igonchar): client should call createNewRecord by himself. createNewRecord() call
+        // will be removed after changing codegen in Studio
         if (currentRecord == null) {
             createNewRecord();
         }
 
-        if (value == null) {
+        if (diValue == null) {
             currentRecord.put(index, null);
             return;
         }
 
         // TODO(rskraba): check type validation for correctness with studio objects.
-        Schema.Field f = runtimeSchema.getFields().get(index);
-        Schema fieldSchema = AvroUtils.unwrapIfNullable(f.schema());
+        Schema.Field field = runtimeSchema.getFields().get(index);
+        Schema fieldSchema = AvroUtils.unwrapIfNullable(field.schema());
 
-        Object datum = null;
+        Object avroValue = null;
 
         boolean isLogicalDate = false;
         LogicalType logicalType = fieldSchema.getLogicalType();
@@ -334,16 +336,17 @@ public class DiIncomingSchemaEnforcer {
         }
 
         // TODO(rskraba): This is pretty rough -- fix with a general type conversion strategy.
-        String talendType = f.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
+        String talendType = field.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
         if (isLogicalDate || "id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) {
-            if (value instanceof Date) {
-                datum = value;
-            } else if (value instanceof Long) {
-                datum = new Date((long) value);
-            } else if (value instanceof String) {
-                String pattern = f.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
-                String vs = (String) value;
+            if (diValue instanceof Date) {
+                avroValue = diValue;
+            } else if (diValue instanceof Long) {
+                // TODO(igonchar): This is wrong. Avro date value should be stored as Long, not Date
+                avroValue = new Date((long) diValue);
+            } else if (diValue instanceof String) {
+                String pattern = field.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
+                String vs = (String) diValue;
 
                 if (pattern == null || pattern.equals("yyyy-MM-dd'T'HH:mm:ss'000Z'")) {
                     if (!vs.endsWith("000Z")) {
@@ -360,73 +363,75 @@ public class DiIncomingSchemaEnforcer {
                 }
 
                 try {
-                    datum = df.parse((String) value);
+                    avroValue = df.parse((String) diValue);
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
 
+        // TODO(igonchar): I'm not sure it is correct. For me avro value should be string. Conversion to BigDecimal may be
+        // delegated to component. Component should decide whether convert to BigDecimal
         if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {
-            if (value instanceof BigDecimal) {
-                datum = value;
-            } else if (value instanceof String) {
-                datum = new BigDecimal((String) value);
+            if (diValue instanceof BigDecimal) {
+                avroValue = diValue;
+            } else if (diValue instanceof String) {
+                avroValue = new BigDecimal((String) diValue);
             }
         }
 
-        if (datum == null) {
+        if (avroValue == null) {
             switch (fieldSchema.getType()) {
             case ARRAY:
                 break;
             case BOOLEAN:
-                if (value instanceof Boolean)
-                    datum = value;
+                if (diValue instanceof Boolean)
+                    avroValue = diValue;
                 else
-                    datum = Boolean.valueOf(String.valueOf(value));
+                    avroValue = Boolean.valueOf(String.valueOf(diValue));
                 break;
             case FIXED:
             case BYTES:
-                if (value instanceof byte[])
-                    datum = value;
+                if (diValue instanceof byte[])
+                    avroValue = diValue;
                 else
-                    datum = String.valueOf(value).getBytes();
+                    avroValue = String.valueOf(diValue).getBytes();
                 break;
             case DOUBLE:
-                if (value instanceof Number)
-                    datum = ((Number) value).doubleValue();
+                if (diValue instanceof Number)
+                    avroValue = ((Number) diValue).doubleValue();
                 else
-                    datum = Double.valueOf(String.valueOf(value));
+                    avroValue = Double.valueOf(String.valueOf(diValue));
                 break;
             case ENUM:
                 break;
             case FLOAT:
-                if (value instanceof Number)
-                    datum = ((Number) value).floatValue();
+                if (diValue instanceof Number)
+                    avroValue = ((Number) diValue).floatValue();
                 else
-                    datum = Float.valueOf(String.valueOf(value));
+                    avroValue = Float.valueOf(String.valueOf(diValue));
                 break;
             case INT:
-                if (value instanceof Number)
-                    datum = ((Number) value).intValue();
+                if (diValue instanceof Number)
+                    avroValue = ((Number) diValue).intValue();
                 else
-                    datum = Integer.valueOf(String.valueOf(value));
+                    avroValue = Integer.valueOf(String.valueOf(diValue));
                 break;
             case LONG:
-                if (value instanceof Number)
-                    datum = ((Number) value).longValue();
+                if (diValue instanceof Number)
+                    avroValue = ((Number) diValue).longValue();
                 else
-                    datum = Long.valueOf(String.valueOf(value));
+                    avroValue = Long.valueOf(String.valueOf(diValue));
                 break;
             case MAP:
                 break;
             case NULL:
-                datum = null;
+                avroValue = null;
                 break;
             case RECORD:
                 break;
             case STRING:
-                datum = String.valueOf(value);
+                avroValue = String.valueOf(diValue);
                 break;
             case UNION:
                 break;
@@ -435,7 +440,7 @@ public class DiIncomingSchemaEnforcer {
             }
         }
 
-        currentRecord.put(index, datum);
+        currentRecord.put(index, avroValue);
     }
 
     /**
