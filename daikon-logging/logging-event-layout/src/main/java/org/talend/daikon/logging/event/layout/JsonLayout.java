@@ -1,4 +1,4 @@
-package org.talend.daikon.logging.event;
+package org.talend.daikon.logging.event.layout;
 
 import ch.qos.logback.core.LayoutBase;
 import ch.qos.logback.core.spi.DeferredProcessingAware;

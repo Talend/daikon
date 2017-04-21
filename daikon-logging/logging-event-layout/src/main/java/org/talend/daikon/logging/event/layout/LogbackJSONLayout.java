@@ -1,4 +1,4 @@
-package org.talend.daikon.logging.event;
+package org.talend.daikon.logging.event.layout;
 
 import java.util.Date;
 import java.util.Map;

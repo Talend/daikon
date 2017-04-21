@@ -19,7 +19,7 @@
         <param name="MaxFileSize" value="50MB" />
         <param name="MaxBackupIndex" value="20" />
         <param name="encoding" value="UTF-8" />
-        <layout class="org.talend.daikon.logging.event.Log4jJSONLayout" locationInfo="true">
+        <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout" locationInfo="true">
         </layout>
     </appender>   
        

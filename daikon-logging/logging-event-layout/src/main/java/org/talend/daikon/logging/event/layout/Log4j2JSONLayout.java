@@ -1,5 +1,5 @@
 
-package org.talend.daikon.logging.event;
+package org.talend.daikon.logging.event.layout;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

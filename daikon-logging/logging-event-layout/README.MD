@@ -8,7 +8,7 @@ Add these dependencies in your project
 GRADLE:
 
 ```
-compile ("org.talend.daikon.logging:daikon-logging-event:0.16.0-SNAPSHOT")
+compile ("org.talend.daikon.logging:logging-event-layout:0.16.0-SNAPSHOT")
 compile ("net.minidev:json-smart:2.2.1")
 compile ("commons-lang:commons-lang:2.6")
 ```
@@ -18,7 +18,7 @@ MAVEN:
 ```
 <dependency>
   	<groupId>org.talend.daikon.logging</groupId>
-  	<artifactId>daikon-logging-event</artifactId>
+  	<artifactId>logging-event-layout</artifactId>
   	<version>0.16.0-SNAPSHOT</version>
 </dependency>
 <dependency>
@@ -46,7 +46,7 @@ MAVEN:
         <param name="MaxFileSize" value="50MB" />
         <param name="MaxBackupIndex" value="20" />
         <param name="encoding" value="UTF-8" />
-        <layout class="org.talend.daikon.logging.event.Log4jJSONLayout">
+        <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout">
             <param name="UserFields" value="" />
         </layout>
     </appender>   
@@ -61,7 +61,7 @@ MAVEN:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration status="DEBUG" packages="org.talend.daikon.logging.event" verbose="false">
+<configuration status="DEBUG" packages="org.talend.daikon.logging.event.layout" verbose="false">
   <appenders>
     <RollingFile name="File" fileName="${LOG_PATH}/application.log"
         filePattern="${LOG_PATH}/application-%d{yyyy-MM-dd}.log">
@@ -92,7 +92,7 @@ MAVEN:
       <fileNamePattern>${LOG_PATH}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
       <maxHistory>30</maxHistory>
     </rollingPolicy>
-    <layout class="org.talend.daikon.logging.event.LogbackJSONLayout">
+    <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
         <param name="UserFields" value="" />
     </layout>
  </appender>
@@ -113,14 +113,14 @@ You can now add your own metadata to the event in the form of comma-separated ke
 ### Log4j config
 
 ```xml
-<layout class="org.talend.daikon.logging.event.Log4jJSONLayout">
+<layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout">
   <param name="UserFields" value="Application_NAME:APP_NAME,Application_ID:APP_ID" />
 </layout>
 ```
 ### Logback config
  
 ```xml
-<layout class="org.talend.daikon.logging.event.LogbackJSONLayout">
+<layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
   <param name="UserFields" value="Application_NAME:APP_NAME,Application_ID:APP_ID" />
 </layout>
 ```

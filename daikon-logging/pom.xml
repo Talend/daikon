@@ -19,6 +19,6 @@
         <spring.version>4.3.3.RELEASE</spring.version>
     </properties>
     <modules>
-        <module>daikon-logging-event</module>
+        <module>logging-event-layout</module>
     </modules>
 </project>

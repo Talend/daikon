@@ -16,6 +16,7 @@ import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.junit.Test;
+import org.talend.daikon.logging.event.layout.Log4j2JSONLayout;
 
 public class Log4j2JSONLayoutTest {
 

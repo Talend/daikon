@@ -8,6 +8,7 @@ import org.apache.log4j.NDC;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.daikon.logging.event.layout.Log4jJSONLayout;
 
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;

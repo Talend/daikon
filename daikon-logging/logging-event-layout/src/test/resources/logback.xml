@@ -12,7 +12,7 @@
       <fileNamePattern>application.log.%d{yyyy-MM-dd}</fileNamePattern>
       <maxHistory>30</maxHistory>
     </rollingPolicy>
-    <layout class="org.talend.daikon.logging.event.LogbackJSONLayout" locationInfo="true">
+    <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout" locationInfo="true">
         <param name="UserFields" value="foo:bar,baz:quz" />
     </layout>
  </appender>

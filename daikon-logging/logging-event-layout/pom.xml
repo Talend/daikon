@@ -9,9 +9,9 @@
         <version>0.16.0-SNAPSHOT</version>
     </parent>
 	<groupId>org.talend.daikon</groupId>
-	<artifactId>daikon-logging-event</artifactId>
+	<artifactId>logging-event-layout</artifactId>
 	<version>0.16.0-SNAPSHOT</version>
-	<name>daikon-logging-event</name>
+	<name>logging-event-layout</name>
 	<properties>
         <ch.qos.logback.version>1.1.7</ch.qos.logback.version> 
         <com.fasterxml.jackson.version>2.4.6</com.fasterxml.jackson.version>
