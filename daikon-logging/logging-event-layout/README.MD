@@ -315,7 +315,7 @@ Maven style:
 	  "logger.name":"org.talend.loggenerator.scenarios.high.LogEventHigh",
 	  "method.name":"publishLogs",
 	  "process.id":"860"
-	},
+   },
    "service":"The name of the application that logged the span",
    "spanId":"The id of a specific operation that took place",
    "traceId":"The id of the latency graph that contains the span",
@@ -326,7 +326,7 @@ Maven style:
    "customInfo":{
 	   "my.custom.data":"my custom test data",
 	   "exceutionId":"9454554dfc-1024585-410c0-d464124
-  	 }
+  	}
 }
 ```
 
