@@ -159,6 +159,7 @@ public class Log4jJSONLayout extends Layout {
 
     @Override
     public void activateOptions() {
+        //Not used
     }
 
     private void addUserFields(String data) {

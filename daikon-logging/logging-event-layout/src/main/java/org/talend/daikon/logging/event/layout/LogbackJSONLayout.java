@@ -10,7 +10,6 @@ import org.talend.daikon.logging.event.field.LayoutFields;
 import ch.qos.logback.classic.pattern.RootCauseFirstThrowableProxyConverter;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import net.minidev.json.JSONObject;
 
 /**
@@ -79,32 +78,28 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         logstashEvent.put(LayoutFields.HOST_IP, hostAdresse);
         logstashEvent.put(LayoutFields.LOG_MESSAGE, loggingEvent.getFormattedMessage());
 
-        if (loggingEvent.getCallerData() != null) {
-            final IThrowableProxy throwableInformation = loggingEvent.getThrowableProxy();
-            if (throwableInformation != null) {
+        if (loggingEvent.getThrowableProxy() != null) {
 
-                if (throwableInformation.getClass().getCanonicalName() != null) {
-                    addEventData(LayoutFields.EXCEPTION_CLASS, throwableInformation.getClass().getCanonicalName());
-                }
-
-                if (throwableInformation.getMessage() != null) {
-                    addEventData(LayoutFields.EXCEPTION_MESSAGE, throwableInformation.getMessage());
-                }
-
-                if (throwableInformation.getStackTraceElementProxyArray() != null) {
-                    ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
-                    String stackTrace = converter.convert(loggingEvent);
-                    addEventData(LayoutFields.STACK_TRACE, stackTrace);
-                }
+            if (loggingEvent.getThrowableProxy().getClass().getCanonicalName() != null) {
+                addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrowableProxy().getClass().getCanonicalName());
             }
-            if (locationInfo) {
-                StackTraceElement callerData = extractCallerData(loggingEvent);
-                if (callerData != null) {
-                    addEventData(LayoutFields.FILE_NAME, callerData.getFileName());
-                    addEventData(LayoutFields.LINE_NUMBER, callerData.getLineNumber());
-                    addEventData(LayoutFields.CLASS_NAME, callerData.getClassName());
-                    addEventData(LayoutFields.METHOD_NAME, callerData.getMethodName());
-                }
+
+            if (loggingEvent.getThrowableProxy().getMessage() != null) {
+                addEventData(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrowableProxy().getMessage());
+            }
+            
+            ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
+            String stackTrace = converter.convert(loggingEvent);
+            addEventData(LayoutFields.STACK_TRACE, stackTrace);
+        }
+
+        if (locationInfo) {
+            StackTraceElement callerData = extractCallerData(loggingEvent);
+            if (callerData != null) {
+                addEventData(LayoutFields.FILE_NAME, callerData.getFileName());
+                addEventData(LayoutFields.LINE_NUMBER, callerData.getLineNumber());
+                addEventData(LayoutFields.CLASS_NAME, callerData.getClassName());
+                addEventData(LayoutFields.METHOD_NAME, callerData.getMethodName());
             }
         }
 
