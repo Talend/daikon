@@ -12,10 +12,6 @@
 // ============================================================================
 package org.talend.daikon.avro;
 
-import static org.talend.daikon.avro.LogicalTypeUtils.DATE;
-import static org.talend.daikon.avro.LogicalTypeUtils.TIMESTAMP_MILLIS;
-import static org.talend.daikon.avro.LogicalTypeUtils.TIME_MILLIS;
-
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;

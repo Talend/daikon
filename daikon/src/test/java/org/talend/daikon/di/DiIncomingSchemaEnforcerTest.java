@@ -572,9 +572,9 @@ public class DiIncomingSchemaEnforcerTest {
                 .name("Test_Byte").type(AvroUtils._byte()).noDefault() //
                 .name("Test_Short").type(AvroUtils._short()).noDefault() //
                 .name("Test_Character").type(AvroUtils._character()).noDefault() //
-                // .name("TestLogicalDate").type(AvroUtils._logicalDate()).noDefault() //
-                // .name("TestLogicalTimeMillis").type(AvroUtils._logicalTime()).noDefault() //
-                // .name("TestLogicalTimestampMillis").type(AvroUtils._logicalTimestamp()).noDefault() //
+                .name("TestLogicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("TestLogicalTimeMillis").type(AvroUtils._logicalTime()).noDefault() //
+                .name("TestLogicalTimestampMillis").type(AvroUtils._logicalTimestamp()).noDefault() //
                 .name("valid").type().booleanType().noDefault() //
                 .endRecord(); //
 
@@ -599,9 +599,9 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.addDynamicField("Test_Byte", "id_Byte", null, null, null, false);
         enforcer.addDynamicField("Test_Short", "id_Short", null, null, null, false);
         enforcer.addDynamicField("Test_Character", "id_Character", null, null, null, false);
-        // enforcer.addDynamicField("TestLogicalDate", "id_Date", "date", null, null, false);
-        // enforcer.addDynamicField("TestLogicalTimeMillis", "id_Integer", "time-millis", null, null, false);
-        // enforcer.addDynamicField("TestLogicalTimestampMillis", "id_Date", "timestamp-millis", null, null, false);
+        enforcer.addDynamicField("TestLogicalDate", "id_Date", "date", null, null, false);
+        enforcer.addDynamicField("TestLogicalTimeMillis", "id_Integer", "time-millis", null, null, false);
+        enforcer.addDynamicField("TestLogicalTimestampMillis", "id_Date", "timestamp-millis", null, null, false);
 
         enforcer.recreateRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
@@ -621,11 +621,13 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.put(8, (byte) 20);
         enforcer.put(9, (short) 2016);
         enforcer.put(10, 'A');
-        enforcer.put(11, false);
-        // enforcer.put(11, 1234567890);
-        // enforcer.put(12, 123456789);
-        // enforcer.put(13, 1234567891012L);
-        // enforcer.put(14, false);
+        // 46 * 365 days in milliseconds
+        enforcer.put(11, new Date(1450656000000l));
+        // 14 hours in milliseconds
+        enforcer.put(12, 50400000);
+        // 46 * 365 days + 14 hours
+        enforcer.put(13, new Date(1450706400000l));
+        enforcer.put(14, false);
 
         IndexedRecord record = enforcer.getCurrentRecord();
 
@@ -640,6 +642,13 @@ public class DiIncomingSchemaEnforcerTest {
         assertThat(record.get(8), is((Object) 20));
         assertThat(record.get(9), is((Object) 2016));
         assertThat(record.get(10), is((Object) "A"));
+        // should be integer value equals to 46 * 365 days in days
+        assertThat(record.get(11), is((Object) 16790));
+        // should be integer value equals to 14 hours in milliseconds
+        assertThat(record.get(12), is((Object) 50400000));
+        // should be long value equals to 1450706400000
+        assertThat(record.get(13), is((Object) 1450706400000l));
+        assertThat(record.get(14), is((Object) false));
     }
 
     /**
