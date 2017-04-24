@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.avro.Schema;
+import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
@@ -219,8 +220,9 @@ public class DiIncomingSchemaEnforcer {
      * Also should be called before calling {@link this#put()} and {@link this#createIndexedRecord()} methods
      */
     public void recreateRuntimeSchema() {
-        if (!needsInitDynamicColumns())
+        if (!needsInitDynamicColumns()) {
             return;
+        }
 
         // Copy all of the fields that were initialized from dynamic columns into the runtime Schema.
         boolean dynamicFieldsAdded = false;
@@ -231,12 +233,7 @@ public class DiIncomingSchemaEnforcer {
                 fields.addAll(dynamicFields);
                 dynamicFieldsAdded = true;
             }
-            // Make a complete copy of the field (it can't be reused).
-            Schema.Field designFieldCopy = new Schema.Field(designField.name(), designField.schema(), designField.doc(),
-                    designField.defaultVal());
-            for (Map.Entry<String, Object> e : designField.getObjectProps().entrySet()) {
-                designFieldCopy.addProp(e.getKey(), e.getValue());
-            }
+            Schema.Field designFieldCopy = copyField(designField);
             fields.add(designFieldCopy);
         }
         if (!dynamicFieldsAdded) {
@@ -254,6 +251,21 @@ public class DiIncomingSchemaEnforcer {
 
         // And indicate that initialization is finished.
         dynamicFields = null;
+    }
+    
+    /**
+     * Creates copy of Avro schema field
+     * Field from one schema can't be reused in another
+     * 
+     * @param original original field
+     * @return field copy
+     */
+    private Field copyField(Field original) {
+        Field copy = new Schema.Field(original.name(), original.schema(), original.doc(), original.defaultVal());
+        for (Map.Entry<String, Object> e : original.getObjectProps().entrySet()) {
+            copy.addProp(e.getKey(), e.getValue());
+        }
+        return copy;
     }
 
     /**
