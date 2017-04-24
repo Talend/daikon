@@ -52,11 +52,11 @@ public class DiIncomingSchemaEnforcer {
      * Dynamic column position possible value, which means schema doesn't have dynamic column
      */
     private static final int NO_DYNAMIC_COLUMN = -1;
-    
+
     /**
      * The number of milliseconds in one day
      */
-    private static final long ONE_DAY = 1000*60*60*24;
+    private static final long ONE_DAY = 1000 * 60 * 60 * 24;
 
     /**
      * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
@@ -252,7 +252,7 @@ public class DiIncomingSchemaEnforcer {
         // And indicate that initialization is finished.
         dynamicFields = null;
     }
-    
+
     /**
      * Creates copy of Avro schema field
      * Field from one schema can't be reused in another
@@ -383,7 +383,7 @@ public class DiIncomingSchemaEnforcer {
         if (LogicalTypeUtils.isLogicalDate(fieldSchema)) {
             // (igonchar): diValue MUST be of java.util.Date
             Date diDate = (Date) diValue;
-            int avroDays = (int) (diDate.getTime() / ONE_DAY );
+            int avroDays = (int) (diDate.getTime() / ONE_DAY);
             currentRecord.put(index, avroDays);
             return;
         }
