@@ -18,7 +18,7 @@ Supports both regular _LoggingEvents_ (logged through a `Logger`).
     * [Global Custom Fields](#loggingevent_custom_global)
   * [Log correlation (Spring Cloud Sleuth)](#spring_cloud_sleuth)
     * [Including Spring Cloud Sleuth in your project](#including_spring_cloud_sleuth)
-* [LoggingEvent Structure Example](#loggingevent_structure)
+* [LoggingEvent Structure Proposal](#loggingevent_structure)
 	* [LoggingEvent Structure Questions](#loggingevent_structure_example)
 
 <a name="including"/>
@@ -236,8 +236,8 @@ In these  examples we will have in log file these json :
 
 ```
 {
-	"Application_NAME":"APP_NAME",
-    "Application_ID":"APP_ID"
+  "Application_NAME":"APP_NAME",
+  "Application_ID":"APP_ID"
 }
 ```
 
@@ -297,28 +297,36 @@ Maven style:
 
 
 <a name="loggingevent_structure"/>
-#### LoggingEvent Structure Example
+#### LoggingEvent Structure Proposal
 
 ```
 { 
    "eventUUID":"9454554dfc-4545dv-410c0-d464124",
+   "correlationId":"someCorrelationId",
    "category":"TestCategory",
    "eventType":"LOGEvent",
-   "agentId":"tenantId",
-   "audit":"false",
-   "exceutionId":"9454522d-4545dv-410c0-4511527",
-   "processId":"860",
-   "logTimestamp":"2016-12-13T13:33:39.934Z",
-   "hostName":"tlnd-host",
-   "hostAddress":"192.168.56.1",
-   "level":"INFO",
-   "methods="[GET],produces=[application\/json]}\" onto public org.talend.provisioning.core.provisioner.tic.BookkeeperAccount..."
-   "logMessage":"Exception in monitor thread while connecting to server localhost:27017", 
-   "exceptionClass":"ch.qos.logback.classic.spi.ThrowableProxy",
-   "stackTrace":"at com.mongodb.connection.SocketStream.open(SocketStream.java:63)\nat 	com.mongodb.connection.InternalStreamConnection.open(InternalStreamConnection.java:114)\nat 	com.mongodb.connection.DefaultServerMonitor$Se"
-   "threadName":"cluster-ClusterId{value='584ff8b24f57bc2b3426be9b', description='null'}-localhost:27017",
-   "loggerName":"org.mongodb.driver.cluster",
-   "exceptionMessage":"Exception opening socket"
+   "severity":"INFO",
+   "logMessage":"slf4j log message (high)",
+   "logSource":{
+   		"class.name":"org.talend.loggenerator.scenarios.high.LogEventHigh",
+		"file.name":"LogEventHigh.java",
+		"host.name":"win75",
+		"line.number":"68",
+		"logger.name":"org.talend.loggenerator.scenarios.high.LogEventHigh",
+		"method.name":"publishLogs",
+		"process.id":"860"
+	},
+	"service":"The name of the application that logged the span",
+	"spanId":"The id of a specific operation that took place",
+	"traceId":"The id of the latency graph that contains the span",
+	"exportable":"Whether the log should be exported to Zipkin or not",
+	"logTimestamp":"2016-12-13T13:33:39.934Z",
+	"agentId":"tenantId",
+	"audit":"false",
+	"customInfo":{
+		"my.custom.data":"my custom test data",
+		"exceutionId":"9454554dfc-1024585-410c0-d464124
+  	 }
 }
 ```
 
@@ -329,13 +337,13 @@ Maven style:
 
 | Field             | Description
 |-------------------|------------
-| `eventUUID`       |  
-| `category`        |  
-| `eventType`       |  
-| `agentId`         |  
-| `audit`           |  
-| `exceutionId`     |  
-| `processId`       |  
+| `eventUUID`       | The unique id of every log event. Its a UUID, the appenders should just generate a UUID and assign to this attribute
+| `category`        |  ??
+| `eventType`       | The attribute which allows to group similar types of log events
+| `agentId`         | The tenantId(accountId)
+| `audit`           | Is a flag, if this log event is needed to be saved for auditing purpose
+| `exceutionId`     | The job execution id
+| `processId`       | The id of the jvm process
 
 2. For these following fields can we use MDC to set them ?
 
