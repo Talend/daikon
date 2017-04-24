@@ -200,7 +200,7 @@ will appear as a field in the LoggingEvent.
 
 Each entry in the Mapped Diagnostic Context (MDC) will appear as a field in the log file in the form of comma-separated "key":"value"
 
-We provide a java class constants that contains common MDC keys: `MdcCommonKeys` (please add there all MDC keys you think will be common)
+We provide a java class constants that contains common MDC fields: `MdcCommonFields` (please add there all MDC keys you think will be common)
 
 <a name="loggingevent_custom"/>
 ### Custom Fields
