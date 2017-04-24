@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.avro.LogicalType;
-import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
@@ -53,6 +51,11 @@ public class DiIncomingSchemaEnforcer {
      * Dynamic column position possible value, which means schema doesn't have dynamic column
      */
     private static final int NO_DYNAMIC_COLUMN = -1;
+    
+    /**
+     * The number of milliseconds in one day
+     */
+    private static final long ONE_DAY = 1000*60*60*24;
 
     /**
      * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
@@ -327,18 +330,13 @@ public class DiIncomingSchemaEnforcer {
 
         Object avroValue = null;
 
-        boolean isLogicalDate = false;
-        LogicalType logicalType = fieldSchema.getLogicalType();
-        if (logicalType != null) {
-            if (logicalType == LogicalTypes.date() || logicalType == LogicalTypes.timestampMillis()) {
-                isLogicalDate = true;
-            }
-        }
-
         // TODO(rskraba): This is pretty rough -- fix with a general type conversion strategy.
         String talendType = field.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
-        if (isLogicalDate || "id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) {
+
+        // TODO(igonchar): This is wrong. However I left it as is. We have to fix it after release
+        // Seems, talendType is added by Studio to schema
+        if ("java.util.Date".equals(javaClass) || "id_Date".equals(talendType)) {
             if (diValue instanceof Date) {
                 avroValue = diValue;
             } else if (diValue instanceof Long) {
@@ -368,6 +366,22 @@ public class DiIncomingSchemaEnforcer {
                     throw new RuntimeException(e);
                 }
             }
+        }
+
+        if (LogicalTypeUtils.isLogicalDate(fieldSchema)) {
+            // (igonchar): diValue MUST be of java.util.Date
+            Date diDate = (Date) diValue;
+            int avroDays = (int) (diDate.getTime() / ONE_DAY );
+            currentRecord.put(index, avroDays);
+            return;
+        }
+
+        if (LogicalTypeUtils.isLogicalTimestampMillis(fieldSchema)) {
+            // (igonchar): diValue MUST be of java.util.Date
+            Date diDate = (Date) diValue;
+            long avroTimestamp = diDate.getTime();
+            currentRecord.put(index, avroTimestamp);
+            return;
         }
 
         // TODO(igonchar): I'm not sure it is correct. For me avro value should be string. Conversion to BigDecimal may be
