@@ -19,7 +19,7 @@ Supports both regular _LoggingEvents_ (logged through a `Logger`).
   * [Log correlation (Spring Cloud Sleuth)](#spring_cloud_sleuth)
     * [Including Spring Cloud Sleuth in your project](#including_spring_cloud_sleuth)
 * [LoggingEvent Structure Proposal](#loggingevent_structure)
-	* [LoggingEvent Structure Questions](#loggingevent_structure_example)
+	* [LoggingEvent Structure MDC](#loggingevent_structure_example)
 
 <a name="including"/>
 ## Including it in your project
@@ -199,6 +199,7 @@ By default, each entry in the Mapped Diagnostic Context (MDC) (`org.slf4j.MDC`)
 will appear as a field in the LoggingEvent.
 
 Each entry in the Mapped Diagnostic Context (MDC) will appear as a field in the log file in the form of comma-separated "key":"value"
+TODO: We will provide a java class constants that contains all MDC keys allowed
 
 <a name="loggingevent_custom"/>
 ### Custom Fields
@@ -324,16 +325,11 @@ Maven style:
    "agentId":"tenantId",
    "audit":"false",
    "customInfo":{
-	   "my.custom.data":"my custom test data",
-	   "exceutionId":"9454554dfc-1024585-410c0-d464124
-  	}
+	  "my.custom.data":"my custom test data",
+	  "exceutionId":"9454554dfc-1024585-410c0-d464124
+    }
 }
 ```
-
-<a name="loggingevent_structure_example"/>
-#### LoggingEvent Structure Questions
-
-1. Do we need these following fields currently used in ESB ?
 
 | Field             | Description
 |-------------------|------------
@@ -342,6 +338,3 @@ Maven style:
 | `eventType`       | The attribute which allows to group similar types of log events
 | `audit`           | Is a flag, if this log event is needed to be saved for auditing purpose
 
-2. Do you see some fields missing here that cannot set with MDC ?
-
-3. On MDC fields, is it preferable to use the same keys for all applications? Can we provide a java class that contains all MDC keys allowed?
