@@ -340,18 +340,8 @@ Maven style:
 | `eventUUID`       | The unique id of every log event. Its a UUID, the appenders should just generate a UUID and assign to this attribute
 | `category`        |  ??
 | `eventType`       | The attribute which allows to group similar types of log events
-| `agentId`         | The tenantId(accountId)
 | `audit`           | Is a flag, if this log event is needed to be saved for auditing purpose
-| `exceutionId`     | The job execution id
-| `processId`       | The id of the jvm process
 
-2. For these following fields can we use MDC to set them ?
+2. Do you see some fields missing here that cannot set with MDC ?
 
-| Field             | Description
-|-------------------|------------ 
-| `agentId`         |  The tenant ID   
-| `exceutionId`     |  The job exection ID
-
-3. Do you see some fields missing here that cannot set with MDC ?
-
-4. On MDC fields, is it preferable to use the same keys for all applications? Can we provide a java class that contains all MDC keys allowed?
+3. On MDC fields, is it preferable to use the same keys for all applications? Can we provide a java class that contains all MDC keys allowed?
