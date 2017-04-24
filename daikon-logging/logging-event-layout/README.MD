@@ -297,7 +297,7 @@ Maven style:
 
 
 <a name="loggingevent_structure"/>
-#### LoggingEvent Structure
+#### LoggingEvent Structure Example
 
 ```
 { 
