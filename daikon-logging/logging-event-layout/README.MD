@@ -199,6 +199,7 @@ By default, each entry in the Mapped Diagnostic Context (MDC) (`org.slf4j.MDC`)
 will appear as a field in the LoggingEvent.
 
 Each entry in the Mapped Diagnostic Context (MDC) will appear as a field in the log file in the form of comma-separated "key":"value"
+
 TODO: We will provide a java class constants that contains all MDC keys allowed
 
 <a name="loggingevent_custom"/>
