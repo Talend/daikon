@@ -65,9 +65,9 @@ The layouts provided by the daikon-logging-event-layout library are as follows:
 
 |Name             | Format        | Protocol   | Function | LoggingEvent 
 |-----------------|---------------|------------|----------| ------------
-|LogbackLayout    | Logstash JSON | any        | Layout   | [`LogstashLayout`](daikon-logging/logging-event-layout/src/main/java/org/talend/daikon/logging/event/layout/LogbackJSONLayout.java)
-|Log4jLayout      | Logstash JSON | any        | Layout   | [`Log4jJSONLayout`](daikon-logging/logging-event-layout/src/main/java/org/talend/daikon/logging/event/layout/layout/Log4jJSONLayout.java)
-|Log4j2Layout     | Logstash JSON | any        | Layout   | [`Log4j2JSONLayout`](daikon-logging/logging-event-layout/src/main/java/org/talend/daikon/logging/event/layout/Log4j2JSONLayout.java)
+|LogbackLayout    | Logstash JSON | any        | Layout   | [`LogstashLayout`](/src/main/java/org/talend/daikon/logging/event/layout/LogbackJSONLayout.java)
+|Log4jLayout      | Logstash JSON | any        | Layout   | [`Log4jJSONLayout`](/src/main/java/org/talend/daikon/logging/event/layout/Log4jJSONLayout.java)
+|Log4j2Layout     | Logstash JSON | any        | Layout   | [`Log4j2JSONLayout`](/src/main/java/org/talend/daikon/logging/event/layout/Log4j2JSONLayout.java)
 
 These layouts can generally be used by any logback and log4j appender (such as `RollingFileAppender`).
 
