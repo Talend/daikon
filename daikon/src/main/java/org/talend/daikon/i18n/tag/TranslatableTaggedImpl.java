@@ -35,6 +35,9 @@ public class TranslatableTaggedImpl extends TranslatableImpl implements HasTags 
         return tags;
     }
 
+    /**
+     * Get tags. Override this method to implement tags support.
+     */
     protected Collection<TagImpl> doGetTags() {
         return Collections.emptyList();
     }
