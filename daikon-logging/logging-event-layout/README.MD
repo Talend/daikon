@@ -316,16 +316,16 @@ Maven style:
 	  "method.name":"publishLogs",
 	  "process.id":"860"
 	},
-	"service":"The name of the application that logged the span",
-	"spanId":"The id of a specific operation that took place",
-	"traceId":"The id of the latency graph that contains the span",
-	"exportable":"Whether the log should be exported to Zipkin or not",
-	"logTimestamp":"2016-12-13T13:33:39.934Z",
-	"agentId":"tenantId",
-	"audit":"false",
-	"customInfo":{
-		"my.custom.data":"my custom test data",
-		"exceutionId":"9454554dfc-1024585-410c0-d464124
+   "service":"The name of the application that logged the span",
+   "spanId":"The id of a specific operation that took place",
+   "traceId":"The id of the latency graph that contains the span",
+   "exportable":"Whether the log should be exported to Zipkin or not",
+   "logTimestamp":"2016-12-13T13:33:39.934Z",
+   "agentId":"tenantId",
+   "audit":"false",
+   "customInfo":{
+	   "my.custom.data":"my custom test data",
+	   "exceutionId":"9454554dfc-1024585-410c0-d464124
   	 }
 }
 ```
