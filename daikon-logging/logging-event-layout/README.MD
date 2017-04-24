@@ -308,13 +308,13 @@ Maven style:
    "severity":"INFO",
    "logMessage":"slf4j log message (high)",
    "logSource":{
-   		"class.name":"org.talend.loggenerator.scenarios.high.LogEventHigh",
-		"file.name":"LogEventHigh.java",
-		"host.name":"win75",
-		"line.number":"68",
-		"logger.name":"org.talend.loggenerator.scenarios.high.LogEventHigh",
-		"method.name":"publishLogs",
-		"process.id":"860"
+   	  "class.name":"org.talend.loggenerator.scenarios.high.LogEventHigh",
+	  "file.name":"LogEventHigh.java",
+	  "host.name":"win75",
+	  "line.number":"68",
+	  "logger.name":"org.talend.loggenerator.scenarios.high.LogEventHigh",
+	  "method.name":"publishLogs",
+	  "process.id":"860"
 	},
 	"service":"The name of the application that logged the span",
 	"spanId":"The id of a specific operation that took place",
