@@ -2,9 +2,12 @@ package org.talend.daikon.di;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.avro.Schema;
@@ -177,6 +180,36 @@ public class DiOutgoingSchemaEnforcerTest {
         dateField.addProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'");
 
         Object transformedValue = enforcer.transformValue(1L, dateField);
+
+        assertThat(transformedValue, equalTo((Object) expectedDate));
+    }
+
+    /**
+     * the date may be in string format with a pattern
+     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Date} value correctly
+     * using Talend type property
+     */
+    @Test
+    public void testTransformValueToDateByTalendTypeString() {
+        String stringDate = "2017-01-01 01:00:00";
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat df = new SimpleDateFormat(pattern);
+        Date expectedDate = null;
+        try {
+            expectedDate = df.parse(stringDate);
+        } catch (ParseException e) {
+            // do nothing
+        }
+        assertNotNull(expectedDate);
+
+        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
+
+        Field dateField = new Field("createdDate", Schema.create(Schema.Type.STRING), null, null);
+        dateField.addProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date");
+        dateField.addProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN, pattern);
+
+        Object transformedValue = enforcer.transformValue(stringDate, dateField);
 
         assertThat(transformedValue, equalTo((Object) expectedDate));
     }
