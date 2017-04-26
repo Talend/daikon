@@ -17,7 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 import org.junit.Test;
 import org.talend.daikon.i18n.GlobalI18N;
@@ -29,13 +29,13 @@ public class TranslatableTaggedImplTest {
 
     private static class TaggedTestDefinition extends TranslatableTaggedImpl {
 
-        private Collection<TagImpl> tagsList;
+        private List<TagImpl> tagsList;
 
-        public void setTags(Collection<TagImpl> tags) {
+        public void setTags(List<TagImpl> tags) {
             this.tagsList = tags;
         }
 
-        protected Collection<TagImpl> doGetTags() {
+        protected List<TagImpl> doGetTags() {
             return tagsList;
         }
 
@@ -48,7 +48,7 @@ public class TranslatableTaggedImplTest {
 
         assertEquals(1, def.getTags().size());
 
-        assertTrue(def.getTags().iterator().next().hasTag("common tag"));
+        assertTrue(TagUtils.hasTag(def.getTags().get(0), "common tag"));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class TranslatableTaggedImplTest {
 
         assertEquals(1, def.getTags().size());
 
-        assertTrue(def.getTags().iterator().next().hasTag("Testing"));
+        assertTrue(TagUtils.hasTag(def.getTags().get(0), "Testing"));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class TranslatableTaggedImplTest {
 
         assertEquals(1, def.getTags().size());
 
-        assertFalse(def.getTags().iterator().next().hasTag("MySQL"));
+        assertFalse(TagUtils.hasTag(def.getTags().get(0), "MySQL"));
     }
 
 }

@@ -20,15 +20,18 @@ public interface Tag {
     public static final String TAG_PREFIX = "tag.";
 
     /**
-     * Check whether tag contains the given string value.
-     * 
-     * @param tag String representation of tag to be found.
+     * @return parent tag if present or return null
      */
-    public boolean hasTag(String tag);
+    public Tag getParentTag();
 
     /**
-     * Get translated tag value.
+     * Get translated current tag value.
      */
     public String getTranslatedValue();
+
+    /**
+     * Get current tag value.
+     */
+    public String getValue();
 
 }

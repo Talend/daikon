@@ -12,8 +12,8 @@
 // ============================================================================
 package org.talend.daikon.i18n.tag;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.talend.daikon.i18n.TranslatableImpl;
 
@@ -22,10 +22,10 @@ import org.talend.daikon.i18n.TranslatableImpl;
  */
 public class TranslatableTaggedImpl extends TranslatableImpl implements HasTags {
 
-    private Collection<TagImpl> tags;
+    private List<TagImpl> tags;
 
     @Override
-    public Collection<TagImpl> getTags() {
+    public List<TagImpl> getTags() {
         if (tags == null) {
             tags = doGetTags();
             for (TagImpl tag : tags) {
@@ -38,7 +38,7 @@ public class TranslatableTaggedImpl extends TranslatableImpl implements HasTags 
     /**
      * Get tags. Override this method to implement tags support.
      */
-    protected Collection<TagImpl> doGetTags() {
+    protected List<TagImpl> doGetTags() {
         return Collections.emptyList();
     }
 
