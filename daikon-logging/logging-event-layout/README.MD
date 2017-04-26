@@ -96,7 +96,7 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
       <fileNamePattern>${LOG_PATH}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
       <maxHistory>30</maxHistory>
     </rollingPolicy>
-    <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
+    <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout" locationInfo="false">
         <param name="UserFields" value="" />
     </layout>
  </appender>
@@ -118,7 +118,7 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
         <param name="MaxFileSize" value="50MB" />
         <param name="MaxBackupIndex" value="20" />
         <param name="encoding" value="UTF-8" />
-        <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout">
+        <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout" locationInfo="false">
             <param name="UserFields" value="" />
         </layout>
     </appender>   
@@ -137,7 +137,7 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
   <appenders>
     <RollingFile name="File" fileName="${LOG_PATH}/application.log"
         filePattern="${LOG_PATH}/application-%d{yyyy-MM-dd}.log">
-        <Log4j2JSONLayout charset="UTF-8" skipJsonEscapeSubLayout="true" subLayoutAsElement="true">
+        <Log4j2JSONLayout charset="UTF-8" skipJsonEscapeSubLayout="true" locationInfo="false" subLayoutAsElement="true">
             <KeyValuePair key="" value=""/>
             <KeyValuePair key="" value=""/>
         </Log4j2JSONLayout>
@@ -171,26 +171,25 @@ The field names listed here are the default field names.
 | `agentTimestamp`  | Time of the agent that logged the event (can be the same value with logTimestamp). (`yyyy-MM-dd'T'HH:mm:ss.SSSZZ`).
 | `@version`        | The format version (e.g. 1) 
 | `logMessage`      | Formatted log message of the event 
-| `loggerName`      | Name of the logger that logged the event
 | `threadName`      | Name of the thread that logged the event
 | `severity`        | String name of the level of the event
 | `stackTrace`      | (Only if a throwable was logged) The stacktrace of the throwable.  Stackframes are separated by line endings.
-| `hostAddress`     | The host address IP
-| `hostName`        | The host name
+| `host.address`    | The host address IP
+| `host.name`       | The host name
 | `exceptionClass`  | (Only if a throwable was logged) Name of the class that logged the exception
 | `exceptionMessage`| (OOnly if a throwable was logged) The exception message. 
 | `stackTrace`      | (Only if a throwable was logged) The stacktrace of the throwable.  Stackframes are separated by line endings.
 
-If you enable the `locationInfo` and set it to `true` you will have these more following fields
+If you set `locationInfo` property  to `true` in your layout log4j/logback configuration you will have these more following fields
 
 | Field             | Description
 |-------------------|------------
-| `fileName`        | Name of the file that logged the event
-| `className`       | Fully qualified class name of the class that logged the event
-| `methodName`      | Name of the method that logged the event
-| `lineNumber`      | ine number of the file where the event was logged
-
-
+| `file.name`       | Name of the file that logged the event
+| `class.name`      | Fully qualified class name of the class that logged the event
+| `method.name`     | Name of the method that logged the event
+| `line.number`     | Line number of the file where the event was logged
+| `logger.name`     | Name of the logger that logged the event
+| `process.id`      | The id of the jvm process
 
 
 <a name="loggingevent_mdc"/>
@@ -301,12 +300,13 @@ Maven style:
 
 <a name="correlation_id"/>
 #### Tracking correlation ids using Slf4j.
+
 The objectives are as follows:
 
-    Ensure that a correlation id is assigned for each transaction (will be generated if not on service request).
-    If it's on service request the please use this key name :HEADER_REQUEST_CORRELATION_ID define in MdcKeys.java
-    
-    Ensure that the correlation id is documented on all log messages so that it can be correlated across services.
+Ensure that a correlation id is assigned for each transaction (will be generated if not on service request).
+If it's on service request then please use this key name: HEADER_REQUEST_CORRELATION_ID provided in MdcKeys.java
+
+Ensure that the correlation id is documented on all log messages so that it can be correlated across services.
 
 #### Filter configuration
 To enable tracking correlation ids in the logs you have to :
@@ -340,9 +340,10 @@ To enable tracking correlation ids in the logs you have to :
 		<filter-mapping>
 			<url-pattern>/*</url-pattern>
 		</filter-mapping>
+    </filter>
 	  ```
 	  
-2. Configure your Layout as described here [Layouts](#layout)	  
+2. Configure your log4j/logback configuration as described here [Layouts](#layout)	  
 
 <a name="loggingevent_structure"/>
 #### LoggingEvent Structure Example
