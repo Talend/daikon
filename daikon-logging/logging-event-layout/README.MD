@@ -299,14 +299,14 @@ Maven style:
 
 
 <a name="correlation_id"/>
-#### Tracking correlation ids using Slf4j.
+#### Tracking correlation ids using Slf4j
 
 The objectives are as follows:
 
-Ensure that a correlation id is assigned for each transaction (will be generated if not on service request).
+1. Ensure that a correlation id is assigned for each transaction (will be generated if not on service request).
 If it's on service request then please use this key name: HEADER_REQUEST_CORRELATION_ID provided in MdcKeys.java
 
-Ensure that the correlation id is documented on all log messages so that it can be correlated across services.
+2. Ensure that the correlation id is documented on all log messages so that it can be correlated across services.
 
 #### Filter configuration
 To enable tracking correlation ids in the logs you have to :
