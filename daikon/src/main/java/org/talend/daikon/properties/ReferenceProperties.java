@@ -72,11 +72,11 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
     }
 
     @Override
-    protected void visitProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
-        super.visitProperties(visitor, visited);
+    protected void acceptForAllProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
+        super.acceptForAllProperties(visitor, visited);
 
         if (reference != null) {
-            visitProperty(visitor, visited, reference);
+            acceptForProperty(visitor, visited, reference);
         }
     }
 

@@ -372,7 +372,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
             return;
         }
         visited.add(this);
-        visitProperties(visitor, visited);
+        acceptForAllProperties(visitor, visited);
         visitor.visit(this, parent);
     }
 
@@ -384,35 +384,35 @@ public class PropertiesImpl extends TranslatableTaggedImpl
      * <p>Example:<blockquote>
      * <pre>
      *     {@literal @Override}
-     *     protected void visitProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
-     *         super.visitProperties(visitor, visited);
+     *     protected void acceptForAllProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
+     *         super.acceptForAllProperties(visitor, visited);
      *
      *         if (someSpecialProperty != null) {
-     *             visitProperty(visitor, visited, someSpecialProperty);
+     *             acceptForProperty(visitor, visited, someSpecialProperty);
      *         }
      *     }
      * </pre></blockquote>
      *
-     * @see #visitProperty(AnyPropertyVisitor, Set, NamedThing)
+     * @see #acceptForProperty(AnyPropertyVisitor, Set, NamedThing)
      *
-     * @param visitor visitor to be used
+     * @param visitor visitor to be accepted
      * @param visited collection to register visited properties
      */
-    protected void visitProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
+    protected void acceptForAllProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
         List<NamedThing> properties = getProperties();
         for (NamedThing nt : properties) {
-            visitProperty(visitor, visited, nt);
+            acceptForProperty(visitor, visited, nt);
         }
     }
 
     /**
      * Accept visitor for a single property.
      *
-     * @param visitor visitor to be used
+     * @param visitor visitor to be accepted
      * @param visited collection to register visited properties
      * @param nt object to be visited
      */
-    protected final void visitProperty(AnyPropertyVisitor visitor, Set<Properties> visited, NamedThing nt) {
+    protected final void acceptForProperty(AnyPropertyVisitor visitor, Set<Properties> visited, NamedThing nt) {
         if (nt instanceof PropertiesImpl) {
             ((PropertiesImpl) nt).acceptInternal(visitor, this, visited);
         } else if (nt instanceof AnyProperty) {
