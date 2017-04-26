@@ -167,6 +167,7 @@ The field names listed here are the default field names.
 
 | Field             | Description
 |-------------------|------------
+| `eventUUID`       | The unique id of every log event. Its a UUID, the appenders should just generate a UUID and assign to this attribute
 | `logTimestamp`    | Time of the log event. (`yyyy-MM-dd'T'HH:mm:ss.SSSZZ`).
 | `agentTimestamp`  | Time of the agent that logged the event (can be the same value with logTimestamp). (`yyyy-MM-dd'T'HH:mm:ss.SSSZZ`).
 | `@version`        | The format version (e.g. 1) 
@@ -179,6 +180,7 @@ The field names listed here are the default field names.
 | `exceptionClass`  | (Only if a throwable was logged) Name of the class that logged the exception
 | `exceptionMessage`| (OOnly if a throwable was logged) The exception message. 
 | `stackTrace`      | (Only if a throwable was logged) The stacktrace of the throwable.  Stackframes are separated by line endings.
+| `correaltionId`   | The correlationd ids if it's enabled [Tracking correlation ids using Slf4j](#correlation_id)
 
 If you set `locationInfo` property  to `true` in your layout log4j/logback configuration you will have these more following fields
 
@@ -379,9 +381,8 @@ To enable tracking correlation ids in the logs you have to :
 }
 ```
 
-| Field             | Description
-|-------------------|------------
-| `eventUUID`       | The unique id of every log event. Its a UUID, the appenders should just generate a UUID and assign to this attribute
+| Field             | Description (These fields will be added using MDC)
+|-------------------|----------------------------------------------------
 | `category`        |  ??
 | `eventType`       | The attribute which allows to group similar types of log events
 | `audit`           | Is a flag, if this log event is needed to be saved for auditing purpose
