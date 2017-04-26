@@ -21,7 +21,7 @@ import org.talend.daikon.i18n.ClassBasedI18nMessages;
 import org.talend.daikon.i18n.I18nMessages;
 
 /**
- * Tests for TagUtils class.
+ * Tests for {@link TagUtils} class.
  */
 public class TagUtilsTest {
 

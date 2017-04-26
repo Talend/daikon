@@ -20,10 +20,14 @@ import org.talend.daikon.i18n.TranslatableImpl;
  */
 public class TagImpl extends TranslatableImpl implements Tag {
 
+    /**
+     * Name of the tag.
+     */
     private final String value;
 
-    private String displayName;
-
+    /**
+     * Parent tag of the hierarchical tag.
+     */
     private Tag parentTag;
 
     /**
@@ -54,6 +58,12 @@ public class TagImpl extends TranslatableImpl implements Tag {
         }
     }
 
+    /**
+     * Returns a full translated path to root for current tag. Translated full path is constructed using translated
+     * values of all parent tags separated with "/" sign.
+     * 
+     * @see {@link TagUtils#getTranslatedPathToRoot}
+     */
     @Override
     public String toString() {
         return TagUtils.getTranslatedPathToRoot(this);
@@ -65,12 +75,9 @@ public class TagImpl extends TranslatableImpl implements Tag {
      */
     @Override
     public String getTranslatedValue() {
-        if (displayName == null) {
-            String fullTagName = TAG_PREFIX + getValue();
-            String value = getI18nMessage(fullTagName, new Object());
-            displayName = fullTagName.equals(value) ? getValue() : value;
-        }
-        return displayName;
+        String fullTagName = TAG_PREFIX + getValue();
+        String value = getI18nMessage(fullTagName, new Object());
+        return fullTagName.equals(value) ? getValue() : value;
     }
 
     @Override

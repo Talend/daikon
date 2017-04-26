@@ -22,7 +22,7 @@ import org.talend.daikon.i18n.ClassBasedI18nMessages;
 import org.talend.daikon.i18n.I18nMessages;
 
 /**
- * 
+ * Tests for {@link TagImpl} class
  */
 public class TagImplTest {
 
