@@ -381,9 +381,9 @@ To enable tracking correlation ids in the logs you have to :
 }
 ```
 
-| Field             | Description (These fields will be added using MDC)
-|-------------------|----------------------------------------------------
-| `category`        |  ??
+| Field             | Description (These fields are used ESB/TIC right now)
+|-------------------|-----------------------------------------------------------
+| `category`        | ??
 | `eventType`       | The attribute which allows to group similar types of log events
 | `audit`           | Is a flag, if this log event is needed to be saved for auditing purpose
 
