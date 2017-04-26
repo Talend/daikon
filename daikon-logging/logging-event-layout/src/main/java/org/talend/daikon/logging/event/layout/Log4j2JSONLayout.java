@@ -1,8 +1,8 @@
 
 package org.talend.daikon.logging.event.layout;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,19 +39,15 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     private JSONObject logstashEvent;
 
-    private HostData host = new HostData();
+    private JSONObject userFieldsEvent;
 
-    private String hostName = host.getHostName();
-
-    private String hostAdresse = host.getHostAddress();
-
-    protected Log4j2JSONLayout(final boolean locationInfo, final boolean properties, final boolean complete,
-            final boolean compact, boolean eventEol, final Charset charset, final Map<String, String> additionalLogAttributes) {
+    protected Log4j2JSONLayout(final Boolean locationInfo, final Charset charset, final Map<String, String> additionalLogAttributes) {
         super(charset);
+        setLocationInfo(locationInfo);
         Log4j2JSONLayout.ADDITIONNAL_ATTRIBUTES.putAll(additionalLogAttributes);
     }
 
-    public static String dateFormat(long timestamp) {
+    private String dateFormat(long timestamp) {
         return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
     }
 
@@ -107,19 +103,10 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
             }
 
         }
-
-        return new Log4j2JSONLayout(locationInfo, properties, complete, compact, eventEol, charset, additionalLogAttributes);
+        return new Log4j2JSONLayout(locationInfo, charset, additionalLogAttributes);
 
     }
 
-    /**
-     * Creates a JSON Layout using the default settings.
-     *
-     * @return A JSON Layout.
-     */
-    public static AbstractStringLayout createDefaultLayout() {
-        return new Log4j2JSONLayout(false, false, false, false, false, UTF_8, new HashMap<String, String>());
-    }
 
     /**
      * Formats a {@link org.apache.logging.log4j.core.LogEvent}.
@@ -129,24 +116,28 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
      */
     @Override
     public String toSerializable(final LogEvent loggingEvent) {
+        logstashEvent = new JSONObject();
+        userFieldsEvent = new JSONObject();
+        HostData host = new HostData();
         String threadName = loggingEvent.getThreadName();
         long timestamp = loggingEvent.getTimeMillis();
         Map<String, String> mdc = loggingEvent.getContextData().toMap();
 
-        logstashEvent = new JSONObject();
-
-        logstashEvent.put(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
-        logstashEvent.put(LayoutFields.TIME_STAMP, dateFormat(timestamp));
-        Date currentDate = new Date();
-        logstashEvent.put(LayoutFields.AGENT_TIME_STAMP, dateFormat(currentDate.getTime()));
-
+        /**
+         * Extract and add fields from log4j2 config, if defined
+         */
+        addUserFields(ADDITIONNAL_ATTRIBUTES);
+        
         /**
          * Now we start injecting our own stuff.
          */
-        addUserFields(ADDITIONNAL_ATTRIBUTES);
-        logstashEvent.put(LayoutFields.HOST_NAME, hostName);
-        logstashEvent.put(LayoutFields.HOST_IP, hostAdresse);
-        logstashEvent.put(LayoutFields.LOG_MESSAGE, loggingEvent.getMessage().getFormattedMessage());
+        addEventData(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
+        addEventData(LayoutFields.TIME_STAMP, dateFormat(timestamp));
+        addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
+        addEventData(LayoutFields.THREAD_NAME, threadName);
+        Date currentDate = new Date();
+        addEventData(LayoutFields.AGENT_TIME_STAMP, dateFormat(currentDate.getTime()));
+        addEventData(LayoutFields.LOG_MESSAGE, loggingEvent.getMessage().getFormattedMessage());
 
         if (loggingEvent.getThrown() != null) {
             if (loggingEvent.getThrown().getClass() != null && loggingEvent.getThrown().getClass().getCanonicalName() != null) {
@@ -167,20 +158,30 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
             }
         }
 
+        JSONObject logSourceEvent = new JSONObject();
         if (locationInfo && loggingEvent.getSource() != null) {
-            addEventData(LayoutFields.FILE_NAME, loggingEvent.getSource().getFileName());
-            addEventData(LayoutFields.LINE_NUMBER, loggingEvent.getSource().getLineNumber());
-            addEventData(LayoutFields.CLASS_NAME, loggingEvent.getSource().getClassName());
-            addEventData(LayoutFields.METHOD_NAME, loggingEvent.getSource().getMethodName());
+            logSourceEvent.put(LayoutFields.FILE_NAME, loggingEvent.getSource().getFileName());
+            logSourceEvent.put(LayoutFields.LINE_NUMBER, loggingEvent.getSource().getLineNumber());
+            logSourceEvent.put(LayoutFields.CLASS_NAME, loggingEvent.getSource().getClassName());
+            logSourceEvent.put(LayoutFields.METHOD_NAME, loggingEvent.getSource().getMethodName());
+            logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
+            RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+            String jvmName = runtimeBean.getName();
+            logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
+        }
+        
+        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
+        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
+        
+        for (Map.Entry<String, String> entry : mdc.entrySet()) {
+            userFieldsEvent.put(entry.getKey(), entry.getValue());
         }
 
-        addEventData(LayoutFields.FILE_NAME, loggingEvent.getLoggerFqcn());
-        addEventData(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
-        addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
-        addEventData(LayoutFields.THREAD_NAME, threadName);
-        for (Map.Entry<String, String> entry : mdc.entrySet()) {
-            addEventData(entry.getKey(), entry.getValue());
+        if (!userFieldsEvent.isEmpty()) {
+            addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
         }
+        
         return logstashEvent.toString() + "\n";
     }
 
@@ -212,7 +213,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     private void addUserFields(Map<String, String> additionalLogAttributes) {
         for (Map.Entry<String, String> entry : additionalLogAttributes.entrySet()) {
-            addEventData(entry.getKey(), entry.getValue());
+            userFieldsEvent.put(entry.getKey(), entry.getValue());
         }
     }
 

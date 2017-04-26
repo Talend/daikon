@@ -1,4 +1,4 @@
-package org.talend.daikon.logging.event;
+package org.talend.daikon.logging.layout;
 
 import static org.junit.Assert.*;
 
@@ -8,7 +8,7 @@ import org.apache.log4j.NDC;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.talend.daikon.logging.event.layout.Log4jJSONLayout;
+import org.talend.daikon.logging.event.field.LayoutFields;
 
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -20,11 +20,12 @@ public class Log4jJSONEventLayoutTest {
     static final Logger LOGGER = Logger.getRootLogger();
 
     static final String EXPECTED_BASIC_SIMPLE_JSON_TEST = "{\"@version\":1," +
-    // "\"logTimestamp\":\"2015-07-28T11:31:18.492-07:00\",\"timeMillis\":1438108278492," +
+    // "\"@timestamp\":\"2015-07-28T11:31:18.492-07:00\",\"timeMillis\":1438108278492," +
             "\"threadName\":\"" + Thread.currentThread().getName() + "\"," + "\"severity\":\"DEBUG\","
-            + "\"loggerName\":\"org.talend.daikon.logging.event.Log4jJSONEventLayoutTest\"," + "\"logMessage\":\"Test Message\","
-            + "\"fileName\":\"org.talend.daikon.logging.event.Log4jJSONEventLayoutTest\"," + "\"foo\":\"bar\"}";
-
+            + "\"logMessage\":\"Test Message\","
+            + "\"logSource\":{\"logger.name\":\"org.talend.daikon.logging.layout.Log4jJSONEventLayoutTest\"," 
+            + "\"file.name\":\"org.talend.daikon.logging.layout.Log4jJSONEventLayoutTest\"}" + ","+ "\"foo\":\"bar\"}";
+    
     @Before
     public void setupTestAppender() {
     }
@@ -63,7 +64,8 @@ public class Log4jJSONEventLayoutTest {
         LOGGER.warn("warning dawg");
         Object obj = JSONValue.parse(EXPECTED_BASIC_SIMPLE_JSON_TEST);
         JSONObject jsonObject = (JSONObject) obj;
-        assertEquals("Logged class does not match", this.getClass().getCanonicalName().toString(), jsonObject.get("loggerName"));
+        JSONObject logSource = (JSONObject) jsonObject.get("logSource");
+        assertEquals("Logged class does not match", this.getClass().getCanonicalName().toString(), logSource.get("logger.name"));
     }
 
     @Test
@@ -71,7 +73,8 @@ public class Log4jJSONEventLayoutTest {
         LOGGER.warn("whoami");
         Object obj = JSONValue.parse(EXPECTED_BASIC_SIMPLE_JSON_TEST);
         JSONObject jsonObject = (JSONObject) obj;
-        assertNotNull("File value is missing", jsonObject.get("fileName"));
+        JSONObject logSource = (JSONObject) jsonObject.get("logSource");
+        assertNotNull("File value is missing", logSource.get("file.name"));
     }
 
     @Test
@@ -79,7 +82,8 @@ public class Log4jJSONEventLayoutTest {
         LOGGER.warn("whoami");
         Object obj = JSONValue.parse(EXPECTED_BASIC_SIMPLE_JSON_TEST);
         JSONObject jsonObject = (JSONObject) obj;
-        assertNotNull("LoggerName value is missing", jsonObject.get("loggerName"));
+        JSONObject logSource = (JSONObject) jsonObject.get("logSource");
+        assertNotNull("LoggerName value is missing", logSource.get("logger.name"));
     }
 
     @Test
@@ -94,6 +98,10 @@ public class Log4jJSONEventLayoutTest {
     public void testDateFormat() {
         long timestamp = 1364844991207L;
         assertEquals("format does not produce expected output", "2013-04-01T19:36:31.207Z",
-                Log4jJSONLayout.dateFormat(timestamp));
+                dateFormat(timestamp));
+    }
+    
+    private String dateFormat(long timestamp) {
+        return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
     }
 }

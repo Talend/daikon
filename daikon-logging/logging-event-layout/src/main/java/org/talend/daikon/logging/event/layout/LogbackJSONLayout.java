@@ -1,7 +1,10 @@
 package org.talend.daikon.logging.event.layout;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.log4j.helpers.LogLog;
 import org.talend.daikon.logging.event.field.HostData;
@@ -24,13 +27,9 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
     private String customUserFields;
 
     private JSONObject logstashEvent;
-
-    private HostData host = new HostData();
-
-    private String hostName = host.getHostName();
-
-    private String hostAdresse = host.getHostAddress();
-
+    
+    private JSONObject userFieldsEvent;
+  
     /**
      * For backwards compatibility, the default is to generate location information
      * in the log messages.
@@ -50,17 +49,14 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
 
     @Override
     public String doLayout(ILoggingEvent loggingEvent) {
+        logstashEvent = new JSONObject();
+        userFieldsEvent = new JSONObject();
+        HostData host = new HostData();
         String threadName = loggingEvent.getThreadName();
         long timestamp = loggingEvent.getTimeStamp();
         Map<String, String> mdc = loggingEvent.getMDCPropertyMap();
-
-        logstashEvent = new JSONObject();
+        String eventUUD = UUID.randomUUID().toString();
         String whoami = this.getClass().getSimpleName();
-
-        logstashEvent.put(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
-        logstashEvent.put(LayoutFields.TIME_STAMP, dateFormat(timestamp));
-        Date currentDate = new Date();
-        logstashEvent.put(LayoutFields.AGENT_TIME_STAMP, dateFormat(currentDate.getTime()));
 
         /**
          * Extract and add fields from log4j config, if defined
@@ -74,9 +70,14 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         /**
          * Now we start injecting our own stuff.
          */
-        logstashEvent.put(LayoutFields.HOST_NAME, hostName);
-        logstashEvent.put(LayoutFields.HOST_IP, hostAdresse);
-        logstashEvent.put(LayoutFields.LOG_MESSAGE, loggingEvent.getFormattedMessage());
+        addEventData(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
+        addEventData(LayoutFields.EVENT_UUID, eventUUD);
+        addEventData(LayoutFields.TIME_STAMP, dateFormat(timestamp));
+        addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
+        addEventData(LayoutFields.THREAD_NAME, threadName);
+        Date currentDate = new Date();
+        addEventData(LayoutFields.AGENT_TIME_STAMP, dateFormat(currentDate.getTime()));
+        addEventData(LayoutFields.LOG_MESSAGE, loggingEvent.getFormattedMessage());
 
         if (loggingEvent.getThrowableProxy() != null) {
 
@@ -87,45 +88,54 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
             if (loggingEvent.getThrowableProxy().getMessage() != null) {
                 addEventData(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrowableProxy().getMessage());
             }
-            
+
             ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
             String stackTrace = converter.convert(loggingEvent);
             addEventData(LayoutFields.STACK_TRACE, stackTrace);
         }
 
+        JSONObject logSourceEvent = new JSONObject();
         if (locationInfo) {
             StackTraceElement callerData = extractCallerData(loggingEvent);
             if (callerData != null) {
-                addEventData(LayoutFields.FILE_NAME, callerData.getFileName());
-                addEventData(LayoutFields.LINE_NUMBER, callerData.getLineNumber());
-                addEventData(LayoutFields.CLASS_NAME, callerData.getClassName());
-                addEventData(LayoutFields.METHOD_NAME, callerData.getMethodName());
+                logSourceEvent.put(LayoutFields.FILE_NAME, callerData.getFileName());
+                logSourceEvent.put(LayoutFields.LINE_NUMBER, callerData.getLineNumber());
+                logSourceEvent.put(LayoutFields.CLASS_NAME, callerData.getClassName());
+                logSourceEvent.put(LayoutFields.METHOD_NAME, callerData.getMethodName());
+                logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
             }
+            RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+            String jvmName = runtimeBean.getName();
+            logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
         }
-
-        addEventData(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
-        addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
-        addEventData(LayoutFields.THREAD_NAME, threadName);
-
+        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
+        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
+        
         for (Map.Entry<String, String> entry : mdc.entrySet()) {
-            addEventData(entry.getKey(), entry.getValue());
+            userFieldsEvent.put(entry.getKey(), entry.getValue());
         }
 
+        if (!userFieldsEvent.isEmpty()) {
+            addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
+        }
+        
         return logstashEvent.toString() + "\n";
 
     }
 
     private void addUserFields(String data) {
         if (null != data) {
+            
             String[] pairs = data.split(",");
             for (String pair : pairs) {
                 String[] userField = pair.split(":", 2);
                 if (userField[0] != null) {
                     String key = userField[0];
                     String val = userField[1];
-                    addEventData(key, val);
+                    userFieldsEvent.put(key, val);
                 }
-            }
+            } 
         }
     }
 
@@ -143,7 +153,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         return ste[0];
     }
 
-    private static String dateFormat(long timestamp) {
+    private String dateFormat(long timestamp) {
         return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
     }
 

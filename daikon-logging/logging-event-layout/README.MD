@@ -18,6 +18,7 @@ Supports both regular _LoggingEvents_ (logged through a `Logger`).
     * [Global Custom Fields](#loggingevent_custom_global)
   * [Log correlation (Spring Cloud Sleuth)](#spring_cloud_sleuth)
     * [Including Spring Cloud Sleuth in your project](#including_spring_cloud_sleuth)
+* [Tracking correlation ids using Slf4j](#correlation_id)
 * [LoggingEvent Structure Proposal](#loggingevent_structure)
 	* [LoggingEvent Structure MDC](#loggingevent_structure_example)
 
@@ -200,7 +201,7 @@ will appear as a field in the LoggingEvent.
 
 Each entry in the Mapped Diagnostic Context (MDC) will appear as a field in the log file in the form of comma-separated "key":"value"
 
-We provide a java class constants that contains common MDC fields: `MdcCommonFields` (please add there all MDC keys you think will be common)
+We provide a java class constants that contains common MDC keys: `MdcKeys` (please add there all MDC keys you think will be common)
 
 <a name="loggingevent_custom"/>
 ### Custom Fields
@@ -298,8 +299,53 @@ Maven style:
 ```
 
 
+<a name="correlation_id"/>
+#### Tracking correlation ids using Slf4j.
+The objectives are as follows:
+
+    Ensure that a correlation id is assigned for each transaction (will be generated if not on service request).
+    If it's on service request the please use this key name :HEADER_REQUEST_CORRELATION_ID define in MdcKeys.java
+    
+    Ensure that the correlation id is documented on all log messages so that it can be correlated across services.
+
+#### Filter configuration
+To enable tracking correlation ids in the logs you have to :
+
+1. Configure the Filter in your application
+
+	a. SPA:
+	
+	Add FilterRegistrationBean bean in your Application.java as this:
+	
+	```
+	@Bean
+    public FilterRegistrationBean correlationHeaderFilter() {
+        FilterRegistrationBean filterRegBean = new FilterRegistrationBean();
+        filterRegBean.setFilter(new RequestCorrelationFilter());
+        filterRegBean.setUrlPatterns(Arrays.asList("/*"));
+        filterRegBean.setEnabled(Boolean.TRUE);
+        filterRegBean.setName("Log Correlation Filter");
+        filterRegBean.setAsyncSupported(Boolean.TRUE);
+        return filterRegBean;
+    }
+    ```
+    b.  For RESTful or SOAP service requests, this is accomplished by servlet filter.
+	
+	```xml
+	<filter>
+		<filter-name>correlationIdFilter</filter-name>
+			<filter-class>org.talend.daikon.logging.correlate.RequestCorrelationFilter</filter-class>
+		</filter>
+	
+		<filter-mapping>
+			<url-pattern>/*</url-pattern>
+		</filter-mapping>
+	  ```
+	  
+2. Configure your Layout as described here [Layouts](#layout)	  
+
 <a name="loggingevent_structure"/>
-#### LoggingEvent Structure Proposal
+#### LoggingEvent Structure Example
 
 ```
 { 

@@ -8,9 +8,7 @@
         <artifactId>daikon-logging</artifactId>
         <version>0.16.0-SNAPSHOT</version>
     </parent>
-	<groupId>org.talend.daikon</groupId>
 	<artifactId>logging-event-layout</artifactId>
-	<version>0.16.0-SNAPSHOT</version>
 	<name>logging-event-layout</name>
 	<properties>
         <ch.qos.logback.version>1.1.7</ch.qos.logback.version> 
@@ -92,6 +90,12 @@
     	 	<groupId>com.google.code.gson</groupId>
     	  	<artifactId>gson</artifactId>
     	  	<version>2.7</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- Tests -->
 	    <dependency>

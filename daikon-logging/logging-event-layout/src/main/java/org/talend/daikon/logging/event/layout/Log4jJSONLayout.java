@@ -1,5 +1,7 @@
 package org.talend.daikon.logging.event.layout;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.Date;
 import java.util.Map;
 
@@ -28,12 +30,8 @@ public class Log4jJSONLayout extends Layout {
     private boolean ignoreThrowable;
 
     private JSONObject logstashEvent;
-
-    private HostData host = new HostData();
-
-    private String hostName = host.getHostName();
-
-    private String hostAdresse = host.getHostAddress();
+    
+    private JSONObject userFieldsEvent;
 
     /**
      * For backwards compatibility, the default is to generate location information
@@ -55,19 +53,15 @@ public class Log4jJSONLayout extends Layout {
     @SuppressWarnings("unchecked")
     @Override
     public String format(LoggingEvent loggingEvent) {
+        logstashEvent = new JSONObject();
+        userFieldsEvent = new JSONObject();
+        HostData host = new HostData();
         String threadName = loggingEvent.getThreadName();
         long timestamp = loggingEvent.getTimeStamp();
         Map<String, String> mdc = loggingEvent.getProperties();
         String ndc = loggingEvent.getNDC();
-
-        logstashEvent = new JSONObject();
         String whoami = this.getClass().getSimpleName();
-
-        logstashEvent.put(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
-        logstashEvent.put(LayoutFields.TIME_STAMP, dateFormat(timestamp));
-        Date currentDate = new Date();
-        logstashEvent.put(LayoutFields.AGENT_TIME_STAMP, dateFormat(currentDate.getTime()));
-
+        
         /**
          * Extract and add fields from log4j config, if defined
          */
@@ -80,9 +74,14 @@ public class Log4jJSONLayout extends Layout {
         /**
          * Now we start injecting our own stuff.
          */
-        logstashEvent.put(LayoutFields.HOST_NAME, hostName);
-        logstashEvent.put(LayoutFields.HOST_IP, hostAdresse);
-        logstashEvent.put(LayoutFields.LOG_MESSAGE, loggingEvent.getRenderedMessage());
+        addEventData(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
+        addEventData(LayoutFields.TIME_STAMP, dateFormat(timestamp));
+        Date currentDate = new Date();
+        addEventData(LayoutFields.AGENT_TIME_STAMP, dateFormat(currentDate.getTime()));
+        addEventData(LayoutFields.NDC, ndc);
+        addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
+        addEventData(LayoutFields.THREAD_NAME, threadName);
+        addEventData(LayoutFields.LOG_MESSAGE, loggingEvent.getRenderedMessage());
 
         if (loggingEvent.getThrowableInformation() != null) {
             final ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
@@ -104,25 +103,35 @@ public class Log4jJSONLayout extends Layout {
             }
         }
 
+        JSONObject logSourceEvent = new JSONObject();
         if (locationInfo) {
             LocationInfo info = loggingEvent.getLocationInformation();
-            addEventData(LayoutFields.FILE_NAME, info.getFileName());
-            addEventData(LayoutFields.LINE_NUMBER, info.getLineNumber());
-            addEventData(LayoutFields.CLASS_NAME, info.getClassName());
-            addEventData(LayoutFields.METHOD_NAME, info.getMethodName());
+            logSourceEvent.put(LayoutFields.FILE_NAME, info.getFileName());
+            logSourceEvent.put(LayoutFields.LINE_NUMBER, info.getLineNumber());
+            logSourceEvent.put(LayoutFields.CLASS_NAME, info.getClassName());
+            logSourceEvent.put(LayoutFields.METHOD_NAME, info.getMethodName());
+            logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
+            RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+            String jvmName = runtimeBean.getName();
+            logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
         }
-
-        addEventData(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
-        addEventData(LayoutFields.NDC, ndc);
-        addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
-        addEventData(LayoutFields.THREAD_NAME, threadName);
+        
+        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
+        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
+        
         for (Map.Entry<String, String> entry : mdc.entrySet()) {
-            addEventData(entry.getKey(), entry.getValue());
+            userFieldsEvent.put(entry.getKey(), entry.getValue());
         }
+        
+        if (!userFieldsEvent.isEmpty()) {
+            addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
+        }
+        
         return logstashEvent.toString() + "\n";
     }
 
-    public static String dateFormat(long timestamp) {
+    private static String dateFormat(long timestamp) {
         return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
     }
 
@@ -170,7 +179,7 @@ public class Log4jJSONLayout extends Layout {
                 if (userField[0] != null) {
                     String key = userField[0];
                     String val = userField[1];
-                    addEventData(key, val);
+                    userFieldsEvent.put(key, val);
                 }
             }
         }
