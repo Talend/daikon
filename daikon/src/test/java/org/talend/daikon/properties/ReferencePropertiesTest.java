@@ -111,6 +111,7 @@ public class ReferencePropertiesTest {
 
         final Set<AnyProperty> visited = new HashSet<>();
         refEProp.accept(new AnyPropertyVisitor() {
+
             @Override
             public void visit(Property property, Properties parent) {
                 visited.add(property);
