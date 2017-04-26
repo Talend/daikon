@@ -77,7 +77,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                     if (property.isFlag(Flags.ENCRYPT)) {
                         property.encryptStoredValue(!ENCRYPT);
                     } // else not an encrypted property
-                } // else not a Property so ignores it.
+                } // else not a Property so ignore it.
             }
         }
 
