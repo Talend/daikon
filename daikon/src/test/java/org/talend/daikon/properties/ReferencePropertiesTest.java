@@ -122,7 +122,7 @@ public class ReferencePropertiesTest {
             }
         }, null);
 
-        assertNotNull(visited.contains(testAProp));
+        assertNotNull("Referenced properties visited", visited.contains(testAProp));
     }
 
 }
