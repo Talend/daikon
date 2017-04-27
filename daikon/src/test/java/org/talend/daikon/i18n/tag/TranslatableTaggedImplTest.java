@@ -29,13 +29,13 @@ public class TranslatableTaggedImplTest {
 
     private static class TaggedTestDefinition extends TranslatableTaggedImpl {
 
-        private List<Tag> tagsList;
+        private List<TagImpl> tagsList;
 
-        public void setTags(List<Tag> tags) {
+        public void setTags(List<TagImpl> tags) {
             this.tagsList = tags;
         }
 
-        protected List<Tag> doGetTags() {
+        protected List<TagImpl> doGetTags() {
             return tagsList;
         }
 
@@ -44,7 +44,7 @@ public class TranslatableTaggedImplTest {
     @Test
     public void testCommonTag() {
         TaggedTestDefinition def = new TaggedTestDefinition();
-        def.setTags(Arrays.asList(new Tag[] { CommonTestTags.COMMON_TAG }));
+        def.setTags(Arrays.asList(CommonTestTags.COMMON_TAG));
 
         assertEquals(1, def.getTags().size());
 
@@ -55,7 +55,7 @@ public class TranslatableTaggedImplTest {
     public void testTags() {
         TaggedTestDefinition def = new TaggedTestDefinition();
         def.setI18nMessageFormatter(GlobalI18N.getI18nMessageProvider().getI18nMessages(this.getClass()));
-        Tag tag = new TagImpl("testTag");
+        TagImpl tag = new TagImpl("testTag");
         def.setTags(Arrays.asList(tag));
 
         assertEquals(1, def.getTags().size());
@@ -67,7 +67,7 @@ public class TranslatableTaggedImplTest {
     public void testDoesntHaveTags() {
         TaggedTestDefinition def = new TaggedTestDefinition();
         def.setI18nMessageFormatter(GlobalI18N.getI18nMessageProvider().getI18nMessages(this.getClass()));
-        Tag tag = new TagImpl("testTag");
+        TagImpl tag = new TagImpl("testTag");
         def.setTags(Arrays.asList(tag));
 
         assertEquals(1, def.getTags().size());

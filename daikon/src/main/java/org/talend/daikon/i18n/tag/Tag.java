@@ -12,12 +12,10 @@
 // ============================================================================
 package org.talend.daikon.i18n.tag;
 
-import org.talend.daikon.i18n.Translatable;
-
 /**
  * Interface for Tag presentation.
  */
-public interface Tag extends Translatable {
+public interface Tag {
 
     public static final String TAG_PREFIX = "tag.";
 

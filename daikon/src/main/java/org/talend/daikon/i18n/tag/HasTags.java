@@ -22,6 +22,6 @@ public interface HasTags {
     /**
      * Get declared tags.
      */
-    List<Tag> getTags();
+    List<? extends Tag> getTags();
 
 }

@@ -22,13 +22,13 @@ import org.talend.daikon.i18n.TranslatableImpl;
  */
 public class TranslatableTaggedImpl extends TranslatableImpl implements HasTags {
 
-    private List<Tag> tags;
+    private List<TagImpl> tags;
 
     @Override
-    public List<Tag> getTags() {
+    public List<TagImpl> getTags() {
         if (tags == null) {
             tags = doGetTags();
-            for (Tag tag : tags) {
+            for (TagImpl tag : tags) {
                 tag.setI18nMessageFormatter(getI18nMessageFormatter());
             }
         }
@@ -38,7 +38,7 @@ public class TranslatableTaggedImpl extends TranslatableImpl implements HasTags 
     /**
      * Get tags. Override this method to implement tags support.
      */
-    protected List<Tag> doGetTags() {
+    protected List<TagImpl> doGetTags() {
         return Collections.emptyList();
     }
 
