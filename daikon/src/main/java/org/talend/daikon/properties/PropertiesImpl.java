@@ -77,7 +77,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                     if (property.isFlag(Flags.ENCRYPT)) {
                         property.encryptStoredValue(!ENCRYPT);
                     } // else not an encrypted property
-                } // else not a Property so ignors it.
+                } // else not a Property so ignore it.
             }
         }
 
@@ -135,7 +135,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                     se = (NamedThing) f.get(this);
                     if (se != null) {
                         initializeField(f, se);
-                    } else {// field not initilaized but is should be (except for returns field)
+                    } else {// field not initialized but is should be (except for returns field)
                         if (!acceptUninitializedField(f)) {
                             throw new TalendRuntimeException(PropertiesErrorCode.PROPERTIES_HAS_UNITIALIZED_PROPS,
                                     ExceptionContext.withBuilder().put("name", this.getClass().getCanonicalName())
@@ -147,7 +147,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                 }
             }
             propsAlreadyInitialized = true;
-        } // else already intialized
+        } // else already initialized
     }
 
     protected List<Field> initializeFields() {
@@ -185,7 +185,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
 
     /**
      * This shall set the value holder for all the properties, set the i18n formatter of this current class to the
-     * properties so that the i18n values are computed agains this class message properties. This calls the
+     * properties so that the i18n values are computed against this class message properties. This calls the
      * initProperties for all field of type {@link Property}
      *
      * @param f field to be initialized
@@ -334,7 +334,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                     if (fValue != null) {
                         NamedThing se = (NamedThing) fValue;
                         properties.add(se);
-                    } // else not initalized but this is already handled in the initProperties that must be called
+                    } // else not initialized but this is already handled in the initProperties that must be called
                       // before the getProperties
                 }
             } catch (IllegalAccessException e) {
@@ -372,15 +372,52 @@ public class PropertiesImpl extends TranslatableTaggedImpl
             return;
         }
         visited.add(this);
+        acceptForAllProperties(visitor, visited);
+        visitor.visit(this, parent);
+    }
+
+    /**
+     * Traverse all visitable properties and accept <code>AnyPropertyVisitor</code>.
+     *
+     * <p>Can be overriden by subclasses to visit extra properties that are not exposed but should be visited.
+     *
+     * <p>Example:<blockquote>
+     * <pre>
+     *     {@literal @Override}
+     *     protected void acceptForAllProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
+     *         super.acceptForAllProperties(visitor, visited);
+     *
+     *         if (someSpecialProperty != null) {
+     *             acceptForProperty(visitor, visited, someSpecialProperty);
+     *         }
+     *     }
+     * </pre></blockquote>
+     *
+     * @see #acceptForProperty(AnyPropertyVisitor, Set, NamedThing)
+     *
+     * @param visitor visitor to be accepted
+     * @param visited collection to register visited properties
+     */
+    protected void acceptForAllProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
         List<NamedThing> properties = getProperties();
         for (NamedThing nt : properties) {
-            if (nt instanceof PropertiesImpl) {
-                ((PropertiesImpl) nt).acceptInternal(visitor, this, visited);
-            } else if (nt instanceof AnyProperty) {
-                ((AnyProperty) nt).accept(visitor, this);
-            }
+            acceptForProperty(visitor, visited, nt);
         }
-        visitor.visit(this, parent);
+    }
+
+    /**
+     * Accept visitor for a single property.
+     *
+     * @param visitor visitor to be accepted
+     * @param visited collection to register visited properties
+     * @param nt object to be visited
+     */
+    protected final void acceptForProperty(AnyPropertyVisitor visitor, Set<Properties> visited, NamedThing nt) {
+        if (nt instanceof PropertiesImpl) {
+            ((PropertiesImpl) nt).acceptInternal(visitor, this, visited);
+        } else if (nt instanceof AnyProperty) {
+            ((AnyProperty) nt).accept(visitor, this);
+        }
     }
 
     /**
@@ -394,7 +431,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
     }
 
     /**
-     * @return a Namething from a property path wich allow to recurse into nested properties using the . as a separator
+     * @return a NamedThing from a property path which allow to recurse into nested properties using the . as a separator
      * for Properties names and the final Property. Or null if none found
      */
     @Override
