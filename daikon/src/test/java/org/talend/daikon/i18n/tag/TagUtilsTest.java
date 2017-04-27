@@ -56,13 +56,25 @@ public class TagUtilsTest {
     }
 
     @Test
-    public void testHasTag() {
+    public void testHasTranslatedTagValue() {
         TagImpl tag = new TagImpl("testTag");
         tag.setI18nMessageFormatter(i18nMessages);
 
         Assert.assertTrue(TagUtils.hasTag(tag, "Testing"));
         Assert.assertTrue(TagUtils.hasTag(tag, "sting tag"));
         Assert.assertTrue(TagUtils.hasTag(tag, "test"));
+    }
+
+    @Test
+    public void testHasTagValue() {
+        TagImpl parentTag = new TagImpl("parentTag");
+        TagImpl tag = new TagImpl("testTag", parentTag);
+        tag.setI18nMessageFormatter(i18nMessages);
+        tag.setI18nMessageFormatter(i18nMessages);
+
+        Assert.assertTrue(TagUtils.hasTag(tag, "testTag"));
+        Assert.assertTrue(TagUtils.hasTag(tag, "parent"));
+        Assert.assertTrue(TagUtils.hasTag(tag, "parentTag"));
     }
 
     @Test
