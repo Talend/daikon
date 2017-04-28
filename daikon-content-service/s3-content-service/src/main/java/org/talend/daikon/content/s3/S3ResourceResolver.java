@@ -1,6 +1,7 @@
 package org.talend.daikon.content.s3;
 
 import static org.talend.daikon.content.s3.LocationUtils.toS3Location;
+import static org.talend.daikon.content.s3.LocationUtils.S3PathBuilder.builder;
 
 import java.io.IOException;
 
@@ -27,7 +28,11 @@ class S3ResourceResolver extends AbstractResourceResolver {
 
     @Override
     public DeletableResource[] getResources(String locationPattern) throws IOException {
-        return super.getResources("s3://" + bucket.getBucketName() + locationPattern);
+        final String location = builder(bucket.getBucketName()) //
+                .append(bucket.getRoot()) //
+                .append(locationPattern) //
+                .build();
+        return super.getResources("s3://" + location);
     }
 
     @Override
@@ -40,11 +45,16 @@ class S3ResourceResolver extends AbstractResourceResolver {
             throw new IllegalArgumentException("Location can not be empty (was '" + location + "')");
         }
 
-        return super.getResource("s3://" + bucket.getBucketName() + "/" + toS3Location(location));
+        final String s3Location = builder(bucket.getBucketName()) //
+                .append(bucket.getRoot()) //
+                .append(toS3Location(location)) //
+                .build();
+        return super.getResource("s3://" + s3Location);
     }
 
     @Override
     protected DeletableResource convert(WritableResource writableResource) {
-        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(), bucket.getBucketName());
+        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(), bucket.getBucketName(),
+                bucket.getRoot());
     }
 }
