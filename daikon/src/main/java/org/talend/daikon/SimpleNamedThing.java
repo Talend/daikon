@@ -14,12 +14,12 @@ package org.talend.daikon;
 
 import java.io.Serializable;
 
-import org.talend.daikon.i18n.TranslatableImpl;
+import org.talend.daikon.i18n.tag.TranslatableTaggedImpl;
 
 /**
  * Simple implementation of {@link NamedThing}
  */
-public class SimpleNamedThing extends TranslatableImpl implements NamedThing, Serializable {
+public class SimpleNamedThing extends TranslatableTaggedImpl implements NamedThing, Serializable {
 
     private static final long serialVersionUID = 6570117916097073559L;
 

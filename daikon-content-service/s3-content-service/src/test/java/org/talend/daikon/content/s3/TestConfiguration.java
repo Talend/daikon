@@ -40,11 +40,25 @@ public class TestConfiguration implements InitializingBean, DisposableBean {
 
     @Bean
     public S3BucketProvider s3BucketProvider() {
-        return () -> {
-            if (clientNumber.get() == 0) {
-                return "s3-content-service1";
-            } else {
-                return "s3-content-service2";
+        return new S3BucketProvider() {
+            @Override
+            public String getBucketName() {
+                if (clientNumber.get() == 0) {
+                    return "s3-content-service1";
+                } else {
+                    return "s3-content-service2";
+                }
+            }
+
+            @Override
+            public String getRoot() {
+                if (clientNumber.get() == 0) {
+                    return "app1";
+                } else if (clientNumber.get() == 1) {
+                    return "app2";
+                } else {
+                    return "";
+                }
             }
         };
     }
