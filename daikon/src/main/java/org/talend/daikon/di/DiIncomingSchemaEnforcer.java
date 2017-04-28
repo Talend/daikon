@@ -209,18 +209,18 @@ public class DiIncomingSchemaEnforcer {
      */
     @Deprecated
     public void initDynamicColumnsFinished() {
-        recreateRuntimeSchema();
+        createRuntimeSchema();
     }
 
     /**
-     * Recreates runtime schema from design schema and dynamic fields.
+     * Creates runtime schema from design schema and dynamic fields.
      * Design schema is set in Constructor during enforcer initialization.
      * Dynamic fields are recreated by calling {@link this#addDynamicField()} methods.
      * This method should be called only after all dynamic fields are recreated.
      * Also should be called before calling {@link this#put()} and {@link this#createIndexedRecord()} methods
      */
-    public void recreateRuntimeSchema() {
-        if (!needsInitDynamicColumns()) {
+    public void createRuntimeSchema() {
+        if (areDynamicFieldsInitialized()) {
             return;
         }
 

@@ -199,7 +199,7 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.addDynamicField("name", "id_String", null, null, null, false);
         enforcer.addDynamicField("age", "id_Integer", null, null, null, false);
         assertFalse(enforcer.areDynamicFieldsInitialized());
-        enforcer.recreateRuntimeSchema();
+        enforcer.createRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
 
         // Check the run-time schema was created.
@@ -288,7 +288,7 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.addDynamicField("age", "id_Integer", null, null, null, false);
         enforcer.addDynamicField("valid", "id_Boolean", null, null, null, false);
         assertFalse(enforcer.areDynamicFieldsInitialized());
-        enforcer.recreateRuntimeSchema();
+        enforcer.createRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
 
         // Check the run-time schema was created.
@@ -378,7 +378,7 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.addDynamicField("address", "id_String", null, null, null, false);
         enforcer.addDynamicField("comment", "id_String", null, null, null, false);
         assertFalse(enforcer.areDynamicFieldsInitialized());
-        enforcer.recreateRuntimeSchema();
+        enforcer.createRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
 
         // Check the run-time schema was created.
@@ -603,7 +603,7 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.addDynamicField("TestLogicalTimeMillis", "id_Integer", "time-millis", null, null, false);
         enforcer.addDynamicField("TestLogicalTimestampMillis", "id_Date", "timestamp-millis", null, null, false);
 
-        enforcer.recreateRuntimeSchema();
+        enforcer.createRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
 
         Schema actualRuntimeSchema = enforcer.getRuntimeSchema();
@@ -676,7 +676,7 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.addDynamicField("Test_BigDecimal", "id_BigDecimal", null, null, null, true);
         enforcer.addDynamicField("Test_Date", "id_Date", null, "yyyy-MM-dd'T'HH:mm:ss'000Z'", null, true);
 
-        enforcer.recreateRuntimeSchema();
+        enforcer.createRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
 
         Schema actualRuntimeSchema = enforcer.getRuntimeSchema();
@@ -707,7 +707,7 @@ public class DiIncomingSchemaEnforcerTest {
 
         DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(designSchema);
         enforcer.addDynamicField("Test_Date", "id_Date", null, "yyyy-MM-dd'T'HH:mm:ss'000Z'", null, true);
-        enforcer.recreateRuntimeSchema();
+        enforcer.createRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
 
         enforcer.createNewRecord();
