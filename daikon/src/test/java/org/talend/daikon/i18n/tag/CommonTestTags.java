@@ -15,6 +15,7 @@ package org.talend.daikon.i18n.tag;
 import org.talend.daikon.i18n.GlobalI18N;
 
 /**
+ * Tags used for testing purpose.
  */
 public class CommonTestTags {
 

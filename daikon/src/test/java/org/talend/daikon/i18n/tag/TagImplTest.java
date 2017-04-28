@@ -13,15 +13,16 @@
 package org.talend.daikon.i18n.tag;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.daikon.i18n.ClassBasedI18nMessages;
 import org.talend.daikon.i18n.I18nMessages;
 
 /**
- * 
+ * Tests for {@link TagImpl} class
  */
 public class TagImplTest {
 
@@ -37,75 +38,32 @@ public class TagImplTest {
         TagImpl tag = new TagImpl("testTag");
         tag.setI18nMessageFormatter(i18nMessages);
 
-        String translatedTagValue = tag.getTranslatedValue();
-        assertEquals("Testing tag", translatedTagValue);
+        assertEquals("Testing tag", tag.getTranslatedValue());
+        assertEquals("testTag", tag.getValue());
+        assertNull(tag.getParentTag());
     }
 
     @Test
-    public void testHierarchyTag() {
+    public void testWithParentTag() {
         TagImpl parentTag = new TagImpl("parentTag");
-        TagImpl childTag = new TagImpl("childTag", parentTag);
+        TagImpl tag = new TagImpl("testTag", parentTag);
         parentTag.setI18nMessageFormatter(i18nMessages);
-        childTag.setI18nMessageFormatter(i18nMessages);
+        tag.setI18nMessageFormatter(i18nMessages);
 
-        String translatedParentTagValue = parentTag.getTranslatedValue();
-        assertEquals("parent", translatedParentTagValue);
-        String translatedChildTagValue = childTag.getTranslatedValue();
-        assertEquals("parent/child", translatedChildTagValue);
+        assertEquals("Testing tag", tag.getTranslatedValue());
+        assertEquals("testTag", tag.getValue());
+        assertNotNull(tag.getParentTag());
+        Tag retrievedParentTag = tag.getParentTag();
+        assertEquals("parentTag", retrievedParentTag.getValue());
+        assertEquals("parent", retrievedParentTag.getTranslatedValue());
+        assertNull(retrievedParentTag.getParentTag());
     }
 
     @Test
     public void testEmptyTag() {
-        TagImpl parentTag = new TagImpl("parentTag");
-        TagImpl childTag = new TagImpl("nonExistentTag", parentTag);
-        parentTag.setI18nMessageFormatter(i18nMessages);
-        childTag.setI18nMessageFormatter(i18nMessages);
-
-        String translatedChildTagValue = childTag.getTranslatedValue();
-        assertEquals("parent/nonExistentTag", translatedChildTagValue);
-    }
-
-    @Test
-    public void testCommonTag() {
-        TagImpl childTag = new TagImpl("childTag", CommonTestTags.COMMON_TAG);
-        TagImpl childTag1 = new TagImpl("nonExistentTag", CommonTestTags.COMMON_TAG);
-        CommonTestTags.COMMON_TAG.setI18nMessageFormatter(i18nMessages);
-        childTag.setI18nMessageFormatter(i18nMessages);
-        childTag1.setI18nMessageFormatter(i18nMessages);
-
-        assertEquals("Common tag/child", childTag.getTranslatedValue());
-        assertEquals("Common tag/nonExistentTag", childTag1.getTranslatedValue());
-    }
-
-    @Test
-    public void testHasTag() {
-        TagImpl tag = new TagImpl("testTag");
+        TagImpl tag = new TagImpl("nonExistentTag", null);
         tag.setI18nMessageFormatter(i18nMessages);
-
-        Assert.assertTrue(tag.hasTag("Testing"));
-        Assert.assertTrue(tag.hasTag("sting tag"));
-        Assert.assertTrue(tag.hasTag("test"));
-    }
-
-    @Test
-    public void testHasParentTag() {
-        TagImpl tag = new TagImpl("testTag", CommonTestTags.COMMON_TAG);
-        tag.setI18nMessageFormatter(i18nMessages);
-
-        Assert.assertTrue(tag.hasTag("Common tag"));
-        Assert.assertTrue(tag.hasTag("Com"));
-        Assert.assertTrue(tag.hasTag("mon tag"));
-        Assert.assertTrue(tag.hasTag("Common tag/Testing"));
-        Assert.assertTrue(tag.hasTag("Testing"));
-    }
-
-    @Test
-    public void testDoesntHaveTag() {
-        TagImpl tag = new TagImpl("testTag", CommonTestTags.COMMON_TAG);
-        tag.setI18nMessageFormatter(i18nMessages);
-
-        Assert.assertFalse(tag.hasTag("MySQL"));
-        Assert.assertFalse(tag.hasTag("Cloud"));
+        assertEquals("nonExistentTag", tag.getTranslatedValue());
     }
 
 }

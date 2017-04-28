@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.daikon.i18n.tag;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Interface for tags support.
@@ -22,6 +22,6 @@ public interface HasTags {
     /**
      * Get declared tags.
      */
-    Collection<? extends Tag> getTags();
+    List<? extends Tag> getTags();
 
 }

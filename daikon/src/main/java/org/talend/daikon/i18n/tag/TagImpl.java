@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.daikon.i18n.tag;
 
-import java.util.regex.Pattern;
-
 import org.talend.daikon.i18n.I18nMessages;
 import org.talend.daikon.i18n.TranslatableImpl;
 
@@ -22,10 +20,14 @@ import org.talend.daikon.i18n.TranslatableImpl;
  */
 public class TagImpl extends TranslatableImpl implements Tag {
 
-    private final String name;
+    /**
+     * Name of the tag.
+     */
+    private final String value;
 
-    private String displayName;
-
+    /**
+     * Parent tag of the hierarchical tag.
+     */
     private Tag parentTag;
 
     /**
@@ -43,7 +45,7 @@ public class TagImpl extends TranslatableImpl implements Tag {
     }
 
     public TagImpl(String name, Tag parentTag, I18nMessages i18nMessages) {
-        this.name = name;
+        this.value = name;
         this.parentTag = parentTag;
         setI18nMessageFormatter(i18nMessages);
     }
@@ -56,49 +58,43 @@ public class TagImpl extends TranslatableImpl implements Tag {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
+    /**
+     * Returns a full translated path to root for current tag. Translated full path is constructed using translated
+     * values of all parent tags separated with "/" sign.
+     * 
+     * @see {@link TagUtils#getTranslatedPathToRoot}
+     */
     @Override
     public String toString() {
-        return getTranslatedValue();
+        return TagUtils.getTranslatedPathToRoot(this);
     }
 
     /**
-     * Get hierarchical tag translated value. Translated value is represented as a concatenation of all parent tags and
-     * current tag delimited by "/". <br/>
+     * Get translated tag value. Translated value is an internationalized value present in corresponding properties file
+     * with name "tag.{tagName}". If translated value is missing in properties file, tag name is returned.
      */
     @Override
     public String getTranslatedValue() {
-        if (displayName == null) {
-            StringBuilder tagValueSb = new StringBuilder();
-            if (parentTag != null) {
-                tagValueSb.append(parentTag.getTranslatedValue()).append("/");
-            }
-            tagValueSb.append(getStringValue());
-            displayName = tagValueSb.toString();
-        }
-        return displayName;
-    }
-
-    protected String getStringValue() {
-        String fullTagName = TAG_PREFIX + getName();
+        String fullTagName = TAG_PREFIX + getValue();
         String value = getI18nMessage(fullTagName, new Object());
-        return fullTagName.equals(value) ? getName() : value;
+        return fullTagName.equals(value) ? getValue() : value;
     }
 
-    public boolean hasTag(String tag) {
-        Pattern pattern = Pattern.compile(tag, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-        String value = getTranslatedValue();
-        return pattern.matcher(value).find();
+    @Override
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public Tag getParentTag() {
+        return parentTag;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
         result = prime * result + ((parentTag == null) ? 0 : parentTag.hashCode());
         return result;
     }
@@ -112,10 +108,10 @@ public class TagImpl extends TranslatableImpl implements Tag {
         if (getClass() != obj.getClass())
             return false;
         TagImpl other = (TagImpl) obj;
-        if (name == null) {
-            if (other.name != null)
+        if (value == null) {
+            if (other.value != null)
                 return false;
-        } else if (!name.equals(other.name))
+        } else if (!value.equals(other.value))
             return false;
         if (parentTag == null) {
             if (other.parentTag != null)
