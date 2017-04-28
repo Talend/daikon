@@ -9,7 +9,6 @@
 	</parent>
 
 	<artifactId>service-parent</artifactId>
-	<version>0.16.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>service-parent</name>
 	<properties>
@@ -23,7 +22,6 @@
 		<dependency>
 			<groupId>org.talend.daikon</groupId>
 			<artifactId>service-common</artifactId>
-			<version>0.16.0-SNAPSHOT</version>
 		</dependency>
 		<!-- Common service dependencies -->
 		<dependency>
