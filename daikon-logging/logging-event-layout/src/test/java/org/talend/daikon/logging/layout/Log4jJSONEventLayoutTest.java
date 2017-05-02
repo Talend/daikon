@@ -23,12 +23,8 @@ public class Log4jJSONEventLayoutTest {
     // "\"@timestamp\":\"2015-07-28T11:31:18.492-07:00\",\"timeMillis\":1438108278492," +
             "\"threadName\":\"" + Thread.currentThread().getName() + "\"," + "\"severity\":\"DEBUG\","
             + "\"logMessage\":\"Test Message\","
-            + "\"logSource\":{\"logger.name\":\"org.talend.daikon.logging.layout.Log4jJSONEventLayoutTest\"," 
-            + "\"file.name\":\"org.talend.daikon.logging.layout.Log4jJSONEventLayoutTest\"}" + ","+ "\"foo\":\"bar\"}";
-    
-    @Before
-    public void setupTestAppender() {
-    }
+            + "\"logSource\":{\"logger.name\":\"org.talend.daikon.logging.layout.Log4jJSONEventLayoutTest\","
+            + "\"file.name\":\"org.talend.daikon.logging.layout.Log4jJSONEventLayoutTest\"}" + "," + "\"foo\":\"bar\"}";
 
     @After
     public void clearTestAppender() {
@@ -97,10 +93,9 @@ public class Log4jJSONEventLayoutTest {
     @Test
     public void testDateFormat() {
         long timestamp = 1364844991207L;
-        assertEquals("format does not produce expected output", "2013-04-01T19:36:31.207Z",
-                dateFormat(timestamp));
+        assertEquals("format does not produce expected output", "2013-04-01T19:36:31.207Z", dateFormat(timestamp));
     }
-    
+
     private String dateFormat(long timestamp) {
         return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
     }

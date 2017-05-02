@@ -30,7 +30,7 @@ public class Log4jJSONLayout extends Layout {
     private boolean ignoreThrowable;
 
     private JSONObject logstashEvent;
-    
+
     private JSONObject userFieldsEvent;
 
     /**
@@ -61,7 +61,7 @@ public class Log4jJSONLayout extends Layout {
         Map<String, String> mdc = loggingEvent.getProperties();
         String ndc = loggingEvent.getNDC();
         String whoami = this.getClass().getSimpleName();
-        
+
         /**
          * Extract and add fields from log4j config, if defined
          */
@@ -115,19 +115,19 @@ public class Log4jJSONLayout extends Layout {
             String jvmName = runtimeBean.getName();
             logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
         }
-        
+
         logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
         logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
         addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
-        
+
         for (Map.Entry<String, String> entry : mdc.entrySet()) {
             userFieldsEvent.put(entry.getKey(), entry.getValue());
         }
-        
+
         if (!userFieldsEvent.isEmpty()) {
             addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
         }
-        
+
         return logstashEvent.toString() + "\n";
     }
 

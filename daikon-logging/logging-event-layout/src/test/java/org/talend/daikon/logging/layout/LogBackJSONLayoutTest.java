@@ -14,14 +14,13 @@ import net.minidev.json.JSONValue;
 public class LogBackJSONLayoutTest {
 
     static final Logger LOGGER = LoggerFactory.getLogger("LogBackJSONLayoutTest.class");
-    
+
     static final String BASIC_SIMPLE_JSON_TEST = "{\"@version\":1," +
     // "\"@timestamp\":\"2015-07-28T11:31:18.492-07:00\",\"timeMillis\":1438108278492," +
             "\"threadName\":\"" + Thread.currentThread().getName() + "\"," + "\"severity\":\"DEBUG\","
             + "\"logMessage\":\"Test Message\","
-            + "\"logSource\":{\"logger.name\":\"org.talend.daikon.logging.layout.LogBackJSONLayoutTest\"," 
-            + "\"file.name\":\"org.talend.daikon.logging.layout.LogBackJSONLayoutTest\"}" + ","+ "\"foo\":\"bar\"}";
-
+            + "\"logSource\":{\"logger.name\":\"org.talend.daikon.logging.layout.LogBackJSONLayoutTest\","
+            + "\"file.name\":\"org.talend.daikon.logging.layout.LogBackJSONLayoutTest\"}" + "," + "\"foo\":\"bar\"}";
 
     @Test
     public void testJSONEventLayoutIsJSON() {
@@ -81,7 +80,7 @@ public class LogBackJSONLayoutTest {
         JSONObject jsonObject = (JSONObject) obj;
         assertNotNull("ThreadName value is missing", jsonObject.get("threadName"));
     }
-    
+
     @Test
     public void testDateFormat() {
         long timestamp = 1364844991207L;

@@ -27,9 +27,9 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
     private String customUserFields;
 
     private JSONObject logstashEvent;
-    
+
     private JSONObject userFieldsEvent;
-  
+
     /**
      * For backwards compatibility, the default is to generate location information
      * in the log messages.
@@ -111,7 +111,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
         logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
         addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
-        
+
         for (Map.Entry<String, String> entry : mdc.entrySet()) {
             userFieldsEvent.put(entry.getKey(), entry.getValue());
         }
@@ -119,14 +119,14 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         if (!userFieldsEvent.isEmpty()) {
             addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
         }
-        
+
         return logstashEvent.toString() + "\n";
 
     }
 
     private void addUserFields(String data) {
         if (null != data) {
-            
+
             String[] pairs = data.split(",");
             for (String pair : pairs) {
                 String[] userField = pair.split(":", 2);
@@ -135,7 +135,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
                     String val = userField[1];
                     userFieldsEvent.put(key, val);
                 }
-            } 
+            }
         }
     }
 

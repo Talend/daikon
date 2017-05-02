@@ -170,6 +170,7 @@ The field names listed here are the default field names.
 | `eventUUID`       | The unique id of every log event. Its a UUID, the appenders should just generate a UUID and assign to this attribute
 | `logTimestamp`    | Time of the log event. (`yyyy-MM-dd'T'HH:mm:ss.SSSZZ`).
 | `agentTimestamp`  | Time of the agent that logged the event (can be the same value with logTimestamp). (`yyyy-MM-dd'T'HH:mm:ss.SSSZZ`).
+| `serverTimestamp`  | Time of the logstash sever when event arrive.
 | `@version`        | The format version (e.g. 1) 
 | `logMessage`      | Formatted log message of the event 
 | `threadName`      | Name of the thread that logged the event
@@ -372,6 +373,7 @@ To enable tracking correlation ids in the logs you have to :
    "traceId":"The id of the latency graph that contains the span",
    "exportable":"Whether the log should be exported to Zipkin or not",
    "logTimestamp":"2016-12-13T13:33:39.934Z",
+   "serverTimestamp":"2016-12-13T13:33:40.934Z",
    "agentId":"tenantId",
    "audit":"false",
    "customInfo":{

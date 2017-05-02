@@ -41,7 +41,8 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     private JSONObject userFieldsEvent;
 
-    protected Log4j2JSONLayout(final Boolean locationInfo, final Charset charset, final Map<String, String> additionalLogAttributes) {
+    protected Log4j2JSONLayout(final Boolean locationInfo, final Charset charset,
+            final Map<String, String> additionalLogAttributes) {
         super(charset);
         setLocationInfo(locationInfo);
         Log4j2JSONLayout.ADDITIONNAL_ATTRIBUTES.putAll(additionalLogAttributes);
@@ -107,7 +108,6 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     }
 
-
     /**
      * Formats a {@link org.apache.logging.log4j.core.LogEvent}.
      *
@@ -127,7 +127,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
          * Extract and add fields from log4j2 config, if defined
          */
         addUserFields(ADDITIONNAL_ATTRIBUTES);
-        
+
         /**
          * Now we start injecting our own stuff.
          */
@@ -169,11 +169,11 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
             String jvmName = runtimeBean.getName();
             logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
         }
-        
+
         logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
         logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
         addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
-        
+
         for (Map.Entry<String, String> entry : mdc.entrySet()) {
             userFieldsEvent.put(entry.getKey(), entry.getValue());
         }
@@ -181,7 +181,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         if (!userFieldsEvent.isEmpty()) {
             addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
         }
-        
+
         return logstashEvent.toString() + "\n";
     }
 
