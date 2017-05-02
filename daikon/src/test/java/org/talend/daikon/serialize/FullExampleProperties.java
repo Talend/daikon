@@ -1,7 +1,26 @@
 package org.talend.daikon.serialize;
 
-import static org.talend.daikon.properties.presentation.Widget.*;
-import static org.talend.daikon.properties.property.PropertyFactory.*;
+import static org.talend.daikon.properties.presentation.Widget.BUTTON_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.DATALIST_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.FILE_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.HIDDEN_TEXT_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.NAME_SELECTION_AREA_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.NAME_SELECTION_REFERENCE_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.RADIO_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.SCHEMA_EDITOR_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.SCHEMA_REFERENCE_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.SELECT_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.TABLE_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.TEXT_AREA_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.widget;
+import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
+import static org.talend.daikon.properties.property.PropertyFactory.newDate;
+import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
+import static org.talend.daikon.properties.property.PropertyFactory.newEnumList;
+import static org.talend.daikon.properties.property.PropertyFactory.newInteger;
+import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
+import static org.talend.daikon.properties.property.PropertyFactory.newSchema;
+import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,7 +65,7 @@ public class FullExampleProperties extends PropertiesImpl {
     public final Property<String> multipleSelectionProp = newProperty("multipleSelectionProp");
 
     /** checking {@link WidgetType#BUTTON} */
-    public final PresentationItem showNewForm = new PresentationItem("showNewForm", "Show new form");
+    public final PresentationItem showNewForm = new PresentationItem("showNewForm");
 
     /** checking {@link WidgetType#TABLE} */
     public final TableProperties tableProp = new TableProperties("tableProp");
@@ -87,8 +106,7 @@ public class FullExampleProperties extends PropertiesImpl {
      */
     public final Property<Schema> schema = newSchema("schema"); //$NON-NLS-1$
 
-    public final PresentationItem validateAllCallbackCalled = new PresentationItem("validateAllCallbackCalled",
-            "Validate All Callbacks called");
+    public final PresentationItem validateAllCallbackCalled = new PresentationItem("validateAllCallbackCalled");
 
     private List<String> methodCalled = new ArrayList<>();
 
