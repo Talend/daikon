@@ -12,7 +12,10 @@
 // ============================================================================
 package org.talend.daikon.avro;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
@@ -174,4 +177,55 @@ public class LogicalTypeUtilsTest {
         Schema timeMicrosSchema = LogicalTypes.timeMicros().addToSchema(Schema.create(Schema.Type.LONG));
         assertEquals(LogicalTypeUtils.TIME_MICROS, LogicalTypeUtils.getLogicalTypeName(timeMicrosSchema));
     }
+
+    @Test
+    public void testGetSchemaByLogicalTypeDate() {
+        Schema expected = AvroUtils._logicalDate();
+
+        Schema actual = LogicalTypeUtils.getSchemaByLogicalType("date");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetSchemaByLogicalTypeTimeMillis() {
+        Schema expected = AvroUtils._logicalTime();
+
+        Schema actual = LogicalTypeUtils.getSchemaByLogicalType("time-millis");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetSchemaByLogicalTypeTimeMicros() {
+        Schema expected = AvroUtils._logicalTimeMicros();
+
+        Schema actual = LogicalTypeUtils.getSchemaByLogicalType("time-micros");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetSchemaByLogicalTypeTimestampMillis() {
+        Schema expected = AvroUtils._logicalTimestamp();
+
+        Schema actual = LogicalTypeUtils.getSchemaByLogicalType("timestamp-millis");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetSchemaByLogicalTypeTimestampMicros() {
+        Schema expected = AvroUtils._logicalTimestampMicros();
+
+        Schema actual = LogicalTypeUtils.getSchemaByLogicalType("timestamp-micros");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetSchemaByLogicalTypeNull() {
+        assertNull(LogicalTypeUtils.getSchemaByLogicalType(null));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testGetSchemaByLogicalTypeNotSupported() {
+        LogicalTypeUtils.getSchemaByLogicalType("unsupported");
+    }
+
 }

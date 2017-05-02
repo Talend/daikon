@@ -7,11 +7,15 @@ package org.talend.daikon.content.s3.provider;
  * <li>Runtime-defined bucket name (for multi tenant use cases).</li>
  * </ul>
  */
-@FunctionalInterface
 public interface S3BucketProvider {
 
     /**
      * @return The tenant bucket name.
      */
     String getBucketName();
+
+    /**
+     * @return The root directory name to use inside the bucket.
+     */
+    String getRoot();
 }

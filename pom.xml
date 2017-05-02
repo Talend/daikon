@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.talend.daikon</groupId>
     <artifactId>daikon-parent</artifactId>
-    <version>0.16.0-SNAPSHOT</version>
+    <version>0.17.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Daikon - parent pom</name>
     <url>https://github.com/Talend/daikon</url>
@@ -31,7 +31,8 @@
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
-    </scm>
+      <tag>HEAD</tag>
+  </scm>
     <repositories>
         <repository>
             <id>talend_nexus</id>
@@ -112,7 +113,22 @@
                         </dependency>
                     </dependencies>
                 </plugin>
-            </plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.18</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.0.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<version>3.0.1</version>
+				</plugin>				
+			</plugins>
         </pluginManagement>
         <plugins>
             <plugin>
@@ -159,6 +175,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.4</version>
                 <configuration>
                     <failOnError>false</failOnError>
                 </configuration>
@@ -171,6 +188,16 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<pushChanges>false</pushChanges>
+					<scmCommentPrefix xml:space="preserve">release: </scmCommentPrefix>
+					<tagNameFormat>daikon-@{project.version}</tagNameFormat>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
     <profiles>
