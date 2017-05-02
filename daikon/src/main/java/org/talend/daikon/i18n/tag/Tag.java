@@ -10,25 +10,28 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.di;
-
-import org.apache.avro.Schema;
-import org.apache.avro.generic.IndexedRecord;
+package org.talend.daikon.i18n.tag;
 
 /**
- * Provides means to map design fields to runtime fields
+ * Interface for Tag presentation.
  */
-interface IndexMapper {
+public interface Tag {
 
-    static final int DYNAMIC = -1;
+    public static final String TAG_PREFIX = "tag.";
 
     /**
-     * Computes map of correspondence between design fields (POJO fields) and runtime fields
-     * (IndexedRecord fields)
-     * 
-     * @param runtimeSchema runtime data schema, which goes along with {@link IndexedRecord}
-     * @return map of correspondence
+     * @return parent tag if present or return null
      */
-    int[] computeIndexMap(Schema runtimeSchema);
+    public Tag getParentTag();
+
+    /**
+     * Get translated current tag value.
+     */
+    public String getTranslatedValue();
+
+    /**
+     * Get current tag value.
+     */
+    public String getValue();
 
 }

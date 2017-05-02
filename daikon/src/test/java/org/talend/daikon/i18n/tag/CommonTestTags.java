@@ -10,23 +10,16 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.di;
+package org.talend.daikon.i18n.tag;
 
-import java.util.List;
-
-import org.apache.avro.Schema;
-import org.apache.avro.generic.IndexedRecord;
+import org.talend.daikon.i18n.GlobalI18N;
 
 /**
- * Provides means to map design and dynamic fields to runtime fields
+ * Tags used for testing purpose.
  */
-interface DynamicIndexMapper extends IndexMapper {
+public class CommonTestTags {
 
-    /**
-     * Computes dynamic fields indexes
-     * 
-     * @param runtimeSchema runtime data schema, which goes along with {@link IndexedRecord}
-     * @return list of dynamic fields indexes
-     */
-    List<Integer> computeDynamicFieldsIndexes(Schema runtimeSchema);
+    public static final TagImpl COMMON_TAG = new TagImpl("commonTag", null,
+            GlobalI18N.getI18nMessageProvider().getI18nMessages(CommonTestTags.class));
+
 }

@@ -31,7 +31,13 @@ import org.talend.daikon.java8.Supplier;
 /**
  * An AvroRegistry is used to convert specific datum objects and classes into {@link IndexedRecord}s with {@link Schema}
  * s that can be shared between components for common processing.
+ * 
+ * @deprecated AvroRegistry was designed to share converters between components. It was decided that component should output and
+ * accept IndexedRecord instances. Thus, there is no need to share converters
+ * between components anymore. As for inferSchema functionality it can be implemented on component side. AvroRegistry will be
+ * removed soon
  */
+@Deprecated
 public class AvroRegistry {
 
     /**

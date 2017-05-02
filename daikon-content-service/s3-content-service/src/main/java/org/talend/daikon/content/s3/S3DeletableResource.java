@@ -1,6 +1,7 @@
 package org.talend.daikon.content.s3;
 
 import static org.talend.daikon.content.s3.LocationUtils.toS3Location;
+import static org.talend.daikon.content.s3.LocationUtils.S3PathBuilder.builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,13 +34,16 @@ class S3DeletableResource implements DeletableResource {
 
     private final String bucket;
 
+    private final String root;
+
     private boolean isDeleted;
 
-    protected S3DeletableResource(WritableResource resource, AmazonS3 amazonS3, String location, String bucket) {
+    protected S3DeletableResource(WritableResource resource, AmazonS3 amazonS3, String location, String bucket, String root) {
         this.resource = resource;
         this.amazonS3 = amazonS3;
         this.location = location;
         this.bucket = bucket;
+        this.root = root;
     }
 
     @Override
@@ -54,7 +58,7 @@ class S3DeletableResource implements DeletableResource {
 
     @Override
     public void move(String location) throws IOException {
-        final String moveLocation = toS3Location(location);
+        final String moveLocation = builder().append(root).append(toS3Location(location)).build().substring(1);
         final CopyObjectResult result = amazonS3.copyObject(new CopyObjectRequest(bucket, this.location, bucket, moveLocation));
         if (result == null) {
             LOGGER.error("Unable to move {} to {}", this.location, moveLocation);
@@ -108,7 +112,7 @@ class S3DeletableResource implements DeletableResource {
     public Resource createRelative(String relativePath) throws IOException {
         final Resource relative = resource.createRelative(relativePath);
         if (relative instanceof WritableResource) {
-            return new S3DeletableResource((WritableResource) relative, amazonS3, location, bucket);
+            return new S3DeletableResource((WritableResource) relative, amazonS3, location, bucket, root);
         } else {
             return relative;
         }
