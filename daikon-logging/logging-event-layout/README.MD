@@ -40,7 +40,7 @@ Maven style:
 <dependency>
   	<groupId>org.talend.daikon.logging</groupId>
   	<artifactId>logging-event-layout</artifactId>
-  	<version>0.16.0-SNAPSHOT</version>
+  	<version>0.17.0-SNAPSHOT</version>
 </dependency>
 <dependency>
 	<groupId>net.minidev</groupId>
