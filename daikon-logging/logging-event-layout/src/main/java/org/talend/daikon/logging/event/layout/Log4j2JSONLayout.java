@@ -174,6 +174,16 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
         addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
 
+        addMDC(mdc);
+
+        if (!userFieldsEvent.isEmpty()) {
+            addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
+        }
+
+        return logstashEvent.toString() + "\n";
+    }
+
+    private void addMDC(Map<String, String> mdc) {
         for (Map.Entry<String, String> entry : mdc.entrySet()) {
             if (isSleuthField(entry.getKey())) {
                 addEventData(entry.getKey(), entry.getValue());
@@ -181,12 +191,6 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
                 userFieldsEvent.put(entry.getKey(), entry.getValue());
             }
         }
-
-        if (!userFieldsEvent.isEmpty()) {
-            addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
-        }
-
-        return logstashEvent.toString() + "\n";
     }
 
     /**

@@ -112,13 +112,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
         addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
 
-        for (Map.Entry<String, String> entry : mdc.entrySet()) {
-            if (isSleuthField(entry.getKey())) {
-                addEventData(entry.getKey(), entry.getValue());
-            } else {
-                userFieldsEvent.put(entry.getKey(), entry.getValue());
-            }
-        }
+        addMDC(mdc);
 
         if (!userFieldsEvent.isEmpty()) {
             addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
@@ -126,6 +120,16 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
 
         return logstashEvent.toString() + "\n";
 
+    }
+
+    private void addMDC(Map<String, String> mdc) {
+        for (Map.Entry<String, String> entry : mdc.entrySet()) {
+            if (isSleuthField(entry.getKey())) {
+                addEventData(entry.getKey(), entry.getValue());
+            } else {
+                userFieldsEvent.put(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     private void addUserFields(String data) {

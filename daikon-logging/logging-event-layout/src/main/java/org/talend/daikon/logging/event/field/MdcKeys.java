@@ -27,7 +27,7 @@ public class MdcKeys {
 
     //The request correlation name in the Header
     // Use this key when you want to generate and set the correlation Id in the header of the request in your application
-    public static final String HEADER_REQUEST_CORRELATION_ID = "requestCorrelationId";
+    public static final String HEADER_REQUEST_CORRELATION_ID = "X-Talend-requestID";
 
     //Is an attribute which allows to group similar types of log events
     public static final String CATEGORY = "category";
