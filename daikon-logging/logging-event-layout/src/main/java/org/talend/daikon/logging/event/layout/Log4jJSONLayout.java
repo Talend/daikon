@@ -121,7 +121,11 @@ public class Log4jJSONLayout extends Layout {
         addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
 
         for (Map.Entry<String, String> entry : mdc.entrySet()) {
-            userFieldsEvent.put(entry.getKey(), entry.getValue());
+            if (isSleuthField(entry.getKey())) {
+                addEventData(entry.getKey(), entry.getValue());
+            } else {
+                userFieldsEvent.put(entry.getKey(), entry.getValue());
+            }
         }
 
         if (!userFieldsEvent.isEmpty()) {
@@ -189,5 +193,15 @@ public class Log4jJSONLayout extends Layout {
         if (null != keyval) {
             logstashEvent.put(keyname, keyval);
         }
+    }
+
+    /**
+     *  Check if this field name added by Spring Cloud Sleuth
+     * @param fieldName
+     * @return true if the fieldName represent added by Spring Cloud Sleuth 
+     */
+    private boolean isSleuthField(String fieldName) {
+        return "service".equals(fieldName) || "spanId".equals(fieldName) || "traceId".equals(fieldName)
+                || "exportable".equals(fieldName);
     }
 }

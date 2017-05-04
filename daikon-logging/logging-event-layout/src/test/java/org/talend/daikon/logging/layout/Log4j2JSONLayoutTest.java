@@ -68,6 +68,7 @@ public class Log4j2JSONLayoutTest {
     @Test
     public void testJSONEventLayoutHasMDC() {
         MDC.put("foo", "bar");
+        MDC.put("service", "log4j2");
         LOGGER.warn("I should have MDC data in my log");
         Object obj = JSONValue.parse(BASIC_SIMPLE_JSON_TEST);
         JSONObject jsonObject = (JSONObject) obj;

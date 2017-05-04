@@ -16,14 +16,11 @@ public class MdcKeys {
     //The job execution Id
     public static final String EXECUTION_ID = "executionId";
 
-    //The application name
-    public static final String APPLICATION_NAME = "applicationName";
-
-    //The application version
-    public static final String APPLICATION_VERSION = "applicationVersion";
-
     //The name of the stack
     public static final String STACK_NAME = "stackName";
+
+    //The user Id
+    public static final String USER_ID = "userId";
 
     //The correlation Id
     public static final String CORRELATION_ID = "correlationId";

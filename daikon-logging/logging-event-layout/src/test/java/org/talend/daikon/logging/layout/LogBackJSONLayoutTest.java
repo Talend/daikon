@@ -40,6 +40,7 @@ public class LogBackJSONLayoutTest {
     @Test
     public void testJSONEventLayoutHasNestedMDC() {
         MDC.put("foo", "bar");
+        MDC.put("service", "logback");
         LOGGER.warn("I should have nested MDC data in my log");
         Object obj = JSONValue.parse(BASIC_SIMPLE_JSON_TEST);
         JSONObject jsonObject = (JSONObject) obj;

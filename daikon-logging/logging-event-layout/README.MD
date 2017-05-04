@@ -2,7 +2,7 @@
 
 Provides [logback, Log4j 1&2] layouts to log in JSON format.
 
-Supports both regular _LoggingEvents_ (logged through a `Logger`).
+Supports regular _LoggingEvents_ (logged through a `Logger`).
 
 #### Contents:
 
@@ -318,7 +318,7 @@ To enable tracking correlation ids in the logs you have to :
 
 	a. SPA:
 	
-	Add FilterRegistrationBean bean in your Application.java as this:
+	Add FilterRegistrationBean bean in your Application.java or Configuration class as this:
 	
 	```
 	@Bean
@@ -333,6 +333,8 @@ To enable tracking correlation ids in the logs you have to :
     }
     ```
     b.  For RESTful or SOAP service requests, this is accomplished by servlet filter.
+	
+	In your web.xml, filter configuration is as follows:
 	
 	```xml
 	<filter>
