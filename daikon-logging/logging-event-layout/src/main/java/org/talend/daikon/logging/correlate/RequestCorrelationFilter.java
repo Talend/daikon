@@ -26,11 +26,9 @@ public class RequestCorrelationFilter implements Filter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestCorrelationFilter.class);
 
-    private String correlationHeaderName;
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        correlationHeaderName = MdcKeys.HEADER_REQUEST_CORRELATION_ID;
+        // NoOp
     }
 
     @Override
@@ -39,7 +37,7 @@ public class RequestCorrelationFilter implements Filter {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
-        String correlationId = httpServletRequest.getHeader(correlationHeaderName);
+        String correlationId = httpServletRequest.getHeader(MdcKeys.HEADER_REQUEST_CORRELATION_ID);
 
         if (StringUtils.isEmpty(correlationId)) {
             correlationId = UUID.randomUUID().toString();
@@ -63,7 +61,4 @@ public class RequestCorrelationFilter implements Filter {
         // NoOp
     }
 
-    protected String getCorrelationHeaderName() {
-        return correlationHeaderName;
-    }
 }
