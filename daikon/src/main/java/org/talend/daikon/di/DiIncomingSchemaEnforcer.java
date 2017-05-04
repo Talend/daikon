@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.avro.LogicalType;
-import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
+import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
+import org.talend.daikon.avro.LogicalTypeUtils;
 import org.talend.daikon.avro.SchemaConstants;
 
 /**
@@ -46,30 +46,45 @@ import org.talend.daikon.avro.SchemaConstants;
  * <p>
  * One instance of this object can be created per incoming schema and reused.
  */
-public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
+public class DiIncomingSchemaEnforcer {
+
+    /**
+     * Dynamic column position possible value, which means schema doesn't have dynamic column
+     */
+    private static final int NO_DYNAMIC_COLUMN = -1;
+
+    /**
+     * The number of milliseconds in one day
+     */
+    private static final long ONE_DAY = 1000 * 60 * 60 * 24;
 
     /**
      * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
+     * This schema is retrieved from downstream component's properties
      */
-    private final Schema incomingDesignSchema;
+    private final Schema designSchema;
 
     /**
      * The position of the dynamic column in the incoming schema. This is -1 if there is no dynamic column. There can be
      * a maximum of one dynamic column in the schema.
      */
-    private final int incomingDynamicColumn;
+    private final int dynamicColumnPosition;
 
     /**
      * The {@link Schema} of the actual runtime data that will be provided by this object. This will only be null if
      * dynamic columns exist, but they have not been finished initializing.
      */
-    private Schema incomingRuntimeSchema;
+    private Schema runtimeSchema;
 
-    /** The fields constructed from dynamic columns. This will only be non-null during construction. */
-    private List<Schema.Field> fieldsFromDynamicColumns = null;
+    /**
+     * Collection of fields constructed from dynamic columns. This will only be non-null during construction.
+     */
+    private List<Schema.Field> dynamicFields = null;
 
-    /** The values wrapped by this object. */
-    private GenericData.Record wrapped = null;
+    /**
+     * The values wrapped by this object - current {@link IndexedRecord}
+     */
+    private GenericData.Record currentRecord = null;
 
     /**
      * Access the indexed fields by their name. We should prefer accessing them by index for performance, but this
@@ -80,21 +95,27 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
     // TODO(rskraba): fix with a general type conversion strategy.
     private final Map<String, SimpleDateFormat> dateFormatCache = new HashMap<>();
 
+    /**
+     * Constructor
+     * 
+     * @param incoming design schema retrieved from downstream component properties
+     */
     public DiIncomingSchemaEnforcer(Schema incoming) {
-        this.incomingDesignSchema = incoming;
-        this.incomingRuntimeSchema = incoming;
+        designSchema = incoming;
 
         // Find the dynamic column, if any.
-        incomingDynamicColumn = AvroUtils.isIncludeAllFields(incoming)
-                ? Integer.valueOf(incoming.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : -1;
-        if (incomingDynamicColumn != -1) {
-            incomingRuntimeSchema = null;
-            fieldsFromDynamicColumns = new ArrayList<>();
+        dynamicColumnPosition = AvroUtils.isIncludeAllFields(designSchema)
+                ? Integer.valueOf(designSchema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : NO_DYNAMIC_COLUMN;
+        if (dynamicColumnPosition != NO_DYNAMIC_COLUMN) {
+            runtimeSchema = null;
+            dynamicFields = new ArrayList<>();
+        } else {
+            runtimeSchema = designSchema;
         }
 
         // Add all of the runtime columns except any dynamic column to the index map.
-        for (Schema.Field f : incoming.getFields()) {
-            if (f.pos() != incomingDynamicColumn) {
+        for (Schema.Field f : designSchema.getFields()) {
+            if (f.pos() != dynamicColumnPosition) {
                 columnToFieldIndex.put(f.name(), f.pos());
             }
         }
@@ -102,148 +123,240 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
 
     /**
      * Take all of the parameters from the dynamic metadata and adapt it to a field for the runtime Schema.
+     * 
+     * @deprecated because it was renamed. Use {@link this#addDynamicField(String, String, String, String, boolean)} instead
      */
+    @Deprecated
     public void initDynamicColumn(String name, String dbName, String type, String dbType, int dbTypeId, int length, int precision,
             String format, String description, boolean isKey, boolean isNullable, String refFieldName, String refModuleName) {
+        addDynamicField(name, type, null, format, description, isNullable);
+    }
+
+    /**
+     * Recreates dynamic field from parameters retrieved from DI dynamic metadata
+     * 
+     * @param name dynamic field name
+     * @param diType di column type
+     * @param logicalType dynamic field logical type; could be null
+     * @param fieldPattern dynamic field date format
+     * @param description dynamic field description
+     * @param isNullable defines whether dynamic field may contain <code>null</code> value
+     */
+    public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
+            boolean isNullable) {
         if (!needsInitDynamicColumns())
             return;
-
-        // Add each column to the field index and the incoming runtime schema.
-        // TODO(rskraba): validate all types coming from the studio and add annotations.
-        Schema fieldSchema = null;
-        if ("id_String".equals(type)) {
-            fieldSchema = Schema.create(Schema.Type.STRING);
-        } else if ("id_Boolean".equals(type)) {
-            fieldSchema = Schema.create(Schema.Type.BOOLEAN);
-        } else if ("id_Integer".equals(type)) {
-            fieldSchema = Schema.create(Schema.Type.INT);
-        } else if ("id_Long".equals(type)) {
-            fieldSchema = Schema.create(Schema.Type.LONG);
-        } else if ("id_Double".equals(type)) {
-            fieldSchema = Schema.create(Schema.Type.DOUBLE);
-        } else if ("id_Float".equals(type)) {
-            fieldSchema = Schema.create(Schema.Type.FLOAT);
-        } else if ("id_Byte".equals(type)) {
-            fieldSchema = AvroUtils._byte();
-        } else if ("id_Short".equals(type)) {
-            fieldSchema = AvroUtils._short();
-        } else if ("id_Character".equals(type)) {
-            fieldSchema = AvroUtils._character();
-        } else if ("id_BigDecimal".equals(type)) {
-            fieldSchema = AvroUtils._decimal();
-        } else if ("id_Date".equals(type)) {
-            fieldSchema = AvroUtils._date();
-        } else {
-            throw new UnsupportedOperationException("Unrecognized type " + type);
-        }
+        Schema fieldSchema = diToAvro(diType, logicalType);
 
         if (isNullable) {
             fieldSchema = SchemaBuilder.nullable().type(fieldSchema);
         }
         Schema.Field field = new Schema.Field(name, fieldSchema, description, (Object) null);
         // Set pattern for date type
-        if ("id_Date".equals(type) && format != null) {
-            field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, format);
+        if ("id_Date".equals(diType) && fieldPattern != null) {
+            field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
         }
-        fieldsFromDynamicColumns.add(field);
+        dynamicFields.add(field);
+    }
+
+    /**
+     * Converts DI type to Avro field schema
+     * 
+     * @param diType data integration native type
+     * @param logicalType avro logical type
+     * @return field schema
+     * @throws {@link UnsupportedOperationException} in case of unsupported di type or logical type
+     */
+    Schema diToAvro(String diType, String logicalType) {
+        Schema fieldSchema = LogicalTypeUtils.getSchemaByLogicalType(logicalType);
+        if (fieldSchema != null) {
+            return fieldSchema;
+        }
+
+        if ("id_String".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.STRING);
+        } else if ("id_Boolean".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.BOOLEAN);
+        } else if ("id_Integer".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.INT);
+        } else if ("id_Long".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.LONG);
+        } else if ("id_Double".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.DOUBLE);
+        } else if ("id_Float".equals(diType)) {
+            fieldSchema = Schema.create(Schema.Type.FLOAT);
+        } else if ("id_Byte".equals(diType)) {
+            fieldSchema = AvroUtils._byte();
+        } else if ("id_Short".equals(diType)) {
+            fieldSchema = AvroUtils._short();
+        } else if ("id_Character".equals(diType)) {
+            fieldSchema = AvroUtils._character();
+        } else if ("id_BigDecimal".equals(diType)) {
+            fieldSchema = AvroUtils._decimal();
+        } else if ("id_Date".equals(diType)) {
+            fieldSchema = AvroUtils._date();
+        } else {
+            throw new UnsupportedOperationException("Unrecognized type " + diType);
+        }
+        return fieldSchema;
     }
 
     /**
      * Called when dynamic columns have finished being initialized. After this call, the {@link #getDesignSchema()} can be
      * used to get the runtime schema.
+     * 
+     * @deprecated because it was renamed. Use {@link this#recreateRuntimeSchema()} instead
      */
+    @Deprecated
     public void initDynamicColumnsFinished() {
-        if (!needsInitDynamicColumns())
+        createRuntimeSchema();
+    }
+
+    /**
+     * Creates runtime schema from design schema and dynamic fields.
+     * Design schema is set in Constructor during enforcer initialization.
+     * Dynamic fields are recreated by calling {@link this#addDynamicField()} methods.
+     * This method should be called only after all dynamic fields are recreated.
+     * Also should be called before calling {@link this#put()} and {@link this#createIndexedRecord()} methods
+     */
+    public void createRuntimeSchema() {
+        if (areDynamicFieldsInitialized()) {
             return;
+        }
 
         // Copy all of the fields that were initialized from dynamic columns into the runtime Schema.
         boolean dynamicFieldsAdded = false;
         List<Schema.Field> fields = new ArrayList<Schema.Field>();
-        for (Schema.Field designField : incomingDesignSchema.getFields()) {
+        for (Schema.Field designField : designSchema.getFields()) {
             // Replace the dynamic column by all of its contents.
-            if (designField.pos() == incomingDynamicColumn) {
-                fields.addAll(fieldsFromDynamicColumns);
+            if (designField.pos() == dynamicColumnPosition) {
+                fields.addAll(dynamicFields);
                 dynamicFieldsAdded = true;
             }
-            // Make a complete copy of the field (it can't be reused).
-            Schema.Field designFieldCopy = new Schema.Field(designField.name(), designField.schema(), designField.doc(),
-                    designField.defaultVal());
-            for (Map.Entry<String, Object> e : designField.getObjectProps().entrySet()) {
-                designFieldCopy.addProp(e.getKey(), e.getValue());
-            }
+            Schema.Field designFieldCopy = copyField(designField);
             fields.add(designFieldCopy);
         }
         if (!dynamicFieldsAdded) {
-            fields.addAll(fieldsFromDynamicColumns);
+            fields.addAll(dynamicFields);
         }
 
-        incomingRuntimeSchema = Schema.createRecord(incomingDesignSchema.getName(), incomingDesignSchema.getDoc(),
-                incomingDesignSchema.getNamespace(), incomingDesignSchema.isError());
-        incomingRuntimeSchema.setFields(fields);
+        runtimeSchema = Schema.createRecord(designSchema.getName(), designSchema.getDoc(), designSchema.getNamespace(),
+                designSchema.isError());
+        runtimeSchema.setFields(fields);
 
         // Map all of the fields from the runtime Schema to their index.
-        for (Schema.Field f : incomingRuntimeSchema.getFields()) {
+        for (Schema.Field f : runtimeSchema.getFields()) {
             columnToFieldIndex.put(f.name(), f.pos());
         }
 
         // And indicate that initialization is finished.
-        fieldsFromDynamicColumns = null;
+        dynamicFields = null;
     }
 
     /**
+     * Creates copy of Avro schema field
+     * Field from one schema can't be reused in another
+     * 
+     * @param original original field
+     * @return field copy
+     */
+    private Field copyField(Field original) {
+        Field copy = new Schema.Field(original.name(), original.schema(), original.doc(), original.defaultVal());
+        for (Map.Entry<String, Object> e : original.getObjectProps().entrySet()) {
+            copy.addProp(e.getKey(), e.getValue());
+        }
+        return copy;
+    }
+
+    /**
+     * @deprecated because it was renamed. Use {@link this#areDynamicFieldsInitialized()} instead
      * @return true only if there is a dynamic column and they haven't been finished initializing yet. When this returns
      * true, the enforcer can't be used yet and {@link #getDesignSchema()} is guaranteed to return null.
      */
+    @Deprecated
     public boolean needsInitDynamicColumns() {
-        return fieldsFromDynamicColumns != null;
+        return !areDynamicFieldsInitialized();
     }
 
+    /**
+     * Checks whether dynamic fields were already initialized.
+     * Dynamic fields are initialized using parameters from the first incoming data object.
+     * Thus, this method returns <code>false</code>, if dynamic fields were not initialized yet (before first data object).
+     * It returns <code>true</code>, if dynamic fields were initialized (after first data object)
+     * 
+     * @return true, if dynamic fields were initialized; false - otherwise
+     */
+    public boolean areDynamicFieldsInitialized() {
+        return dynamicFields == null;
+    }
+
+    /**
+     * Return runtime schema
+     * 
+     * @return runtime schema
+     */
     public Schema getRuntimeSchema() {
-        return incomingRuntimeSchema;
+        return runtimeSchema;
     }
 
+    /**
+     * Returns design schema
+     * 
+     * @return design schema
+     */
     public Schema getDesignSchema() {
-        return incomingDesignSchema;
+        return designSchema;
     }
 
-    public void put(String name, Object v) {
-        put(columnToFieldIndex.get(name), v);
+    /**
+     * Converts DI data value to Avro format and put it into record by field name
+     * 
+     * @param name field name
+     * @param diValue data value
+     */
+    public void put(String name, Object diValue) {
+        put(columnToFieldIndex.get(name), diValue);
     }
 
-    public void put(int i, Object v) {
-        if (wrapped == null)
-            wrapped = new GenericData.Record(getRuntimeSchema());
+    /**
+     * Converts DI data value to Avro format and put it into record by field index
+     * 
+     * @param index field index to put in
+     * @param diValue data value in DI format
+     */
+    public void put(int index, Object diValue) {
+        // TODO(igonchar): client should call createNewRecord by himself. createNewRecord() call
+        // will be removed after changing codegen in Studio
+        if (currentRecord == null) {
+            createNewRecord();
+        }
 
-        if (v == null) {
-            wrapped.put(i, null);
+        if (diValue == null) {
+            currentRecord.put(index, null);
             return;
         }
 
         // TODO(rskraba): check type validation for correctness with studio objects.
-        Schema.Field f = incomingRuntimeSchema.getFields().get(i);
-        Schema fieldSchema = AvroUtils.unwrapIfNullable(f.schema());
+        Schema.Field field = runtimeSchema.getFields().get(index);
+        Schema fieldSchema = AvroUtils.unwrapIfNullable(field.schema());
 
-        Object datum = null;
-
-        boolean isLogicalDate = false;
-        LogicalType logicalType = fieldSchema.getLogicalType();
-        if (logicalType != null) {
-            if (logicalType == LogicalTypes.date() || logicalType == LogicalTypes.timestampMillis()) {
-                isLogicalDate = true;
-            }
-        }
+        Object avroValue = null;
 
         // TODO(rskraba): This is pretty rough -- fix with a general type conversion strategy.
-        String talendType = f.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
+        String talendType = field.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
         String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
-        if (isLogicalDate || "id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) {
-            if (v instanceof Date) {
-                datum = v;
-            } else if (v instanceof Long) {
-                datum = new Date((long) v);
-            } else if (v instanceof String) {
-                String pattern = f.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
-                String vs = (String) v;
+
+        // TODO(igonchar): This is wrong. However I left it as is. We have to fix it after release
+        // Seems, talendType is added by Studio to schema
+        if ("java.util.Date".equals(javaClass) || "id_Date".equals(talendType)) {
+            if (diValue instanceof Date) {
+                avroValue = diValue;
+            } else if (diValue instanceof Long) {
+                // TODO(igonchar): This is wrong. Avro date value should be stored as Long, not Date
+                avroValue = new Date((long) diValue);
+            } else if (diValue instanceof String) {
+                String pattern = field.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
+                String vs = (String) diValue;
 
                 if (pattern == null || pattern.equals("yyyy-MM-dd'T'HH:mm:ss'000Z'")) {
                     if (!vs.endsWith("000Z")) {
@@ -260,73 +373,91 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
                 }
 
                 try {
-                    datum = df.parse((String) v);
+                    avroValue = df.parse((String) diValue);
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
 
+        if (LogicalTypeUtils.isLogicalDate(fieldSchema)) {
+            // (igonchar): diValue MUST be of java.util.Date
+            Date diDate = (Date) diValue;
+            int avroDays = (int) (diDate.getTime() / ONE_DAY);
+            currentRecord.put(index, avroDays);
+            return;
+        }
+
+        if (LogicalTypeUtils.isLogicalTimestampMillis(fieldSchema)) {
+            // (igonchar): diValue MUST be of java.util.Date
+            Date diDate = (Date) diValue;
+            long avroTimestamp = diDate.getTime();
+            currentRecord.put(index, avroTimestamp);
+            return;
+        }
+
+        // TODO(igonchar): I'm not sure it is correct. For me avro value should be string. Conversion to BigDecimal may be
+        // delegated to component. Component should decide whether convert to BigDecimal
         if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {
-            if (v instanceof BigDecimal) {
-                datum = v;
-            } else if (v instanceof String) {
-                datum = new BigDecimal((String) v);
+            if (diValue instanceof BigDecimal) {
+                avroValue = diValue;
+            } else if (diValue instanceof String) {
+                avroValue = new BigDecimal((String) diValue);
             }
         }
 
-        if (datum == null) {
+        if (avroValue == null) {
             switch (fieldSchema.getType()) {
             case ARRAY:
                 break;
             case BOOLEAN:
-                if (v instanceof Boolean)
-                    datum = v;
+                if (diValue instanceof Boolean)
+                    avroValue = diValue;
                 else
-                    datum = Boolean.valueOf(String.valueOf(v));
+                    avroValue = Boolean.valueOf(String.valueOf(diValue));
                 break;
             case FIXED:
             case BYTES:
-                if (v instanceof byte[])
-                    datum = v;
+                if (diValue instanceof byte[])
+                    avroValue = diValue;
                 else
-                    datum = String.valueOf(v).getBytes();
+                    avroValue = String.valueOf(diValue).getBytes();
                 break;
             case DOUBLE:
-                if (v instanceof Number)
-                    datum = ((Number) v).doubleValue();
+                if (diValue instanceof Number)
+                    avroValue = ((Number) diValue).doubleValue();
                 else
-                    datum = Double.valueOf(String.valueOf(v));
+                    avroValue = Double.valueOf(String.valueOf(diValue));
                 break;
             case ENUM:
                 break;
             case FLOAT:
-                if (v instanceof Number)
-                    datum = ((Number) v).floatValue();
+                if (diValue instanceof Number)
+                    avroValue = ((Number) diValue).floatValue();
                 else
-                    datum = Float.valueOf(String.valueOf(v));
+                    avroValue = Float.valueOf(String.valueOf(diValue));
                 break;
             case INT:
-                if (v instanceof Number)
-                    datum = ((Number) v).intValue();
+                if (diValue instanceof Number)
+                    avroValue = ((Number) diValue).intValue();
                 else
-                    datum = Integer.valueOf(String.valueOf(v));
+                    avroValue = Integer.valueOf(String.valueOf(diValue));
                 break;
             case LONG:
-                if (v instanceof Number)
-                    datum = ((Number) v).longValue();
+                if (diValue instanceof Number)
+                    avroValue = ((Number) diValue).longValue();
                 else
-                    datum = Long.valueOf(String.valueOf(v));
+                    avroValue = Long.valueOf(String.valueOf(diValue));
                 break;
             case MAP:
                 break;
             case NULL:
-                datum = null;
+                avroValue = null;
                 break;
             case RECORD:
                 break;
             case STRING:
-                datum = String.valueOf(v);
+                avroValue = String.valueOf(diValue);
                 break;
             case UNION:
                 break;
@@ -335,7 +466,7 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
             }
         }
 
-        wrapped.put(i, datum);
+        currentRecord.put(index, avroValue);
     }
 
     /**
@@ -343,8 +474,27 @@ public class DiIncomingSchemaEnforcer implements DiSchemaConstants {
      */
     public IndexedRecord createIndexedRecord() {
         // Send the data to a new instance of IndexedRecord and clear out the existing values.
-        IndexedRecord copy = wrapped;
-        wrapped = null;
+        IndexedRecord copy = currentRecord;
+        currentRecord = null;
         return copy;
     }
+
+    /**
+     * Returns current {@link IndexedRecord}
+     * 
+     * @return current {@link IndexedRecord}
+     */
+    public IndexedRecord getCurrentRecord() {
+        return currentRecord;
+    }
+
+    /**
+     * Creates new instance for {@link IndexedRecord}
+     * This should be called before series of {@link this#put()} calls, which copies values from next DI data object into this
+     * enforcer
+     */
+    public void createNewRecord() {
+        currentRecord = new GenericData.Record(getRuntimeSchema());
+    }
+
 }

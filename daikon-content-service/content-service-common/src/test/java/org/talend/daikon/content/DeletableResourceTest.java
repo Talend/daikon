@@ -117,9 +117,7 @@ public abstract class DeletableResourceTest extends DeletableLoaderResourceTests
     }
 
     @Test
-    public void getFilename() throws Exception {
-        assertEquals(LOCATION, resource.getFilename());
-    }
+    public abstract void getFilename() throws Exception;
 
     @Test
     public abstract void shouldGetDescription() throws Exception;

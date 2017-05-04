@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,15 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
         }
         // we accept that return field is not initialized after setupProperties.
         return "reference".equals(f.getName());
+    }
+
+    @Override
+    protected void acceptForAllProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
+        super.acceptForAllProperties(visitor, visited);
+
+        if (reference != null) {
+            acceptForProperty(visitor, visited, reference);
+        }
     }
 
     /**

@@ -54,9 +54,14 @@ public class S3DeletableResourceTest extends DeletableResourceTest {
         assertEquals(0, resource.lastModified()); // Not implemented by S3 mock.
     }
 
+    @Override
+    public void getFilename() throws Exception {
+        assertEquals("app1/" + LOCATION, resource.getFilename());
+    }
+
     @Test
     public void shouldGetDescription() throws Exception {
-        assertEquals("Amazon s3 resource [bucket='s3-content-service1' and object='file.txt']", resource.getDescription());
+        assertEquals("Amazon s3 resource [bucket='s3-content-service1' and object='app1/file.txt']", resource.getDescription());
     }
 
     @Test
@@ -66,14 +71,21 @@ public class S3DeletableResourceTest extends DeletableResourceTest {
         final Resource resource1 = resolver.getResource(LOCATION);
 
         // Then
-        assertEquals("Amazon s3 resource [bucket='s3-content-service1' and object='file.txt']", resource1.getDescription());
+        assertEquals("Amazon s3 resource [bucket='s3-content-service1' and object='app1/file.txt']", resource1.getDescription());
 
         // Given
         TestConfiguration.clientNumber.set(1);
         final Resource resource2 = resolver.getResource(LOCATION);
 
         // Then
-        assertEquals("Amazon s3 resource [bucket='s3-content-service2' and object='file.txt']", resource2.getDescription());
+        assertEquals("Amazon s3 resource [bucket='s3-content-service2' and object='app2/file.txt']", resource2.getDescription());
+
+        // Given
+        TestConfiguration.clientNumber.set(2);
+        final Resource resource3 = resolver.getResource(LOCATION);
+
+        // Then
+        assertEquals("Amazon s3 resource [bucket='s3-content-service2' and object='file.txt']", resource3.getDescription());
     }
 
     @Test
