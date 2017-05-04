@@ -16,7 +16,6 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.apache.logging.log4j.util.StringMap;
 import org.junit.Test;
-import org.slf4j.MDC;
 import org.talend.daikon.logging.event.layout.Log4j2JSONLayout;
 
 public class Log4j2JSONLayoutTest {
