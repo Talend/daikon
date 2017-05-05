@@ -290,7 +290,7 @@ Maven style:
 
 
 <a name="correlation_id"/></a>
-Tracking user activity ids using Slf4j
+## Tracking user activity ids using Slf4j
 
 The objectives are as follows:
 
@@ -299,7 +299,7 @@ If it's on service request then please use this key name: HEADER_REQUEST_CORRELA
 
 2. Ensure that the correlation id is documented on all log messages so that it can be correlated across services.
 
-#### Filter configuration
+## Filter configuration
 To enable tracking user activity ids in the logs you have to :
 
 1. Configure the Filter in your application
