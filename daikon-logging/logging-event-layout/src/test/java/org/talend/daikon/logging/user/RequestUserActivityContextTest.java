@@ -18,7 +18,7 @@ public class RequestUserActivityContextTest {
         assertTrue("foo".equals(context.getCorrelationId()));
 
         RequestUserActivityContext.clearCurrent();
-        assertTrue(!context.equals(RequestUserActivityContext.getCurrent()));
+        assertFalse(context.equals(RequestUserActivityContext.getCurrent()));
     }
 
 }
