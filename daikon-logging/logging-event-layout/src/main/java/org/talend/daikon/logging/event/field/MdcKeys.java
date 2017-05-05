@@ -5,7 +5,7 @@ package org.talend.daikon.logging.event.field;
  * @author sdiallo
  */
 
-public class MdcKeys {
+public final class MdcKeys {
 
     //The tenant Id (account Id)
     public static final String AGENT_ID = "agentId";
@@ -22,12 +22,12 @@ public class MdcKeys {
     //The user Id
     public static final String USER_ID = "userId";
 
-    //The correlation Id
-    public static final String CORRELATION_ID = "correlationId";
+    //The user atcivity Id
+    public static final String USER_ACTIVITY_ID = "user-activity-id";
 
-    //The request correlation name in the Header
+    //The request userActivtyId name in the Header
     // Use this key when you want to generate and set the correlation Id in the header of the request in your application
-    public static final String HEADER_REQUEST_CORRELATION_ID = "X-Talend-requestID";
+    public static final String HEADER_REQUEST_USER_ACTIVITY_ID = "X-talend-user-activity-id";
 
     //Is an attribute which allows to group similar types of log events
     public static final String CATEGORY = "category";

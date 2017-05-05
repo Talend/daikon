@@ -10,7 +10,7 @@ import org.apache.commons.lang.time.FastDateFormat;
  * @author sdiallo
  *
  */
-public class LayoutFields {
+public final class LayoutFields {
 
     public static final Integer VERSION_VALUE = 1;
 

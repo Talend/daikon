@@ -20,7 +20,7 @@
         <param name="MaxBackupIndex" value="20" />
         <param name="encoding" value="UTF-8" />
         <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout" locationInfo="true">
-        	<param name="UserFields" value="foo:bar, baz:quz" />
+        	<param name="UserFields" value="foo:bar,baz:quz" />
         </layout>
     </appender>   
        

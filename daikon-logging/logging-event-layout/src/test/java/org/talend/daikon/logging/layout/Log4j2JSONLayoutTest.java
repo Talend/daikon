@@ -45,7 +45,6 @@ public class Log4j2JSONLayoutTest {
         //MDC.put("spanId", "123456789"); work only when log4j-slf4j-impl is added as dependencies
         LOGGER.debug("I shouldn't have MDC data in my log");
         String actualJSON = layout.toSerializable(event);
-        System.out.println(actualJSON);
         assertThat(actualJSON,
                 sameJSONAs(EXPECTED_BASIC_SIMPLE_JSON_TEST).allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 

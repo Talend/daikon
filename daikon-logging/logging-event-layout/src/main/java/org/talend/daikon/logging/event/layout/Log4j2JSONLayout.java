@@ -39,17 +39,11 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     private JSONObject logstashEvent;
 
-    private JSONObject userFieldsEvent;
-
     protected Log4j2JSONLayout(final Boolean locationInfo, final Charset charset,
             final Map<String, String> additionalLogAttributes) {
         super(charset);
         setLocationInfo(locationInfo);
         Log4j2JSONLayout.ADDITIONNAL_ATTRIBUTES.putAll(additionalLogAttributes);
-    }
-
-    private String dateFormat(long timestamp) {
-        return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
     }
 
     /**
@@ -86,24 +80,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
     ) {
 
         //Unpacke the pairs list
-        final Map<String, String> additionalLogAttributes = new HashMap<>();
-        if (pairs != null && pairs.length > 0) {
-            for (final KeyValuePair pair : pairs) {
-                final String key = pair.getKey();
-                if (key == null) {
-                    LOGGER.error("A null key is not valid in MapFilter");
-                }
-                final String value = pair.getValue();
-                if (value == null) {
-                    LOGGER.error("A null value for key " + key + " is not allowed in MapFilter");
-                }
-                if (additionalLogAttributes.containsKey(key)) {
-                    LOGGER.error("Duplicate entry for key: {} is forbidden!", key);
-                }
-                additionalLogAttributes.put(key, value);
-            }
-
-        }
+        final Map<String, String> additionalLogAttributes = unpackPairs(pairs);
         return new Log4j2JSONLayout(locationInfo, charset, additionalLogAttributes);
 
     }
@@ -117,80 +94,34 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
     @Override
     public String toSerializable(final LogEvent loggingEvent) {
         logstashEvent = new JSONObject();
-        userFieldsEvent = new JSONObject();
+        JSONObject userFieldsEvent = new JSONObject();
         HostData host = new HostData();
-        String threadName = loggingEvent.getThreadName();
-        long timestamp = loggingEvent.getTimeMillis();
         Map<String, String> mdc = loggingEvent.getContextData().toMap();
 
         /**
          * Extract and add fields from log4j2 config, if defined
          */
-        addUserFields(ADDITIONNAL_ATTRIBUTES);
+        LayoutUtils.addUserFields(ADDITIONNAL_ATTRIBUTES, userFieldsEvent);
 
         /**
          * Now we start injecting our own stuff.
          */
         addEventData(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
-        addEventData(LayoutFields.TIME_STAMP, dateFormat(timestamp));
+        addEventData(LayoutFields.TIME_STAMP, LayoutUtils.dateFormat(loggingEvent.getTimeMillis()));
         addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
-        addEventData(LayoutFields.THREAD_NAME, threadName);
-        Date currentDate = new Date();
-        addEventData(LayoutFields.AGENT_TIME_STAMP, dateFormat(currentDate.getTime()));
+        addEventData(LayoutFields.THREAD_NAME, loggingEvent.getThreadName());
+        addEventData(LayoutFields.AGENT_TIME_STAMP, LayoutUtils.dateFormat(new Date().getTime()));
         addEventData(LayoutFields.LOG_MESSAGE, loggingEvent.getMessage().getFormattedMessage());
-
-        if (loggingEvent.getThrown() != null) {
-            if (loggingEvent.getThrown().getClass() != null && loggingEvent.getThrown().getClass().getCanonicalName() != null) {
-                addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrown().getClass().getCanonicalName());
-            }
-
-            if (loggingEvent.getThrown().getMessage() != null) {
-                addEventData(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrown().getMessage());
-            }
-
-            if (loggingEvent.getThrown().getStackTrace() != null) {
-                final String[] options = { "full" };
-                final ThrowablePatternConverter converter = ThrowablePatternConverter.newInstance(options);
-                final StringBuilder sb = new StringBuilder();
-                converter.format(loggingEvent, sb);
-                final String stackTrace = sb.toString();
-                addEventData(LayoutFields.STACK_TRACE, stackTrace);
-            }
-        }
-
-        JSONObject logSourceEvent = new JSONObject();
-        if (locationInfo && loggingEvent.getSource() != null) {
-            logSourceEvent.put(LayoutFields.FILE_NAME, loggingEvent.getSource().getFileName());
-            logSourceEvent.put(LayoutFields.LINE_NUMBER, loggingEvent.getSource().getLineNumber());
-            logSourceEvent.put(LayoutFields.CLASS_NAME, loggingEvent.getSource().getClassName());
-            logSourceEvent.put(LayoutFields.METHOD_NAME, loggingEvent.getSource().getMethodName());
-            logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
-            RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
-            String jvmName = runtimeBean.getName();
-            logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
-        }
-
-        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
-        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        handleThrown(loggingEvent);
+        JSONObject logSourceEvent = createLogSourceEvent(loggingEvent, host);
         addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
-
-        addMDC(mdc);
+        LayoutUtils.addMDC(mdc, userFieldsEvent, logstashEvent);
 
         if (!userFieldsEvent.isEmpty()) {
             addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
         }
 
         return logstashEvent.toString() + "\n";
-    }
-
-    private void addMDC(Map<String, String> mdc) {
-        for (Map.Entry<String, String> entry : mdc.entrySet()) {
-            if (isSleuthField(entry.getKey())) {
-                addEventData(entry.getKey(), entry.getValue());
-            } else {
-                userFieldsEvent.put(entry.getKey(), entry.getValue());
-            }
-        }
     }
 
     /**
@@ -219,26 +150,72 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         this.customUserFields = userFields;
     }
 
-    private void addUserFields(Map<String, String> additionalLogAttributes) {
-        for (Map.Entry<String, String> entry : additionalLogAttributes.entrySet()) {
-            userFieldsEvent.put(entry.getKey(), entry.getValue());
-        }
-    }
-
     private void addEventData(String keyname, Object keyval) {
         if (null != keyval) {
             logstashEvent.put(keyname, keyval);
         }
     }
 
-    /**
-     * Check if this field name added by Spring Cloud Sleuth
-     * @param fieldName
-     * @return true if the fieldName represent added by Spring Cloud Sleuth 
-     */
-    private boolean isSleuthField(String fieldName) {
-        return "service".equals(fieldName) || "spanId".equals(fieldName) || "traceId".equals(fieldName)
-                || "exportable".equals(fieldName);
+    private static Map<String, String> unpackPairs(final KeyValuePair[] pairs) {
+        final Map<String, String> additionalLogAttributes = new HashMap<>();
+        if (pairs != null && pairs.length > 0) {
+            for (final KeyValuePair pair : pairs) {
+                final String key = pair.getKey();
+                if (key == null) {
+                    LOGGER.error("A null key is not valid in MapFilter");
+                }
+                final String value = pair.getValue();
+                if (value == null) {
+                    LOGGER.error("A null value for key " + key + " is not allowed in MapFilter");
+                }
+                if (additionalLogAttributes.containsKey(key)) {
+                    LOGGER.error("Duplicate entry for key: {} is forbidden!", key);
+                }
+                additionalLogAttributes.put(key, value);
+            }
+        }
+        return additionalLogAttributes;
+    }
+
+    private JSONObject createLogSourceEvent(final LogEvent loggingEvent, HostData host) {
+        JSONObject logSourceEvent = new JSONObject();
+        if (locationInfo && loggingEvent.getSource() != null) {
+            logSourceEvent.put(LayoutFields.FILE_NAME, loggingEvent.getSource().getFileName());
+            logSourceEvent.put(LayoutFields.LINE_NUMBER, loggingEvent.getSource().getLineNumber());
+            logSourceEvent.put(LayoutFields.CLASS_NAME, loggingEvent.getSource().getClassName());
+            logSourceEvent.put(LayoutFields.METHOD_NAME, loggingEvent.getSource().getMethodName());
+            logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
+            RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+            String jvmName = runtimeBean.getName();
+            logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
+        }
+        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
+        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        return logSourceEvent;
+    }
+
+    private void handleThrown(final LogEvent loggingEvent) {
+        if (loggingEvent.getThrown() != null) {
+            if (loggingEvent.getThrown().getClass() != null && loggingEvent.getThrown().getClass().getCanonicalName() != null) {
+                addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrown().getClass().getCanonicalName());
+            }
+
+            if (loggingEvent.getThrown().getMessage() != null) {
+                addEventData(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrown().getMessage());
+            }
+            createStackTraceEvent(loggingEvent);
+        }
+    }
+
+    private void createStackTraceEvent(final LogEvent loggingEvent) {
+        if (loggingEvent.getThrown().getStackTrace() != null) {
+            final String[] options = { "full" };
+            final ThrowablePatternConverter converter = ThrowablePatternConverter.newInstance(options);
+            final StringBuilder sb = new StringBuilder();
+            converter.format(loggingEvent, sb);
+            final String stackTrace = sb.toString();
+            addEventData(LayoutFields.STACK_TRACE, stackTrace);
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-package org.talend.daikon.logging.correlate;
+package org.talend.daikon.logging.user;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -18,13 +18,13 @@ import org.slf4j.MDC;
 import org.talend.daikon.logging.event.field.MdcKeys;
 
 /**
- * Checks for correlation id in the header.
- * If it doesn't exist,  establishes a new correlation id.
+ * Checks for atcivity id in the header.
+ * If it doesn't exist,  establishes a new  id.
  * @author sdiallo
  */
-public class RequestCorrelationFilter implements Filter {
+public class RequestUserActivityFilter implements Filter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestCorrelationFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestUserActivityFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -37,21 +37,21 @@ public class RequestCorrelationFilter implements Filter {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
-        String correlationId = httpServletRequest.getHeader(MdcKeys.HEADER_REQUEST_CORRELATION_ID);
+        String userActivityId = httpServletRequest.getHeader(MdcKeys.HEADER_REQUEST_USER_ACTIVITY_ID);
 
-        if (StringUtils.isEmpty(correlationId)) {
-            correlationId = UUID.randomUUID().toString();
+        if (StringUtils.isEmpty(userActivityId)) {
+            userActivityId = UUID.randomUUID().toString();
         }
 
-        RequestCorrelationContext.getCurrent().setCorrelationId(correlationId);
-        MDC.put(MdcKeys.CORRELATION_ID, correlationId);
-        LOGGER.debug("Correlation Id={} request={}", correlationId, httpServletRequest.getPathInfo());
+        RequestUserActivityContext.getCurrent().setCorrelationId(userActivityId);
+        MDC.put(MdcKeys.USER_ACTIVITY_ID, userActivityId);
+        LOGGER.debug("userActivityId ={} request={}", userActivityId, httpServletRequest.getPathInfo());
 
         try {
             chain.doFilter(httpServletRequest, response);
         } finally {
-            MDC.remove(MdcKeys.CORRELATION_ID);
-            RequestCorrelationContext.clearCurrent();
+            MDC.remove(MdcKeys.USER_ACTIVITY_ID);
+            RequestUserActivityContext.clearCurrent();
         }
 
     }

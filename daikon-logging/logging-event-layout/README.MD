@@ -18,11 +18,11 @@ Supports regular _LoggingEvents_ (logged through a `Logger`).
     * [Global Custom Fields](#loggingevent_custom_global)
   * [Log correlation (Spring Cloud Sleuth)](#spring_cloud_sleuth)
     * [Including Spring Cloud Sleuth in your project](#including_spring_cloud_sleuth)
-* [Tracking correlation ids using Slf4j](#correlation_id)
+* [Tracking user activity ids using Slf4j](#correlation_id)
 * [LoggingEvent Structure Proposal](#loggingevent_structure)
 	* [LoggingEvent Structure MDC](#loggingevent_structure_example)
 
-<a name="including"/>
+<a name="including"/></a>
 ## Including it in your project
 
 
@@ -30,8 +30,6 @@ Gradle style:
 
 ```
 compile ("org.talend.daikon.logging:logging-event-layout:0.16.0-SNAPSHOT")
-compile ("net.minidev:json-smart:2.2.1")
-compile ("commons-lang:commons-lang:2.6")
 ```
 
 Maven style:
@@ -42,21 +40,11 @@ Maven style:
   	<artifactId>logging-event-layout</artifactId>
   	<version>0.17.0-SNAPSHOT</version>
 </dependency>
-<dependency>
-	<groupId>net.minidev</groupId>
-  	<artifactId>json-smart</artifactId>
-  	<version>2.2.1</version>
-</dependency>
-<dependency>
-  	<groupId>commons-lang</groupId>
-  	<artifactId>commons-lang</artifactId>
-  	<version>2.6</version>
-</dependency>
 ```
 
 Older versions than the ones specified in the pom file _might_ work, but the versions in the pom file are what testing has been performed against.
 
-<a name="usage"/>
+<a name="usage"/></a>
 ## Usage
 
 To log using JSON format, you must configure logback, log4j 1&2 to use those layouts provided
@@ -77,7 +65,7 @@ output any JSON format/data by configuring them with various JSON _providers_.
 The daikon logging layouts are really just extensions of the general
 composite JSON layouts with a pre-defined set of providers.
 
-<a name="layout"/>
+<a name="layout"/></a>
 ### Layouts
 
 You can use any of the layouts provided with other logback and log4j appenders.
@@ -154,12 +142,12 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
 </configuration>
 ```
 
-<a name="loggingevent_fields"/>
+<a name="loggingevent_fields"/></a>
 ## LoggingEvent Fields
 
 The following sections describe the fields included in the JSON output by default for LoggingEvents written by each layout
 
-<a name="loggingevent_standard"/>
+<a name="loggingevent_standard"/></a>
 ### Standard Fields
 
 These fields will appear in every LoggingEvent unless otherwise noted.
@@ -181,7 +169,7 @@ The field names listed here are the default field names.
 | `exceptionClass`  | (Only if a throwable was logged) Name of the class that logged the exception
 | `exceptionMessage`| (OOnly if a throwable was logged) The exception message. 
 | `stackTrace`      | (Only if a throwable was logged) The stacktrace of the throwable.  Stackframes are separated by line endings.
-| `correaltionId`   | The correlationd ids if it's enabled [Tracking correlation ids using Slf4j](#correlation_id)
+| `correaltionId`   | The correlationd ids if it's enabled [Tracking user activity ids using Slf4j](#correlation_id)
 
 If you set `locationInfo` property  to `true` in your layout log4j/logback configuration you will have these more following fields
 
@@ -195,7 +183,7 @@ If you set `locationInfo` property  to `true` in your layout log4j/logback confi
 | `process.id`      | The id of the jvm process
 
 
-<a name="loggingevent_mdc"/>
+<a name="loggingevent_mdc"/></a>
 ### MDC fields
 
 By default, each entry in the Mapped Diagnostic Context (MDC) (`org.slf4j.MDC`)
@@ -205,12 +193,12 @@ Each entry in the Mapped Diagnostic Context (MDC) will appear as a field in the 
 
 We provide a java class constants that contains common MDC keys: `MdcKeys` (please add there all MDC keys you think will be common)
 
-<a name="loggingevent_custom"/>
+<a name="loggingevent_custom"/></a>
 ### Custom Fields
 
 In addition to the fields above, you can add other fields to the LoggingEvent either globally, or on an event-by-event basis.
 
-<a name="loggingevent_custom_global"/>
+<a name="loggingevent_custom_global"/></a>
 #### Global Custom Fields
 
 Add custom fields that will appear in every LoggingEvent like this : 
@@ -246,7 +234,7 @@ In these  examples we will have in log file these json :
 }
 ```
 
-<a name="spring_cloud_sleuth"/>
+<a name="spring_cloud_sleuth"/></a>
 #### Log correlation (Spring Cloud Sleuth)
 
 We use Spring Cloud Sleuth (https://cloud.spring.io/spring-cloud-sleuth/spring-cloud-sleuth.html) for logs correaltion, the SLF4J MDC is always set and users will immediately see the trace and span ids in logs. 
@@ -262,7 +250,7 @@ If you enable Spring Cloud Sleuth in your application, you will have these addit
 | `traceId`         |  The id of the latency graph that contains the span
 | `exportable`      |  Whether the log should be exported to Zipkin or not. When would you like the span not to be exportable? In the case in which you want to wrap some operation in a Span and have it written to the logs only.
 
-<a name="including_spring_cloud_sleuth"/>
+<a name="including_spring_cloud_sleuth"/></a>
 #### Including Spring Cloud Sleuth in your project
 
 Gradle style:
@@ -301,8 +289,8 @@ Maven style:
 ```
 
 
-<a name="correlation_id"/>
-#### Tracking correlation ids using Slf4j
+<a name="correlation_id"/></a>
+Tracking user activity ids using Slf4j
 
 The objectives are as follows:
 
@@ -312,7 +300,7 @@ If it's on service request then please use this key name: HEADER_REQUEST_CORRELA
 2. Ensure that the correlation id is documented on all log messages so that it can be correlated across services.
 
 #### Filter configuration
-To enable tracking correlation ids in the logs you have to :
+To enable tracking user activity ids in the logs you have to :
 
 1. Configure the Filter in your application
 
@@ -324,7 +312,7 @@ To enable tracking correlation ids in the logs you have to :
 	@Bean
     public FilterRegistrationBean correlationHeaderFilter() {
         FilterRegistrationBean filterRegBean = new FilterRegistrationBean();
-        filterRegBean.setFilter(new RequestCorrelationFilter());
+        filterRegBean.setFilter(new RequestUserActivityFilter());
         filterRegBean.setUrlPatterns(Arrays.asList("/*"));
         filterRegBean.setEnabled(Boolean.TRUE);
         filterRegBean.setName("Log Correlation Filter");
@@ -339,7 +327,7 @@ To enable tracking correlation ids in the logs you have to :
 	```xml
 	<filter>
 		<filter-name>correlationIdFilter</filter-name>
-			<filter-class>org.talend.daikon.logging.correlate.RequestCorrelationFilter</filter-class>
+			<filter-class>org.talend.daikon.logging.user.RequestUserActivityFilter</filter-class>
 		</filter>
 	
 		<filter-mapping>
@@ -350,7 +338,7 @@ To enable tracking correlation ids in the logs you have to :
 	  
 2. Configure your log4j/logback configuration as described here [Layouts](#layout)	  
 
-<a name="loggingevent_structure"/>
+<a name="loggingevent_structure"/></a>
 #### LoggingEvent Structure Example
 
 ```

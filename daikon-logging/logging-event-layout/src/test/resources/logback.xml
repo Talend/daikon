@@ -13,7 +13,7 @@
       <maxHistory>30</maxHistory>
     </rollingPolicy>
     <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout" locationInfo="true">
-        <param name="UserFields" value="foo:bar, baz:quz" />
+        <param name="UserFields" value="foo:bar,baz:quz" />
     </layout>
  </appender>
       

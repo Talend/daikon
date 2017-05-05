@@ -28,8 +28,6 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
 
     private JSONObject logstashEvent;
 
-    private JSONObject userFieldsEvent;
-
     /**
      * For backwards compatibility, the default is to generate location information
      * in the log messages.
@@ -50,12 +48,9 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
     @Override
     public String doLayout(ILoggingEvent loggingEvent) {
         logstashEvent = new JSONObject();
-        userFieldsEvent = new JSONObject();
+        JSONObject userFieldsEvent = new JSONObject();
         HostData host = new HostData();
-        String threadName = loggingEvent.getThreadName();
-        long timestamp = loggingEvent.getTimeStamp();
         Map<String, String> mdc = loggingEvent.getMDCPropertyMap();
-        String eventUUD = UUID.randomUUID().toString();
         String whoami = this.getClass().getSimpleName();
 
         /**
@@ -64,55 +59,23 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         if (getUserFields() != null) {
             String userFlds = getUserFields();
             LogLog.debug("[" + whoami + "] Got user data from logback property: " + userFlds);
-            addUserFields(userFlds);
+            LayoutUtils.addUserFields(userFlds, userFieldsEvent);
         }
 
         /**
          * Now we start injecting our own stuff.
          */
         addEventData(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
-        addEventData(LayoutFields.EVENT_UUID, eventUUD);
-        addEventData(LayoutFields.TIME_STAMP, dateFormat(timestamp));
+        addEventData(LayoutFields.EVENT_UUID, UUID.randomUUID().toString());
+        addEventData(LayoutFields.TIME_STAMP, dateFormat(loggingEvent.getTimeStamp()));
         addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
-        addEventData(LayoutFields.THREAD_NAME, threadName);
-        Date currentDate = new Date();
-        addEventData(LayoutFields.AGENT_TIME_STAMP, dateFormat(currentDate.getTime()));
+        addEventData(LayoutFields.THREAD_NAME, loggingEvent.getThreadName());
+        addEventData(LayoutFields.AGENT_TIME_STAMP, dateFormat(new Date().getTime()));
         addEventData(LayoutFields.LOG_MESSAGE, loggingEvent.getFormattedMessage());
-
-        if (loggingEvent.getThrowableProxy() != null) {
-
-            if (loggingEvent.getThrowableProxy().getClass().getCanonicalName() != null) {
-                addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrowableProxy().getClass().getCanonicalName());
-            }
-
-            if (loggingEvent.getThrowableProxy().getMessage() != null) {
-                addEventData(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrowableProxy().getMessage());
-            }
-
-            ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
-            String stackTrace = converter.convert(loggingEvent);
-            addEventData(LayoutFields.STACK_TRACE, stackTrace);
-        }
-
-        JSONObject logSourceEvent = new JSONObject();
-        if (locationInfo) {
-            StackTraceElement callerData = extractCallerData(loggingEvent);
-            if (callerData != null) {
-                logSourceEvent.put(LayoutFields.FILE_NAME, callerData.getFileName());
-                logSourceEvent.put(LayoutFields.LINE_NUMBER, callerData.getLineNumber());
-                logSourceEvent.put(LayoutFields.CLASS_NAME, callerData.getClassName());
-                logSourceEvent.put(LayoutFields.METHOD_NAME, callerData.getMethodName());
-                logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
-            }
-            RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
-            String jvmName = runtimeBean.getName();
-            logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
-        }
-        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
-        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        handleThrown(loggingEvent);
+        JSONObject logSourceEvent = createLogSourceEvent(loggingEvent, host);
         addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
-
-        addMDC(mdc);
+        LayoutUtils.addMDC(mdc, userFieldsEvent, logstashEvent);
 
         if (!userFieldsEvent.isEmpty()) {
             addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
@@ -120,49 +83,6 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
 
         return logstashEvent.toString() + "\n";
 
-    }
-
-    private void addMDC(Map<String, String> mdc) {
-        for (Map.Entry<String, String> entry : mdc.entrySet()) {
-            if (isSleuthField(entry.getKey())) {
-                addEventData(entry.getKey(), entry.getValue());
-            } else {
-                userFieldsEvent.put(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
-    private void addUserFields(String data) {
-        if (null != data) {
-
-            String[] pairs = data.split(",");
-            for (String pair : pairs) {
-                String[] userField = pair.split(":", 2);
-                if (userField[0] != null) {
-                    String key = userField[0];
-                    String val = userField[1];
-                    userFieldsEvent.put(key, val);
-                }
-            }
-        }
-    }
-
-    private void addEventData(String keyname, Object keyval) {
-        if (null != keyval) {
-            logstashEvent.put(keyname, keyval);
-        }
-    }
-
-    private StackTraceElement extractCallerData(final ILoggingEvent event) {
-        final StackTraceElement[] ste = event.getCallerData();
-        if (ste == null || ste.length == 0) {
-            return null;
-        }
-        return ste[0];
-    }
-
-    private String dateFormat(long timestamp) {
-        return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
     }
 
     /**
@@ -191,13 +111,59 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         this.customUserFields = userFields;
     }
 
-    /**
-     *  Check if this field name added by Spring Cloud Sleuth
-     * @param fieldName
-     * @return true if the fieldName represent added by Spring Cloud Sleuth 
-     */
-    private boolean isSleuthField(String fieldName) {
-        return "service".equals(fieldName) || "spanId".equals(fieldName) || "traceId".equals(fieldName)
-                || "exportable".equals(fieldName);
+    private void handleThrown(ILoggingEvent loggingEvent) {
+        if (loggingEvent.getThrowableProxy() != null) {
+
+            if (loggingEvent.getThrowableProxy().getClass().getCanonicalName() != null) {
+                addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrowableProxy().getClass().getCanonicalName());
+            }
+
+            if (loggingEvent.getThrowableProxy().getMessage() != null) {
+                addEventData(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrowableProxy().getMessage());
+            }
+
+            ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
+            String stackTrace = converter.convert(loggingEvent);
+            addEventData(LayoutFields.STACK_TRACE, stackTrace);
+        }
     }
+
+    private JSONObject createLogSourceEvent(ILoggingEvent loggingEvent, HostData host) {
+        JSONObject logSourceEvent = new JSONObject();
+        if (locationInfo) {
+            StackTraceElement callerData = extractCallerData(loggingEvent);
+            if (callerData != null) {
+                logSourceEvent.put(LayoutFields.FILE_NAME, callerData.getFileName());
+                logSourceEvent.put(LayoutFields.LINE_NUMBER, callerData.getLineNumber());
+                logSourceEvent.put(LayoutFields.CLASS_NAME, callerData.getClassName());
+                logSourceEvent.put(LayoutFields.METHOD_NAME, callerData.getMethodName());
+                logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
+            }
+            RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+            String jvmName = runtimeBean.getName();
+            logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
+        }
+        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
+        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        return logSourceEvent;
+    }
+
+    private void addEventData(String keyname, Object keyval) {
+        if (null != keyval) {
+            logstashEvent.put(keyname, keyval);
+        }
+    }
+
+    private StackTraceElement extractCallerData(final ILoggingEvent event) {
+        final StackTraceElement[] ste = event.getCallerData();
+        if (ste == null || ste.length == 0) {
+            return null;
+        }
+        return ste[0];
+    }
+
+    private String dateFormat(long timestamp) {
+        return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
+    }
+
 }
