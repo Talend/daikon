@@ -299,7 +299,7 @@ If it's on service request then please use this key name: HEADER_REQUEST_CORRELA
 
 2. Ensure that the correlation id is documented on all log messages so that it can be correlated across services.
 
-## Filter configuration
+### Filter configuration
 To enable tracking user activity ids in the logs you have to :
 
 1. Configure the Filter in your application
@@ -339,7 +339,7 @@ To enable tracking user activity ids in the logs you have to :
 2. Configure your log4j/logback configuration as described here [Layouts](#layout)	  
 
 <a name="loggingevent_structure"/></a>
-#### LoggingEvent Structure Example
+## LoggingEvent Structure Example
 
 ```
 { 
