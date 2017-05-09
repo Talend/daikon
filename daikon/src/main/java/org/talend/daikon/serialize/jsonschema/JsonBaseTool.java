@@ -34,17 +34,17 @@ public class JsonBaseTool {
      * @param className
      * @return
      */
-    protected static Class findClass(String className) {
+    protected static Class findClass(ClassLoader cl, String className) {
         Class<?> aClass = null;
         try {
-            aClass = Class.forName(className);
+            aClass = cl.loadClass(className);
         } catch (ClassNotFoundException e) {
             int lastPosition = className.lastIndexOf(".");
             if (lastPosition < 0) {
                 throw new RuntimeException(e);
             }
             className = className.substring(0, lastPosition) + "$" + className.substring(lastPosition + 1);
-            return findClass(className);
+            return findClass(cl, className);
         }
         return aClass;
     }
