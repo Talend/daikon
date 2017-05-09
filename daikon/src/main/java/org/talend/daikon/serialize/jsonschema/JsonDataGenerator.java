@@ -32,7 +32,7 @@ public class JsonDataGenerator {
 
         List<Property> propertyList = getSubProperty(cProperties);
         for (Property property : propertyList) {
-            processTPropertyValue(property, rootNode);
+            processTPropertyValue(cProperties.getClass().getClassLoader(), property, rootNode);
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
         for (Properties properties : propertiesList) {
@@ -48,7 +48,7 @@ public class JsonDataGenerator {
         return rootNode;
     }
 
-    private ObjectNode processTPropertyValue(Property property, ObjectNode node) {
+    private ObjectNode processTPropertyValue(ClassLoader classLoader, Property property, ObjectNode node) {
         String javaType = property.getType();
         String pName = property.getName();
         Object pValue = property.getValue();
@@ -56,13 +56,13 @@ public class JsonDataGenerator {
             // unset if the value is null
             // node.set(pName, node.nullNode());
         } else if (isListClass(javaType)) {
-            Class type = findClass(getListInnerClassName(javaType));
+            Class type = findClass(classLoader, getListInnerClassName(javaType));
             ArrayNode arrayNode = node.putArray(pName);
             for (Object value : ((List) pValue)) {
                 fillValue(arrayNode, type, value);
             }
         } else {
-            fillValue(node, findClass(javaType), pName, pValue);
+            fillValue(node, findClass(classLoader, javaType), pName, pValue);
         }
         return node;
     }
