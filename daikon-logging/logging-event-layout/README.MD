@@ -29,14 +29,14 @@ Supports regular _LoggingEvents_ (logged through a `Logger`).
 Gradle style:
 
 ```
-compile ("org.talend.daikon.logging:logging-event-layout:0.16.0-SNAPSHOT")
+compile ("org.talend.daikon:logging-event-layout:0.16.0-SNAPSHOT")
 ```
 
 Maven style:
 
 ```xml
 <dependency>
-  	<groupId>org.talend.daikon.logging</groupId>
+  	<groupId>org.talend.daikon</groupId>
   	<artifactId>logging-event-layout</artifactId>
   	<version>0.17.0-SNAPSHOT</version>
 </dependency>
