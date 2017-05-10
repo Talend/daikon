@@ -84,8 +84,9 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
       <fileNamePattern>${LOG_PATH}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
       <maxHistory>30</maxHistory>
     </rollingPolicy>
-    <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout" locationInfo="false">
+    <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
         <param name="UserFields" value="" />
+        <param name="LocationInfo" value="false"/>
     </layout>
  </appender>
   <root level="INFO">
@@ -106,8 +107,9 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
         <param name="MaxFileSize" value="50MB" />
         <param name="MaxBackupIndex" value="20" />
         <param name="encoding" value="UTF-8" />
-        <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout" locationInfo="false">
+        <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout">
             <param name="UserFields" value="" />
+            <param name="LocationInfo" value="false"/>
         </layout>
     </appender>   
     <root> 
