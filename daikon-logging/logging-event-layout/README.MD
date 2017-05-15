@@ -366,11 +366,11 @@ To enable tracking user activity ids in the logs you have to :
    "exportable":"Whether the log should be exported to Zipkin or not",
    "logTimestamp":"2016-12-13T13:33:39.934Z",
    "serverTimestamp":"2016-12-13T13:33:40.934Z",
-   "agentId":"tenantId",
+   "accountId":"tenantId",
    "audit":"false",
    "customInfo":{
 	  "my.custom.data":"my custom test data",
-	  "exceutionId":"9454554dfc-1024585-410c0-d464124
+	  "executionId":"9454554dfc-1024585-410c0-d464124
     }
 }
 ```
