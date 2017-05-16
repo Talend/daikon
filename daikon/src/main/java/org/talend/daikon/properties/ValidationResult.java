@@ -33,7 +33,17 @@ public class ValidationResult {
         ERROR
     }
 
+    /**
+     * <b>TDKN-158</b> - this causing validation error.<br/>
+     * As the OK instance is static it's can be modified while validation process and loose it's real sense
+     * Use {@link #ok()} method to get a new instance instead of that
+     */
+    @Deprecated
     public static ValidationResult OK = new ValidationResult().setStatus(Result.OK);
+
+    public static ValidationResult ok() {
+        return new ValidationResult().setStatus(Result.OK);
+    }
 
     @JsonIgnore
     public Result status = Result.OK;
