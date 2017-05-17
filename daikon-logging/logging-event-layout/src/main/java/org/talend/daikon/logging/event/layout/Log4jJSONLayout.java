@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Map;
 
 import org.apache.log4j.Layout;
-import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.pattern.ThrowableInformationPatternConverter;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
@@ -63,7 +62,6 @@ public class Log4jJSONLayout extends Layout {
          */
         if (getUserFields() != null) {
             String userFlds = getUserFields();
-            LogLog.debug("[" + whoami + "] Got user data from log4j property: " + userFlds);
             LayoutUtils.addUserFields(userFlds, userFieldsEvent);
         }
 
