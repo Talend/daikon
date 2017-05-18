@@ -16,9 +16,11 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <spring.version>4.3.3.RELEASE</spring.version>
+        <spring.boot.version>1.5.2.RELEASE</spring.boot.version>
     </properties>
     <modules>
         <module>daikon-spring-utils</module>
         <module>daikon-spring-mongo</module>
+        <module>hystrix-utils</module>
     </modules>
 </project>
