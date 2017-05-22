@@ -14,17 +14,18 @@ package org.talend.daikon.security.access;
 
 import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.talend.daikon.exception.TalendRuntimeException;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = RequiresAuthorityConfiguration.class)
@@ -48,14 +49,24 @@ public class RequiresAuthorityAspectTest {
         assertEquals("secret string", component.execute());
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void shouldFailToInvoke() throws Exception {
-        component.execute();
+        try {
+            component.execute();
+            fail("Expected an error.");
+        } catch (TalendRuntimeException e) {
+            assertEquals(403, e.getCode().getHttpStatus());
+        }
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void shouldUseAuthorityWhenValueDefined() throws Exception {
-        component.authorityValuePriority();
+        try {
+            component.authorityValuePriority();
+            fail("Expected an error.");
+        } catch (TalendRuntimeException e) {
+            assertEquals(403, e.getCode().getHttpStatus());
+        }
     }
 
     @Test
