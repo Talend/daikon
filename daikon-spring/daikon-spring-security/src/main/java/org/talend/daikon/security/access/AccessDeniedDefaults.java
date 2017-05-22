@@ -16,9 +16,11 @@ import static java.util.Collections.emptyList;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.security.access.AccessDeniedException;
+import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 
 /**
  * Default/Helper implementations for {@link AccessDenied}
@@ -29,13 +31,14 @@ public class AccessDeniedDefaults {
     }
 
     /**
-     * Throw a {@link AccessDeniedException} on denied access.
+     * Throw a {@link TalendRuntimeException} on denied access with a HTTP 403.
+     * @see CommonErrorCodes#INSUFFICIENT_AUTHORITY
      */
     public static class ThrowException implements AccessDenied<Object> { // NOSONAR
 
         @Override
         public Object onDeny(RequiresAuthority requirements, Method method, Object[] args) {
-            throw new AccessDeniedException("Access denied.");
+            throw new TalendRuntimeException(CommonErrorCodes.INSUFFICIENT_AUTHORITY);
         }
     }
 
@@ -71,4 +74,16 @@ public class AccessDeniedDefaults {
             return false;
         }
     }
+
+    /**
+     * A {@link AccessDenied} implementation to return an empty stream on denied access.
+     */
+    public static class EmptyStream implements AccessDenied<Stream> {
+
+        @Override
+        public Stream onDeny(RequiresAuthority requiresAuthority, Method method, Object[] objects) {
+            return Stream.empty();
+        }
+    }
+
 }
