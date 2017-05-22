@@ -1,6 +1,11 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.dateFormatter;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.findClass;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +31,8 @@ public class JsonPropertiesResolver {
 
         List<Property> propertyList = getSubProperty(cProperties);
         for (Property property : propertyList) {
-            Object newProperty = getTPropertyValue(property, jsonData.get(property.getName()));
+            Object newProperty = getTPropertyValue(cProperties.getClass().getClassLoader(), property,
+                    jsonData.get(property.getName()));
             // when the Property is empty, keep the default one
             if (newProperty != null) {
                 property.setValue(newProperty);
@@ -42,12 +48,12 @@ public class JsonPropertiesResolver {
         return cProperties;
     }
 
-    private Object getTPropertyValue(Property property, JsonNode dataNode) {
+    private Object getTPropertyValue(ClassLoader classLoader, Property property, JsonNode dataNode) {
         String javaType = property.getType();
         if (dataNode == null || dataNode.isNull()) {
             return null;
         } else if (isListClass(javaType)) {
-            Class type = findClass(getListInnerClassName(javaType));
+            Class type = findClass(classLoader, getListInnerClassName(javaType));
             ArrayNode arrayNode = ((ArrayNode) dataNode);
             List values = new ArrayList();
             for (int i = 0; i < arrayNode.size(); i++) {
@@ -55,7 +61,7 @@ public class JsonPropertiesResolver {
             }
             return values;
         } else {
-            return getValue(dataNode, findClass(javaType));
+            return getValue(dataNode, findClass(classLoader, javaType));
         }
     }
 
