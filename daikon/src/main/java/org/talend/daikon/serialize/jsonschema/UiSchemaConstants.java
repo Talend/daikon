@@ -100,7 +100,7 @@ public class UiSchemaConstants {
     /**
      * Custom widget type. Disply a table, with a fixed header, and user can add row below the header
      */
-    // Disabled for products that create forms via JSON Schema.  Can be restored when Talend ui
+    // Disabled for products that create forms via JSON Schema. Can be restored when Talend ui
     // forms have a schema editor.
     // public static final String CUSTOM_TYPE_TABLE = "table";
     public static final String CUSTOM_TYPE_TABLE = "hidden";
@@ -108,7 +108,7 @@ public class UiSchemaConstants {
     /**
      * Custom widget type. Display a schema editor, which let the user configure the Columns metadata
      */
-    // Disabled for products that create forms via JSON Schema.  Can be restored when Talend ui
+    // Disabled for products that create forms via JSON Schema. Can be restored when Talend ui
     // forms have a schema editor.
     // public static final String CUSTOM_TYPE_SCHEMA = "schema";
     public static final String CUSTOM_TYPE_SCHEMA = "hidden";
@@ -117,6 +117,13 @@ public class UiSchemaConstants {
      * Custom widget type. Display a button
      */
     public static final String CUSTOM_TYPE_BUTTON = "button";
+
+    /**
+     * This widget represents a multiple checkbox which allow to select or deselect each value among a list of values.
+     * It is backed by a Property<List<String>> for the java model where the possible values are the one displayed in the widget
+     * for selection.
+     */
+    public static final String TYPE_LIST_VIEW = "listview";
 
     // Mapping between Widget type and ui-schema type
     private static Map<String, String> WIDGET_MAPPING = new HashMap<>();
@@ -142,6 +149,8 @@ public class UiSchemaConstants {
 
         WIDGET_MAPPING.put(Widget.SELECT_WIDGET_TYPE, UiSchemaConstants.TYPE_SELECT);
         WIDGET_MAPPING.put(Widget.DATALIST_WIDGET_TYPE, UiSchemaConstants.TYPE_DATALIST);
+        WIDGET_MAPPING.put(Widget.MULTIPLE_VALUE_SELECTOR_WIDGET_TYPE, UiSchemaConstants.TYPE_LIST_VIEW);
+
         // null means use the default
         // WIDGET_MAPPING.put(Widget.DEFAULT_WIDGET_TYPE, null);
         // WIDGET_MAPPING.put(Widget.NAME_SELECTION_AREA_WIDGET_TYPE, null);

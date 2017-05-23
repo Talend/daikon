@@ -16,58 +16,11 @@ import org.talend.daikon.serialize.FullExampleProperties;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class UiSchemaGeneratorTest {
+public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
 
-    class NestedProperties extends PropertiesImpl {
-
-        private static final long serialVersionUID = 1L;
-
-        public final Property<String> myNestedStr = PropertyFactory.newString("myNestedStr");
-
-        public NestedProperties(String name) {
-            super(name);
-        }
-
-        @Override
-        public void setupLayout() {
-            super.setupLayout();
-            Form form = new Form(this, "MyNestedForm");
-            form.addRow(Widget.widget(myNestedStr).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE).setAutoFocus(true));
-        }
-    }
-
-    class AProperties extends PropertiesImpl {
-
-        private static final long serialVersionUID = 1L;
-
-        public final Property<String> myStr = PropertyFactory.newString("myStr");
-
-        public final NestedProperties np = new NestedProperties("np");
-
-        public final NestedProperties np2 = new NestedProperties("np2");
-
-        public final NestedProperties np3 = new NestedProperties("np3");
-
-        public final NestedProperties np4 = new NestedProperties("np4");
-
-        public final NestedProperties np5 = new NestedProperties("np5");
-
-        public AProperties(String name) {
-            super(name);
-        }
-
-        @Override
-        public void setupLayout() {
-            super.setupLayout();
-            Form form = new Form(this, "MyForm");
-            form.addRow(myStr);
-            form.addRow(np.getForm("MyNestedForm"));
-            form.addRow(Widget.widget(np2).setWidgetType(Widget.TABLE_WIDGET_TYPE));
-            form.addRow(Widget.widget(np4.getForm("MyNestedForm")).setVisible(false));
-            form.addRow(Widget.widget(np5).setVisible(false));
-            Form anotherForm = new Form(this, "anotherForm");
-            anotherForm.addRow(np3);
-        }
+    @Override
+    public PropertiesImpl getNestedProperties(String name) {
+        return new NestedProperties(name);
     }
 
     @Test
@@ -108,7 +61,8 @@ public class UiSchemaGeneratorTest {
         UiSchemaGenerator generator = new UiSchemaGenerator();
         ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
         System.out.println(uiSchemaJsonObj.toString());
-        String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:widget\":\"textarea\"}},\"np4\":{\"ui:widget\":\"hidden\"},\"np5\":{\"ui:widget\":\"hidden\"},\"np2\":{\"ui:widget\":\"hidden\"},\"np3\":{\"ui:widget\":\"hidden\"}}";
+        String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:widget\":\"textarea\"}},\"np4\":{\"ui:widget\":\"hidden\"},"
+                + "\"np5\":{\"ui:widget\":\"hidden\"},\"np2\":{\"ui:widget\":\"hidden\"},\"np3\":{\"ui:widget\":\"hidden\"}}";
         assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
     }
 
@@ -163,13 +117,30 @@ public class UiSchemaGeneratorTest {
     }
 
     @Test
-    public void testAutoFocus() throws Exception {
-        AProperties aProperties = new AProperties("foo");
-        aProperties.init();
-        UiSchemaGenerator generator = new UiSchemaGenerator();
-        ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
-        String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:autofocus\":true}}}";
-        assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
+    public void testWidgetListProperty() throws Exception {
+        StringListProperty stringListProperty = new StringListProperty("MyForm");
+        stringListProperty.init();
+        Form f = stringListProperty.getForm(Form.MAIN);
+        ObjectNode uiSchema = new UiSchemaGenerator().genWidget(stringListProperty, f.getName());
+        String expectedPartial = "{\"selectColumnIds\":{\"ui:widget\":\"listview\"}}";
+        assertEquals(expectedPartial, uiSchema.toString(), false);
     }
 
+    private class NestedProperties extends PropertiesImpl {
+
+        private static final long serialVersionUID = 1L;
+
+        public final Property<String> myNestedStr = PropertyFactory.newString("myNestedStr");
+
+        public NestedProperties(String name) {
+            super(name);
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form form = new Form(this, "MyNestedForm");
+            form.addRow(Widget.widget(myNestedStr).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package org.talend.daikon.serialize.jsonschema;
 
+import static org.apache.commons.lang3.StringUtils.substringBefore;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,6 +81,8 @@ public class JsonSchemaConstants {
      */
     public static final String TAG_DEFAULT = "default";
 
+    public static final String DEFINITION_NAME_JSON_METADATA = "@definitionName";
+
     // Mapping between Property type and json-schema type
     private static Map<String, String> TYPE_MAPPING = new HashMap<>();
 
@@ -101,6 +105,9 @@ public class JsonSchemaConstants {
         TYPE_MAPPING.put(Long.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
         // TYPE_MAPPING.put(BigInteger.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
 
+        // Array
+        TYPE_MAPPING.put("java.util.List<java.lang.String>", JsonSchemaConstants.TYPE_ARRAY);
+
         TYPE_MAPPING = Collections.unmodifiableMap(TYPE_MAPPING);
     }
 
@@ -108,5 +115,8 @@ public class JsonSchemaConstants {
         return TYPE_MAPPING;
     }
 
-    public static final String DEFINITION_NAME_JSON_METADATA = "@definitionName";
+    public static String getTypeMapping(final String type) {
+        final String nonGenericType = substringBefore(type, "<");
+        return TYPE_MAPPING.get(nonGenericType);
+    }
 }
