@@ -124,18 +124,7 @@ public class JsonSchemaGenerator {
             } else if (property instanceof EnumListProperty) {
                 resolveList(schema, property);
             } else {
-                schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
-                ArrayNode enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
-                ArrayNode enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
-                List possibleValues = property.getPossibleValues();
-                for (Object possibleValue : possibleValues) {
-                    String value = possibleValue.toString();
-                    if (NamedThing.class.isAssignableFrom(possibleValue.getClass())) {
-                        value = ((NamedThing) possibleValue).getName();
-                    }
-                    enumList.add(value);
-                    enumNames.add(property.getPossibleValuesDisplayName(possibleValue));
-                }
+                resolveDefault(schema, property);
             }
         } else if (isListClass(property.getType())) {
             resolveList(schema, property);
@@ -148,6 +137,35 @@ public class JsonSchemaGenerator {
             }
         }
         return schema;
+    }
+
+    private void resolveDefault(ObjectNode schema, Property property) {
+        schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
+        final ArrayNode enumList;
+        final ArrayNode enumNames;
+        if (isStringListClass(property.getType())) {
+            ObjectNode items = schema.putObject(JsonSchemaConstants.TAG_ITEMS);
+            items.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_STRING);
+            enumList = items.putArray(JsonSchemaConstants.TAG_ENUM);
+            enumNames = items.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
+            schema.put(JsonSchemaConstants.TAG_UNIQUE_ITEMS, "true");
+        } else {
+            enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
+            enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
+        }
+        addEnumsToProperty(enumList, enumNames, property);
+    }
+
+    private void addEnumsToProperty(ArrayNode enumList, ArrayNode enumNames, Property property) {
+        List possibleValues = property.getPossibleValues();
+        for (Object possibleValue : possibleValues) {
+            String value = possibleValue.toString();
+            if (NamedThing.class.isAssignableFrom(possibleValue.getClass())) {
+                value = ((NamedThing) possibleValue).getName();
+            }
+            enumList.add(value);
+            enumNames.add(property.getPossibleValuesDisplayName(possibleValue));
+        }
     }
 
     private void resolveEnum(ObjectNode schema, Property property) {

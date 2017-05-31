@@ -73,9 +73,9 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         stringListProperty.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
         ObjectNode genSchema = generator.genSchema(stringListProperty, Form.MAIN);
-        String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\":"
-                + "{\"selectColumnIds\":{\"title\":\"property.selectColumnIds.displayName\",\"type\":\"array\","
-                + "\"enum\":[\"col1\",\"col2\",\"col3\"],\"enumNames\":[\"Surname\",\"Name\",\"Phone\"]}}}";
+        String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\":{\"selectColumnIds\":"
+                + "{\"title\":\"property.selectColumnIds.displayName\",\"type\":\"array\",\"items\":{\"type\":\"string\",\"enum"
+                + "\":[\"col1\",\"col2\",\"col3\"],\"enumNames\":[\"Surname\",\"Name\",\"Phone\"]},\"uniqueItems\":\"true\"}}}";
         assertEquals(expectedPartial, genSchema.toString(), false);
     }
 
@@ -96,7 +96,7 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
                 default:
                     return null;
                 }
-            };
+            }
         };
 
         public NestedProperties(String name) {

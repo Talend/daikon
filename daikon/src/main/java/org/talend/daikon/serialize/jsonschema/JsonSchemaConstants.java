@@ -70,9 +70,14 @@ public class JsonSchemaConstants {
     public static final String TAG_TITLE = "title";
 
     /**
-     * Built-in tag. Conbine with array type, a json object which represent the element of array
+     * Built-in tag. Combine with array type, a json object which represent the element of array
      */
     public static final String TAG_ITEMS = "items";
+
+    /**
+     * Built-in tag. Combine with array type, a json object which represent the element of array
+     */
+    public static final String TAG_UNIQUE_ITEMS = "uniqueItems";
 
     // TODO(bchen) How it work when Property do not support default value, but use current value as default value, think
     // about cell of table
