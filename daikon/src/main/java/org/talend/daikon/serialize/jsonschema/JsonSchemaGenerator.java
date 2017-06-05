@@ -5,6 +5,7 @@ import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.ReferenceProperties;
@@ -51,9 +52,10 @@ public class JsonSchemaGenerator {
      */
     private ObjectNode processTProperties(Properties cProperties, String formName, boolean visible) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
+        Form form = null;
         if (visible) {
             if (formName != null) {
-                Form form = cProperties.getPreferredForm(formName);
+                form = cProperties.getPreferredForm(formName);
                 if (form != null) {
                     schema.put(JsonSchemaConstants.TAG_TITLE, form.getDisplayName());
                 } else {// wrong form name so hide it.
@@ -77,10 +79,15 @@ public class JsonSchemaGenerator {
             if (property.isRequired()) {
                 addToRequired(schema, name);
             }
-            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperty(property));
+
+            ObjectNode propertySchema = processTProperty(property);
+            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, propertySchema);
+
+            manageWidgetType(form, property, propertySchema);
+
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
-        Form form = cProperties.getPreferredForm(formName);
+        form = cProperties.getPreferredForm(formName);
         for (Properties properties : propertiesList) {
             String name = properties.getName();
             // if this is a reference then just store it as a string and only store the definition
@@ -97,12 +104,37 @@ public class JsonSchemaGenerator {
                 if (isVisible && widget.getContent() instanceof Form) {
                     propertiesFormName = widget.getContent().getName();
                 }
-                boolean componentPresentInCurrentForm = form != null && form.getWidget(properties.getName()) != null;
                 ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name,
                         processTProperties(properties, propertiesFormName, isVisible));
             }
         }
         return schema;
+    }
+
+    /**
+     * Adds the tag uniqueItems to <i>true</i> if the property corresponds to a list view.
+     *
+     * Normally the UISchema and the Json schema should not be coupled. But for the specific case of the list View component the
+     * json schema must be tagged with uniqueItems.
+     *
+     * // TODO find a better way to take care of list_view values uniqueness without coupling the json schema with the ui schema
+     * using a Set may be a good start.
+     * 
+     * @param form the specified form
+     * @param property the specified property
+     * @param schema the schema to enrich with the "uniqueItems" tag
+     */
+    private void manageWidgetType(Form form, Property property, ObjectNode schema) {
+
+        if (form != null && form.getWidgets() != null) {
+            Widget widget = form.getWidget(property.getName());
+            if (widget != null) {
+                String widgetType = widget.getWidgetType();
+                if (StringUtils.equals(Widget.MULTIPLE_VALUE_SELECTOR_WIDGET_TYPE, widgetType)) {
+                    schema.put(JsonSchemaConstants.TAG_UNIQUE_ITEMS, "true");
+                }
+            }
+        }
     }
 
     /**
@@ -143,12 +175,12 @@ public class JsonSchemaGenerator {
         schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
         final ArrayNode enumList;
         final ArrayNode enumNames;
-        if (isStringListClass(property.getType())) {
+        if (isListClass(property.getType())) {
             ObjectNode items = schema.putObject(JsonSchemaConstants.TAG_ITEMS);
-            items.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_STRING);
+            items.put(JsonSchemaConstants.TAG_TYPE,
+                    JsonSchemaConstants.getTypeMapping().get(getListInnerClassName(property.getType())));
             enumList = items.putArray(JsonSchemaConstants.TAG_ENUM);
             enumNames = items.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
-            schema.put(JsonSchemaConstants.TAG_UNIQUE_ITEMS, "true");
         } else {
             enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
             enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
