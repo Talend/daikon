@@ -172,16 +172,17 @@ public class JsonSchemaGenerator {
     }
 
     private void resolveDefault(ObjectNode schema, Property property) {
-        schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
         final ArrayNode enumList;
         final ArrayNode enumNames;
         if (isListClass(property.getType())) {
+            schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(getListType()));
             ObjectNode items = schema.putObject(JsonSchemaConstants.TAG_ITEMS);
             items.put(JsonSchemaConstants.TAG_TYPE,
                     JsonSchemaConstants.getTypeMapping().get(getListInnerClassName(property.getType())));
             enumList = items.putArray(JsonSchemaConstants.TAG_ENUM);
             enumNames = items.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
         } else {
+            schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
             enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
             enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
         }

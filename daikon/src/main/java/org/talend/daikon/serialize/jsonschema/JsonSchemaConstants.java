@@ -1,11 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.apache.commons.lang3.StringUtils.substringBefore;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.avro.Schema;
 
@@ -75,7 +70,7 @@ public class JsonSchemaConstants {
     public static final String TAG_ITEMS = "items";
 
     /**
-     * Built-in tag. Combine with array type, a json object which represent the element of array
+     * Built-in tag. Combine with array type, a json object which mark an array as containing all unique values
      */
     public static final String TAG_UNIQUE_ITEMS = "uniqueItems";
 
@@ -111,7 +106,7 @@ public class JsonSchemaConstants {
         // TYPE_MAPPING.put(BigInteger.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
 
         // Array
-        TYPE_MAPPING.put("java.util.List<java.lang.String>", JsonSchemaConstants.TYPE_ARRAY);
+        TYPE_MAPPING.put(List.class.getName(), JsonSchemaConstants.TYPE_ARRAY);
 
         TYPE_MAPPING = Collections.unmodifiableMap(TYPE_MAPPING);
     }
@@ -120,8 +115,4 @@ public class JsonSchemaConstants {
         return TYPE_MAPPING;
     }
 
-    public static String getTypeMapping(final String type) {
-        final String nonGenericType = substringBefore(type, "<");
-        return TYPE_MAPPING.get(nonGenericType);
-    }
 }
