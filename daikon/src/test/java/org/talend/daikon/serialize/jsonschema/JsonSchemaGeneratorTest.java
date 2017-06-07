@@ -73,9 +73,10 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         stringListProperty.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
         ObjectNode genSchema = generator.genSchema(stringListProperty, Form.MAIN);
-        String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\":{\"selectColumnIds\":"
-                + "{\"title\":\"property.selectColumnIds.displayName\",\"type\":\"array\",\"items\":{\"type\":\"string\",\"enum"
-                + "\":[\"col1\",\"col2\",\"col3\"],\"enumNames\":[\"Surname\",\"Name\",\"Phone\"]},\"uniqueItems\":\"true\"}}}";
+        String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\""
+                + ":{\"selectColumnIds\":{\"title\":\"property.selectColumnIds.displayName\","
+                + "\"type\":\"array\",\"items\":{\"type\":\"string\",\"enum\":[\"col1\",\"col2\",\"col3\"],"
+                + "\"enumNames\":[\"Surname\",\"Name\",\"Phone\"]},\"uniqueItems\":\"true\",\"minItems\":1}}}";
         assertEquals(expectedPartial, genSchema.toString(), false);
     }
 

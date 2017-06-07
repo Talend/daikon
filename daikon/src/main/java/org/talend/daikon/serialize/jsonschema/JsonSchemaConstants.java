@@ -70,6 +70,16 @@ public class JsonSchemaConstants {
     public static final String TAG_ITEMS = "items";
 
     /**
+     * Built-in tag. Combine with array type, a json object which represent the minimum number of items of the array
+     */
+    public static final String TAG_MIN_ITEMS = "minItems";
+
+    /**
+     * Built-in tag. Combine with array type, a json object which represent the maximum number of items of the array
+     */
+    public static final String TAG_MAX_ITEMS = "maxItems";
+
+    /**
      * Built-in tag. Combine with array type, a json object which mark an array as containing all unique values
      */
     public static final String TAG_UNIQUE_ITEMS = "uniqueItems";
@@ -84,31 +94,32 @@ public class JsonSchemaConstants {
     public static final String DEFINITION_NAME_JSON_METADATA = "@definitionName";
 
     // Mapping between Property type and json-schema type
-    private static Map<String, String> TYPE_MAPPING = new HashMap<>();
+    private static final Map<String, String> TYPE_MAPPING;
 
     static {
-        // TYPE_MAPPING.put(Character.class.getName(), JsonSchemaConstants.TYPE_STRING);
-        TYPE_MAPPING.put(String.class.getName(), JsonSchemaConstants.TYPE_STRING);
-        // TYPE_MAPPING.put(CharSequence.class.getName(), JsonSchemaConstants.TYPE_STRING);
-        TYPE_MAPPING.put(Schema.class.getName(), JsonSchemaConstants.TYPE_STRING);
-        TYPE_MAPPING.put(Date.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        Map<String, String> typeMapping = new HashMap<>();
+        // typeMapping.put(Character.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        typeMapping.put(String.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        // typeMapping.put(CharSequence.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        typeMapping.put(Schema.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        typeMapping.put(Date.class.getName(), JsonSchemaConstants.TYPE_STRING);
 
-        TYPE_MAPPING.put(Boolean.class.getName(), JsonSchemaConstants.TYPE_BOOLEAN);
+        typeMapping.put(Boolean.class.getName(), JsonSchemaConstants.TYPE_BOOLEAN);
 
-        TYPE_MAPPING.put(Float.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
-        TYPE_MAPPING.put(Double.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
-        // TYPE_MAPPING.put(BigDecimal.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
+        typeMapping.put(Float.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
+        typeMapping.put(Double.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
+        // typeMapping.put(BigDecimal.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
 
-        // TYPE_MAPPING.put(Byte.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
-        // TYPE_MAPPING.put(Short.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
-        TYPE_MAPPING.put(Integer.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
-        TYPE_MAPPING.put(Long.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
-        // TYPE_MAPPING.put(BigInteger.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        // typeMapping.put(Byte.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        // typeMapping.put(Short.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        typeMapping.put(Integer.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        typeMapping.put(Long.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        // typeMapping.put(BigInteger.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
 
         // Array
-        TYPE_MAPPING.put(List.class.getName(), JsonSchemaConstants.TYPE_ARRAY);
+        typeMapping.put(List.class.getName(), JsonSchemaConstants.TYPE_ARRAY);
 
-        TYPE_MAPPING = Collections.unmodifiableMap(TYPE_MAPPING);
+        TYPE_MAPPING = Collections.unmodifiableMap(typeMapping);
     }
 
     public static Map<String, String> getTypeMapping() {

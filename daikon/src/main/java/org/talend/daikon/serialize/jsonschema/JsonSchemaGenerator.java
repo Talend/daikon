@@ -5,7 +5,6 @@ import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.ReferenceProperties;
@@ -83,7 +82,7 @@ public class JsonSchemaGenerator {
             ObjectNode propertySchema = processTProperty(property);
             ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, propertySchema);
 
-            manageWidgetType(form, property, propertySchema);
+            WidgetSpecificJsonSchemaUtils.listViewSpecific(form, property, propertySchema);
 
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
@@ -109,32 +108,6 @@ public class JsonSchemaGenerator {
             }
         }
         return schema;
-    }
-
-    /**
-     * Adds the tag uniqueItems to <i>true</i> if the property corresponds to a list view.
-     *
-     * Normally the UISchema and the Json schema should not be coupled. But for the specific case of the list View component the
-     * json schema must be tagged with uniqueItems.
-     *
-     * // TODO find a better way to take care of list_view values uniqueness without coupling the json schema with the ui schema
-     * using a Set may be a good start.
-     * 
-     * @param form the specified form
-     * @param property the specified property
-     * @param schema the schema to enrich with the "uniqueItems" tag
-     */
-    private void manageWidgetType(Form form, Property property, ObjectNode schema) {
-
-        if (form != null && form.getWidgets() != null) {
-            Widget widget = form.getWidget(property.getName());
-            if (widget != null) {
-                String widgetType = widget.getWidgetType();
-                if (StringUtils.equals(Widget.MULTIPLE_VALUE_SELECTOR_WIDGET_TYPE, widgetType)) {
-                    schema.put(JsonSchemaConstants.TAG_UNIQUE_ITEMS, "true");
-                }
-            }
-        }
     }
 
     /**
