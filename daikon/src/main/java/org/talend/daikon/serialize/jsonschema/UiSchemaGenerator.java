@@ -1,13 +1,8 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
@@ -16,9 +11,13 @@ import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
 
 public class UiSchemaGenerator {
 
@@ -39,7 +38,7 @@ public class UiSchemaGenerator {
      * ComponentProeprties could use multiple forms in one time to represent the graphic setting, Main & Advanced for
      * instance. ComponentProperties could has Properties/Property which are not in Form, treat it as hidden
      * Properties/Property
-     * 
+     *
      * @param hasVisible Secondary return value: If anything in this form is visible, the first boolean value will be
      * set to true. Otherwise, this remains untouched. (otherwise, this array will be untouched).
      */
@@ -152,6 +151,9 @@ public class UiSchemaGenerator {
         } else {
             String widgetType = UiSchemaConstants.getWidgetMapping().get(widget.getWidgetType());
             if (widgetType != null) {
+                if (widget.isAutoFocus()) {
+                    schema.put(UiSchemaConstants.TAG_AUTO_FOCUS, true);
+                }
                 schema.put(UiSchemaConstants.TAG_WIDGET, widgetType);
                 Map<String, String> optionsMap = UiSchemaConstants.getWidgetOptionsMapping().get(widget.getWidgetType());
                 if (optionsMap != null) {
@@ -167,7 +169,7 @@ public class UiSchemaGenerator {
                 if (!UiSchemaConstants.TYPE_HIDDEN.equals(widgetType)) {
                     hasVisible[0] = true;
                 }
-            } else {//no supported widget for this, so if Properties then hide 
+            } else {//no supported widget for this, so if Properties then hide
                 NamedThing content = widget.getContent();
                 if (content instanceof Properties) {
                     // hide the Properties that do not have a Widget to render it.
@@ -201,7 +203,9 @@ public class UiSchemaGenerator {
         return schema;
     }
 
-    /** Take an UPPER_CASE String and returns its lowerCase couterpart. Used to serialize enums. **/
+    /**
+     * Take an UPPER_CASE String and returns its lowerCase couterpart. Used to serialize enums.
+     **/
     private static String fromUpperCaseToCamel(String upperCase) {
         StringBuilder builder = new StringBuilder();
         String[] tokens = upperCase.toLowerCase().split("_");

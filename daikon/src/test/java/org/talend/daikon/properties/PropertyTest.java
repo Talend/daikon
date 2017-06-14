@@ -27,6 +27,8 @@ import java.util.EnumSet;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
+import org.talend.daikon.NamedThing;
+import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.Property.Flags;
@@ -233,6 +235,16 @@ public class PropertyTest {
 
         assertThat(prop1.equals(prop3), is(Boolean.FALSE));
 
+    }
+
+    @Test
+    public void testDisplayName() {
+        Property<String> prop1 = newProperty("name");
+        NamedThing possibleValue = new SimpleNamedThing("col1", "Name");
+        prop1.setPossibleValues(possibleValue);
+
+        String s = prop1.getPossibleValuesDisplayName(possibleValue);
+        assertThat(s, is("Name"));
     }
 
 }

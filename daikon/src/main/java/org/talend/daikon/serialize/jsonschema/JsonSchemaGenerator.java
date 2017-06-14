@@ -51,9 +51,10 @@ public class JsonSchemaGenerator {
      */
     private ObjectNode processTProperties(Properties cProperties, String formName, boolean visible) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
+        Form form = null;
         if (visible) {
             if (formName != null) {
-                Form form = cProperties.getPreferredForm(formName);
+                form = cProperties.getPreferredForm(formName);
                 if (form != null) {
                     schema.put(JsonSchemaConstants.TAG_TITLE, form.getDisplayName());
                 } else {// wrong form name so hide it.
@@ -77,10 +78,15 @@ public class JsonSchemaGenerator {
             if (property.isRequired()) {
                 addToRequired(schema, name);
             }
-            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, processTProperty(property));
+
+            ObjectNode propertySchema = processTProperty(property);
+            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, propertySchema);
+
+            WidgetSpecificJsonSchemaUtils.listViewSpecific(form, property, propertySchema);
+
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
-        Form form = cProperties.getPreferredForm(formName);
+        form = cProperties.getPreferredForm(formName);
         for (Properties properties : propertiesList) {
             String name = properties.getName();
             // if this is a reference then just store it as a string and only store the definition
@@ -97,7 +103,6 @@ public class JsonSchemaGenerator {
                 if (isVisible && widget.getContent() instanceof Form) {
                     propertiesFormName = widget.getContent().getName();
                 }
-                boolean componentPresentInCurrentForm = form != null && form.getWidget(properties.getName()) != null;
                 ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name,
                         processTProperties(properties, propertiesFormName, isVisible));
             }
@@ -124,18 +129,7 @@ public class JsonSchemaGenerator {
             } else if (property instanceof EnumListProperty) {
                 resolveList(schema, property);
             } else {
-                schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
-                ArrayNode enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
-                ArrayNode enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
-                List possibleValues = property.getPossibleValues();
-                for (Object possibleValue : possibleValues) {
-                    String value = possibleValue.toString();
-                    if (NamedThing.class.isAssignableFrom(possibleValue.getClass())) {
-                        value = ((NamedThing) possibleValue).getName();
-                    }
-                    enumList.add(value);
-                    enumNames.add(property.getPossibleValuesDisplayName(possibleValue));
-                }
+                resolveDefault(schema, property);
             }
         } else if (isListClass(property.getType())) {
             resolveList(schema, property);
@@ -148,6 +142,36 @@ public class JsonSchemaGenerator {
             }
         }
         return schema;
+    }
+
+    private void resolveDefault(ObjectNode schema, Property property) {
+        final ArrayNode enumList;
+        final ArrayNode enumNames;
+        if (isListClass(property.getType())) {
+            schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(getListType()));
+            ObjectNode items = schema.putObject(JsonSchemaConstants.TAG_ITEMS);
+            items.put(JsonSchemaConstants.TAG_TYPE,
+                    JsonSchemaConstants.getTypeMapping().get(getListInnerClassName(property.getType())));
+            enumList = items.putArray(JsonSchemaConstants.TAG_ENUM);
+            enumNames = items.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
+        } else {
+            schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.getTypeMapping().get(property.getType()));
+            enumList = schema.putArray(JsonSchemaConstants.TAG_ENUM);
+            enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
+        }
+        addEnumsToProperty(enumList, enumNames, property);
+    }
+
+    private void addEnumsToProperty(ArrayNode enumList, ArrayNode enumNames, Property property) {
+        List possibleValues = property.getPossibleValues();
+        for (Object possibleValue : possibleValues) {
+            String value = possibleValue.toString();
+            if (NamedThing.class.isAssignableFrom(possibleValue.getClass())) {
+                value = ((NamedThing) possibleValue).getName();
+            }
+            enumList.add(value);
+            enumNames.add(property.getPossibleValuesDisplayName(possibleValue));
+        }
     }
 
     private void resolveEnum(ObjectNode schema, Property property) {

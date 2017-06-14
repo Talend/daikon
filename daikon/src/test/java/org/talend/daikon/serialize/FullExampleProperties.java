@@ -300,7 +300,7 @@ public class FullExampleProperties extends PropertiesImpl {
         if (methodCalled.size() == 25) {
             return ValidationResult.OK;
         } else {
-            return new ValidationResult().setStatus(Result.ERROR).setMessage("some method where not called :" + methodCalled);
+            return new ValidationResult(Result.ERROR, "some method where not called :" + methodCalled);
         }
     }
 

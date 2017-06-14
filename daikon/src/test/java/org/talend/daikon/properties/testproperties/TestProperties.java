@@ -110,11 +110,11 @@ public class TestProperties extends PropertiesImpl {
     }
 
     public ValidationResult afterFormFinishMain(Repository<Properties> repo) {
-        return new ValidationResult().setStatus(Result.ERROR);
+        return new ValidationResult(Result.ERROR);
     }
 
     public ValidationResult afterInteger() {
-        return new ValidationResult().setStatus(Result.WARNING);
+        return new ValidationResult(Result.WARNING);
     }
 
     @Override

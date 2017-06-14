@@ -162,6 +162,14 @@ public class Widget implements ToStringIndent {
      */
     public static final String JSON_TABLE_WIDGET_TYPE = "widget.type.jsonTable";
 
+    /**
+     * This widget represents a multiple checkbox which allow to select or deselect each value among a list of values.
+     *
+     * It is backed by a Property<List<String>> for the java model where the possible values are the one displayed in the widget
+     * for selection.
+     */
+    public static final String MULTIPLE_VALUE_SELECTOR_WIDGET_TYPE = "widget.type.listview";
+
     /*
      * Widget configurations
      */
@@ -170,6 +178,11 @@ public class Widget implements ToStringIndent {
      * Tell the client whether the widget is readonly or not.
      */
     public static final String READ_ONLY_WIDGET_CONF = "widget.conf.readonly";
+
+    /**
+     * Tell the client whether the widget is autofocus or not.
+     */
+    public static final String AUTO_FOCUS_WIDGET_CONF = "widget.conf.autofocus";
 
     /**
      * Tell the client whether hide the toolbar or not. For example can set it as "true" to hide the toolbar of a table
@@ -223,12 +236,12 @@ public class Widget implements ToStringIndent {
 
     private Map<String, Object> configurationValues = new HashMap<>();
 
-    public static Widget widget(NamedThing content) {
-        return new Widget(content);
-    }
-
     public Widget(NamedThing content) {
         this.content = content;
+    }
+
+    public static Widget widget(NamedThing content) {
+        return new Widget(content);
     }
 
     public NamedThing getContent() {
@@ -276,13 +289,6 @@ public class Widget implements ToStringIndent {
     /**
      * Set or reset this as hidden and mark the underlying {@link Property} or {@link Form} as hidden or not.
      */
-    public Widget setHidden(Property<Boolean> hidden) {
-        return setHidden(hidden.getValue());
-    }
-
-    /**
-     * Set or reset this as hidden and mark the underlying {@link Property} or {@link Form} as hidden or not.
-     */
     public Widget setHidden() {
         return setHidden(true);
     }
@@ -297,13 +303,6 @@ public class Widget implements ToStringIndent {
     /**
      * Set or reset this as visible and mark the underlying {@link Property} or {@link Form} as visible or not.
      */
-    public Widget setVisible(Property<Boolean> visible) {
-        return setHidden(!visible.getValue());
-    }
-
-    /**
-     * Set or reset this as visible and mark the underlying {@link Property} or {@link Form} as visible or not.
-     */
     public Widget setVisible() {
         return setVisible(true);
     }
@@ -313,10 +312,24 @@ public class Widget implements ToStringIndent {
     }
 
     /**
+     * Set or reset this as hidden and mark the underlying {@link Property} or {@link Form} as hidden or not.
+     */
+    public Widget setHidden(Property<Boolean> hidden) {
+        return setHidden(hidden.getValue());
+    }
+
+    /**
      * return if the current Widget is visible or not.
      */
     public boolean isVisible() {
         return !hidden;
+    }
+
+    /**
+     * Set or reset this as visible and mark the underlying {@link Property} or {@link Form} as visible or not.
+     */
+    public Widget setVisible(Property<Boolean> visible) {
+        return setHidden(!visible.getValue());
     }
 
     public String getWidgetType() {
@@ -407,6 +420,15 @@ public class Widget implements ToStringIndent {
 
     public Widget setReadonly(boolean readonly) {
         setConfigurationValue(READ_ONLY_WIDGET_CONF, readonly);
+        return this;
+    }
+
+    public boolean isAutoFocus() {
+        return Boolean.valueOf(String.valueOf(getConfigurationValue(AUTO_FOCUS_WIDGET_CONF)));
+    }
+
+    public Widget setAutoFocus(boolean autoFocus) {
+        setConfigurationValue(AUTO_FOCUS_WIDGET_CONF, autoFocus);
         return this;
     }
 

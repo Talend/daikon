@@ -2,20 +2,10 @@ package org.talend.daikon.serialize.jsonschema;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.talend.daikon.properties.property.PropertyFactory.newInteger;
-import static org.talend.daikon.properties.property.PropertyFactory.newString;
+import static org.junit.Assert.*;
+import static org.talend.daikon.properties.property.PropertyFactory.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,14 +43,26 @@ public class JsonBaseToolTest {
             -79, 0, 0, 0, 2, 0, 10, 0, 0, 0, 6, 0, 1, 0, 0, 0, 4, 0, 11, 0, 0, 0, 12, 0, 1, 0, 0, 0, 5, 0, 12, 0, 13, 0, 0, 0, 1,
             0, 14, 0, 0, 0, 2, 0, 15 };
 
-    private class AnotherClassLoader extends ClassLoader {
+    // used to generate a text file representing the bytes of a given class file bytecode.
+    public static void main(String args[]) throws Exception {
+        int _offset = 0;
+        int _read = 0;
 
-        public AnotherClassLoader() {
-            byte[] rawBytes = new byte[anotherClassBytes.length];
-            for (int index = 0; index < rawBytes.length; index++)
-                rawBytes[index] = (byte) anotherClassBytes[index];
-            defineClass("org.talend.daikon.serialize.jsonschema.AnotherClassloaderClass", rawBytes, 0, rawBytes.length);
-        }
+        File fileName = new File(args[0]);
+        InputStream fileInputStream = new FileInputStream(fileName);
+        FileOutputStream fileOutputStream = new FileOutputStream(args[1]);
+        PrintStream printStream = new PrintStream(fileOutputStream);
+        StringBuffer bytesStringBuffer = new StringBuffer();
+
+        byte[] byteArray = new byte[(int) fileName.length()];
+        while (_offset < byteArray.length && (_read = fileInputStream.read(byteArray, _offset, byteArray.length - _offset)) >= 0)
+            _offset += _read;
+
+        fileInputStream.close();
+        for (int index = 0; index < byteArray.length; index++)
+            bytesStringBuffer.append(byteArray[index] + ",");
+
+        printStream.print(bytesStringBuffer.length() == 0 ? "" : bytesStringBuffer.substring(0, bytesStringBuffer.length() - 1));
     }
 
     @Test
@@ -110,6 +112,14 @@ public class JsonBaseToolTest {
     }
 
     @Test
+    public void isStringListClass() throws Exception {
+        Property<List<String>> stringListProperty = newStringList("selectColumnIds");
+        Property<String> stringProperty = newString("toto");
+        assertTrue(JsonBaseTool.isListClass(stringListProperty.getType()));
+        assertFalse(JsonBaseTool.isListClass(stringProperty.getType()));
+    }
+
+    @Test
     public void getListInnerClassName() throws Exception {
         FullExampleProperties properties = new FullExampleProperties("fullexample");
         assertEquals(String.class.getName(), JsonBaseTool.getListInnerClassName(properties.tableProp.colListString.getType()));
@@ -140,6 +150,16 @@ public class JsonBaseToolTest {
             subPropertiesName.add(subProperty.getName());
         }
         assertThat(subPropertiesName, containsInAnyOrder("pCommon", "cCommon"));
+    }
+
+    private class AnotherClassLoader extends ClassLoader {
+
+        public AnotherClassLoader() {
+            byte[] rawBytes = new byte[anotherClassBytes.length];
+            for (int index = 0; index < rawBytes.length; index++)
+                rawBytes[index] = (byte) anotherClassBytes[index];
+            defineClass("org.talend.daikon.serialize.jsonschema.AnotherClassloaderClass", rawBytes, 0, rawBytes.length);
+        }
     }
 
     public class ParentClass extends PropertiesImpl {
@@ -184,28 +204,6 @@ public class JsonBaseToolTest {
         public CCommonClass(String name) {
             super(name);
         }
-    }
-
-    // used to generate a text file representing the bytes of a given class file bytecode.
-    public static void main(String args[]) throws Exception {
-        int _offset = 0;
-        int _read = 0;
-
-        File fileName = new File(args[0]);
-        InputStream fileInputStream = new FileInputStream(fileName);
-        FileOutputStream fileOutputStream = new FileOutputStream(args[1]);
-        PrintStream printStream = new PrintStream(fileOutputStream);
-        StringBuffer bytesStringBuffer = new StringBuffer();
-
-        byte[] byteArray = new byte[(int) fileName.length()];
-        while (_offset < byteArray.length && (_read = fileInputStream.read(byteArray, _offset, byteArray.length - _offset)) >= 0)
-            _offset += _read;
-
-        fileInputStream.close();
-        for (int index = 0; index < byteArray.length; index++)
-            bytesStringBuffer.append(byteArray[index] + ",");
-
-        printStream.print(bytesStringBuffer.length() == 0 ? "" : bytesStringBuffer.substring(0, bytesStringBuffer.length() - 1));
     }
 
 }

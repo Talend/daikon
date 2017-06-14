@@ -85,7 +85,7 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
       <maxHistory>30</maxHistory>
     </rollingPolicy>
     <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
-        <param name="UserFields" value="" />
+        <param name="UserFields" value="field1:value1,field2:value2" />
         <param name="LocationInfo" value="false"/>
     </layout>
  </appender>
@@ -108,7 +108,7 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
         <param name="MaxBackupIndex" value="20" />
         <param name="encoding" value="UTF-8" />
         <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout">
-            <param name="UserFields" value="" />
+            <param name="UserFields" value="field1:value1,field2:value2" />
             <param name="LocationInfo" value="false"/>
         </layout>
     </appender>   
@@ -128,8 +128,8 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
     <RollingFile name="File" fileName="${LOG_PATH}/application.log"
         filePattern="${LOG_PATH}/application-%d{yyyy-MM-dd}.log">
         <Log4j2JSONLayout charset="UTF-8" skipJsonEscapeSubLayout="true" locationInfo="false" subLayoutAsElement="true">
-            <KeyValuePair key="" value=""/>
-            <KeyValuePair key="" value=""/>
+            <KeyValuePair key="field1" value="value1"/>
+            <KeyValuePair key="field2" value="value2"/>
         </Log4j2JSONLayout>
         <Policies>
           <TimeBasedTriggeringPolicy interval="1" modulate="true"/>

@@ -1,9 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.avro.Schema;
 
@@ -68,9 +65,24 @@ public class JsonSchemaConstants {
     public static final String TAG_TITLE = "title";
 
     /**
-     * Built-in tag. Conbine with array type, a json object which represent the element of array
+     * Built-in tag. Combine with array type, a json object which represent the element of array
      */
     public static final String TAG_ITEMS = "items";
+
+    /**
+     * Built-in tag. Combine with array type, a json object which represent the minimum number of items of the array
+     */
+    public static final String TAG_MIN_ITEMS = "minItems";
+
+    /**
+     * Built-in tag. Combine with array type, a json object which represent the maximum number of items of the array
+     */
+    public static final String TAG_MAX_ITEMS = "maxItems";
+
+    /**
+     * Built-in tag. Combine with array type, a json object which mark an array as containing all unique values
+     */
+    public static final String TAG_UNIQUE_ITEMS = "uniqueItems";
 
     // TODO(bchen) How it work when Property do not support default value, but use current value as default value, think
     // about cell of table
@@ -79,34 +91,39 @@ public class JsonSchemaConstants {
      */
     public static final String TAG_DEFAULT = "default";
 
+    public static final String DEFINITION_NAME_JSON_METADATA = "@definitionName";
+
     // Mapping between Property type and json-schema type
-    private static Map<String, String> TYPE_MAPPING = new HashMap<>();
+    private static final Map<String, String> TYPE_MAPPING;
 
     static {
-        // TYPE_MAPPING.put(Character.class.getName(), JsonSchemaConstants.TYPE_STRING);
-        TYPE_MAPPING.put(String.class.getName(), JsonSchemaConstants.TYPE_STRING);
-        // TYPE_MAPPING.put(CharSequence.class.getName(), JsonSchemaConstants.TYPE_STRING);
-        TYPE_MAPPING.put(Schema.class.getName(), JsonSchemaConstants.TYPE_STRING);
-        TYPE_MAPPING.put(Date.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        Map<String, String> typeMapping = new HashMap<>();
+        // typeMapping.put(Character.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        typeMapping.put(String.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        // typeMapping.put(CharSequence.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        typeMapping.put(Schema.class.getName(), JsonSchemaConstants.TYPE_STRING);
+        typeMapping.put(Date.class.getName(), JsonSchemaConstants.TYPE_STRING);
 
-        TYPE_MAPPING.put(Boolean.class.getName(), JsonSchemaConstants.TYPE_BOOLEAN);
+        typeMapping.put(Boolean.class.getName(), JsonSchemaConstants.TYPE_BOOLEAN);
 
-        TYPE_MAPPING.put(Float.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
-        TYPE_MAPPING.put(Double.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
-        // TYPE_MAPPING.put(BigDecimal.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
+        typeMapping.put(Float.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
+        typeMapping.put(Double.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
+        // typeMapping.put(BigDecimal.class.getName(), JsonSchemaConstants.TYPE_NUMBER);
 
-        // TYPE_MAPPING.put(Byte.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
-        // TYPE_MAPPING.put(Short.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
-        TYPE_MAPPING.put(Integer.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
-        TYPE_MAPPING.put(Long.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
-        // TYPE_MAPPING.put(BigInteger.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        // typeMapping.put(Byte.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        // typeMapping.put(Short.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        typeMapping.put(Integer.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        typeMapping.put(Long.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
+        // typeMapping.put(BigInteger.class.getName(), JsonSchemaConstants.TYPE_INTEGER);
 
-        TYPE_MAPPING = Collections.unmodifiableMap(TYPE_MAPPING);
+        // Array
+        typeMapping.put(List.class.getName(), JsonSchemaConstants.TYPE_ARRAY);
+
+        TYPE_MAPPING = Collections.unmodifiableMap(typeMapping);
     }
 
     public static Map<String, String> getTypeMapping() {
         return TYPE_MAPPING;
     }
 
-    public static final String DEFINITION_NAME_JSON_METADATA = "@definitionName";
 }

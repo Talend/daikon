@@ -277,6 +277,11 @@ public class PropertiesImpl extends TranslatableTaggedImpl
     }
 
     @Override
+    public void refreshProperties() {
+        // No op
+    }
+
+    @Override
     public List<Form> getForms() {
         return forms;
     }

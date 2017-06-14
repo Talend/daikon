@@ -30,7 +30,8 @@ public enum CommonErrorCodes implements ErrorCode {
     UNABLE_TO_READ_CONTENT(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
     UNABLE_TO_PARSE_REQUEST(HttpServletResponse.SC_BAD_REQUEST), // 400,
     /** uses <b>argument</b> and <b>value</b> context keys (in this order) */
-    UNEXPECTED_ARGUMENT(HttpServletResponse.SC_BAD_REQUEST, "argument", "value"); // 400,
+    UNEXPECTED_ARGUMENT(HttpServletResponse.SC_BAD_REQUEST, "argument", "value"), // 400,
+    INSUFFICIENT_AUTHORITY(403); // 403
     // e.g
     // IllegalArgumentException
 

@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.helpers.LogLog;
 import org.talend.daikon.logging.event.field.HostData;
 import org.talend.daikon.logging.event.field.LayoutFields;
 
@@ -58,7 +57,6 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
          */
         if (getUserFields() != null) {
             String userFlds = getUserFields();
-            LogLog.debug("[" + whoami + "] Got user data from logback property: " + userFlds);
             LayoutUtils.addUserFields(userFlds, userFieldsEvent);
         }
 
