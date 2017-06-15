@@ -147,7 +147,7 @@ public class ReferencePropertiesTest {
         definition2PropertiesMap.put("no_used", refEProp);
         definition2PropertiesMap.put(TestAProperties.TEST_A_PROPERTIES_DEFINTION_NAME, testAProp);
         definition2PropertiesMap.put(TestBProperties.TEST_B_PROPERTIES_DEFINTION_NAME, testBProp);
-        ReferenceProperties.resolveReferenceProperties(definition2PropertiesMap);
+        ReferenceProperties.resolveReferenceProperties(definition2PropertiesMap, true);
 
         // then
         assertTrue(refEProp.afterRefCallbackCalled);
