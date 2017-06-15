@@ -151,15 +151,6 @@ public interface Properties extends AnyProperty, ToStringIndent {
     void refreshLayout(Form form);
 
     /**
-     * This method intent is to be called at the end of the initialization process of a {@link Properties} object.
-     * For instance it can be used after the deserialization of a properties, from a Json object, containing a some
-     * {@link Property} that need runtime to retrieve some values.
-     *
-     * Class implementing this method may implement a stub of this method and its sub classes overwrite it if needed.
-     */
-    void refreshProperties();
-
-    /**
      * Returns all of the {@link Form} objects associated with this object.
      */
     List<Form> getForms();

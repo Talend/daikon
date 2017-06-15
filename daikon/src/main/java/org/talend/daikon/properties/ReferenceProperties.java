@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import static org.talend.daikon.properties.property.PropertyFactory.*;
+import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.definition.Definition;
 import org.talend.daikon.definition.service.DefinitionRegistryService;
+import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.properties.property.Property;
 
 /**
@@ -114,10 +116,16 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
                 @Override
                 public void visit(Properties properties, Properties parent) {
                     if (properties instanceof ReferenceProperties<?>) {
-                        ReferenceProperties<?> referenceProperties = (ReferenceProperties<?>) properties;
+                        ReferenceProperties<Properties> referenceProperties = (ReferenceProperties<Properties>) properties;
                         Properties theReference = propertiesMap.get(referenceProperties.referenceDefinitionName.getValue());
                         if (theReference != null) {
                             referenceProperties.setReference(theReference);
+                            // call afterReference if any
+                            try {
+                                PropertiesDynamicMethodHelper.afterReference(parent, referenceProperties);
+                            } catch (Throwable e) {
+                                throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                            }
                         } else {// no reference of the required type has been provided so do no set anything but log it
                             LOG.debug("failed to find a reference object for ReferenceProperties[" + referenceProperties.getName()
                                     + "] with definition [" + referenceProperties.referenceDefinitionName.getValue()

@@ -15,7 +15,11 @@ package org.talend.daikon.properties;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -290,11 +294,6 @@ public class PropertiesImpl extends TranslatableTaggedImpl
     }
 
     @Override
-    public void refreshProperties() {
-        // No op
-    }
-
-    @Override
     public List<Form> getForms() {
         return forms;
     }
@@ -459,8 +458,8 @@ public class PropertiesImpl extends TranslatableTaggedImpl
     }
 
     /**
-     * @return a NamedThing from a property path which allow to recurse into nested properties using the . as a separator
-     * for Properties names and the final Property. Or null if none found
+     * @return a NamedThing from a property path which allow to recurse into nested properties using the . as a
+     * separator for Properties names and the final Property. Or null if none found
      */
     @Override
     public NamedThing getProperty(String propPath) {

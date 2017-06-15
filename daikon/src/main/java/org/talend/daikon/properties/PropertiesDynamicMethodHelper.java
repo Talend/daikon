@@ -117,6 +117,13 @@ public class PropertiesDynamicMethodHelper {
         doInvoke(props, findMethod(props, Properties.METHOD_AFTER_FORM_FINISH, formName, REQUIRED), repostory);
     }
 
+    static public void afterReference(Properties props, ReferenceProperties<Properties> refProp) throws Throwable {
+        Method afterRefCallback = findMethod(props, Properties.METHOD_AFTER, refProp.getName(), !REQUIRED);
+        if (afterRefCallback != null) {
+            doInvoke(props, afterRefCallback);
+        } // else not method to call back so ignores it
+    }
+
     static public void setFormLayoutMethods(Properties props, String property, Form form) {
         Method m;
         m = findMethod(props, Properties.METHOD_BEFORE_FORM, property, !REQUIRED);
