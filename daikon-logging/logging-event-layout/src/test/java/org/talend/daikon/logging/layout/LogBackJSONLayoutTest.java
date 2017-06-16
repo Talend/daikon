@@ -90,6 +90,7 @@ public class LogBackJSONLayoutTest {
         List<String> stackOptionList = Arrays.asList("full");
         try {
             stackOptionList.get(1).toString();
+            fail("Expected exception to be thrown");
         } catch (Exception e) {
             LOGGER.error("Exceptions happen!", e);
         }
