@@ -2,9 +2,6 @@ package org.talend.daikon.logging.layout;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,14 +83,8 @@ public class LogBackJSONLayoutTest {
     }
 
     @Test
-    public void testGenerateingStackTraceError() {
-        List<String> stackOptionList = Arrays.asList("full");
-        try {
-            stackOptionList.get(1).toString();
-            fail("Expected exception to be thrown");
-        } catch (Exception e) {
-            LOGGER.error("Exceptions happen!", e);
-        }
+    public void testGeneratingStackTraceError() {
+        LOGGER.error("Exceptions happen!", new Exception());
     }
 
     @Test
