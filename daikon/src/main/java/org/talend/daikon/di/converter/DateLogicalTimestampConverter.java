@@ -16,31 +16,18 @@ import java.util.Date;
 
 import org.apache.avro.Schema;
 import org.talend.daikon.avro.AvroUtils;
-import org.talend.daikon.avro.converter.AvroConverter;
+import org.talend.daikon.avro.converter.AbstractAvroConverter;
 
 /**
  * Converts DI Date to Avro logical Timestamps millis and vice versa
  */
-public class DateLogicalTimestampConverter implements AvroConverter<Date, Long> {
-
-    private static final Schema LOGICAL_TIMESTAMP_SCHEMA = AvroUtils._logicalTimestamp();
+public class DateLogicalTimestampConverter extends AbstractAvroConverter<Date, Long> {
 
     /**
-     * Returns schema of Avro logical timestamp type
+     * Constructor sets {@link Date} class, which is type of DI data and logical timestamp {@link Schema} as Avro type
      */
-    @Override
-    public Schema getSchema() {
-        return LOGICAL_TIMESTAMP_SCHEMA;
-    }
-
-    /**
-     * Returns {@link Date} class, which is type of DI data
-     * 
-     * @return {@link Date} class
-     */
-    @Override
-    public Class<Date> getDatumClass() {
-        return Date.class;
+    public DateLogicalTimestampConverter() {
+        super(Date.class, AvroUtils._logicalTimestamp());
     }
 
     /**

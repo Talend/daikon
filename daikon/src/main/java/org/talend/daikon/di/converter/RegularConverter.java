@@ -13,7 +13,7 @@
 package org.talend.daikon.di.converter;
 
 import org.apache.avro.Schema;
-import org.talend.daikon.avro.converter.AvroConverter;
+import org.talend.daikon.avro.converter.AbstractAvroConverter;
 
 /**
  * Doesn't convert data. It returns data unchanged. It is used for following avro data types:
@@ -31,7 +31,7 @@ import org.talend.daikon.avro.converter.AvroConverter;
  * </ol>
  * 
  */
-public class RegularConverter implements AvroConverter<Object, Object> {
+public class RegularConverter extends AbstractAvroConverter<Object, Object> {
 
     /**
      * Reference to itself for Singleton pattern implementation
@@ -40,9 +40,12 @@ public class RegularConverter implements AvroConverter<Object, Object> {
 
     /**
      * Private constructor for Singleton pattern implementation
+     * Sets both Di {@link Class} and Avro {@link Schema} null, as this converter supports multiple 
+     * types
+     * Corresponding methods {@link this#getDatumClass()} and {@link this#getSchema()} are not supported
      */
     private RegularConverter() {
-        // does nothing
+        super(null, null);
     }
 
     /**

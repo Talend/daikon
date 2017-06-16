@@ -16,14 +16,12 @@ import java.util.Date;
 
 import org.apache.avro.Schema;
 import org.talend.daikon.avro.AvroUtils;
-import org.talend.daikon.avro.converter.AvroConverter;
+import org.talend.daikon.avro.converter.AbstractAvroConverter;
 
 /**
  * Converts DI Date to Avro logical Date and vice versa
  */
-public class DateLogicalDateConverter implements AvroConverter<Date, Integer> {
-
-    private static final Schema LOGICAL_DATE_SCHEMA = AvroUtils._logicalDate();
+public class DateLogicalDateConverter extends AbstractAvroConverter<Date, Integer> {
 
     /**
      * The number of milliseconds in one day
@@ -31,21 +29,10 @@ public class DateLogicalDateConverter implements AvroConverter<Date, Integer> {
     private static final long ONE_DAY = 1000 * 60 * 60 * 24;
 
     /**
-     * Returns schema of Avro logical date type
+     * Constructor sets {@link Date} class, which is type of DI data and logical date {@link Schema} as Avro type
      */
-    @Override
-    public Schema getSchema() {
-        return LOGICAL_DATE_SCHEMA;
-    }
-
-    /**
-     * Returns {@link Date} class, which is type of DI data
-     * 
-     * @return {@link Date} class
-     */
-    @Override
-    public Class<Date> getDatumClass() {
-        return Date.class;
+    public DateLogicalDateConverter() {
+        super(Date.class, AvroUtils._logicalDate());
     }
 
     /**
