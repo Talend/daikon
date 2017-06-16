@@ -113,13 +113,20 @@ public class DiIncomingSchemaEnforcerTest {
     }
 
     /**
-     * TODO
+     * Checks following {@link DiIncomingSchemaEnforcer} workflow:
+     * 1. Create instance of {@link DiIncomingSchemaEnforcer}
+     * 2. Checks that dynamic fields don't require initialization (as design schema doesn't contain dynamic field)
+     * 3. Checks that design schema equals to runtime schema
+     * 4. Check DI data to IndexedRecord conversion for several data objects
      */
     @Test
     public void testNonDynamic() {
         // The design time schema should be the same as the runtime schema.
         Schema talend6Schema = componentRecord.getSchema();
         DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
+        
+        // design schema has no dynamic fields, thus dynamic fields are considered as already initialized
+        assertTrue(enforcer.areDynamicFieldsInitialized());
 
         // The enforcer is immediately usable
         assertThat(enforcer.getDesignSchema(), is(talend6Schema));
