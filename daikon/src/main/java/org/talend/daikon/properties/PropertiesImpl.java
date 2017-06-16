@@ -15,11 +15,17 @@ package org.talend.daikon.properties;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
@@ -44,7 +50,7 @@ import com.cedarsoftware.util.io.JsonWriter;
 public class PropertiesImpl extends TranslatableTaggedImpl
         implements Properties, AnyProperty, PostDeserializeHandler, ToStringIndent {
 
-    protected static final boolean ENCRYPT = true;
+    private static final Logger LOG = LoggerFactory.getLogger(PropertiesImpl.class);
 
     private static final long serialVersionUID = -7970336622844281900L;
 
@@ -54,41 +60,9 @@ public class PropertiesImpl extends TranslatableTaggedImpl
 
     private ValidationResult validationResult;
 
-    private transient boolean layoutAlreadyInitalized;
+    transient private boolean layoutAlreadyInitalized;
 
-    private transient boolean propsAlreadyInitialized;
-
-    /**
-     * named constructor to be used is these properties are nested in other properties. Do not subclass this method for
-     * initialization, use {@link #init()} instead.
-     * 
-     * @param name, uniquely identify the property among other properties when used as nested properties.
-     */
-    public PropertiesImpl(String name) {
-        setName(name);
-    }
-
-    /**
-     * creates a new Properties instance looking for a String constructor and uses name as a parameter
-     *
-     * @param propClass never null, the class to instantiate.
-     * @param name the name of the properties to be set if a String contructor is found
-     * @throws TalendRuntimeException if any reflection method throws an exception.
-     */
-    public static <P extends Properties> P createNewInstance(Class<P> propClass, String name) {
-        try {
-            // look for a string constructor
-            Constructor<P> stringConstructor = propClass.getConstructor(String.class);
-            if (stringConstructor != null) {
-                return stringConstructor.newInstance(name);
-            } // else no constructor found so throw an exception
-            throw TalendRuntimeException
-                    .createUnexpectedException("Could not find a suitable constructor for class [" + propClass.getName() + "]");
-        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException e) {
-            throw TalendRuntimeException.createUnexpectedException(e);
-        }
-    }
+    transient private boolean propsAlreadyInitialized;
 
     /**
      * Handle post deserialization.
@@ -119,13 +93,24 @@ public class PropertiesImpl extends TranslatableTaggedImpl
             initLayout();
         }
 
+        // setup i18n for direct property and presentation item
         List<NamedThing> properties = getProperties();
         for (NamedThing prop : properties) {
-            if (prop instanceof Property) {
+            if (!(prop instanceof Properties)) {
                 prop.setI18nMessageFormatter(getI18nMessageFormatter());
             }
         }
         return false;
+    }
+
+    /**
+     * named constructor to be used is these properties are nested in other properties. Do not subclass this method for
+     * initialization, use {@link #init()} instead.
+     * 
+     * @param name, uniquely identify the property among other properties when used as nested properties.
+     */
+    public PropertiesImpl(String name) {
+        setName(name);
     }
 
     @Override
@@ -180,7 +165,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                     NamedThing se = (NamedThing) f.get(this);
                     if (se != null) {
                         initializeField(f, se);
-                    } else {// not yet initialized to record it
+                    } else {// not yet initialized so record it
                         uninitializedProperties.add(f);
                     }
                 } // else not a field that ought to be initialized
@@ -195,7 +180,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
      * this is called during setProperties to check after everything is setup that some properties may be null. Usually
      * it is not recommended to have properties not setup. But for example the RETURN properties for ComponentProperties
      * may be null.
-     *
+     * 
      * @param f field to be check if a null value is tolerated after initialization.
      * @return true if the null value is accepted for the given field after setup.
      */
@@ -217,12 +202,12 @@ public class PropertiesImpl extends TranslatableTaggedImpl
             throw new IllegalArgumentException("The java field [" + this.getClass().getCanonicalName() + "." + f.getName()
                     + "] should be named identically to the instance name [" + value.getName() + "]");
         }
-        if (value instanceof Property) {
+        if (value instanceof PropertiesImpl) {// a nested Properties so recurse
             // Do not set the i18N for nested Properties, they already handle their i18n
-            value.setI18nMessageFormatter(getI18nMessageFormatter());
-        } else if (value instanceof PropertiesImpl) {// a property so setit up
             ((PropertiesImpl) value).initProperties();
-        } // else nothing to initialize.
+        } else {// a simple Property or PresentationItem so just set i18n
+            value.setI18nMessageFormatter(getI18nMessageFormatter());
+        }
     }
 
     private void initLayout() {
@@ -265,6 +250,8 @@ public class PropertiesImpl extends TranslatableTaggedImpl
         }
 
     }
+
+    protected static final boolean ENCRYPT = true;
 
     /**
      * this will look for all property with the encrypt flag including nested Properties and encrypt or decrypt them
@@ -407,7 +394,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
      *
      * <p>
      * Example:<blockquote>
-     *
+     * 
      * <pre>
      *     {@literal @Override}
      *     protected void acceptForAllProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
@@ -418,7 +405,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
      *         }
      *     }
      * </pre>
-     *
+     * 
      * </blockquote>
      *
      * @see #acceptForProperty(AnyPropertyVisitor, Set, NamedThing)
@@ -450,7 +437,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
 
     /**
      * Is this object of type {@link Property} or {@link Properties}?
-     *
+     * 
      * @param clazz, the class to be tested
      * @return true if the clazz inherits from {@link Property} or {@link Properties}.
      */
@@ -459,8 +446,8 @@ public class PropertiesImpl extends TranslatableTaggedImpl
     }
 
     /**
-     * @return a NamedThing from a property path which allow to recurse into nested properties using the . as a separator
-     * for Properties names and the final Property. Or null if none found
+     * @return a NamedThing from a property path which allow to recurse into nested properties using the . as a
+     * separator for Properties names and the final Property. Or null if none found
      */
     @Override
     public NamedThing getProperty(String propPath) {
@@ -496,7 +483,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
 
     /**
      * Returns the property in this object specified by a the simple (unqualified) property name.
-     *
+     * 
      * @param propName a simple property name. Should never be null
      */
     protected NamedThing getLocalProperty(String propName) {
@@ -530,13 +517,13 @@ public class PropertiesImpl extends TranslatableTaggedImpl
         }
     }
 
+    public void setValidationResult(ValidationResult vr) {
+        validationResult = vr;
+    }
+
     @Override
     public ValidationResult getValidationResult() {
         return validationResult;
-    }
-
-    public void setValidationResult(ValidationResult vr) {
-        validationResult = vr;
     }
 
     @Override
@@ -613,8 +600,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                     ((Property) thisProp).setValueEvaluator(((Property) otherProp).getValueEvaluator());
                 }
             } else {
-                TalendRuntimeException
-                        .unexpectedException("The property " + otherProp.getClass().getName() + " is not of the expected type.");
+                LOG.debug("Do not copy [" + otherProp + "]");
             }
 
         }
@@ -654,6 +640,28 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                     .unexpectedException("Unexpected property class: " + otherProp.getClass() + " prop: " + otherProp);
         }
         return thisProp;
+    }
+
+    /**
+     * creates a new Properties instance looking for a String constructor and uses name as a parameter
+     * 
+     * @param propClass never null, the class to instantiate.
+     * @param name the name of the properties to be set if a String contructor is found
+     * @throws TalendRuntimeException if any reflection method throws an exception.
+     */
+    public static <P extends Properties> P createNewInstance(Class<P> propClass, String name) {
+        try {
+            // look for a string constructor
+            Constructor<P> stringConstructor = propClass.getConstructor(String.class);
+            if (stringConstructor != null) {
+                return stringConstructor.newInstance(name);
+            } // else no constructor found so throw an exception
+            throw TalendRuntimeException
+                    .createUnexpectedException("Could not find a suitable constructor for class [" + propClass.getName() + "]");
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            throw TalendRuntimeException.createUnexpectedException(e);
+        }
     }
 
     @Override

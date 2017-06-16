@@ -65,7 +65,7 @@ public class FullExampleProperties extends PropertiesImpl {
     public final Property<String> multipleSelectionProp = newProperty("multipleSelectionProp");
 
     /** checking {@link WidgetType#BUTTON} */
-    public final PresentationItem showNewForm = new PresentationItem("showNewForm", "Show new form");
+    public final PresentationItem showNewForm = new PresentationItem("showNewForm");
 
     /** checking {@link WidgetType#TABLE} */
     public final TableProperties tableProp = new TableProperties("tableProp");
@@ -106,8 +106,7 @@ public class FullExampleProperties extends PropertiesImpl {
      */
     public final Property<Schema> schema = newSchema("schema"); //$NON-NLS-1$
 
-    public final PresentationItem validateAllCallbackCalled = new PresentationItem("validateAllCallbackCalled",
-            "Validate All Callbacks called");
+    public final PresentationItem validateAllCallbackCalled = new PresentationItem("validateAllCallbackCalled");
 
     private List<String> methodCalled = new ArrayList<>();
 

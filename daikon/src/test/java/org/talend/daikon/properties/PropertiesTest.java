@@ -320,7 +320,7 @@ public class PropertiesTest {
         TestProperties componentProperties = (TestProperties) new TestProperties("test").init();
         List<NamedThing> pList = componentProperties.getProperties();
         assertTrue(pList.get(0) != null);
-        assertEquals(16, pList.size());
+        assertEquals(17, pList.size());
     }
 
     @Test
