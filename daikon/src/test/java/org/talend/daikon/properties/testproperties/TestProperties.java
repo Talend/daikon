@@ -47,7 +47,7 @@ public class TestProperties extends PropertiesImpl {
 
     public Form restoreForm;
 
-    public PresentationItem testPI = new PresentationItem("testPI", "testPI display name");
+    public PresentationItem testPI = new PresentationItem("testPI");
 
     public Property<String> userId = newProperty(USER_ID_PROP_NAME).setRequired();
 
