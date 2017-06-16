@@ -84,17 +84,16 @@ public class LogBackJSONLayoutTest {
         JSONObject jsonObject = (JSONObject) obj;
         assertNotNull("ThreadName value is missing", jsonObject.get("threadName"));
     }
-    
+
     @Test
     public void testGenerateingStackTraceError() {
         List<String> stackOptionList = Arrays.asList("full");
         try {
-            stackOptionList.get(1).toString();  
-          } catch(Exception e) {
-              LOGGER.error("Exceptions happen!", e);
-          }
+            stackOptionList.get(1).toString();
+        } catch (Exception e) {
+            LOGGER.error("Exceptions happen!", e);
+        }
     }
-    
 
     @Test
     public void testDateFormat() {

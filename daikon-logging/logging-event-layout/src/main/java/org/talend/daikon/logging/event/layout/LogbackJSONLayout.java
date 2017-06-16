@@ -111,7 +111,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
 
     private void handleThrown(ILoggingEvent loggingEvent) {
         if (loggingEvent.getThrowableProxy() != null) {
-            
+
             if (loggingEvent.getThrowableProxy().getClass().getCanonicalName() != null) {
                 addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrowableProxy().getClass().getCanonicalName());
             }
@@ -119,7 +119,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
             if (loggingEvent.getThrowableProxy().getMessage() != null) {
                 addEventData(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrowableProxy().getMessage());
             }
-            
+
             ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
             converter.setOptionList(Arrays.asList("full"));
             converter.start();
