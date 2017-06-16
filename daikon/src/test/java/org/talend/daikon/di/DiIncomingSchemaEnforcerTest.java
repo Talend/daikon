@@ -73,7 +73,10 @@ public class DiIncomingSchemaEnforcerTest {
 
     private void checkEnforcerWithComponentRecordData(DiIncomingSchemaEnforcer enforcer) {
         // The enforcer must be ready to receive values.
-        assertThat(enforcer.needsInitDynamicColumns(), is(false));
+        assertTrue(enforcer.areDynamicFieldsInitialized());
+        
+        // Create new record before passing values to enforcer
+        enforcer.createNewRecord();
 
         // Put values into the enforcer and get them as an IndexedRecord.
         enforcer.put(0, 1);
@@ -82,10 +85,13 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.put(3, true);
         enforcer.put(4, "Main Street");
         enforcer.put(5, "This is a record with six columns.");
-        IndexedRecord adapted = enforcer.createIndexedRecord();
+        IndexedRecord adapted = enforcer.getCurrentRecord();
 
         // Ensure that the result is the same as the expected component record.
         assertThat(adapted, is(componentRecord));
+        
+        // Create new record before passing values to enforcer
+        enforcer.createNewRecord();
 
         // Ensure that we create a new instance when we give it another value.
         enforcer.put("id", 2);
@@ -94,7 +100,7 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.put("valid", false);
         enforcer.put("address", "2 Main Street");
         enforcer.put("comment", "2 This is a record with six columns.");
-        IndexedRecord adapted2 = enforcer.createIndexedRecord();
+        IndexedRecord adapted2 = enforcer.getCurrentRecord();
 
         // It should have the same schema, but not be the same instance.
         assertThat(adapted2.getSchema(), sameInstance(adapted.getSchema()));
@@ -107,6 +113,9 @@ public class DiIncomingSchemaEnforcerTest {
         assertThat(adapted2.get(5), is((Object) "2 This is a record with six columns."));
     }
 
+    /**
+     * TODO
+     */
     @Test
     public void testNonDynamic() {
         // The design time schema should be the same as the runtime schema.
@@ -116,7 +125,7 @@ public class DiIncomingSchemaEnforcerTest {
         // The enforcer is immediately usable
         assertThat(enforcer.getDesignSchema(), is(talend6Schema));
         assertThat(enforcer.getRuntimeSchema(), is(talend6Schema));
-        assertThat(enforcer.needsInitDynamicColumns(), is(false));
+        checkEnforcerWithComponentRecordData(enforcer);
     }
 
     /**
@@ -389,6 +398,10 @@ public class DiIncomingSchemaEnforcerTest {
         checkEnforcerWithComponentRecordData(enforcer);
     }
 
+    /**
+     * TODO to be removed
+     * This is wrong test-case indexed record should not store values of type {@link Date}
+     */
     @Test
     public void testTypeConversion_toDate() {
         // The expected schema after enforcement.
@@ -410,21 +423,26 @@ public class DiIncomingSchemaEnforcerTest {
 
         // No dynamic columns, the schema is available.
         assertThat(enforcer.getDesignSchema(), is(talend6Schema));
-        assertThat(enforcer.needsInitDynamicColumns(), is(false));
+        assertTrue(enforcer.areDynamicFieldsInitialized());
         assertThat(enforcer.getRuntimeSchema(), is(talend6Schema));
 
         // Put values into the enforcer and get them as an IndexedRecord.
+        enforcer.createNewRecord();
         enforcer.put(0, new Date(1234567891011L));
-        assertThat(enforcer.createIndexedRecord().get(0), is((Object) new Date(1234567891011L)));
+        assertThat(enforcer.getCurrentRecord().get(0), is((Object) new Date(1234567891011L)));
 
         // 2016-05-02T17:30:38.000Z
+        enforcer.createNewRecord();
         enforcer.put(0, "2009-02-13T23:31:31.000Z");
         // "yyyy-MM-dd'T'HH:mm:ss'000Z'"
-        IndexedRecord adapted = enforcer.createIndexedRecord();
+        IndexedRecord adapted = enforcer.getCurrentRecord();
         assertThat(adapted.getSchema(), sameInstance(enforcer.getRuntimeSchema()));
         assertThat(adapted.get(0), is((Object) new Date(1234567891000L)));
     }
 
+    /**
+     * Checks {@link DiIncomingSchemaEnforcer#put()} converts DI Date type to Avro logical data correctly
+     */
     @Test
     public void testTypeConversion_toLogicalDate() {
         // The expected schema after enforcement.
@@ -436,16 +454,21 @@ public class DiIncomingSchemaEnforcerTest {
 
         // No dynamic columns, the schema is available.
         assertThat(enforcer.getDesignSchema(), is(designSchema));
-        assertThat(enforcer.needsInitDynamicColumns(), is(false));
+        assertTrue(enforcer.areDynamicFieldsInitialized());
         assertThat(enforcer.getRuntimeSchema(), is(designSchema));
 
         // Put values into the enforcer and get them as an IndexedRecord.
+        enforcer.createNewRecord();
         enforcer.put(0, new Date(1234567891011L));
-        IndexedRecord adapted = enforcer.createIndexedRecord();
+        IndexedRecord adapted = enforcer.getCurrentRecord();
         assertThat(adapted.get(0), is((Object) 14288));
         assertThat(adapted.getSchema(), sameInstance(enforcer.getRuntimeSchema()));
     }
 
+    /**
+     * TODO to be removed
+     * This is old test. New test is {link this{@link #testAddDynamicFieldAllTypes()}
+     */
     @Test
     public void testDynamicColumnALLSupportedType() {
         Schema talend6Schema = SchemaBuilder.builder().record("Record").fields() //
@@ -686,7 +709,7 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.put(0, new BigDecimal("630.1020"));
         enforcer.put(1, new Date(1234567891011L));
 
-        IndexedRecord record = enforcer.createIndexedRecord();
+        IndexedRecord record = enforcer.getCurrentRecord();
         assertThat(record.get(0), is((Object) new BigDecimal("630.1020")));
         assertThat(record.get(1), is((Object) new Date(1234567891011L)));
     }
