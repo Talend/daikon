@@ -3,11 +3,18 @@ package org.talend.daikon.logging.layout;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.talend.daikon.logging.event.field.LayoutFields;
+import org.talend.daikon.logging.event.layout.LogbackJSONLayout;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.ThrowableProxy;
+import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 
@@ -84,7 +91,15 @@ public class LogBackJSONLayoutTest {
 
     @Test
     public void testGeneratingStackTraceError() {
-        LOGGER.error("Exceptions happen!", new Exception());
+        IThrowableProxy throwableProxy = new ThrowableProxy(new Exception("My goodness"));
+        ILoggingEvent event = mockBasicILoggingEvent(Level.ERROR);
+        Mockito.when(event.getThrowableProxy()).thenReturn(throwableProxy);
+        LogbackJSONLayout layout = new LogbackJSONLayout();
+        layout.start();
+        String logValue = layout.doLayout(event);
+        Object obj = JSONValue.parse(logValue);
+        JSONObject jsonObject = (JSONObject) obj;
+        assertEquals(jsonObject.get("stackTrace"), ThrowableProxyUtil.asString(throwableProxy));
     }
 
     @Test
@@ -95,5 +110,14 @@ public class LogBackJSONLayoutTest {
 
     private String dateFormat(long timestamp) {
         return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
+    }
+
+    private ILoggingEvent mockBasicILoggingEvent(Level level) {
+        ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
+        Mockito.when(event.getLoggerName()).thenReturn("LoggerName");
+        Mockito.when(event.getThreadName()).thenReturn("ThreadName");
+        Mockito.when(event.getFormattedMessage()).thenReturn("My message");
+        Mockito.when(event.getLevel()).thenReturn(level);
+        return event;
     }
 }
