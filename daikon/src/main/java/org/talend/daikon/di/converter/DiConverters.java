@@ -14,6 +14,7 @@ package org.talend.daikon.di.converter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,7 @@ public class DiConverters {
         DI_TYPES_CONVERTERS.put(Byte.class.getCanonicalName(), new ByteIntegerConverter());
         DI_TYPES_CONVERTERS.put(Character.class.getCanonicalName(), new CharStringConverter());
         DI_TYPES_CONVERTERS.put(Short.class.getCanonicalName(), new ShortIntegerConverter());
+        DI_TYPES_CONVERTERS.put(Date.class.getCanonicalName(), new DateLogicalTimestampConverter());
 
         AVRO_TYPES_CONVERTERS = new HashMap<>();
         AVRO_TYPES_CONVERTERS.put(Type.ARRAY, RegularConverter.getInstance());

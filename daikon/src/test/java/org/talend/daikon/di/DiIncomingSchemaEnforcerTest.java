@@ -18,9 +18,9 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -30,6 +30,7 @@ import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -273,6 +274,7 @@ public class DiIncomingSchemaEnforcerTest {
      * TODO to be removed
      * This is wrong test-case indexed record should not store values of type {@link Date}
      */
+    @Ignore("Incorrect behavior. Keep this test here until behavior won't be fixed in components")
     @Test
     public void testTypeConversion_toDate() {
         // The expected schema after enforcement.
@@ -422,8 +424,8 @@ public class DiIncomingSchemaEnforcerTest {
         assertThat(record.get(3), is((Object) 1234567891011L));
         assertThat(record.get(4), is((Object) 2.15));
         assertThat(record.get(5), is((Object) 3.6f));
-        assertThat(record.get(6), is((Object) new BigDecimal("630.1020")));
-        assertThat(record.get(7), is((Object) new Date(1234567891011L)));
+        assertThat(record.get(6), is((Object) "630.1020"));
+        assertThat(record.get(7), is((Object) 1234567891011L));
         assertThat(record.get(8), is((Object) 20));
         assertThat(record.get(9), is((Object) 2016));
         assertThat(record.get(10), is((Object) "A"));
@@ -472,8 +474,8 @@ public class DiIncomingSchemaEnforcerTest {
         enforcer.put(1, new Date(1234567891011L));
 
         IndexedRecord record = enforcer.getCurrentRecord();
-        assertThat(record.get(0), is((Object) new BigDecimal("630.1020")));
-        assertThat(record.get(1), is((Object) new Date(1234567891011L)));
+        assertThat(record.get(0), is((Object) "630.1020"));
+        assertThat(record.get(1), is((Object) 1234567891011L));
     }
 
     /**
@@ -481,6 +483,7 @@ public class DiIncomingSchemaEnforcerTest {
      * TODO (iv.gonchar): this is incorrect behavior, because avro record should not contain java.util.Date value. It should store
      * such value as Long
      */
+    @Ignore("Incorrect behavior. Keep this test here until behavior won't be fixed in components")
     @Test
     public void testPutDatePattern() {
         Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //

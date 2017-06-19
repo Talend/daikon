@@ -30,6 +30,8 @@ import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.LogicalTypeUtils;
 import org.talend.daikon.avro.SchemaConstants;
+import org.talend.daikon.avro.converter.AvroConverter;
+import org.talend.daikon.di.converter.DiConverters;
 
 /**
  * <b>You should almost certainly not be using this class.</b>
@@ -85,6 +87,11 @@ public class DiIncomingSchemaEnforcer {
      * The values wrapped by this object - current {@link IndexedRecord}
      */
     private GenericData.Record currentRecord = null;
+    
+    /**
+     * DI to avro converters list
+     */
+    private List<AvroConverter> converters;
 
     /**
      * Access the indexed fields by their name. We should prefer accessing them by index for performance, but this
@@ -119,6 +126,7 @@ public class DiIncomingSchemaEnforcer {
                 columnToFieldIndex.put(f.name(), f.pos());
             }
         }
+        converters = DiConverters.initConverters(designSchema);
     }
 
     /**
@@ -144,7 +152,7 @@ public class DiIncomingSchemaEnforcer {
      */
     public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
             boolean isNullable) {
-        if (!needsInitDynamicColumns())
+        if (areDynamicFieldsInitialized())
             return;
         Schema fieldSchema = diToAvro(diType, logicalType);
 
@@ -244,13 +252,16 @@ public class DiIncomingSchemaEnforcer {
                 designSchema.isError());
         runtimeSchema.setFields(fields);
 
-        // Map all of the fields from the runtime Schema to their index.
+        // Map all of the fields from the runtime Schema to their index. TODO remove it
         for (Schema.Field f : runtimeSchema.getFields()) {
             columnToFieldIndex.put(f.name(), f.pos());
         }
 
         // And indicate that initialization is finished.
         dynamicFields = null;
+        
+        // creates converters list taking into account dynamic fields
+        converters = DiConverters.initConverters(runtimeSchema);
     }
 
     /**
@@ -325,152 +336,16 @@ public class DiIncomingSchemaEnforcer {
      * @param diValue data value in DI format
      */
     public void put(int index, Object diValue) {
-        // TODO(igonchar): client should call createNewRecord by himself. createNewRecord() call
-        // will be removed after changing codegen in Studio
-        if (currentRecord == null) {
-            createNewRecord();
-        }
-
-        if (diValue == null) {
-            currentRecord.put(index, null);
-            return;
-        }
-
-        // TODO(rskraba): check type validation for correctness with studio objects.
-        Schema.Field field = runtimeSchema.getFields().get(index);
-        Schema fieldSchema = AvroUtils.unwrapIfNullable(field.schema());
-
         Object avroValue = null;
-
-        // TODO(rskraba): This is pretty rough -- fix with a general type conversion strategy.
-        String talendType = field.getProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE);
-        String javaClass = fieldSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
-
-        // TODO(igonchar): This is wrong. However I left it as is. We have to fix it after release
-        // Seems, talendType is added by Studio to schema
-        if ("java.util.Date".equals(javaClass) || "id_Date".equals(talendType)) {
-            if (diValue instanceof Date) {
-                avroValue = diValue;
-            } else if (diValue instanceof Long) {
-                // TODO(igonchar): This is wrong. Avro date value should be stored as Long, not Date
-                avroValue = new Date((long) diValue);
-            } else if (diValue instanceof String) {
-                String pattern = field.getProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN);
-                String vs = (String) diValue;
-
-                if (pattern == null || pattern.equals("yyyy-MM-dd'T'HH:mm:ss'000Z'")) {
-                    if (!vs.endsWith("000Z")) {
-                        throw new RuntimeException("Unparseable date: \"" + vs + "\""); //$NON-NLS-1$ //$NON-NLS-2$
-                    }
-                    pattern = "yyyy-MM-dd'T'HH:mm:ss";
-                }
-
-                SimpleDateFormat df = dateFormatCache.get(pattern);
-                if (df == null) {
-                    df = new SimpleDateFormat(pattern);
-                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                    dateFormatCache.put(pattern, df);
-                }
-
-                try {
-                    avroValue = df.parse((String) diValue);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        if (LogicalTypeUtils.isLogicalDate(fieldSchema)) {
-            // (igonchar): diValue MUST be of java.util.Date
-            Date diDate = (Date) diValue;
-            int avroDays = (int) (diDate.getTime() / ONE_DAY);
-            currentRecord.put(index, avroDays);
-            return;
-        }
-
-        if (LogicalTypeUtils.isLogicalTimestampMillis(fieldSchema)) {
-            // (igonchar): diValue MUST be of java.util.Date
-            Date diDate = (Date) diValue;
-            long avroTimestamp = diDate.getTime();
-            currentRecord.put(index, avroTimestamp);
-            return;
-        }
-
-        // TODO(igonchar): I'm not sure it is correct. For me avro value should be string. Conversion to BigDecimal may be
-        // delegated to component. Component should decide whether convert to BigDecimal
-        if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {
-            if (diValue instanceof BigDecimal) {
-                avroValue = diValue;
-            } else if (diValue instanceof String) {
-                avroValue = new BigDecimal((String) diValue);
-            }
-        }
-
-        if (avroValue == null) {
-            switch (fieldSchema.getType()) {
-            case ARRAY:
-                break;
-            case BOOLEAN:
-                if (diValue instanceof Boolean)
-                    avroValue = diValue;
-                else
-                    avroValue = Boolean.valueOf(String.valueOf(diValue));
-                break;
-            case FIXED:
-            case BYTES:
-                if (diValue instanceof byte[])
-                    avroValue = diValue;
-                else
-                    avroValue = String.valueOf(diValue).getBytes();
-                break;
-            case DOUBLE:
-                if (diValue instanceof Number)
-                    avroValue = ((Number) diValue).doubleValue();
-                else
-                    avroValue = Double.valueOf(String.valueOf(diValue));
-                break;
-            case ENUM:
-                break;
-            case FLOAT:
-                if (diValue instanceof Number)
-                    avroValue = ((Number) diValue).floatValue();
-                else
-                    avroValue = Float.valueOf(String.valueOf(diValue));
-                break;
-            case INT:
-                if (diValue instanceof Number)
-                    avroValue = ((Number) diValue).intValue();
-                else
-                    avroValue = Integer.valueOf(String.valueOf(diValue));
-                break;
-            case LONG:
-                if (diValue instanceof Number)
-                    avroValue = ((Number) diValue).longValue();
-                else
-                    avroValue = Long.valueOf(String.valueOf(diValue));
-                break;
-            case MAP:
-                break;
-            case NULL:
-                avroValue = null;
-                break;
-            case RECORD:
-                break;
-            case STRING:
-                avroValue = String.valueOf(diValue);
-                break;
-            case UNION:
-                break;
-            default:
-                break;
-            }
-        }
-
+        if (diValue != null) {
+            avroValue = converters.get(index).convertToAvro(diValue);
+        } 
         currentRecord.put(index, avroValue);
     }
 
     /**
      * @return An IndexedRecord created from the values stored in this enforcer and clears out any existing values.
+     * @deprecated {@link this#createNewRecord()} and {@link this#getCurrentRecord()} should be used instead
      */
     public IndexedRecord createIndexedRecord() {
         // Send the data to a new instance of IndexedRecord and clear out the existing values.
