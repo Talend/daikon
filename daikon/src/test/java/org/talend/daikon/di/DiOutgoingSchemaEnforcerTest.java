@@ -2,10 +2,14 @@ package org.talend.daikon.di;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -243,5 +247,93 @@ public class DiOutgoingSchemaEnforcerTest {
         enforcer.setWrapped(indexedRecord);
         int[] actualIndexMap = enforcer.indexMap;
         assertArrayEquals(expectedIndexMap, actualIndexMap);
+    }
+    
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} converts all types from Avro to DI correctly
+     */
+    @Test
+    public void testGetAllTypes() {
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("Boolean").type().booleanType().noDefault() //
+                .name("Byte").type(AvroUtils._byte()).noDefault() //
+                .name("Short").type(AvroUtils._short()).noDefault() //
+                .name("Integer").type().intType().noDefault() //
+                .name("LogicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("LogicalTimeMillis").type(AvroUtils._logicalTime()).noDefault() //
+                .name("Long").type().longType().noDefault() //
+                .name("Date").type(AvroUtils._date()).noDefault() //
+                .name("LogicalTimestampMillis").type(AvroUtils._logicalTimestamp()).noDefault() //
+                .name("Float").type().floatType().noDefault() //
+                .name("Double").type().doubleType().noDefault() //
+                .name("Bytes").type().bytesType().noDefault() //
+                .name("Decimal").type(AvroUtils._decimal()).noDefault() //
+                .name("Character").type(AvroUtils._character()).noDefault() //
+                .name("String").type().stringType().noDefault() //
+                .name("Array").type().array().items().stringType().noDefault() //
+                .endRecord(); //
+        
+        /*
+         * Runtime schema may differ from design schema. It may not contain some DI schema properties.
+         * But it doesn't matter for test, so we may take runtime schema equals to design schema
+         */
+        Schema runtimeSchema = designSchema;
+        
+        IndexedRecord record = new GenericData.Record(runtimeSchema);
+        // boolean
+        record.put(0, true);
+        // byte
+        record.put(1, 123);
+        // short
+        record.put(2, 12345);
+        // integer
+        record.put(3, 123456789);
+        // logical date
+        record.put(4, 1234);
+        // logical time-millis
+        record.put(5, 12345);
+        // long
+        record.put(6, 123456789012l);
+        // deprecated DI date
+        record.put(7, 123456789012l);
+        // logical timestamp-millis
+        record.put(8, 123456789012l);
+        // float
+        record.put(9, 12.34f);
+        // double
+        record.put(10, 1234.5678);
+        // bytes
+        byte[] bytes = new byte[] { 0, 1, 2, 3 };
+        record.put(11, bytes);
+        // DI Decimal
+        record.put(12, "1234.5678");
+        // DI Character
+        record.put(13, "s");
+        // String
+        record.put(14, "str");
+        // Array
+        record.put(15, Arrays.asList("one", "two", "three"));
+        
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(designSchema, new IndexMapperByIndex(designSchema));
+        enforcer.setWrapped(record);
+        
+        assertEquals(true, enforcer.get(0));
+        assertEquals((byte) 123, enforcer.get(1));
+        assertEquals((short) 12345, enforcer.get(2));
+        assertEquals(123456789, enforcer.get(3));
+        // 106617600000 = 1234 days in milliseconds
+        assertEquals(new Date(106617600000l), enforcer.get(4));
+        assertEquals(12345, enforcer.get(5));
+        assertEquals(123456789012l, enforcer.get(6));
+        assertEquals(new Date(123456789012l), enforcer.get(7));
+        assertEquals(new Date(123456789012l), enforcer.get(8));
+        assertEquals(12.34f, enforcer.get(9));
+        assertEquals(1234.5678, enforcer.get(10));
+        assertEquals(bytes, enforcer.get(11));
+        assertEquals(new BigDecimal("1234.5678"), enforcer.get(12));
+        assertEquals('s', enforcer.get(13));
+        assertEquals("str", enforcer.get(14));
+        assertEquals(Arrays.asList("one", "two", "three"), enforcer.get(15));
     }
 }
