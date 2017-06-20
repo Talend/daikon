@@ -79,28 +79,6 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingDynamicSchemaEnforcer#getSchema()} returns design schema, which was passed to constructor
-     * without any changes
-     */
-    @Test
-    public void testGetSchema() {
-
-        Schema designSchema = SchemaBuilder.builder().record("Record") //
-                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "0") //
-                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
-                .fields() //
-                .name("address").type().intType().noDefault() //
-                .name("comment").type().stringType().noDefault() //
-                .name("createdDate").type().intType().noDefault() //
-                .endRecord(); //
-
-        DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
-        Schema actualSchema = enforcer.getSchema();
-        assertEquals(designSchema, actualSchema);
-    }
-
-    /**
      * Checks {@link DiOutgoingDynamicSchemaEnforcer#getDynamicFieldsSchema()} returns schema, which contains only
      * dynamic fields (i.e. fields which are present in runtime schema, but are not present in design schema)
      */

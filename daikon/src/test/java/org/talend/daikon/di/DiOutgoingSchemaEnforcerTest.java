@@ -89,19 +89,6 @@ public class DiOutgoingSchemaEnforcerTest {
     }
 
     /**
-     * Checks {@link DiOutgoingSchemaEnforcer#getSchema()} returns design schema, which was passed to constructor
-     * without any changes
-     */
-    @Test
-    public void testGetSchema() {
-        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
-        Schema actualSchema = enforcer.getSchema();
-
-        assertThat(actualSchema, equalTo(talend6Schema));
-    }
-
-    /**
      * Checks {@link DiOutgoingSchemaEnforcer#get(int)} returns correct values retrieved from wrapped
      * {@link IndexedRecord} in case design and runtime schema have same order of the fields
      */

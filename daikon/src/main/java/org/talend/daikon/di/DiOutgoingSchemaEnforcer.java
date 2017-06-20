@@ -27,7 +27,6 @@ import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
-import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapterException;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to coerce the output type to the exact
@@ -82,24 +81,13 @@ import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapt
  * dynamic column,
  * Row2Struct will contain one more field than desigh avro schema.
  */
-public class DiOutgoingSchemaEnforcer implements IndexedRecord {
-
-    /**
-     * {@link Schema} which was specified by user during setting component properties (at design time)
-     * This schema may contain di-specific properties
-     */
-    protected final Schema designSchema;
+public class DiOutgoingSchemaEnforcer {
 
     /**
      * A {@link List} of design schema {@link Field}s
      * It is stored as separate field to accelerate access to them
      */
     protected final List<Field> designFields;
-
-    /**
-     * Number of fields in design schema
-     */
-    protected final int designSchemaSize;
 
     /**
      * {@link IndexedRecord} currently wrapped by this enforcer. This can be swapped out for new data as long as
@@ -134,9 +122,7 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      * @param indexMapper  tool, which computes correspondence between design and runtime fields
      */
     public DiOutgoingSchemaEnforcer(Schema designSchema, IndexMapper indexMapper) {
-        this.designSchema = designSchema;
         this.designFields = designSchema.getFields();
-        this.designSchemaSize = designFields.size();
         this.indexMapper = indexMapper;
     }
 
@@ -155,25 +141,6 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
     }
 
     /**
-     * Returns schema of this {@link IndexedRecord}
-     * Note, this schema doesn't contain dynamic field.
-     * However, {@link DiOutgoingDynamicSchemaEnforcer} returns dynamic values
-     * in map, when dynamic field index is passed
-     */
-    @Override
-    public Schema getSchema() {
-        return designSchema;
-    }
-
-    /**
-     * Throws {@link UnmodifiableAdapterException}. This operation is not supported
-     */
-    @Override
-    public void put(int i, Object v) {
-        throw new UnmodifiableAdapterException();
-    }
-
-    /**
      * {@inheritDoc}
      * <p>
      * Could be called only after first record was wrapped.
@@ -182,7 +149,6 @@ public class DiOutgoingSchemaEnforcer implements IndexedRecord {
      *
      * @param pojoIndex index of required value. Could be from 0 to designSchemaSize - 1
      */
-    @Override
     public Object get(int pojoIndex) {
         Field outField = designFields.get(pojoIndex);
         Object value = wrappedRecord.get(indexMap[pojoIndex]);
