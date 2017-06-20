@@ -74,7 +74,7 @@ public class DiIncomingSchemaEnforcerTest {
     private void checkEnforcerWithComponentRecordData(DiIncomingSchemaEnforcer enforcer) {
         // The enforcer must be ready to receive values.
         assertTrue(enforcer.areDynamicFieldsInitialized());
-        
+
         // Create new record before passing values to enforcer
         enforcer.createNewRecord();
 
@@ -89,7 +89,7 @@ public class DiIncomingSchemaEnforcerTest {
 
         // Ensure that the result is the same as the expected component record.
         assertThat(adapted, is(componentRecord));
-        
+
         // Create new record before passing values to enforcer
         enforcer.createNewRecord();
 
@@ -125,7 +125,7 @@ public class DiIncomingSchemaEnforcerTest {
         // The design time schema should be the same as the runtime schema.
         Schema talend6Schema = componentRecord.getSchema();
         DiIncomingSchemaEnforcer enforcer = new DiIncomingSchemaEnforcer(talend6Schema);
-        
+
         // design schema has no dynamic fields, thus dynamic fields are considered as already initialized
         assertTrue(enforcer.areDynamicFieldsInitialized());
 

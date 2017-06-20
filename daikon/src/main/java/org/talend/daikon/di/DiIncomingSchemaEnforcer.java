@@ -12,20 +12,16 @@
 // ============================================================================
 package org.talend.daikon.di;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.LogicalTypeUtils;
@@ -34,18 +30,14 @@ import org.talend.daikon.avro.converter.AvroConverter;
 import org.talend.daikon.di.converter.DiConverters;
 
 /**
- * <b>You should almost certainly not be using this class.</b>
+ * Converts data from DI to Avro format. </br>
  * 
- * This class acts as a wrapper around arbitrary values to coerce the Talend 6 Studio types in a generated POJO to a
- * {@link IndexedRecord} object that can be processed in the next component..
- * <p>
- * A wrapper like this should be attached before an output component, for example, to ensure that its incoming data with
- * the constraints imposed by the Studio meet the contract of the component framework, for example:
+ * It is a part of Di-to-TCOMP adapter. It is used before TCOMP component in the flow to convert DI row to TCOMP
+ * {@link IndexedRecord}:
  * <ul>
- * <li>Coercing the types of the Talend POJO objects to expected Avro schema types.</li>
- * <li>Unwrapping data in a routines.system.Dynamic column into flat fields.</li>
+ * <li>It coerce Talend POJO objects types to expected Avro schema types</li>
+ * <li>It unwraps data in a routines.system.Dynamic column into flat fields</li>
  * </ul>
- * <p>
  * One instance of this object can be created per incoming schema and reused.
  */
 public class DiIncomingSchemaEnforcer {
@@ -56,21 +48,10 @@ public class DiIncomingSchemaEnforcer {
     private static final int NO_DYNAMIC_COLUMN = -1;
 
     /**
-     * The number of milliseconds in one day
-     */
-    private static final long ONE_DAY = 1000 * 60 * 60 * 24;
-
-    /**
      * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
      * This schema is retrieved from downstream component's properties
      */
     private final Schema designSchema;
-
-    /**
-     * The position of the dynamic column in the incoming schema. This is -1 if there is no dynamic column. There can be
-     * a maximum of one dynamic column in the schema.
-     */
-    private final int dynamicColumnPosition;
 
     /**
      * The {@link Schema} of the actual runtime data that will be provided by this object. This will only be null if
@@ -79,65 +60,82 @@ public class DiIncomingSchemaEnforcer {
     private Schema runtimeSchema;
 
     /**
+     * The position of the dynamic field in the incoming schema. This equals to {@link this#NO_DYNAMIC_COLUMN} if there is no
+     * dynamic field. There can be
+     * only one dynamic field in the schema.
+     */
+    private final int dynamicFieldPosition;
+
+    /**
      * Collection of fields constructed from dynamic columns. This will only be non-null during construction.
      */
-    private List<Schema.Field> dynamicFields = null;
+    private List<Schema.Field> dynamicFields;
 
     /**
      * The values wrapped by this object - current {@link IndexedRecord}
      */
-    private GenericData.Record currentRecord = null;
-    
+    private GenericData.Record currentRecord;
+
     /**
-     * DI to avro converters list
+     * DI to avro converters list. Converter index corresponds to specific field in {@link Schema}, which this converter will
+     * convert
      */
+    @SuppressWarnings("rawtypes")
     private List<AvroConverter> converters;
 
     /**
      * Access the indexed fields by their name. We should prefer accessing them by index for performance, but this
      * complicates the logic of dynamic columns quite a bit.
      */
-    private final Map<String, Integer> columnToFieldIndex = new HashMap<>();
-
-    // TODO(rskraba): fix with a general type conversion strategy.
-    private final Map<String, SimpleDateFormat> dateFormatCache = new HashMap<>();
+    private final Map<String, Integer> nameToIndexMap = new HashMap<>();
 
     /**
-     * Constructor
+     * Constructor set design {@link Schema}, checks whether there is dynamic column in schema, computes its position.
+     * If there is no dynamic field:
+     * <ul>
+     * <li>Computes field name to field index map</li>
+     * <li>Initializes DI to Avro converters</li>
+     * </ul>
+     * If there is dynamic field above actions are done in {@link this#createRuntimeSchema()} method
      * 
      * @param incoming design schema retrieved from downstream component properties
      */
     public DiIncomingSchemaEnforcer(Schema incoming) {
         designSchema = incoming;
 
-        // Find the dynamic column, if any.
-        dynamicColumnPosition = AvroUtils.isIncludeAllFields(designSchema)
-                ? Integer.valueOf(designSchema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : NO_DYNAMIC_COLUMN;
-        if (dynamicColumnPosition != NO_DYNAMIC_COLUMN) {
+        dynamicFieldPosition = computeDynamicFieldPosition(designSchema);
+        if (dynamicFieldPosition != NO_DYNAMIC_COLUMN) {
             runtimeSchema = null;
             dynamicFields = new ArrayList<>();
         } else {
             runtimeSchema = designSchema;
+            computeNameToIndexMap();
+            converters = DiConverters.initConverters(runtimeSchema);
         }
-
-        // Add all of the runtime columns except any dynamic column to the index map.
-        for (Schema.Field f : designSchema.getFields()) {
-            if (f.pos() != dynamicColumnPosition) {
-                columnToFieldIndex.put(f.name(), f.pos());
-            }
-        }
-        converters = DiConverters.initConverters(designSchema);
     }
 
     /**
-     * Take all of the parameters from the dynamic metadata and adapt it to a field for the runtime Schema.
+     * Computes dynamic field position in design schema.
+     * Returns dynamic field position or {@link this#NO_DYNAMIC_COLUMN} if there is no dynamic field in schema
      * 
-     * @deprecated because it was renamed. Use {@link this#addDynamicField(String, String, String, String, boolean)} instead
+     * @return dynamic field position
      */
-    @Deprecated
-    public void initDynamicColumn(String name, String dbName, String type, String dbType, int dbTypeId, int length, int precision,
-            String format, String description, boolean isKey, boolean isNullable, String refFieldName, String refModuleName) {
-        addDynamicField(name, type, null, format, description, isNullable);
+    private int computeDynamicFieldPosition(Schema schema) {
+        return AvroUtils.isIncludeAllFields(schema)
+                ? Integer.valueOf(schema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : NO_DYNAMIC_COLUMN;
+    }
+
+    /**
+     * Compute mapping of field name to field index. This is used in {@link this#put(String, Object)} method for quick index
+     * computation
+     * However, it is not clear, which approach is better:
+     * 1. Use this mapping and put values by field index
+     * 2. Or just use {@link Record#put(String, Object)} and put values by field name
+     */
+    private void computeNameToIndexMap() {
+        for (Schema.Field f : runtimeSchema.getFields()) {
+            nameToIndexMap.put(f.name(), f.pos());
+        }
     }
 
     /**
@@ -181,43 +179,32 @@ public class DiIncomingSchemaEnforcer {
             return fieldSchema;
         }
 
-        if ("id_String".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.STRING);
-        } else if ("id_Boolean".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.BOOLEAN);
-        } else if ("id_Integer".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.INT);
-        } else if ("id_Long".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.LONG);
-        } else if ("id_Double".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.DOUBLE);
-        } else if ("id_Float".equals(diType)) {
-            fieldSchema = Schema.create(Schema.Type.FLOAT);
-        } else if ("id_Byte".equals(diType)) {
-            fieldSchema = AvroUtils._byte();
-        } else if ("id_Short".equals(diType)) {
-            fieldSchema = AvroUtils._short();
-        } else if ("id_Character".equals(diType)) {
-            fieldSchema = AvroUtils._character();
-        } else if ("id_BigDecimal".equals(diType)) {
-            fieldSchema = AvroUtils._decimal();
-        } else if ("id_Date".equals(diType)) {
-            fieldSchema = AvroUtils._date();
-        } else {
+        switch (diType) {
+        case "id_String":
+            return Schema.create(Schema.Type.STRING);
+        case "id_Boolean":
+            return Schema.create(Schema.Type.BOOLEAN);
+        case "id_Integer":
+            return Schema.create(Schema.Type.INT);
+        case "id_Long":
+            return Schema.create(Schema.Type.LONG);
+        case "id_Double":
+            return Schema.create(Schema.Type.DOUBLE);
+        case "id_Float":
+            return Schema.create(Schema.Type.FLOAT);
+        case "id_Byte":
+            return AvroUtils._byte();
+        case "id_Short":
+            return AvroUtils._short();
+        case "id_Character":
+            return AvroUtils._character();
+        case "id_BigDecimal":
+            return AvroUtils._decimal();
+        case "id_Date":
+            return AvroUtils._date();
+        default:
             throw new UnsupportedOperationException("Unrecognized type " + diType);
         }
-        return fieldSchema;
-    }
-
-    /**
-     * Called when dynamic columns have finished being initialized. After this call, the {@link #getDesignSchema()} can be
-     * used to get the runtime schema.
-     * 
-     * @deprecated because it was renamed. Use {@link this#recreateRuntimeSchema()} instead
-     */
-    @Deprecated
-    public void initDynamicColumnsFinished() {
-        createRuntimeSchema();
     }
 
     /**
@@ -237,7 +224,7 @@ public class DiIncomingSchemaEnforcer {
         List<Schema.Field> fields = new ArrayList<Schema.Field>();
         for (Schema.Field designField : designSchema.getFields()) {
             // Replace the dynamic column by all of its contents.
-            if (designField.pos() == dynamicColumnPosition) {
+            if (designField.pos() == dynamicFieldPosition) {
                 fields.addAll(dynamicFields);
                 dynamicFieldsAdded = true;
             }
@@ -252,14 +239,11 @@ public class DiIncomingSchemaEnforcer {
                 designSchema.isError());
         runtimeSchema.setFields(fields);
 
-        // Map all of the fields from the runtime Schema to their index. TODO remove it
-        for (Schema.Field f : runtimeSchema.getFields()) {
-            columnToFieldIndex.put(f.name(), f.pos());
-        }
+        computeNameToIndexMap();
 
         // And indicate that initialization is finished.
         dynamicFields = null;
-        
+
         // creates converters list taking into account dynamic fields
         converters = DiConverters.initConverters(runtimeSchema);
     }
@@ -280,16 +264,6 @@ public class DiIncomingSchemaEnforcer {
     }
 
     /**
-     * @deprecated because it was renamed. Use {@link this#areDynamicFieldsInitialized()} instead
-     * @return true only if there is a dynamic column and they haven't been finished initializing yet. When this returns
-     * true, the enforcer can't be used yet and {@link #getDesignSchema()} is guaranteed to return null.
-     */
-    @Deprecated
-    public boolean needsInitDynamicColumns() {
-        return !areDynamicFieldsInitialized();
-    }
-
-    /**
      * Checks whether dynamic fields were already initialized.
      * Dynamic fields are initialized using parameters from the first incoming data object.
      * Thus, this method returns <code>false</code>, if dynamic fields were not initialized yet (before first data object).
@@ -302,21 +276,12 @@ public class DiIncomingSchemaEnforcer {
     }
 
     /**
-     * Return runtime schema
-     * 
-     * @return runtime schema
+     * Creates new instance for {@link IndexedRecord}
+     * This should be called before series of {@link this#put()} calls, which copies values from next DI data object into this
+     * enforcer
      */
-    public Schema getRuntimeSchema() {
-        return runtimeSchema;
-    }
-
-    /**
-     * Returns design schema
-     * 
-     * @return design schema
-     */
-    public Schema getDesignSchema() {
-        return designSchema;
+    public void createNewRecord() {
+        currentRecord = new GenericData.Record(getRuntimeSchema());
     }
 
     /**
@@ -326,7 +291,7 @@ public class DiIncomingSchemaEnforcer {
      * @param diValue data value
      */
     public void put(String name, Object diValue) {
-        put(columnToFieldIndex.get(name), diValue);
+        put(nameToIndexMap.get(name), diValue);
     }
 
     /**
@@ -335,23 +300,13 @@ public class DiIncomingSchemaEnforcer {
      * @param index field index to put in
      * @param diValue data value in DI format
      */
+    @SuppressWarnings("unchecked")
     public void put(int index, Object diValue) {
         Object avroValue = null;
         if (diValue != null) {
             avroValue = converters.get(index).convertToAvro(diValue);
-        } 
+        }
         currentRecord.put(index, avroValue);
-    }
-
-    /**
-     * @return An IndexedRecord created from the values stored in this enforcer and clears out any existing values.
-     * @deprecated {@link this#createNewRecord()} and {@link this#getCurrentRecord()} should be used instead
-     */
-    public IndexedRecord createIndexedRecord() {
-        // Send the data to a new instance of IndexedRecord and clear out the existing values.
-        IndexedRecord copy = currentRecord;
-        currentRecord = null;
-        return copy;
     }
 
     /**
@@ -364,12 +319,21 @@ public class DiIncomingSchemaEnforcer {
     }
 
     /**
-     * Creates new instance for {@link IndexedRecord}
-     * This should be called before series of {@link this#put()} calls, which copies values from next DI data object into this
-     * enforcer
+     * Returns design schema
+     * 
+     * @return design schema
      */
-    public void createNewRecord() {
-        currentRecord = new GenericData.Record(getRuntimeSchema());
+    Schema getDesignSchema() {
+        return designSchema;
+    }
+
+    /**
+     * Return runtime schema
+     * 
+     * @return runtime schema
+     */
+    Schema getRuntimeSchema() {
+        return runtimeSchema;
     }
 
 }
