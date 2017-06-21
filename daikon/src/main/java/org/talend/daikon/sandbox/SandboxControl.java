@@ -12,9 +12,6 @@
 // ============================================================================
 package org.talend.daikon.sandbox;
 
-import java.net.URL;
-import java.util.List;
-
 /**
  * Provide finer-grained control for the creation of {@link SandboxedInstance}s.
  *
