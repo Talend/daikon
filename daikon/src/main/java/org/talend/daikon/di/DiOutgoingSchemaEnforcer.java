@@ -27,6 +27,8 @@ import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
+import org.talend.daikon.avro.converter.AvroConverter;
+import org.talend.daikon.di.converter.DiConverters;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to coerce the output type to the exact
@@ -116,10 +118,17 @@ public class DiOutgoingSchemaEnforcer {
     private boolean firstRecordProcessed = false;
 
     /**
+     * Avro to DI converters list. Converter index corresponds to specific field in {@link Schema}, which this converter will
+     * convert
+     */
+    @SuppressWarnings("rawtypes")
+    private List<AvroConverter> converters;
+
+    /**
      * Constructor sets design schema and {@link IndexMapper} instance
      *
      * @param designSchema design schema specified by user
-     * @param indexMapper  tool, which computes correspondence between design and runtime fields
+     * @param indexMapper tool, which computes correspondence between design and runtime fields
      */
     public DiOutgoingSchemaEnforcer(Schema designSchema, IndexMapper indexMapper) {
         this.designFields = designSchema.getFields();
@@ -129,6 +138,8 @@ public class DiOutgoingSchemaEnforcer {
     /**
      * Wraps {@link IndexedRecord},
      * creates map of correspondence between design and runtime fields, when first record is wrapped
+     * It may be useful when runtime schema has different field order from design schema (and "by Name" index mapping is used)
+     * Also initializes converters for each field
      *
      * @param record {@link IndexedRecord} to be wrapped
      */
@@ -136,32 +147,51 @@ public class DiOutgoingSchemaEnforcer {
         wrappedRecord = record;
         if (!firstRecordProcessed) {
             indexMap = indexMapper.computeIndexMap(record.getSchema());
+            converters = DiConverters.initConverters(record.getSchema());
             firstRecordProcessed = true;
         }
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
      * Could be called only after first record was wrapped.
      * Here design schema and runtime schema have the same fields
      * (but fields could be in different order)
+     * 
+     * <code>pojoIndex</code> is a field index in design schema. This field may have different index in runtime schema
+     * (when runtime {@link Schema} has different field order).
+     * {@link this#indexMap} is used to compute corresponding field index in runtime schema
      *
      * @param pojoIndex index of required value. Could be from 0 to designSchemaSize - 1
      */
     public Object get(int pojoIndex) {
-        Field outField = designFields.get(pojoIndex);
         Object value = wrappedRecord.get(indexMap[pojoIndex]);
-        return transformValue(value, outField);
+        return convertValue(value, indexMap[pojoIndex]);
+    }
+
+    /**
+     * Converts value from Avro to DI format
+     * 
+     * @param avroValue value retrieved from {@link IndexedRecord}
+     * @param recordIndex value index in {@link IndexedRecord}
+     * @return DI value to be set to DI row
+     */
+    @SuppressWarnings("unchecked")
+    private Object convertValue(Object avroValue, int recordIndex) {
+        Object diValue = null;
+        if (avroValue != null) {
+            diValue = converters.get(recordIndex).convertToDatum(avroValue);
+        }
+        return diValue;
     }
 
     /**
      * Transforms record column value from Avro type to Talend type
      *
-     * @param value      record column value, which should be transformed into Talend compatible value.
-     *                   It can be null when null
-     *                   corresponding wrapped field.
+     * @param value record column value, which should be transformed into Talend compatible value.
+     * It can be null when null
+     * corresponding wrapped field.
      * @param valueField field, which contain information about value's Talend type. It mustn't be null
+     * TODO remove after adding converters
      */
     protected Object transformValue(Object value, Field valueField) {
         if (null == value) {

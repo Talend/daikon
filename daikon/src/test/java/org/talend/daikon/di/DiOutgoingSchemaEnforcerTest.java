@@ -7,9 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -248,7 +246,7 @@ public class DiOutgoingSchemaEnforcerTest {
         int[] actualIndexMap = enforcer.indexMap;
         assertArrayEquals(expectedIndexMap, actualIndexMap);
     }
-    
+
     /**
      * Checks {@link DiOutgoingSchemaEnforcer#get(int)} converts all types from Avro to DI correctly
      */
@@ -273,13 +271,13 @@ public class DiOutgoingSchemaEnforcerTest {
                 .name("String").type().stringType().noDefault() //
                 .name("Array").type().array().items().stringType().noDefault() //
                 .endRecord(); //
-        
+
         /*
          * Runtime schema may differ from design schema. It may not contain some DI schema properties.
          * But it doesn't matter for test, so we may take runtime schema equals to design schema
          */
         Schema runtimeSchema = designSchema;
-        
+
         IndexedRecord record = new GenericData.Record(runtimeSchema);
         // boolean
         record.put(0, true);
@@ -314,10 +312,10 @@ public class DiOutgoingSchemaEnforcerTest {
         record.put(14, "str");
         // Array
         record.put(15, Arrays.asList("one", "two", "three"));
-        
+
         DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(designSchema, new IndexMapperByIndex(designSchema));
         enforcer.setWrapped(record);
-        
+
         assertEquals(true, enforcer.get(0));
         assertEquals((byte) 123, enforcer.get(1));
         assertEquals((short) 12345, enforcer.get(2));
@@ -336,4 +334,91 @@ public class DiOutgoingSchemaEnforcerTest {
         assertEquals("str", enforcer.get(14));
         assertEquals(Arrays.asList("one", "two", "three"), enforcer.get(15));
     }
+
+    /**
+     * Checks {@link DiOutgoingSchemaEnforcer#get(int)} converts null values without Exception for all types
+     */
+    @Test
+    public void testGetNullValues() {
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .fields() //
+                .name("Boolean").type().nullable().booleanType().noDefault() //
+                .name("Byte").type(AvroUtils.wrapAsNullable(AvroUtils._byte())).noDefault() //
+                .name("Short").type(AvroUtils.wrapAsNullable(AvroUtils._short())).noDefault() //
+                .name("Integer").type().nullable().intType().noDefault() //
+                .name("LogicalDate").type(AvroUtils.wrapAsNullable(AvroUtils._logicalDate())).noDefault() //
+                .name("LogicalTimeMillis").type(AvroUtils.wrapAsNullable(AvroUtils._logicalTime())).noDefault() //
+                .name("Long").type().nullable().longType().noDefault() //
+                .name("Date").type(AvroUtils.wrapAsNullable(AvroUtils._date())).noDefault() //
+                .name("LogicalTimestampMillis").type(AvroUtils.wrapAsNullable(AvroUtils._logicalTimestamp())).noDefault() //
+                .name("Float").type().nullable().floatType().noDefault() //
+                .name("Double").type().nullable().doubleType().noDefault() //
+                .name("Bytes").type().nullable().bytesType().noDefault() //
+                .name("Decimal").type(AvroUtils.wrapAsNullable(AvroUtils._decimal())).noDefault() //
+                .name("Character").type(AvroUtils.wrapAsNullable(AvroUtils._character())).noDefault() //
+                .name("String").type().nullable().stringType().noDefault() //
+                .name("Array").type().nullable().array().items().stringType().noDefault() //
+                .endRecord(); //
+
+        /*
+         * Runtime schema may differ from design schema. It may not contain some DI schema properties.
+         * But it doesn't matter for test, so we may take runtime schema equals to design schema
+         */
+        Schema runtimeSchema = designSchema;
+
+        IndexedRecord record = new GenericData.Record(runtimeSchema);
+        // boolean
+        record.put(0, null);
+        // byte
+        record.put(1, null);
+        // short
+        record.put(2, null);
+        // integer
+        record.put(3, null);
+        // logical date
+        record.put(4, null);
+        // logical time-millis
+        record.put(5, null);
+        // long
+        record.put(6, null);
+        // deprecated DI date
+        record.put(7, null);
+        // logical timestamp-millis
+        record.put(8, null);
+        // float
+        record.put(9, null);
+        // double
+        record.put(10, null);
+        // bytes
+        record.put(11, null);
+        // DI Decimal
+        record.put(12, null);
+        // DI Character
+        record.put(13, null);
+        // String
+        record.put(14, null);
+        // Array
+        record.put(15, null);
+
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(designSchema, new IndexMapperByIndex(designSchema));
+        enforcer.setWrapped(record);
+
+        assertEquals(null, enforcer.get(0));
+        assertEquals(null, enforcer.get(1));
+        assertEquals(null, enforcer.get(2));
+        assertEquals(null, enforcer.get(3));
+        assertEquals(null, enforcer.get(4));
+        assertEquals(null, enforcer.get(5));
+        assertEquals(null, enforcer.get(6));
+        assertEquals(null, enforcer.get(7));
+        assertEquals(null, enforcer.get(8));
+        assertEquals(null, enforcer.get(9));
+        assertEquals(null, enforcer.get(10));
+        assertEquals(null, enforcer.get(11));
+        assertEquals(null, enforcer.get(12));
+        assertEquals(null, enforcer.get(13));
+        assertEquals(null, enforcer.get(14));
+        assertEquals(null, enforcer.get(15));
+    }
+
 }
