@@ -86,12 +86,6 @@ import org.talend.daikon.di.converter.DiConverters;
 public class DiOutgoingSchemaEnforcer {
 
     /**
-     * A {@link List} of design schema {@link Field}s
-     * It is stored as separate field to accelerate access to them
-     */
-    protected final List<Field> designFields;
-
-    /**
      * {@link IndexedRecord} currently wrapped by this enforcer. This can be swapped out for new data as long as
      * they keep the same schema. This {@link IndexedRecord} contains another {@link Schema} which is called actual or runtime
      * schema.
@@ -129,9 +123,18 @@ public class DiOutgoingSchemaEnforcer {
      *
      * @param designSchema design schema specified by user
      * @param indexMapper tool, which computes correspondence between design and runtime fields
+     * @deprecated use {@link this#DiOutgoingSchemaEnforcer(IndexMapper)}} instead
      */
     public DiOutgoingSchemaEnforcer(Schema designSchema, IndexMapper indexMapper) {
-        this.designFields = designSchema.getFields();
+        this(indexMapper);
+    }
+
+    /**
+     * Constructor sets {@link IndexMapper} instance
+     *
+     * @param indexMapper tool, which computes correspondence between design and runtime fields
+     */
+    public DiOutgoingSchemaEnforcer(IndexMapper indexMapper) {
         this.indexMapper = indexMapper;
     }
 
@@ -146,10 +149,20 @@ public class DiOutgoingSchemaEnforcer {
     public void setWrapped(IndexedRecord record) {
         wrappedRecord = record;
         if (!firstRecordProcessed) {
-            indexMap = indexMapper.computeIndexMap(record.getSchema());
-            converters = DiConverters.initConverters(record.getSchema());
+            processFirstRecord(record);
             firstRecordProcessed = true;
         }
+    }
+
+    /**
+     * Computes {@link this#indexMap} and initializes {@link this#converters}
+     * This method could be extended
+     * 
+     * @param record first incoming {@link IndexedRecord}
+     */
+    protected void processFirstRecord(IndexedRecord record) {
+        indexMap = indexMapper.computeIndexMap(record.getSchema());
+        converters = DiConverters.initConverters(record.getSchema());
     }
 
     /**

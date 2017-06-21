@@ -37,6 +37,12 @@ import org.apache.avro.generic.IndexedRecord;
  * It extends {@link DiOutgoingSchemaEnforcer} and provides handling for dynamic fields
  */
 public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
+    
+    /**
+     * A {@link List} of design schema {@link Field}s
+     * It is stored as separate field to accelerate access to them
+     */
+    private List<Field> designFields;
 
     /**
      * A {@link List} of runtime schema {@link Field}s
@@ -60,19 +66,14 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     private Schema dynamicFieldsSchema;
 
     /**
-     * State field, which denotes whether first incoming {@link IndexedRecord} was processed
-     * (i.e. )
-     */
-    private boolean firstRecordProcessed = false;
-
-    /**
-     * Constructor sets design schema, its fields and size, runtime schema fields and values related to dynamic fields handling
+     * Constructor sets values related to dynamic fields handling
      * 
      * @param designSchema design schema (specified by user and provided by Di Studio)
      * @param indexMapper tool, which computes correspondence between design and runtime fields
      */
     public DiOutgoingDynamicSchemaEnforcer(Schema designSchema, DynamicIndexMapper indexMapper) {
-        super(designSchema, indexMapper);
+        super(indexMapper);
+        this.designFields = designSchema.getFields();
         this.dynamicFieldPosition = DynamicFieldUtils.getDynamicFieldPosition(designSchema);
         if (dynamicFieldPosition == DynamicFieldUtils.NO_DYNAMIC_COLUMN) {
             throw new IllegalArgumentException("Design schema doesn't contain dynamic field");
@@ -109,25 +110,18 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     }
 
     /**
-     * Wraps {@link IndexedRecord},
-     * creates map of correspondence between design and runtime fields, when first record is wrapped
+     * Computes {@link this#indexMap}, initializes {@link this#converters}
+     * Computes runtime fields and creates dynamic fields schema 
      * 
-     * @param record {@link IndexedRecord} to be wrapped
+     * @param record first incoming {@link IndexedRecord}
      */
     @Override
-    public void setWrapped(IndexedRecord record) {
-        super.setWrapped(record);
-        // wrappedRecord = record;
-        // if (indexMap == null) {
-        // indexMap = indexMapper.computeIndexMap(record.getSchema());
-        // }
-        if (!firstRecordProcessed) {
-            Schema runtimeSchema = record.getSchema();
-            this.runtimeFields = runtimeSchema.getFields();
-            this.dynamicFieldsIndexes = ((DynamicIndexMapper) indexMapper).computeDynamicFieldsIndexes(runtimeSchema);
-            createDynamicFieldsSchema();
-            // firstRecordProcessed = true;
-        }
+    protected void processFirstRecord(IndexedRecord record) {
+        super.processFirstRecord(record);
+        Schema runtimeSchema = record.getSchema();
+        this.runtimeFields = runtimeSchema.getFields();
+        this.dynamicFieldsIndexes = ((DynamicIndexMapper) indexMapper).computeDynamicFieldsIndexes(runtimeSchema);
+        createDynamicFieldsSchema();
     }
 
     /**
