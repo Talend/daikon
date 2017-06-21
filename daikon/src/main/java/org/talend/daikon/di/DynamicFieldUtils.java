@@ -23,7 +23,7 @@ class DynamicFieldUtils {
     /**
      * Dynamic column position possible value, which means schema doesn't have dynamic column
      */
-    static final int NO_DYNAMIC_COLUMN = -1;
+    static final int NO_DYNAMIC_FIELD = -1;
 
     /**
      * Computes dynamic field position in design schema.
@@ -33,6 +33,6 @@ class DynamicFieldUtils {
      */
     static int getDynamicFieldPosition(Schema schema) {
         return AvroUtils.isIncludeAllFields(schema)
-                ? Integer.valueOf(schema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : NO_DYNAMIC_COLUMN;
+                ? Integer.valueOf(schema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : NO_DYNAMIC_FIELD;
     }
 }

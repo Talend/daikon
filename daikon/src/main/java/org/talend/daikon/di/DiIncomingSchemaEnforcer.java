@@ -99,7 +99,7 @@ public class DiIncomingSchemaEnforcer {
         designSchema = incoming;
 
         dynamicFieldPosition = DynamicFieldUtils.getDynamicFieldPosition(designSchema);
-        if (dynamicFieldPosition != DynamicFieldUtils.NO_DYNAMIC_COLUMN) {
+        if (dynamicFieldPosition != DynamicFieldUtils.NO_DYNAMIC_FIELD) {
             runtimeSchema = null;
             dynamicFields = new ArrayList<>();
         } else {

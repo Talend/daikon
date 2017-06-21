@@ -75,7 +75,7 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
         super(indexMapper);
         this.designFields = designSchema.getFields();
         this.dynamicFieldPosition = DynamicFieldUtils.getDynamicFieldPosition(designSchema);
-        if (dynamicFieldPosition == DynamicFieldUtils.NO_DYNAMIC_COLUMN) {
+        if (dynamicFieldPosition == DynamicFieldUtils.NO_DYNAMIC_FIELD) {
             throw new IllegalArgumentException("Design schema doesn't contain dynamic field");
         }
     }
