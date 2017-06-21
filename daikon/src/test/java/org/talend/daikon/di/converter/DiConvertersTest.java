@@ -62,7 +62,7 @@ public class DiConvertersTest {
         converter = converters.get(0);
         assertThat(converter, instanceOf(DateLogicalDateConverter.class));
         converter = converters.get(1);
-        assertThat(converter, instanceOf(RegularConverter.class));
+        assertThat(converter, instanceOf(IdentityConverter.class));
         converter = converters.get(2);
         assertThat(converter, instanceOf(DateLogicalTimestampConverter.class));
         converter = converters.get(3);
@@ -74,20 +74,20 @@ public class DiConvertersTest {
         converter = converters.get(6);
         assertThat(converter, instanceOf(ShortIntegerConverter.class));
         converter = converters.get(7);
-        assertThat(converter, instanceOf(RegularConverter.class));
+        assertThat(converter, instanceOf(IdentityConverter.class));
         converter = converters.get(8);
-        assertThat(converter, instanceOf(RegularConverter.class));
+        assertThat(converter, instanceOf(IdentityConverter.class));
         converter = converters.get(9);
-        assertThat(converter, instanceOf(RegularConverter.class));
+        assertThat(converter, instanceOf(IdentityConverter.class));
         converter = converters.get(10);
-        assertThat(converter, instanceOf(RegularConverter.class));
+        assertThat(converter, instanceOf(IdentityConverter.class));
         converter = converters.get(11);
-        assertThat(converter, instanceOf(RegularConverter.class));
+        assertThat(converter, instanceOf(IdentityConverter.class));
         converter = converters.get(12);
-        assertThat(converter, instanceOf(RegularConverter.class));
+        assertThat(converter, instanceOf(IdentityConverter.class));
         converter = converters.get(13);
-        assertThat(converter, instanceOf(RegularConverter.class));
+        assertThat(converter, instanceOf(IdentityConverter.class));
         converter = converters.get(14);
-        assertThat(converter, instanceOf(RegularConverter.class));
+        assertThat(converter, instanceOf(IdentityConverter.class));
     }
 }

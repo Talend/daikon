@@ -58,7 +58,7 @@ public class DiConverters {
     static {
         LOGICAL_CONVERTERS = new HashMap<>();
         LOGICAL_CONVERTERS.put(LogicalTypeUtils.DATE, new DateLogicalDateConverter());
-        LOGICAL_CONVERTERS.put(LogicalTypeUtils.TIME_MILLIS, RegularConverter.getInstance());
+        LOGICAL_CONVERTERS.put(LogicalTypeUtils.TIME_MILLIS, IdentityConverter.getInstance());
         LOGICAL_CONVERTERS.put(LogicalTypeUtils.TIMESTAMP_MILLIS, new DateLogicalTimestampConverter());
 
         DI_TYPES_CONVERTERS = new HashMap<>();
@@ -69,14 +69,14 @@ public class DiConverters {
         DI_TYPES_CONVERTERS.put(Date.class.getCanonicalName(), new DateLogicalTimestampConverter());
 
         AVRO_TYPES_CONVERTERS = new HashMap<>();
-        AVRO_TYPES_CONVERTERS.put(Type.ARRAY, RegularConverter.getInstance());
-        AVRO_TYPES_CONVERTERS.put(Type.BOOLEAN, RegularConverter.getInstance());
-        AVRO_TYPES_CONVERTERS.put(Type.BYTES, RegularConverter.getInstance());
-        AVRO_TYPES_CONVERTERS.put(Type.DOUBLE, RegularConverter.getInstance());
-        AVRO_TYPES_CONVERTERS.put(Type.FLOAT, RegularConverter.getInstance());
-        AVRO_TYPES_CONVERTERS.put(Type.INT, RegularConverter.getInstance());
-        AVRO_TYPES_CONVERTERS.put(Type.LONG, RegularConverter.getInstance());
-        AVRO_TYPES_CONVERTERS.put(Type.STRING, RegularConverter.getInstance());
+        AVRO_TYPES_CONVERTERS.put(Type.ARRAY, IdentityConverter.getInstance());
+        AVRO_TYPES_CONVERTERS.put(Type.BOOLEAN, IdentityConverter.getInstance());
+        AVRO_TYPES_CONVERTERS.put(Type.BYTES, IdentityConverter.getInstance());
+        AVRO_TYPES_CONVERTERS.put(Type.DOUBLE, IdentityConverter.getInstance());
+        AVRO_TYPES_CONVERTERS.put(Type.FLOAT, IdentityConverter.getInstance());
+        AVRO_TYPES_CONVERTERS.put(Type.INT, IdentityConverter.getInstance());
+        AVRO_TYPES_CONVERTERS.put(Type.LONG, IdentityConverter.getInstance());
+        AVRO_TYPES_CONVERTERS.put(Type.STRING, IdentityConverter.getInstance());
     }
 
     /**

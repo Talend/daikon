@@ -31,12 +31,12 @@ import org.talend.daikon.avro.converter.AbstractAvroConverter;
  * </ol>
  * 
  */
-public class RegularConverter extends AbstractAvroConverter<Object, Object> {
+public class IdentityConverter extends AbstractAvroConverter<Object, Object> {
 
     /**
      * Reference to itself for Singleton pattern implementation
      */
-    private static RegularConverter instance;
+    private static IdentityConverter instance;
 
     /**
      * Private constructor for Singleton pattern implementation
@@ -44,7 +44,7 @@ public class RegularConverter extends AbstractAvroConverter<Object, Object> {
      * types
      * Corresponding methods {@link this#getDatumClass()} and {@link this#getSchema()} are not supported
      */
-    private RegularConverter() {
+    private IdentityConverter() {
         super(null, null);
     }
 
@@ -53,9 +53,9 @@ public class RegularConverter extends AbstractAvroConverter<Object, Object> {
      * 
      * @return instance of this class
      */
-    public static RegularConverter getInstance() {
+    public static IdentityConverter getInstance() {
         if (instance == null) {
-            instance = new RegularConverter();
+            instance = new IdentityConverter();
         }
         return instance;
     }
