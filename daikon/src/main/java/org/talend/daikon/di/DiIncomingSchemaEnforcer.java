@@ -23,11 +23,10 @@ import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.IndexedRecord;
-import org.talend.daikon.avro.AvroUtils;
-import org.talend.daikon.avro.LogicalTypeUtils;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.avro.converter.AvroConverter;
 import org.talend.daikon.di.converter.DiConverters;
+import org.talend.daikon.di.converter.SchemaConverter;
 
 /**
  * Converts data from DI to Avro format. </br>
@@ -136,7 +135,7 @@ public class DiIncomingSchemaEnforcer {
             boolean isNullable) {
         if (areDynamicFieldsInitialized())
             return;
-        Schema fieldSchema = diToAvro(diType, logicalType);
+        Schema fieldSchema = SchemaConverter.diToAvro(diType, logicalType);
 
         if (isNullable) {
             fieldSchema = SchemaBuilder.nullable().type(fieldSchema);
@@ -147,48 +146,6 @@ public class DiIncomingSchemaEnforcer {
             field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
         }
         dynamicFields.add(field);
-    }
-
-    /**
-     * Converts DI type to Avro field schema
-     * 
-     * @param diType data integration native type
-     * @param logicalType avro logical type
-     * @return field schema
-     * @throws {@link UnsupportedOperationException} in case of unsupported di type or logical type
-     */
-    Schema diToAvro(String diType, String logicalType) {
-        Schema fieldSchema = LogicalTypeUtils.getSchemaByLogicalType(logicalType);
-        if (fieldSchema != null) {
-            return fieldSchema;
-        }
-
-        switch (diType) {
-        case "id_String":
-            return Schema.create(Schema.Type.STRING);
-        case "id_Boolean":
-            return Schema.create(Schema.Type.BOOLEAN);
-        case "id_Integer":
-            return Schema.create(Schema.Type.INT);
-        case "id_Long":
-            return Schema.create(Schema.Type.LONG);
-        case "id_Double":
-            return Schema.create(Schema.Type.DOUBLE);
-        case "id_Float":
-            return Schema.create(Schema.Type.FLOAT);
-        case "id_Byte":
-            return AvroUtils._byte();
-        case "id_Short":
-            return AvroUtils._short();
-        case "id_Character":
-            return AvroUtils._character();
-        case "id_BigDecimal":
-            return AvroUtils._decimal();
-        case "id_Date":
-            return AvroUtils._date();
-        default:
-            throw new UnsupportedOperationException("Unrecognized type " + diType);
-        }
     }
 
     /**
