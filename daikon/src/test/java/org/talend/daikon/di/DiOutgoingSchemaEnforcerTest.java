@@ -10,14 +10,12 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.avro.Schema;
-import org.apache.avro.Schema.Field;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.daikon.avro.AvroUtils;
-import org.talend.daikon.avro.SchemaConstants;
 
 /**
  * Unit-tests for {@link DiOutgoingSchemaEnforcer} class
@@ -97,7 +95,7 @@ public class DiOutgoingSchemaEnforcerTest {
     @Test
     public void testGetByIndex() {
         IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(indexMapper);
         enforcer.setWrapped(record);
 
         assertThat(enforcer.get(0), equalTo((Object) 1));
@@ -127,7 +125,7 @@ public class DiOutgoingSchemaEnforcerTest {
                 .endRecord(); //
 
         IndexMapper indexMapper = new IndexMapperByName(talend6Schema);
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(indexMapper);
         enforcer.setWrapped(record);
 
         assertThat(enforcer.get(0), equalTo((Object) true));
@@ -144,85 +142,10 @@ public class DiOutgoingSchemaEnforcerTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void testGetOutOfBounds() {
         IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(indexMapper);
         enforcer.setWrapped(record);
 
         enforcer.get(10);
-    }
-
-    /**
-     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Date} value correctly
-     * using Talend type property
-     */
-    @Test
-    public void testTransformValueToDateByTalendType() {
-        Date expectedDate = new Date(1L);
-
-        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
-
-        Field dateField = new Field("createdDate", Schema.create(Schema.Type.LONG), null, null);
-        dateField.addProp(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date");
-        dateField.addProp(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'");
-
-        Object transformedValue = enforcer.transformValue(1L, dateField);
-
-        assertThat(transformedValue, equalTo((Object) expectedDate));
-    }
-
-    /**
-     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Date} value correctly
-     * using Java class
-     */
-    @Test
-    public void testTransformValueToDateByJavaClass() {
-        Date expectedDate = new Date(1L);
-
-        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
-
-        Field dateField = new Field("createdDate", Schema.create(Schema.Type.LONG), null, null);
-        dateField.schema().addProp(SchemaConstants.JAVA_CLASS_FLAG, "java.util.Date");
-
-        Object transformedValue = enforcer.transformValue(1L, dateField);
-
-        assertThat(transformedValue, equalTo((Object) expectedDate));
-    }
-
-    /**
-     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link BigDecimal} value
-     * correctly using Java class
-     */
-    @Test
-    public void testTransformValueToDecimal() {
-        BigDecimal expectedDecimal = new BigDecimal("10.20");
-
-        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
-
-        Field decimalField = new Field("decimal", AvroUtils._decimal(), null, null);
-
-        Object transformedValue = enforcer.transformValue("10.20", decimalField);
-
-        assertThat(transformedValue, equalTo((Object) expectedDecimal));
-    }
-
-    /**
-     * Checks {@link DiOutgoingSchemaEnforcer#transformValue(Object, Field)} transforms {@link Character} value
-     * correctly using Java class
-     */
-    @Test
-    public void testTransformValueToCharacter() {
-        char expectedChar = 'A';
-
-        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema);
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(talend6Schema, indexMapper);
-
-        Field characterField = new Field("character", AvroUtils._character(), null, null);
-
-        Object transformedValue = enforcer.transformValue("A", characterField);
-
-        assertThat(transformedValue, equalTo((Object) expectedChar));
     }
 
     /**
@@ -313,7 +236,7 @@ public class DiOutgoingSchemaEnforcerTest {
         // Array
         record.put(15, Arrays.asList("one", "two", "three"));
 
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(designSchema, new IndexMapperByIndex(designSchema));
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(new IndexMapperByIndex(designSchema));
         enforcer.setWrapped(record);
 
         assertEquals(true, enforcer.get(0));
@@ -400,7 +323,7 @@ public class DiOutgoingSchemaEnforcerTest {
         // Array
         record.put(15, null);
 
-        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(designSchema, new IndexMapperByIndex(designSchema));
+        DiOutgoingSchemaEnforcer enforcer = new DiOutgoingSchemaEnforcer(new IndexMapperByIndex(designSchema));
         enforcer.setWrapped(record);
 
         assertEquals(null, enforcer.get(0));

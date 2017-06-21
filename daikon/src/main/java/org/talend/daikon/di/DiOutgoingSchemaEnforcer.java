@@ -12,21 +12,10 @@
 // ============================================================================
 package org.talend.daikon.di;
 
-import static org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
-
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
-import org.apache.avro.LogicalType;
-import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
-import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
-import org.talend.daikon.avro.AvroUtils;
-import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.avro.converter.AvroConverter;
 import org.talend.daikon.di.converter.DiConverters;
 
@@ -119,17 +108,6 @@ public class DiOutgoingSchemaEnforcer {
     private List<AvroConverter> converters;
 
     /**
-     * Constructor sets design schema and {@link IndexMapper} instance
-     *
-     * @param designSchema design schema specified by user
-     * @param indexMapper tool, which computes correspondence between design and runtime fields
-     * @deprecated use {@link this#DiOutgoingSchemaEnforcer(IndexMapper)}} instead
-     */
-    public DiOutgoingSchemaEnforcer(Schema designSchema, IndexMapper indexMapper) {
-        this(indexMapper);
-    }
-
-    /**
      * Constructor sets {@link IndexMapper} instance
      *
      * @param indexMapper tool, which computes correspondence between design and runtime fields
@@ -195,55 +173,6 @@ public class DiOutgoingSchemaEnforcer {
             diValue = converters.get(recordIndex).convertToDatum(avroValue);
         }
         return diValue;
-    }
-
-    /**
-     * Transforms record column value from Avro type to Talend type
-     *
-     * @param value record column value, which should be transformed into Talend compatible value.
-     * It can be null when null
-     * corresponding wrapped field.
-     * @param valueField field, which contain information about value's Talend type. It mustn't be null
-     * TODO remove after adding converters
-     */
-    protected Object transformValue(Object value, Field valueField) {
-        if (null == value) {
-            return null;
-        }
-
-        Schema nonnull = AvroUtils.unwrapIfNullable(valueField.schema());
-        LogicalType logicalType = nonnull.getLogicalType();
-        if (logicalType != null) {
-            if (logicalType == LogicalTypes.date()) {
-                Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-                c.setTimeInMillis(0L);
-                c.add(Calendar.DATE, (Integer) value);
-                return c.getTime();
-            } else if (logicalType == LogicalTypes.timeMillis()) {
-                return value;
-            } else if (logicalType == LogicalTypes.timestampMillis()) {
-                return new Date((Long) value);
-            }
-        }
-
-        // This might not always have been specified.
-        String talendType = valueField.getProp(TALEND6_COLUMN_TALEND_TYPE);
-        String javaClass = nonnull.getProp(SchemaConstants.JAVA_CLASS_FLAG);
-
-        // TODO(rskraba): A full list of type conversion to coerce to Talend-compatible types.
-        if ("id_Short".equals(talendType)) { //$NON-NLS-1$
-            return value instanceof Number ? ((Number) value).shortValue() : Short.parseShort(String.valueOf(value));
-        } else if ("id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) { //$NON-NLS-1$
-            // FIXME - remove this mapping in favor of using Avro logical types
-            return value instanceof Date ? value : new Date((Long) value);
-        } else if ("id_Byte".equals(talendType)) { //$NON-NLS-1$
-            return value instanceof Number ? ((Number) value).byteValue() : Byte.parseByte(String.valueOf(value));
-        } else if ("id_Character".equals(talendType) || "java.lang.Character".equals(javaClass)) {
-            return value instanceof Character ? value : ((String) value).charAt(0);
-        } else if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {
-            return value instanceof BigDecimal ? value : new BigDecimal(String.valueOf(value));
-        }
-        return value;
     }
 
 }
