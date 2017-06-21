@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
-import org.talend.daikon.avro.AvroUtils;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to transform output avro-styled values to the exact
@@ -74,9 +73,8 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
      */
     public DiOutgoingDynamicSchemaEnforcer(Schema designSchema, DynamicIndexMapper indexMapper) {
         super(designSchema, indexMapper);
-        if (AvroUtils.isIncludeAllFields(designSchema)) {
-            this.dynamicFieldPosition = Integer.valueOf(designSchema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION));
-        } else {
+        this.dynamicFieldPosition = DynamicFieldUtils.getDynamicFieldPosition(designSchema);
+        if (dynamicFieldPosition == DynamicFieldUtils.NO_DYNAMIC_COLUMN) {
             throw new IllegalArgumentException("Design schema doesn't contain dynamic field");
         }
     }
@@ -128,6 +126,7 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
             this.runtimeFields = runtimeSchema.getFields();
             this.dynamicFieldsIndexes = ((DynamicIndexMapper) indexMapper).computeDynamicFieldsIndexes(runtimeSchema);
             createDynamicFieldsSchema();
+            // firstRecordProcessed = true;
         }
     }
 
@@ -151,7 +150,7 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     }
 
     /**
-     * Creates {@link Schema} of dynamic fields
+     * Creates {@link Schema} of dynamic fields. It is used to create Dynamic Metadatas in DI
      */
     private void createDynamicFieldsSchema() {
         List<Field> dynamicFields = new ArrayList<>();

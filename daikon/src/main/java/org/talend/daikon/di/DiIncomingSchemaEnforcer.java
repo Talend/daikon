@@ -43,11 +43,6 @@ import org.talend.daikon.di.converter.DiConverters;
 public class DiIncomingSchemaEnforcer {
 
     /**
-     * Dynamic column position possible value, which means schema doesn't have dynamic column
-     */
-    private static final int NO_DYNAMIC_COLUMN = -1;
-
-    /**
      * The design-time schema from the Studio that determines how incoming java column data will be interpreted.
      * This schema is retrieved from downstream component's properties
      */
@@ -103,8 +98,8 @@ public class DiIncomingSchemaEnforcer {
     public DiIncomingSchemaEnforcer(Schema incoming) {
         designSchema = incoming;
 
-        dynamicFieldPosition = computeDynamicFieldPosition(designSchema);
-        if (dynamicFieldPosition != NO_DYNAMIC_COLUMN) {
+        dynamicFieldPosition = DynamicFieldUtils.getDynamicFieldPosition(designSchema);
+        if (dynamicFieldPosition != DynamicFieldUtils.NO_DYNAMIC_COLUMN) {
             runtimeSchema = null;
             dynamicFields = new ArrayList<>();
         } else {
@@ -112,17 +107,6 @@ public class DiIncomingSchemaEnforcer {
             computeNameToIndexMap();
             converters = DiConverters.initConverters(runtimeSchema);
         }
-    }
-
-    /**
-     * Computes dynamic field position in design schema.
-     * Returns dynamic field position or {@link this#NO_DYNAMIC_COLUMN} if there is no dynamic field in schema
-     * 
-     * @return dynamic field position
-     */
-    private int computeDynamicFieldPosition(Schema schema) {
-        return AvroUtils.isIncludeAllFields(schema)
-                ? Integer.valueOf(schema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : NO_DYNAMIC_COLUMN;
     }
 
     /**
