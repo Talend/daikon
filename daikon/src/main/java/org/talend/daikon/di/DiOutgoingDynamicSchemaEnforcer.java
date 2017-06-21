@@ -57,10 +57,9 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     /**
      * Constructor sets values related to dynamic fields handling
      * 
-     * @param designSchema design schema (specified by user and provided by Di Studio)
      * @param indexMapper tool, which computes correspondence between design and runtime fields
      */
-    public DiOutgoingDynamicSchemaEnforcer(Schema designSchema, DynamicIndexMapper indexMapper) {
+    public DiOutgoingDynamicSchemaEnforcer(DynamicIndexMapper indexMapper) {
         super(indexMapper);
     }
 

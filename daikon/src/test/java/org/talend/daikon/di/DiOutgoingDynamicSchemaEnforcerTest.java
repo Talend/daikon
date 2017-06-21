@@ -142,7 +142,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(indexMapper);
         enforcer.setWrapped(record);
         Schema actualDynamicSchema = enforcer.getDynamicFieldsSchema();
         assertEquals(expectedDynamicSchema, actualDynamicSchema);
@@ -172,7 +172,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(indexMapper);
         enforcer.setWrapped(record);
 
         // non-Dynamic fields
@@ -223,7 +223,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(indexMapper);
         enforcer.setWrapped(record);
 
         // non-Dynamic fields
@@ -275,7 +275,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(indexMapper);
         enforcer.setWrapped(record);
 
         // non-Dynamic fields
@@ -360,7 +360,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         nullRecord.put(15, null);
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(indexMapper);
         enforcer.setWrapped(nullRecord);
 
         // non-Dynamic fields
@@ -411,7 +411,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
                 .endRecord(); //
 
         DynamicIndexMapper indexMapper = new DynamicIndexMapperByIndex(designSchema);
-        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(indexMapper);
         enforcer.setWrapped(record);
 
         enforcer.get(11);
