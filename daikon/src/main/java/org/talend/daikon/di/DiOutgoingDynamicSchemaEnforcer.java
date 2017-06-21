@@ -39,14 +39,9 @@ import org.apache.avro.generic.IndexedRecord;
 public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
 
     /**
-     * A {@link List} of runtime schema {@link Field}s
+     * {@link List} of runtime schema {@link Field} names
      */
-    private List<Field> runtimeFields;
-
-    /**
-     * Dynamic field position in the design schema. Schema can contain 0 or 1 dynamic columns.
-     */
-    private final int dynamicFieldPosition;
+    private List<String> runtimeFieldsNames;
 
     /**
      * Contains indexes of dynamic fields (i.e. fields which are present in runtime schema, but are not present in design schema)
@@ -67,10 +62,6 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
      */
     public DiOutgoingDynamicSchemaEnforcer(Schema designSchema, DynamicIndexMapper indexMapper) {
         super(indexMapper);
-        this.dynamicFieldPosition = DynamicFieldUtils.getDynamicFieldPosition(designSchema);
-        if (dynamicFieldPosition == DynamicFieldUtils.NO_DYNAMIC_FIELD) {
-            throw new IllegalArgumentException("Design schema doesn't contain dynamic field");
-        }
     }
 
     /**
@@ -109,9 +100,9 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     protected void processFirstRecord(IndexedRecord record) {
         super.processFirstRecord(record);
         Schema runtimeSchema = record.getSchema();
-        this.runtimeFields = runtimeSchema.getFields();
+        initRuntimeFieldsNames(runtimeSchema);
         this.dynamicFieldsIndexes = ((DynamicIndexMapper) indexMapper).computeDynamicFieldsIndexes(runtimeSchema);
-        createDynamicFieldsSchema();
+        createDynamicFieldsSchema(record.getSchema());
     }
 
     /**
@@ -126,21 +117,20 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
         for (int dynamicIndex : dynamicFieldsIndexes) {
             Object avroValue = wrappedRecord.get(dynamicIndex);
             Object diValue = convertValue(avroValue, dynamicIndex);
-            Field dynamicField = runtimeFields.get(dynamicIndex);
-            String dynamicFieldName = dynamicField.name();
-            dynamicValues.put(dynamicFieldName, diValue);
+            dynamicValues.put(runtimeFieldsNames.get(dynamicIndex), diValue);
         }
         return dynamicValues;
     }
 
     /**
      * Creates {@link Schema} of dynamic fields. It is used to create Dynamic Metadatas in DI
+     * 
+     * @param runtimeSchema Runtime Avro {@link Schema}, it comes with {@link IndexedRecord}
      */
-    private void createDynamicFieldsSchema() {
+    private void createDynamicFieldsSchema(Schema runtimeSchema) {
         List<Field> dynamicFields = new ArrayList<>();
-        // List<Integer> dynamicFieldsIndexes = indexMapper.computeDynamicFieldsIndexes();
-        for (int index : dynamicFieldsIndexes) {
-            Field dynamicField = runtimeFields.get(index);
+        for (int dynamicIndex : dynamicFieldsIndexes) {
+            Field dynamicField = runtimeSchema.getFields().get(dynamicIndex);
             Field dynamicFieldCopy = new Schema.Field(dynamicField.name(), dynamicField.schema(), dynamicField.doc(),
                     dynamicField.defaultVal());
             Map<String, Object> fieldProperties = dynamicField.getObjectProps();
@@ -155,5 +145,18 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
 
         dynamicFieldsSchema = Schema.createRecord("dynamic", null, null, false);
         dynamicFieldsSchema.setFields(dynamicFields);
+    }
+
+    /**
+     * Initializes runtime fields names
+     * These fields are used as keys in generated {@link Map} with dynamic values
+     * 
+     * @param runtimeSchema Runtime Avro {@link Schema}, it comes with {@link IndexedRecord}
+     */
+    private void initRuntimeFieldsNames(Schema runtimeSchema) {
+        runtimeFieldsNames = new ArrayList<>(runtimeSchema.getFields().size());
+        for (Field field : runtimeSchema.getFields()) {
+            runtimeFieldsNames.add(field.name());
+        }
     }
 }
