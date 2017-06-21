@@ -37,12 +37,6 @@ import org.apache.avro.generic.IndexedRecord;
  * It extends {@link DiOutgoingSchemaEnforcer} and provides handling for dynamic fields
  */
 public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
-    
-    /**
-     * A {@link List} of design schema {@link Field}s
-     * It is stored as separate field to accelerate access to them
-     */
-    private List<Field> designFields;
 
     /**
      * A {@link List} of runtime schema {@link Field}s
@@ -73,7 +67,6 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
      */
     public DiOutgoingDynamicSchemaEnforcer(Schema designSchema, DynamicIndexMapper indexMapper) {
         super(indexMapper);
-        this.designFields = designSchema.getFields();
         this.dynamicFieldPosition = DynamicFieldUtils.getDynamicFieldPosition(designSchema);
         if (dynamicFieldPosition == DynamicFieldUtils.NO_DYNAMIC_FIELD) {
             throw new IllegalArgumentException("Design schema doesn't contain dynamic field");
@@ -97,21 +90,18 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
      * 
      * @param pojoIndex index of required value. Could be from 0 to designSchemaSize
      */
-    // @Override
     public Object get(int pojoIndex) {
         int runtimeIndex = indexMap[pojoIndex];
         if (runtimeIndex == DYNAMIC) {
             return getDynamicValues();
         }
-
-        Field designField = pojoIndex > dynamicFieldPosition ? designFields.get(pojoIndex - 1) : designFields.get(pojoIndex);
-        Object value = wrappedRecord.get(runtimeIndex);
-        return transformValue(value, designField);
+        Object avroValue = wrappedRecord.get(runtimeIndex);
+        return convertValue(avroValue, runtimeIndex);
     }
 
     /**
      * Computes {@link this#indexMap}, initializes {@link this#converters}
-     * Computes runtime fields and creates dynamic fields schema 
+     * Computes runtime fields and creates dynamic fields schema
      * 
      * @param record first incoming {@link IndexedRecord}
      */
@@ -134,11 +124,11 @@ public class DiOutgoingDynamicSchemaEnforcer extends DiOutgoingSchemaEnforcer {
     private Map<String, Object> getDynamicValues() {
         Map<String, Object> dynamicValues = new LinkedHashMap<>();
         for (int dynamicIndex : dynamicFieldsIndexes) {
+            Object avroValue = wrappedRecord.get(dynamicIndex);
+            Object diValue = convertValue(avroValue, dynamicIndex);
             Field dynamicField = runtimeFields.get(dynamicIndex);
             String dynamicFieldName = dynamicField.name();
-            Object value = wrappedRecord.get(dynamicIndex);
-            value = transformValue(value, runtimeFields.get(dynamicIndex));
-            dynamicValues.put(dynamicFieldName, value);
+            dynamicValues.put(dynamicFieldName, diValue);
         }
         return dynamicValues;
     }

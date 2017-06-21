@@ -189,7 +189,7 @@ public class DiOutgoingSchemaEnforcer {
      * @return DI value to be set to DI row
      */
     @SuppressWarnings("unchecked")
-    private Object convertValue(Object avroValue, int recordIndex) {
+    protected Object convertValue(Object avroValue, int recordIndex) {
         Object diValue = null;
         if (avroValue != null) {
             diValue = converters.get(recordIndex).convertToDatum(avroValue);

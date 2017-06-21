@@ -188,6 +188,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         assertEquals(Arrays.asList("one", "two", "three"), enforcer.get(10));
 
         // Dynamic fields
+        @SuppressWarnings("unchecked")
         Map<String, Object> dynamicValues = (Map<String, Object>) enforcer.get(0);
         assertThat(dynamicValues.size(), equalTo(6));
         assertThat(dynamicValues, hasEntry("Boolean", (Object) true));
@@ -238,6 +239,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         assertEquals(Arrays.asList("one", "two", "three"), enforcer.get(10));
 
         // Dynamic fields
+        @SuppressWarnings("unchecked")
         Map<String, Object> dynamicValues = (Map<String, Object>) enforcer.get(2);
         assertThat(dynamicValues.size(), equalTo(6));
         assertThat(dynamicValues, hasEntry("Short", (Object) (short) 12345));
@@ -290,6 +292,7 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         assertEquals(12.34f, enforcer.get(9));
 
         // Dynamic fields
+        @SuppressWarnings("unchecked")
         Map<String, Object> dynamicValues = (Map<String, Object>) enforcer.get(10);
         assertThat(dynamicValues.size(), equalTo(6));
         assertThat(dynamicValues, hasEntry("Double", (Object) 1234.5678));
@@ -298,6 +301,90 @@ public class DiOutgoingDynamicSchemaEnforcerTest {
         assertThat(dynamicValues, hasEntry("Character", (Object) 's'));
         assertThat(dynamicValues, hasEntry("String", (Object) "str"));
         assertThat(dynamicValues, hasEntry("Array", (Object) Arrays.asList("one", "two", "three")));
+    }
+
+    /**
+     * Checks {@link DiOutgoingDynamicSchemaEnforcer#get()} correctly handles null values
+     */
+    @Test
+    public void testGetAllNulls() {
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "10") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true") //
+                .fields() //
+                .name("Boolean").type().nullable().booleanType().noDefault() //
+                .name("Byte").type(AvroUtils.wrapAsNullable(AvroUtils._byte())).noDefault() //
+                .name("Short").type(AvroUtils.wrapAsNullable(AvroUtils._short())).noDefault() //
+                .name("Integer").type().nullable().intType().noDefault() //
+                .name("LogicalDate").type(AvroUtils.wrapAsNullable(AvroUtils._logicalDate())).noDefault() //
+                .name("LogicalTimeMillis").type(AvroUtils.wrapAsNullable(AvroUtils._logicalTime())).noDefault() //
+                .name("Long").type().nullable().longType().noDefault() //
+                .name("Date").type(AvroUtils.wrapAsNullable(AvroUtils._date())).noDefault() //
+                .name("LogicalTimestampMillis").type(AvroUtils.wrapAsNullable(AvroUtils._logicalTimestamp())).noDefault() //
+                .name("Float").type().nullable().floatType().noDefault() //
+                .endRecord(); //
+
+        IndexedRecord nullRecord = new GenericData.Record(runtimeSchema);
+        // boolean
+        nullRecord.put(0, null);
+        // byte
+        nullRecord.put(1, null);
+        // short
+        nullRecord.put(2, null);
+        // integer
+        nullRecord.put(3, null);
+        // logical date
+        nullRecord.put(4, null);
+        // logical time-millis
+        nullRecord.put(5, null);
+        // long
+        nullRecord.put(6, null);
+        // deprecated DI date
+        nullRecord.put(7, null);
+        // logical timestamp-millis
+        nullRecord.put(8, null);
+        // float
+        nullRecord.put(9, null);
+        // double
+        nullRecord.put(10, null);
+        // bytes
+        nullRecord.put(11, null);
+        // DI Decimal
+        nullRecord.put(12, null);
+        // DI Character
+        nullRecord.put(13, null);
+        // String
+        nullRecord.put(14, null);
+        // Array
+        nullRecord.put(15, null);
+
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
+        DiOutgoingDynamicSchemaEnforcer enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+        enforcer.setWrapped(nullRecord);
+
+        // non-Dynamic fields
+        assertEquals(null, enforcer.get(0));
+        assertEquals(null, enforcer.get(1));
+        assertEquals(null, enforcer.get(2));
+        assertEquals(null, enforcer.get(3));
+        assertEquals(null, enforcer.get(4));
+        assertEquals(null, enforcer.get(5));
+        assertEquals(null, enforcer.get(6));
+        assertEquals(null, enforcer.get(7));
+        assertEquals(null, enforcer.get(8));
+        assertEquals(null, enforcer.get(9));
+
+        // Dynamic fields
+        @SuppressWarnings("unchecked")
+        Map<String, Object> dynamicValues = (Map<String, Object>) enforcer.get(10);
+        assertThat(dynamicValues.size(), equalTo(6));
+        assertThat(dynamicValues, hasEntry("Double", null));
+        assertThat(dynamicValues, hasEntry("Bytes", null));
+        assertThat(dynamicValues, hasEntry("Decimal", null));
+        assertThat(dynamicValues, hasEntry("Character", null));
+        assertThat(dynamicValues, hasEntry("String", null));
+        assertThat(dynamicValues, hasEntry("Array", null));
     }
 
     /**
