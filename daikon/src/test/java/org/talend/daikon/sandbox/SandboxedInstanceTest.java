@@ -62,7 +62,7 @@ public class SandboxedInstanceTest {
     public void testClose() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         URLClassLoader urlClassLoader = URLClassLoader
                 .newInstance(Collections.singleton(this.getClass().getResource("zeLib-0.0.1.jar")).toArray(new URL[1]));
-        SandboxedInstance sandboxedInstance = new SandboxedInstance(TEST_CLASS_NAME, true, urlClassLoader, CLASSLOADER_REUSABLE);
+        SandboxedInstance sandboxedInstance = new SandboxedInstance(TEST_CLASS_NAME, false, urlClassLoader, CLASSLOADER_REUSABLE);
         ClassLoader previousClassLoader = Thread.currentThread().getContextClassLoader();
         Object instance = sandboxedInstance.getInstance();
         assertTrue(ClassLoaderIsolatedSystemProperties.getInstance().isIsolated(instance.getClass().getClassLoader()));
