@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.daikon.di.converter;
 
-import java.util.Date;
-
 import org.apache.avro.Schema;
 import org.junit.Assert;
 import org.junit.Test;
