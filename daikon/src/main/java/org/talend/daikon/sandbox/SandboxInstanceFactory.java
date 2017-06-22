@@ -84,7 +84,8 @@ public class SandboxInstanceFactory {
             sandboxClassLoader = createClassLoader(runtimeInfo, parentClassLoader);
         }
 
-        return new SandboxedInstance(runtimeInfo.getRuntimeClassName(), useCurrentJvmProperties, sandboxClassLoader);
+        return new SandboxedInstance(runtimeInfo.getRuntimeClassName(), useCurrentJvmProperties, sandboxClassLoader,
+                reusableClassLoader);
     }
 
     private static URLClassLoader createClassLoader(RuntimeInfo runtimeInfo, ClassLoader parentClassLoader) {
