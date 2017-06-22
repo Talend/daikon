@@ -40,7 +40,7 @@ public class IdentityConverter extends AbstractAvroConverter<Object, Object> {
 
     /**
      * Private constructor for Singleton pattern implementation
-     * Sets both Di {@link Class} and Avro {@link Schema} null, as this converter supports multiple 
+     * Sets both Di {@link Class} and Avro {@link Schema} null, as this converter supports multiple
      * types
      * Corresponding methods {@link this#getDatumClass()} and {@link this#getSchema()} are not supported
      */

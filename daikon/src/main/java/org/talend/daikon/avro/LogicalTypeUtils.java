@@ -147,5 +147,5 @@ public final class LogicalTypeUtils {
         }
         }
     }
-    
+
 }
