@@ -79,7 +79,7 @@ public class SandboxedInstance implements AutoCloseable {
                 try {
                     ((AutoCloseable) sandboxClassLoader).close();
                 } catch (Exception e) {
-                    new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                    TalendRuntimeException.createUnexpectedException(e);
                 }
             }
         }
