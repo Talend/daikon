@@ -115,41 +115,71 @@ public final class TypeConverter {
         String logicalType = LogicalTypeUtils.getLogicalTypeName(typeSchema);
 
         if (logicalType != null) {
-            switch (logicalType) {
-            case LogicalTypeUtils.DATE:
-                return DATE;
-            case LogicalTypeUtils.TIME_MICROS:
-                return LONG;
-            case LogicalTypeUtils.TIME_MILLIS:
-                return INTEGER;
-            case LogicalTypeUtils.TIMESTAMP_MICROS:
-                return DATE;
-            case LogicalTypeUtils.TIMESTAMP_MILLIS:
-                return DATE;
-            default:
-                throw new UnsupportedOperationException("Unrecognized type " + logicalType);
-            }
+            return getDiByLogicalType(logicalType);
         }
 
         String javaClass = typeSchema.getProp(SchemaConstants.JAVA_CLASS_FLAG);
         if (javaClass != null) {
-            switch (javaClass) {
-            case "java.math.BigDecimal":
-                return BIGDECIMAL;
-            case "java.lang.Byte":
-                return BYTE;
-            case "java.lang.Character":
-                return CHARACTER;
-            case "java.lang.Short":
-                return SHORT;
-            case "java.util.Date":
-                return DATE;
-            default:
-                throw new UnsupportedOperationException("Unrecognized java class " + javaClass);
-            }
+            return getDiByJavaClass(javaClass);
         }
 
-        switch (typeSchema.getType()) {
+        return getDiByAvroType(typeSchema.getType());
+    }
+
+    /**
+     * Returns DI metadata type which corresponds to Avro logical type
+     * 
+     * @param logicalType Avro logical type
+     * @return DI type
+     */
+    private static String getDiByLogicalType(String logicalType) {
+        switch (logicalType) {
+        case LogicalTypeUtils.DATE:
+            return DATE;
+        case LogicalTypeUtils.TIME_MICROS:
+            return LONG;
+        case LogicalTypeUtils.TIME_MILLIS:
+            return INTEGER;
+        case LogicalTypeUtils.TIMESTAMP_MICROS:
+            return DATE;
+        case LogicalTypeUtils.TIMESTAMP_MILLIS:
+            return DATE;
+        default:
+            throw new UnsupportedOperationException("Unrecognized type " + logicalType);
+        }
+    }
+
+    /**
+     * Returns DI metadata type which corresponds to java-class property flag
+     * 
+     * @param javaClass java-class property value
+     * @return DI type
+     */
+    private static String getDiByJavaClass(String javaClass) {
+        switch (javaClass) {
+        case "java.math.BigDecimal":
+            return BIGDECIMAL;
+        case "java.lang.Byte":
+            return BYTE;
+        case "java.lang.Character":
+            return CHARACTER;
+        case "java.lang.Short":
+            return SHORT;
+        case "java.util.Date":
+            return DATE;
+        default:
+            throw new UnsupportedOperationException("Unrecognized java class " + javaClass);
+        }
+    }
+
+    /**
+     * Returns DI metadata type which corresponds to avro type
+     * 
+     * @param type avro schema type
+     * @return DI type
+     */
+    private static String getDiByAvroType(Schema.Type type) {
+        switch (type) {
         case ARRAY:
             return LIST;
         case BYTES:
@@ -167,7 +197,7 @@ public final class TypeConverter {
         case STRING:
             return STRING;
         default:
-            throw new UnsupportedOperationException("Unsupported avro type " + typeSchema);
+            throw new UnsupportedOperationException("Unsupported avro type " + type);
         }
     }
 }

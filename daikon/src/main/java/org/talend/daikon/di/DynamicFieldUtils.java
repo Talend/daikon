@@ -19,15 +19,15 @@ import org.talend.daikon.avro.AvroUtils;
  * Utility methods for DI dynamic field
  */
 final class DynamicFieldUtils {
-    
-    private DynamicFieldUtils() {
-        // Class provides static utility methods and shouldn't be instantiated
-    }
 
     /**
      * Dynamic column position possible value, which means schema doesn't have dynamic column
      */
     static final int NO_DYNAMIC_FIELD = -1;
+
+    private DynamicFieldUtils() {
+        // Class provides static utility methods and shouldn't be instantiated
+    }
 
     /**
      * Computes dynamic field position in design schema.

@@ -14,11 +14,13 @@ package org.talend.daikon.di.converter;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.talend.daikon.avro.AvroUtils;
+import org.talend.daikon.avro.SchemaConstants;
 
 /**
  * Unit-tests for {@link TypeConverter}
@@ -365,6 +367,47 @@ public class TypeConverterTest {
         String expectedType = "id_List";
         Schema fieldSchema = Schema.createArray(Schema.create(Schema.Type.STRING));
         assertEquals(expectedType, TypeConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link TypeConverter#avroToDi(Schema)} throws {@link UnsupportedOperationException} with following message
+     * "Unrecognized type",
+     * when unknown logical type is passed
+     */
+    @Test
+    public void testAvroToDiUnsupportedLogicalType() {
+        thrown.expect(UnsupportedOperationException.class);
+        thrown.expectMessage("Unrecognized type unsupported");
+        LogicalType unsupported = new LogicalType("unsupported");
+        Schema fieldSchema = unsupported.addToSchema(AvroUtils._string());
+        TypeConverter.avroToDi(fieldSchema);
+    }
+
+    /**
+     * Checks {@link TypeConverter#avroToDi(Schema)} throws {@link UnsupportedOperationException} with following message
+     * "Unrecognized java class",
+     * when unsupported java-class flag is passed
+     */
+    @Test
+    public void testAvroToDiUnsupportedJavaClass() {
+        thrown.expect(UnsupportedOperationException.class);
+        thrown.expectMessage("Unrecognized java class java.lang.Unsupported");
+        Schema fieldSchema = AvroUtils._string();
+        fieldSchema.addProp(SchemaConstants.JAVA_CLASS_FLAG, "java.lang.Unsupported");
+        TypeConverter.avroToDi(fieldSchema);
+    }
+
+    /**
+     * Checks {@link TypeConverter#avroToDi(Schema)} throws {@link UnsupportedOperationException} with following message
+     * "Unsupported avro type",
+     * when unsupported avro type is passed
+     */
+    @Test
+    public void testAvroToDiUnsupportedAvroType() {
+        thrown.expect(UnsupportedOperationException.class);
+        thrown.expectMessage("Unsupported avro type MAP");
+        Schema fieldSchema = Schema.createMap(Schema.create(Schema.Type.STRING));
+        TypeConverter.avroToDi(fieldSchema);
     }
 
 }
