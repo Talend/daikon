@@ -26,7 +26,7 @@ import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.avro.converter.AvroConverter;
 import org.talend.daikon.di.converter.DiConverters;
-import org.talend.daikon.di.converter.SchemaConverter;
+import org.talend.daikon.di.converter.TypeConverter;
 
 /**
  * Converts data from DI to Avro format. </br>
@@ -135,7 +135,7 @@ public class DiIncomingSchemaEnforcer {
             boolean isNullable) {
         if (areDynamicFieldsInitialized())
             return;
-        Schema fieldSchema = SchemaConverter.diToAvro(diType, logicalType);
+        Schema fieldSchema = TypeConverter.diToAvro(diType, logicalType);
 
         if (isNullable) {
             fieldSchema = SchemaBuilder.nullable().type(fieldSchema);

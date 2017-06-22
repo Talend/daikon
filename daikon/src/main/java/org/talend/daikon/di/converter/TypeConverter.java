@@ -18,9 +18,9 @@ import org.talend.daikon.avro.LogicalTypeUtils;
 import org.talend.daikon.avro.SchemaConstants;
 
 /**
- * Converts DI metadata to avro schema and vice versa
+ * Converts DI metadata type to avro schema type and vice versa
  */
-public final class SchemaConverter {
+public final class TypeConverter {
 
     /**
      * Di types
@@ -51,7 +51,7 @@ public final class SchemaConverter {
 
     public static final String LIST = "id_List";
 
-    private SchemaConverter() {
+    private TypeConverter() {
         // Class provides static utility methods and shouldn't be instantiated
     }
 
