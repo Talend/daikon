@@ -138,7 +138,7 @@ public class SchemaConverterTest {
      */
     @Test
     public void testDiToAvroDate() {
-        Schema expectedSchema = AvroUtils._date();
+        Schema expectedSchema = AvroUtils._logicalTimestamp();
         assertEquals(expectedSchema, SchemaConverter.diToAvro("id_Date", null));
     }
 
@@ -180,6 +180,191 @@ public class SchemaConverterTest {
     public void testDiToAvroLogicalTimestamp() {
         Schema expectedSchema = AvroUtils._logicalTimestamp();
         assertEquals(expectedSchema, SchemaConverter.diToAvro(null, "timestamp-millis"));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts boolean avro type to "id_Boolean" di type
+     */
+    @Test
+    public void testAvroToDiBoolean() {
+        String expectedType = "id_Boolean";
+        Schema fieldSchema = AvroUtils._boolean();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts int avro type with java-class flag "java.lang.Byte" to "id_Byte"
+     * di type
+     */
+    @Test
+    public void testAvroToDiByte() {
+        String expectedType = "id_Byte";
+        Schema fieldSchema = AvroUtils._byte();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts int avro type with java-class flag "java.lang.Short" to "id_Short"
+     * di type
+     */
+    @Test
+    public void testAvroToDiShort() {
+        String expectedType = "id_Short";
+        Schema fieldSchema = AvroUtils._short();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts int avro type to "id_Integer" di type
+     */
+    @Test
+    public void testAvroToDiInteger() {
+        String expectedType = "id_Integer";
+        Schema fieldSchema = AvroUtils._int();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts logical date avro type to "id_Date" di type
+     */
+    @Test
+    public void testAvroToDiLogicalDate() {
+        String expectedType = "id_Date";
+        Schema fieldSchema = AvroUtils._logicalDate();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts logical time-millis avro type to "id_Integer" di type
+     */
+    @Test
+    public void testAvroToDiLogicalTimeMillis() {
+        String expectedType = "id_Integer";
+        Schema fieldSchema = AvroUtils._logicalTime();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts logical time-micros avro type to "id_Long" di type
+     */
+    @Test
+    public void testAvroToDiLogicalTimeMicros() {
+        String expectedType = "id_Long";
+        Schema fieldSchema = AvroUtils._logicalTimeMicros();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts long avro type to "id_Long" di type
+     */
+    @Test
+    public void testAvroToDiLong() {
+        String expectedType = "id_Long";
+        Schema fieldSchema = AvroUtils._long();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts long avro type with java-class flag "java.util.Date" to "id_Date"
+     * di type
+     */
+    @Test
+    public void testAvroToDiDate() {
+        String expectedType = "id_Date";
+        Schema fieldSchema = AvroUtils._date();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts logical timestamp-millis avro type to "id_Date" di type
+     */
+    @Test
+    public void testAvroToDiLogicalTimestampMillis() {
+        String expectedType = "id_Date";
+        Schema fieldSchema = AvroUtils._logicalTimestamp();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts logical timestamp-micros avro type to "id_Date" di type
+     */
+    @Test
+    public void testAvroToDiLogicalTimestampMicros() {
+        String expectedType = "id_Date";
+        Schema fieldSchema = AvroUtils._logicalTimestampMicros();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts float avro type to "id_Float" di type
+     */
+    @Test
+    public void testAvroToDiFloat() {
+        String expectedType = "id_Float";
+        Schema fieldSchema = AvroUtils._float();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts double avro type to "id_Double" di type
+     */
+    @Test
+    public void testAvroToDiDouble() {
+        String expectedType = "id_Double";
+        Schema fieldSchema = AvroUtils._double();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts bytes avro type to "id_byte[]" di type
+     */
+    @Test
+    public void testAvroToDiBytes() {
+        String expectedType = "id_byte[]";
+        Schema fieldSchema = AvroUtils._bytes();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts string avro type with java-class flag "java.math.BigDecimal" to
+     * "id_BigDecimal" di type
+     */
+    @Test
+    public void testAvroToDiBigDecimal() {
+        String expectedType = "id_BigDecimal";
+        Schema fieldSchema = AvroUtils._decimal();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts string avro type with java-class flag "java.lang.String" to
+     * "id_Character" di type
+     */
+    @Test
+    public void testAvroToDiCharacter() {
+        String expectedType = "id_Character";
+        Schema fieldSchema = AvroUtils._character();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts string avro type to "id_String" di type
+     */
+    @Test
+    public void testAvroToDiString() {
+        String expectedType = "id_String";
+        Schema fieldSchema = AvroUtils._string();
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
+    }
+
+    /**
+     * Checks {@link SchemaConverter#avroToDi(Schema)} converts array avro type to "id_List" di type
+     */
+    @Test
+    public void testAvroToDiArray() {
+        String expectedType = "id_List";
+        Schema fieldSchema = Schema.createArray(Schema.create(Schema.Type.STRING));
+        assertEquals(expectedType, SchemaConverter.avroToDi(fieldSchema));
     }
 
 }

@@ -355,7 +355,7 @@ public class DiIncomingSchemaEnforcerTest {
                 .name("Test_Float").type().floatType().noDefault() //
                 .name("Test_BigDecimal").type(AvroUtils._decimal()).noDefault() //
                 .name("Test_Date").prop(SchemaConstants.TALEND_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'")
-                .type(AvroUtils._date()).noDefault() //
+                .type(AvroUtils._logicalTimestamp()).noDefault() //
                 .name("Test_Byte").type(AvroUtils._byte()).noDefault() //
                 .name("Test_Short").type(AvroUtils._short()).noDefault() //
                 .name("Test_Character").type(AvroUtils._character()).noDefault() //
@@ -447,7 +447,7 @@ public class DiIncomingSchemaEnforcerTest {
                 .fields() //
                 .name("Test_BigDecimal").type(AvroUtils.wrapAsNullable(AvroUtils._decimal())).noDefault() //
                 .name("Test_Date").prop(SchemaConstants.TALEND_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'")
-                .type(AvroUtils.wrapAsNullable(AvroUtils._date())).noDefault() //
+                .type(AvroUtils.wrapAsNullable(AvroUtils._logicalTimestamp())).noDefault() //
                 .name("valid").type().booleanType().noDefault() //
                 .endRecord(); //
 
