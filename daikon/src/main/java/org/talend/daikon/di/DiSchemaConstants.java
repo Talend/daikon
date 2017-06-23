@@ -34,7 +34,7 @@ public interface DiSchemaConstants {
     String TALEND6_LABEL = "di.table.label"; //$NON-NLS-1$
 
     /** Property is present if readonly, otherwise not present. */
-    String TALEND6_IS_READ_ONLY = SchemaConstants.TALEND_IS_LOCKED; //$NON-NLS-1$
+    String TALEND6_IS_READ_ONLY = SchemaConstants.TALEND_IS_LOCKED; // $NON-NLS-1$
 
     /** The key will have this as a prefix, pointing to the value. */
     String TALEND6_ADDITIONAL_PROPERTIES = "di.prop."; //$NON-NLS-1$
@@ -52,7 +52,7 @@ public interface DiSchemaConstants {
      */
 
     /** Property is present if key, otherwise not present. */
-    String TALEND6_COLUMN_IS_KEY = SchemaConstants.TALEND_COLUMN_IS_KEY; //$NON-NLS-1$
+    String TALEND6_COLUMN_IS_KEY = SchemaConstants.TALEND_COLUMN_IS_KEY; // $NON-NLS-1$
 
     String TALEND6_COLUMN_SOURCE_TYPE = SchemaConstants.TALEND_COLUMN_DB_TYPE;
 
