@@ -13,7 +13,6 @@
 package org.talend.daikon.sandbox;
 
 import static org.junit.Assert.*;
-import static org.talend.daikon.sandbox.SandboxInstanceFactory.CLASSLOADER_NOT_REUSABLE;
 import static org.talend.daikon.sandbox.SandboxInstanceFactory.CLASSLOADER_REUSABLE;
 
 import java.net.URL;
@@ -76,7 +75,7 @@ public class SandboxedInstanceTest {
                 .newInstance(Collections.singleton(this.getClass().getResource("zeLib-0.0.1.jar")).toArray(new URL[1]));
         ClassLoader sandboxedClassLoader;
         try (SandboxedInstance sandboxedInstance = new SandboxedInstance(TEST_CLASS_NAME, true, urlClassLoader,
-                CLASSLOADER_NOT_REUSABLE)) {
+                !CLASSLOADER_REUSABLE)) {
             Object instance = sandboxedInstance.getInstance();
             sandboxedClassLoader = instance.getClass().getClassLoader();
             assertTrue(ClassLoaderIsolatedSystemProperties.getInstance().isIsolated(sandboxedClassLoader));
@@ -98,7 +97,7 @@ public class SandboxedInstanceTest {
         URLClassLoader urlClassLoader = URLClassLoader
                 .newInstance(Collections.singleton(this.getClass().getResource("zeLib-0.0.1.jar")).toArray(new URL[1]));
         try (SandboxedInstance sandboxedInstance = new SandboxedInstance(TEST_CLASS_NAME, true, urlClassLoader,
-                CLASSLOADER_NOT_REUSABLE)) {
+                !CLASSLOADER_REUSABLE)) {
             assertNull(sandboxedInstance.isolatedThread);
             assertNull(sandboxedInstance.previousContextClassLoader);
             assertTrue(sandboxedInstance.useCurrentJvmProperties);
@@ -121,7 +120,7 @@ public class SandboxedInstanceTest {
         URLClassLoader urlClassLoader = URLClassLoader
                 .newInstance(Collections.singleton(this.getClass().getResource("zeLib-0.0.1.jar")).toArray(new URL[1]));
         SandboxedInstance sandboxedInstance = new SandboxedInstance(TEST_CLASS_NAME, false, urlClassLoader,
-                CLASSLOADER_NOT_REUSABLE);
+                !CLASSLOADER_REUSABLE);
         try {
             assertNull(sandboxedInstance.isolatedThread);
             assertNull(sandboxedInstance.previousContextClassLoader);

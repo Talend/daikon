@@ -31,9 +31,6 @@ public class SandboxInstanceFactory {
     /** A useful constant value for ClassLoaders that can be reused and placed in the cache. */
     public static final boolean CLASSLOADER_REUSABLE = true;
 
-    /** A useful constant value for ClassLoaders that can not be reused or retrieved from the cache. */
-    public static final boolean CLASSLOADER_NOT_REUSABLE = !CLASSLOADER_REUSABLE;
-
     /**
      * TODO: Add context variable to allow the user to configure the maximum size of the cache. Maybe using a
      * CacheBuilder.
