@@ -1,17 +1,19 @@
 package org.talend.daikon.avro.converter;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.avro.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.avro.Schema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
 
 public class ConvertJson implements AvroConverter<String, Schema> {
 
@@ -91,7 +93,7 @@ public class ConvertJson implements AvroConverter<String, Schema> {
             finalSchema.put(TYPE, RECORD);
             finalSchema.set(FIELDS, getFields(jsonNode));
             outputSchema = new Schema.Parser().parse(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(finalSchema));
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
         return outputSchema;
@@ -123,70 +125,70 @@ public class ConvertJson implements AvroConverter<String, Schema> {
 
             if (!(nextNode instanceof NullNode)) {
                 switch (nextNode.getNodeType()) {
-                    case NUMBER:
-                        fieldNode.put(NAME, map.getKey());
+                case NUMBER:
+                    fieldNode.put(NAME, map.getKey());
+                    fieldTypeArray.add(NULL);
+                    if (nextNode.isInt()) {
+                        fieldTypeArray.add(INT);
+                    } else if (nextNode.isLong()) {
+                        fieldTypeArray.add(LONG);
+                    } else {
+                        fieldTypeArray.add(DOUBLE);
+                    }
+                    fieldNode.put(TYPE, fieldTypeArray);
+                    fields.add(fieldNode);
+                    break;
+
+                case STRING:
+                    fieldNode.put(NAME, map.getKey());
+                    fieldTypeArray.add(NULL);
+                    fieldTypeArray.add(STRING);
+                    fieldNode.put(TYPE, fieldTypeArray);
+                    fields.add(fieldNode);
+                    break;
+
+                case ARRAY:
+                    final ArrayNode arrayNode = (ArrayNode) nextNode;
+                    final JsonNode element = arrayNode.get(0);
+                    final ObjectNode objectNode = mapper.createObjectNode();
+                    objectNode.put(NAME, map.getKey());
+
+                    if (element.getNodeType() == JsonNodeType.NUMBER) {
+                        fieldNode.put(TYPE, ARRAY);
                         fieldTypeArray.add(NULL);
-                        if (nextNode.isInt()) {
+                        if (nextNode.get(0).isInt()) {
                             fieldTypeArray.add(INT);
-                        } else if (nextNode.isLong()) {
+                        } else if (nextNode.get(0).isLong()) {
                             fieldTypeArray.add(LONG);
                         } else {
                             fieldTypeArray.add(DOUBLE);
                         }
-                        fieldNode.put(TYPE, fieldTypeArray);
-                        fields.add(fieldNode);
-                        break;
-
-                    case STRING:
-                        fieldNode.put(NAME, map.getKey());
+                        fieldNode.put(ITEMS, fieldTypeArray);
+                        objectNode.set(TYPE, fieldNode);
+                    } else if (element.getNodeType() == JsonNodeType.STRING) {
+                        fieldNode.put(TYPE, ARRAY);
                         fieldTypeArray.add(NULL);
                         fieldTypeArray.add(STRING);
-                        fieldNode.put(TYPE, fieldTypeArray);
-                        fields.add(fieldNode);
-                        break;
+                        fieldNode.put(ITEMS, fieldTypeArray);
+                        objectNode.set(TYPE, fieldNode);
+                    } else {
+                        objectNode.set(TYPE, mapper.createObjectNode().put(TYPE, ARRAY).set(ITEMS, mapper.createObjectNode()
+                                .put(TYPE, RECORD).put(NAME, generateRandomNumber(map)).set(FIELDS, getFields(element))));
+                    }
+                    fields.add(objectNode);
+                    break;
 
-                    case ARRAY:
-                        final ArrayNode arrayNode = (ArrayNode) nextNode;
-                        final JsonNode element = arrayNode.get(0);
-                        final ObjectNode objectNode = mapper.createObjectNode();
-                        objectNode.put(NAME, map.getKey());
+                case OBJECT:
+                    ObjectNode node = mapper.createObjectNode();
+                    node.put(NAME, map.getKey());
+                    node.set(TYPE, mapper.createObjectNode().put(TYPE, RECORD).put(NAME, generateRandomNumber(map)).set(FIELDS,
+                            getFields(nextNode)));
+                    fields.add(node);
+                    break;
 
-                        if (element.getNodeType() == JsonNodeType.NUMBER) {
-                            fieldNode.put(TYPE, ARRAY);
-                            fieldTypeArray.add(NULL);
-                            if (nextNode.get(0).isInt()) {
-                                fieldTypeArray.add(INT);
-                            } else if (nextNode.get(0).isLong()) {
-                                fieldTypeArray.add(LONG);
-                            } else {
-                                fieldTypeArray.add(DOUBLE);
-                            }
-                            fieldNode.put(ITEMS, fieldTypeArray);
-                            objectNode.set(TYPE, fieldNode);
-                        } else if (element.getNodeType() == JsonNodeType.STRING) {
-                            fieldNode.put(TYPE, ARRAY);
-                            fieldTypeArray.add(NULL);
-                            fieldTypeArray.add(STRING);
-                            fieldNode.put(ITEMS, fieldTypeArray);
-                            objectNode.set(TYPE, fieldNode);
-                        } else {
-                            objectNode.set(TYPE, mapper.createObjectNode().put(TYPE, ARRAY).set(ITEMS, mapper.createObjectNode()
-                                    .put(TYPE, RECORD).put(NAME, generateRandomNumber(map)).set(FIELDS, getFields(element))));
-                        }
-                        fields.add(objectNode);
-                        break;
-
-                    case OBJECT:
-                        ObjectNode node = mapper.createObjectNode();
-                        node.put(NAME, map.getKey());
-                        node.set(TYPE, mapper.createObjectNode().put(TYPE, RECORD).put(NAME, generateRandomNumber(map)).set(FIELDS,
-                                getFields(nextNode)));
-                        fields.add(node);
-                        break;
-
-                    default:
-                        logger.error("Node type not found - " + nextNode.getNodeType());
-                        break;
+                default:
+                    logger.error("Node type not found - " + nextNode.getNodeType());
+                    break;
                 }
             } else {
                 fieldNode.put(NAME, map.getKey());
