@@ -13,8 +13,10 @@
 package org.talend.daikon.properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +59,7 @@ public class ReferencePropertiesTest {
         TestBProperties testBProp = new TestBProperties(null);
 
         assertNull(refEProp.testAPropReference.getReference());
+        assertNull(refEProp.testAPropReference2.getReference());
         assertNull(testAProp.testBPropReference.getReference());
 
         // merge everything to the parent
@@ -67,6 +70,7 @@ public class ReferencePropertiesTest {
         ReferenceProperties.resolveReferenceProperties(definition2PropertiesMap);
 
         assertEquals(testAProp, refEProp.testAPropReference.getReference());
+        assertEquals(testAProp, refEProp.testAPropReference2.getReference());
         assertEquals(testBProp, testAProp.testBPropReference.getReference());
     }
 
@@ -124,6 +128,29 @@ public class ReferencePropertiesTest {
         }, null);
 
         assertNotNull("Referenced properties visited", visited.contains(testAProp));
+    }
+
+    @Test
+    public void testResolveReferenceCallBackCalled() throws ParseException, IOException {
+
+        // given
+        ReferenceExampleProperties refEProp = new ReferenceExampleProperties(null);
+        TestAProperties testAProp = new TestAProperties(null);
+        TestBProperties testBProp = new TestBProperties(null);
+
+        assertFalse(refEProp.afterRefCallbackCalled);
+
+        // when
+
+        // merge everything to the parent
+        Map<String, Properties> definition2PropertiesMap = new HashMap<>();
+        definition2PropertiesMap.put("no_used", refEProp);
+        definition2PropertiesMap.put(TestAProperties.TEST_A_PROPERTIES_DEFINTION_NAME, testAProp);
+        definition2PropertiesMap.put(TestBProperties.TEST_B_PROPERTIES_DEFINTION_NAME, testBProp);
+        ReferenceProperties.resolveReferenceProperties(definition2PropertiesMap, true);
+
+        // then
+        assertTrue(refEProp.afterRefCallbackCalled);
     }
 
 }

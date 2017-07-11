@@ -1,0 +1,55 @@
+{
+	"variables": [],
+	"info": {
+		"name": "CQRS poc",
+		"_postman_id": "a412c789-f9c6-5c27-d45a-47431f67d34b",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create preparation command",
+			"request": {
+				"url": "http://localhost:8080/?name=\"my Prep\"&desc=\"upper case for all columns\"",
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "add a step to a preparation",
+			"request": {
+				"url": "http://localhost:8080/step/3fd9131d-ff51-474c-837b-167cfc3c6906/?type=LOWERCASE",
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update a preparation",
+			"request": {
+				"url": "http://localhost:8080/8466f5ed-d15b-483e-8879-0e92038b48c1/?name=\"ze prep \"&desc=\"new Description 3\"",
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "List all preparations",
+			"request": {
+				"url": "http://localhost:8080/",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

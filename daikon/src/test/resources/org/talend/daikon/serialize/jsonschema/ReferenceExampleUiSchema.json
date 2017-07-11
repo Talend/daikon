@@ -1,1 +1,1 @@
-{"ui:order":["parentProp","testAPropReference"],"parentProp":{"ui:widget":"hidden"},"testAPropReference":{"ui:widget":"hidden"},"ui:widget":"hidden"}
+{"ui:order":["parentProp","testAPropReference","testAPropReference2"],"parentProp":{"ui:widget":"hidden"},"testAPropReference":{"ui:widget":"hidden"},"testAPropReference2":{"ui:widget":"hidden"},"ui:widget":"hidden"}

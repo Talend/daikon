@@ -277,11 +277,6 @@ public class PropertiesImpl extends TranslatableTaggedImpl
     }
 
     @Override
-    public void refreshProperties() {
-        // No op
-    }
-
-    @Override
     public List<Form> getForms() {
         return forms;
     }
@@ -570,17 +565,16 @@ public class PropertiesImpl extends TranslatableTaggedImpl
             if (thisProp == null) {
                 // the current Property or Properties is null so we need to create a new instance
                 try {
+                    Field f = getClass().getField(otherProp.getName());
+                    // the field exists in this class so create an instance and set it
                     thisProp = createPropertyInstance(otherProp);
                     // assign the newly created instance to the field.
-                    try {
-                        Field f = getClass().getField(otherProp.getName());
-                        f.set(this, thisProp);
-                    } catch (NoSuchFieldException e) {
-                        // A field exists in the other that's not in ours, just ignore it
-                        continue;
-                    }
+                    f.set(this, thisProp);
+                } catch (NoSuchFieldException e) {
+                    // A field exists in the other that's not in ours, just ignore it
+                    continue;
                 } catch (ReflectiveOperationException | SecurityException e) {
-                    TalendRuntimeException.unexpectedException(e);
+                    throw TalendRuntimeException.createUnexpectedException(e);
                 }
             }
 
@@ -632,12 +626,12 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                 }
             }
             if (thisProp == null) {
-                TalendRuntimeException
-                        .unexpectedException("Failed to find a proper constructor in Properties : " + otherClass.getName());
+                throw TalendRuntimeException
+                        .createUnexpectedException("Failed to find a proper constructor in Properties : " + otherClass.getName());
             }
         } else {
-            TalendRuntimeException
-                    .unexpectedException("Unexpected property class: " + otherProp.getClass() + " prop: " + otherProp);
+            throw TalendRuntimeException
+                    .createUnexpectedException("Unexpected property class: " + otherProp.getClass() + " prop: " + otherProp);
         }
         return thisProp;
     }

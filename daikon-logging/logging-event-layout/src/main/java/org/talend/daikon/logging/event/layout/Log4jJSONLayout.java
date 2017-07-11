@@ -55,7 +55,6 @@ public class Log4jJSONLayout extends Layout {
         HostData host = new HostData();
         Map<String, String> mdc = loggingEvent.getProperties();
         String ndc = loggingEvent.getNDC();
-        String whoami = this.getClass().getSimpleName();
 
         /**
          * Extract and add fields from log4j config, if defined

@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.daikon.properties;
 
-import static org.talend.daikon.properties.property.PropertyFactory.*;
+import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.definition.Definition;
 import org.talend.daikon.definition.service.DefinitionRegistryService;
+import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.properties.property.Property;
 
 /**
@@ -81,13 +83,25 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
     }
 
     /**
-     * resolve the referenced properties between a group of properties.
+     * resolve the referenced properties between a group of properties but never calls any AfterReference callback
      * 
      * @param properties list of all references to resolve
      * @param definitionRegistry used to find the definitions compatible with current properties
      */
-    public static void resolveReferenceProperties(final Iterable<? extends Properties> properties,
+    public static void resolveReferenceProperties(Iterable<? extends Properties> properties,
             DefinitionRegistryService definitionRegistry) {
+        resolveReferenceProperties(properties, definitionRegistry, false);
+    }
+
+    /**
+     * resolve the referenced properties between a group of properties. And also may call the
+     * after<ReferecenProperties.getName()> callback if any and if callAfterCallback is true
+     * 
+     * @param properties list of all references to resolve
+     * @param definitionRegistry used to find the definitions compatible with current properties
+     */
+    public static void resolveReferenceProperties(Iterable<? extends Properties> properties,
+            DefinitionRegistryService definitionRegistry, boolean callAfterCallback) {
         // construct the definitionName and Properties map
         Map<String, Properties> def2PropsMap = new HashMap<>();
 
@@ -98,15 +112,25 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
                 def2PropsMap.put(def.getName(), prop);
             }
         }
-        resolveReferenceProperties(def2PropsMap);
+        resolveReferenceProperties(def2PropsMap, callAfterCallback);
     }
 
     /**
-     * resolve the referenced properties between a group of properties.
+     * resolve the referenced properties between a group of properties.but do not call any callback method.
      * 
      * @param propertiesMap a map with the definitions name and Properties instance related to those definitions
      */
     public static void resolveReferenceProperties(final Map<String, Properties> propertiesMap) {
+        resolveReferenceProperties(propertiesMap, false);
+    }
+
+    /**
+     * resolve the referenced properties between a group of properties.And also may call the
+     * after<ReferecenProperties.getName()> callback if any and if callAfterCallback is true.
+     * 
+     * @param propertiesMap a map with the definitions name and Properties instance related to those definitions
+     */
+    public static void resolveReferenceProperties(final Map<String, Properties> propertiesMap, final boolean callAfterCallback) {
         for (Entry<String, Properties> entry : propertiesMap.entrySet()) {
             Properties theProperties = entry.getValue();
             theProperties.accept(new PropertiesVisitor() {
@@ -114,10 +138,18 @@ public class ReferenceProperties<T extends Properties> extends PropertiesImpl {
                 @Override
                 public void visit(Properties properties, Properties parent) {
                     if (properties instanceof ReferenceProperties<?>) {
-                        ReferenceProperties<?> referenceProperties = (ReferenceProperties<?>) properties;
+                        ReferenceProperties<Properties> referenceProperties = (ReferenceProperties<Properties>) properties;
                         Properties theReference = propertiesMap.get(referenceProperties.referenceDefinitionName.getValue());
                         if (theReference != null) {
                             referenceProperties.setReference(theReference);
+                            // call afterReference if any
+                            if (callAfterCallback) {
+                                try {
+                                    PropertiesDynamicMethodHelper.afterReference(parent, referenceProperties);
+                                } catch (Throwable e) {
+                                    throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+                                }
+                            } // else user does not want callback to be called
                         } else {// no reference of the required type has been provided so do no set anything but log it
                             LOG.debug("failed to find a reference object for ReferenceProperties[" + referenceProperties.getName()
                                     + "] with definition [" + referenceProperties.referenceDefinitionName.getValue()
