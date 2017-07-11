@@ -37,7 +37,7 @@ public class ConvertJsonTest {
      * @throws IOException
      */
     @Test
-    public void testGetFields_simpleJson() throws IOException {
+    public void testGetFieldsSimpleJson() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(simpleJson);
 
@@ -92,7 +92,7 @@ public class ConvertJsonTest {
      * @throws IOException
      */
     @Test
-    public void testGetFields_arrayJson() throws IOException {
+    public void testGetFieldsArrayJson() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(arrayJson);
 
@@ -138,7 +138,7 @@ public class ConvertJsonTest {
      * @throws IOException
      */
     @Test
-    public void testGetFields_nullJson() throws IOException {
+    public void testGetFieldsNullJson() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(nullJson);
 
@@ -166,7 +166,7 @@ public class ConvertJsonTest {
      * @throws IOException
      */
     @Test
-    public void testGetFields_intJson() throws IOException {
+    public void testGetFieldsIntJson() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(intJson);
 
@@ -194,7 +194,7 @@ public class ConvertJsonTest {
      * @throws IOException
      */
     @Test
-    public void testGetFields_doubleJson() throws IOException {
+    public void testGetFieldsDoubleJson() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(doubleJson);
 

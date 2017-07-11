@@ -35,8 +35,6 @@ public class ConvertJson implements AvroConverter<String, Schema> {
 
     private final ObjectMapper mapper;
 
-    private Schema outputSchema = null;
-
     /**
      * Constructor
      *
@@ -63,6 +61,7 @@ public class ConvertJson implements AvroConverter<String, Schema> {
 
     @Override
     public Schema convertToAvro(String value) {
+        Schema outputSchema = null;
         try {
             final JsonNode jsonNode = mapper.readTree(value);
             final ObjectNode finalSchema = mapper.createObjectNode();
@@ -153,8 +152,6 @@ public class ConvertJson implements AvroConverter<String, Schema> {
 
                     default:
                         logger.error("Node type not found - " + nextNode.getNodeType());
-                        throw new RuntimeException("Unable to determine action for node type " + nextNode.getNodeType()
-                                + "; Allowed types are ARRAY, STRING, NUMBER, OBJECT");
                 }
             } else {
                 fieldNode.put(NAME, map.getKey());
