@@ -2,7 +2,7 @@ package org.talend.daikon.avro.converter;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
+import java.util.UUID;
 
 import org.apache.avro.Schema;
 import org.slf4j.Logger;
@@ -207,6 +207,6 @@ public class ConvertJson implements AvroConverter<String, Schema> {
      * @param map to create random number
      */
     public String generateRandomNumber(Map.Entry<String, JsonNode> map) {
-        return (map.getKey() + "_" + new Random().nextInt(100));
+        return (map.getKey() + "_" + UUID.randomUUID().toString().replace("-", "_"));
     }
 }
