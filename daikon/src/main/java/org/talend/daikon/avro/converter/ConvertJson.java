@@ -33,6 +33,12 @@ public class ConvertJson implements AvroConverter<String, Schema> {
 
     private static final String NULL = "null";
 
+    private static final String INT = "int";
+
+    private static final String DOUBLE = "double";
+
+    private static final String LONG = "long";
+
     private final ObjectMapper mapper;
 
     /**
@@ -59,11 +65,26 @@ public class ConvertJson implements AvroConverter<String, Schema> {
         return null;
     }
 
+    /**
+     * Convert json string to avro schema.
+     *
+     * Example:
+     *
+     * json string parameter: {"a": {"b": "b1"}, "d": 100}
+     *
+     * avro schema constructed:
+     * {"type":"record","name":"outer_record","namespace":"org.talend",
+     * "fields":[{"name":"a","type":{"type":"record","name":"a_98","fields":[{"name":"b","type":["null","string"]}]}},
+     * {"name":"d","type":["null","int"]}]}
+     *
+     * @param json string to convert
+     * @return avro schema constructed
+     */
     @Override
-    public Schema convertToAvro(String value) {
+    public Schema convertToAvro(String json) {
         Schema outputSchema = null;
         try {
-            final JsonNode jsonNode = mapper.readTree(value);
+            final JsonNode jsonNode = mapper.readTree(json);
             final ObjectNode finalSchema = mapper.createObjectNode();
             finalSchema.put("namespace", "org.talend");
             finalSchema.put(NAME, "outer_record");
@@ -77,10 +98,17 @@ public class ConvertJson implements AvroConverter<String, Schema> {
     }
 
     /**
-     * Get fields of json node.
+     * Construct the fields schema of json node. Supported data types are: INT, LONG, DOUBLE, STRING, ARRAY, OBJECT.
+     *
+     * Example:
+     *
+     * jsonNode parameter: {"a": {"b": "b1"}, "d": 100}
+     *
+     * jsonNode parameter fields schema:
+     * [{"name":"a","type":{"type":"record","name":"a_49","fields":[{"name":"b","type":["null","string"]}]}},{"name":"d","type":["null","int"]}]
      *
      * @param jsonNode
-     * @return fields of json node
+     * @return fields schema of json node
      */
     public ArrayNode getFields(final JsonNode jsonNode) {
         final ArrayNode fields = mapper.createArrayNode();
@@ -99,11 +127,11 @@ public class ConvertJson implements AvroConverter<String, Schema> {
                         fieldNode.put(NAME, map.getKey());
                         fieldTypeArray.add(NULL);
                         if (nextNode.isInt()) {
-                            fieldTypeArray.add("int");
+                            fieldTypeArray.add(INT);
                         } else if (nextNode.isLong()) {
-                            fieldTypeArray.add("long");
+                            fieldTypeArray.add(LONG);
                         } else {
-                            fieldTypeArray.add("double");
+                            fieldTypeArray.add(DOUBLE);
                         }
                         fieldNode.put(TYPE, fieldTypeArray);
                         fields.add(fieldNode);
@@ -126,7 +154,13 @@ public class ConvertJson implements AvroConverter<String, Schema> {
                         if (element.getNodeType() == JsonNodeType.NUMBER) {
                             fieldNode.put(TYPE, ARRAY);
                             fieldTypeArray.add(NULL);
-                            fieldTypeArray.add((nextNode.get(0).isLong() ? "long" : "double"));
+                            if (nextNode.get(0).isInt()) {
+                                fieldTypeArray.add(INT);
+                            } else if (nextNode.get(0).isLong()) {
+                                fieldTypeArray.add(LONG);
+                            } else {
+                                fieldTypeArray.add(DOUBLE);
+                            }
                             fieldNode.put(ITEMS, fieldTypeArray);
                             objectNode.set(TYPE, fieldNode);
                         } else if (element.getNodeType() == JsonNodeType.STRING) {
