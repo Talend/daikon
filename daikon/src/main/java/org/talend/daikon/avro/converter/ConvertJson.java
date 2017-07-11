@@ -186,6 +186,7 @@ public class ConvertJson implements AvroConverter<String, Schema> {
 
                     default:
                         logger.error("Node type not found - " + nextNode.getNodeType());
+                        break;
                 }
             } else {
                 fieldNode.put(NAME, map.getKey());
