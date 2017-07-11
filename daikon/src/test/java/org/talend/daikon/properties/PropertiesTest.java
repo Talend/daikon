@@ -78,6 +78,34 @@ public class PropertiesTest {
         }
     }
 
+    private static final class APropertyToCopy extends PropertiesImpl {
+
+        // property also existing in TestProperties (shall be copied)
+        public final Property<String> userId = newProperty("userId").setRequired();
+
+        // presentation item also existing in TestProperties (shall not be copied cause nothing to be copied in a
+        // presentation item)
+        public final PresentationItem testPI = new PresentationItem("testPI");
+
+        // property also existing in TestProperties (shall not be copied)
+        public final Property<String> notExistsProp = newProperty("notExistsProp").setRequired();
+
+        // presentation item also existing in TestProperties (shall not be copied)
+        public final PresentationItem notExistsPI = new PresentationItem("notExistsPI");
+
+        public APropertyToCopy(String name) {
+            super(name);
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form form = new Form(this, Form.MAIN);
+            testPI.setFormtoShow(form);
+            notExistsPI.setFormtoShow(form);
+        }
+    }
+
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
 
@@ -184,6 +212,28 @@ public class PropertiesTest {
         assertEquals(1, ((Property<?>) props2.getProperty("integer")).getValue());
         assertEquals("User1", ((Property<?>) props2.getProperty("userId")).getStringValue());
         assertEquals("great1", ((Property<?>) props2.getProperty("nestedProps.aGreatProperty")).getStringValue());
+    }
+
+    @Test
+    public void testCopyValuesFromAnotherType() {
+        // given
+        APropertyToCopy propsToCopy = (APropertyToCopy) new APropertyToCopy("toBeCopied").init();
+        propsToCopy.userId.setValue("toBeCopied1");
+        propsToCopy.notExistsProp.setValue("notToBeCopied");
+        assertNotNull(propsToCopy.notExistsPI.getFormtoShow());
+        assertNotNull(propsToCopy.testPI.getFormtoShow());
+
+        TestProperties props = (TestProperties) new TestProperties("test1").init();
+        props.userId.setValue("User1");
+        assertEquals("User1", ((Property<?>) props.getProperty("userId")).getStringValue());
+        assertNull(props.testPI.getFormtoShow());
+
+        // when
+        props.copyValuesFrom(propsToCopy);
+
+        // then
+        assertEquals("toBeCopied1", ((Property<?>) props.getProperty("userId")).getStringValue());
+        assertNull(props.testPI.getFormtoShow());
     }
 
     @Test

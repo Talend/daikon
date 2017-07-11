@@ -40,9 +40,9 @@ public final class EnforcerCreator {
             } else {
                 indexMapper = new DynamicIndexMapperByName(designSchema);
             }
-            enforcer = new DiOutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+            enforcer = new DiOutgoingDynamicSchemaEnforcer(indexMapper);
         } else {
-            enforcer = new DiOutgoingSchemaEnforcer(designSchema, new IndexMapperByIndex(designSchema));
+            enforcer = new DiOutgoingSchemaEnforcer(new IndexMapperByIndex(designSchema));
         }
 
         return enforcer;

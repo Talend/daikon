@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -43,15 +44,22 @@ public class SandboxInstanceFactoryTest {
 
     static final private Logger LOG = LoggerFactory.getLogger(SandboxInstanceFactoryTest.class);
 
-    private class TestRuntime implements RuntimeInfo {
+    private class TestRuntime implements RuntimeInfo, SandboxControl {
 
-        private String cacheSufix = "";
+        private boolean reusable = true;
+
+        private String cacheSuffix = "";
 
         public TestRuntime() {
         }
 
-        public TestRuntime(String cacheSufix) {
-            this.cacheSufix = cacheSufix;
+        public TestRuntime(String cacheSuffix) {
+            this.cacheSuffix = cacheSuffix;
+        }
+
+        public TestRuntime(String cacheSuffix, boolean reusable) {
+            this(cacheSuffix);
+            this.reusable = reusable;
         }
 
         @Override
@@ -69,13 +77,18 @@ public class SandboxInstanceFactoryTest {
         }
 
         @Override
+        public boolean isClassLoaderReusable() {
+            return reusable;
+        }
+
+        @Override
         public String toString() {
-            return TEST_CLASS_NAME + cacheSufix;
+            return TEST_CLASS_NAME + cacheSuffix;
         }
 
         @Override
         public boolean equals(Object obj) {
-            return (TEST_CLASS_NAME + cacheSufix).equals(obj.toString());
+            return (TEST_CLASS_NAME + cacheSuffix).equals(obj.toString());
         }
 
         @Override
@@ -205,10 +218,8 @@ public class SandboxInstanceFactoryTest {
     }
 
     /**
-     * Test method for
-     * {@link org.talend.daikon.sandbox.SandboxInstanceFactory#createSandboxedInstance(java.lang.String, java.util.Set, java.lang.ClassLoader)}
-     * .
-     * 
+     * Test method for {@link org.talend.daikon.sandbox.SandboxInstanceFactory#createSandboxedInstance}
+     *
      * @throws Exception
      */
     @Test
@@ -234,11 +245,7 @@ public class SandboxInstanceFactoryTest {
     }
 
     /**
-     * Test method for
-     * {@link org.talend.daikon.sandbox.SandboxInstanceFactory#createSandboxedInstance(java.lang.String, java.util.Set, java.lang.ClassLoader)}
-     * . Create two sandboxed instance and check if they are correctly sharing the same ClassLoader.
-     * 
-     * @throws Exception
+     * Create two sandboxed instance and check if they are correctly sharing the same ClassLoader.
      */
     @Test
     public void testCreate2SandboxedInstance() throws Exception {
@@ -277,6 +284,47 @@ public class SandboxInstanceFactoryTest {
         }
     }
 
+    /**
+     * Create two sandboxed instance that do not have a reusable runtime and check if they are not sharing the same
+     * ClassLoader.
+     */
+    @Test
+    public void testCreate2SandboxedInstanceUnreusedClassLoader() throws Exception {
+        // we will check that the created instance object is created properly and created with another class loader.
+        ClassLoader parent = new ClassLoader(this.getClass().getClassLoader()) {
+            // abstract class but without anything to implement
+        };
+        ClassLoader classLoader = null;
+        try (SandboxedInstance sandboxedInstance = SandboxInstanceFactory.createSandboxedInstance(new TestRuntime("test2", false),
+                parent, true)) {
+            assertNotNull(sandboxedInstance);
+            Object instance = sandboxedInstance.getInstance();
+            assertNotNull(instance);
+            // WARNING the following test may fail from Eclipse or IntelliJ cause the
+            // runtime jar is on the classpath for the tests and should not (see pom.xml)
+            assertEquals(TEST_CLASS_NAME, instance.getClass().getCanonicalName());
+            ClassLoader instanceClassLoader = instance.getClass().getClassLoader();
+            assertNotEquals(this.getClass().getClassLoader(), instanceClassLoader);
+            // make sure the parent classloader is the one we gave
+            assertEquals(parent, instanceClassLoader.getParent());
+            classLoader = sandboxedInstance.getSandboxClassLoader();
+            try (SandboxedInstance sandboxedInstance2 = SandboxInstanceFactory
+                    .createSandboxedInstance(new TestRuntime("test2", false), parent, true)) {
+                assertNotNull(sandboxedInstance2);
+                Object instance2 = sandboxedInstance2.getInstance();
+                assertNotNull(instance2);
+                assertEquals(TEST_CLASS_NAME, instance2.getClass().getCanonicalName());
+                ClassLoader instanceClassLoader2 = instance2.getClass().getClassLoader();
+                assertNotEquals(this.getClass().getClassLoader(), instanceClassLoader2);
+                // make sure the parent classloader is the one we gave
+                assertEquals(parent, instanceClassLoader2.getParent());
+
+                // The classloaders must not be the same.
+                assertNotSame(classLoader, sandboxedInstance2.getSandboxClassLoader());
+            }
+        }
+    }
+
     @Test
     public void testCacheClassLoaderClosedAndNotIsolated() throws Exception {
         try {
@@ -307,9 +355,7 @@ public class SandboxInstanceFactoryTest {
     }
 
     /**
-     * Test method for
-     * {@link org.talend.daikon.sandbox.SandboxInstanceFactory#createSandboxedInstance(java.lang.String, java.util.Set, java.lang.ClassLoader)}
-     * .
+     * Test method for {@link org.talend.daikon.sandbox.SandboxInstanceFactory#createSandboxedInstance} .
      *
      * @throws Exception
      */

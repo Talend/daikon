@@ -2,6 +2,7 @@ package org.talend.daikon.logging.event.layout;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -50,7 +51,6 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         JSONObject userFieldsEvent = new JSONObject();
         HostData host = new HostData();
         Map<String, String> mdc = loggingEvent.getMDCPropertyMap();
-        String whoami = this.getClass().getSimpleName();
 
         /**
          * Extract and add fields from log4j config, if defined
@@ -121,6 +121,8 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
             }
 
             ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
+            converter.setOptionList(Arrays.asList("full"));
+            converter.start();
             String stackTrace = converter.convert(loggingEvent);
             addEventData(LayoutFields.STACK_TRACE, stackTrace);
         }

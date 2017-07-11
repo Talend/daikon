@@ -13,6 +13,7 @@
 package org.talend.daikon.avro;
 
 import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;
 
@@ -45,10 +46,7 @@ public final class LogicalTypeUtils {
      */
     public static boolean isLogicalTimestampMillis(Schema schema) {
         LogicalType logicalType = schema.getLogicalType();
-        if (logicalType == null) {
-            return false;
-        }
-        return Type.LONG == schema.getType() && TIMESTAMP_MILLIS.equals(logicalType.getName());
+        return Type.LONG == schema.getType() && LogicalTypes.timestampMillis().equals(logicalType);
     }
 
     /**
@@ -61,10 +59,7 @@ public final class LogicalTypeUtils {
      */
     public static boolean isLogicalTimestampMicros(Schema schema) {
         LogicalType logicalType = schema.getLogicalType();
-        if (logicalType == null) {
-            return false;
-        }
-        return Type.LONG == schema.getType() && TIMESTAMP_MICROS.equals(logicalType.getName());
+        return Type.LONG == schema.getType() && LogicalTypes.timestampMicros().equals(logicalType);
     }
 
     /**
@@ -77,10 +72,7 @@ public final class LogicalTypeUtils {
      */
     public static boolean isLogicalDate(Schema schema) {
         LogicalType logicalType = schema.getLogicalType();
-        if (logicalType == null) {
-            return false;
-        }
-        return Type.INT == schema.getType() && DATE.equals(logicalType.getName());
+        return Type.INT == schema.getType() && LogicalTypes.date().equals(logicalType);
     }
 
     /**
@@ -92,10 +84,7 @@ public final class LogicalTypeUtils {
      */
     public static boolean isLogicalTimeMillis(Schema schema) {
         LogicalType logicalType = schema.getLogicalType();
-        if (logicalType == null) {
-            return false;
-        }
-        return Type.INT == schema.getType() && TIME_MILLIS.equals(logicalType.getName());
+        return Type.INT == schema.getType() && LogicalTypes.timeMillis().equals(logicalType);
     }
 
     /**
@@ -107,10 +96,7 @@ public final class LogicalTypeUtils {
      */
     public static boolean isLogicalTimeMicros(Schema schema) {
         LogicalType logicalType = schema.getLogicalType();
-        if (logicalType == null) {
-            return false;
-        }
-        return Type.LONG == schema.getType() && TIME_MICROS.equals(logicalType.getName());
+        return Type.LONG == schema.getType() && LogicalTypes.timeMicros().equals(logicalType);
     }
 
     /**
@@ -161,4 +147,5 @@ public final class LogicalTypeUtils {
         }
         }
     }
+
 }
