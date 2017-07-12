@@ -19,28 +19,6 @@ public class ConvertJson implements AvroConverter<String, Schema> {
 
     private static final Logger logger = LoggerFactory.getLogger(AvroConverter.class);
 
-    private static final String NAME = "name";
-
-    private static final String TYPE = "type";
-
-    private static final String ARRAY = "array";
-
-    private static final String ITEMS = "items";
-
-    private static final String STRING = "string";
-
-    private static final String RECORD = "record";
-
-    private static final String FIELDS = "fields";
-
-    private static final String NULL = "null";
-
-    private static final String INT = "int";
-
-    private static final String DOUBLE = "double";
-
-    private static final String LONG = "long";
-
     private final ObjectMapper mapper;
 
     /**
@@ -89,9 +67,9 @@ public class ConvertJson implements AvroConverter<String, Schema> {
             final JsonNode jsonNode = mapper.readTree(json);
             final ObjectNode finalSchema = mapper.createObjectNode();
             finalSchema.put("namespace", "org.talend");
-            finalSchema.put(NAME, "outer_record");
-            finalSchema.put(TYPE, RECORD);
-            finalSchema.set(FIELDS, getFields(jsonNode));
+            finalSchema.put(ConvertJsonConstant.NAME, "outer_record");
+            finalSchema.put(ConvertJsonConstant.TYPE, ConvertJsonConstant.RECORD);
+            finalSchema.set(ConvertJsonConstant.FIELDS, getFields(jsonNode));
             outputSchema = new Schema.Parser().parse(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(finalSchema));
         } catch (Exception ex) {
             logger.error(ex.getMessage());
@@ -100,13 +78,13 @@ public class ConvertJson implements AvroConverter<String, Schema> {
     }
 
     /**
-     * Construct the fields schema of json node. Supported data types are: INT, LONG, DOUBLE, STRING, ARRAY, OBJECT.
+     * Construct the fields schema from json node. Supported data types are: INT, LONG, DOUBLE, STRING, ARRAY, OBJECT.
      *
      * Example:
      *
      * jsonNode parameter: {"a": {"b": "b1"}, "d": 100}
      *
-     * jsonNode parameter fields schema:
+     * jsonNode fields schema:
      * [{"name":"a","type":{"type":"record","name":"a_49","fields":[{"name":"b","type":["null","string"]}]}},{"name":"d","type":["null","int"]}]
      *
      * @param jsonNode
@@ -126,24 +104,24 @@ public class ConvertJson implements AvroConverter<String, Schema> {
             if (!(nextNode instanceof NullNode)) {
                 switch (nextNode.getNodeType()) {
                 case NUMBER:
-                    fieldNode.put(NAME, map.getKey());
-                    fieldTypeArray.add(NULL);
+                    fieldNode.put(ConvertJsonConstant.NAME, map.getKey());
+                    fieldTypeArray.add(ConvertJsonConstant.NULL);
                     if (nextNode.isInt()) {
-                        fieldTypeArray.add(INT);
+                        fieldTypeArray.add(ConvertJsonConstant.INT);
                     } else if (nextNode.isLong()) {
-                        fieldTypeArray.add(LONG);
+                        fieldTypeArray.add(ConvertJsonConstant.LONG);
                     } else {
-                        fieldTypeArray.add(DOUBLE);
+                        fieldTypeArray.add(ConvertJsonConstant.DOUBLE);
                     }
-                    fieldNode.put(TYPE, fieldTypeArray);
+                    fieldNode.put(ConvertJsonConstant.TYPE, fieldTypeArray);
                     fields.add(fieldNode);
                     break;
 
                 case STRING:
-                    fieldNode.put(NAME, map.getKey());
-                    fieldTypeArray.add(NULL);
-                    fieldTypeArray.add(STRING);
-                    fieldNode.put(TYPE, fieldTypeArray);
+                    fieldNode.put(ConvertJsonConstant.NAME, map.getKey());
+                    fieldTypeArray.add(ConvertJsonConstant.NULL);
+                    fieldTypeArray.add(ConvertJsonConstant.STRING);
+                    fieldNode.put(ConvertJsonConstant.TYPE, fieldTypeArray);
                     fields.add(fieldNode);
                     break;
 
@@ -151,38 +129,44 @@ public class ConvertJson implements AvroConverter<String, Schema> {
                     final ArrayNode arrayNode = (ArrayNode) nextNode;
                     final JsonNode element = arrayNode.get(0);
                     final ObjectNode objectNode = mapper.createObjectNode();
-                    objectNode.put(NAME, map.getKey());
+                    objectNode.put(ConvertJsonConstant.NAME, map.getKey());
 
                     if (element.getNodeType() == JsonNodeType.NUMBER) {
-                        fieldNode.put(TYPE, ARRAY);
-                        fieldTypeArray.add(NULL);
+                        fieldNode.put(ConvertJsonConstant.TYPE, ConvertJsonConstant.ARRAY);
+                        fieldTypeArray.add(ConvertJsonConstant.NULL);
                         if (nextNode.get(0).isInt()) {
-                            fieldTypeArray.add(INT);
+                            fieldTypeArray.add(ConvertJsonConstant.INT);
                         } else if (nextNode.get(0).isLong()) {
-                            fieldTypeArray.add(LONG);
+                            fieldTypeArray.add(ConvertJsonConstant.LONG);
                         } else {
-                            fieldTypeArray.add(DOUBLE);
+                            fieldTypeArray.add(ConvertJsonConstant.DOUBLE);
                         }
-                        fieldNode.put(ITEMS, fieldTypeArray);
-                        objectNode.set(TYPE, fieldNode);
+                        fieldNode.put(ConvertJsonConstant.ITEMS, fieldTypeArray);
+                        objectNode.set(ConvertJsonConstant.TYPE, fieldNode);
                     } else if (element.getNodeType() == JsonNodeType.STRING) {
-                        fieldNode.put(TYPE, ARRAY);
-                        fieldTypeArray.add(NULL);
-                        fieldTypeArray.add(STRING);
-                        fieldNode.put(ITEMS, fieldTypeArray);
-                        objectNode.set(TYPE, fieldNode);
+                        fieldNode.put(ConvertJsonConstant.TYPE, ConvertJsonConstant.ARRAY);
+                        fieldTypeArray.add(ConvertJsonConstant.NULL);
+                        fieldTypeArray.add(ConvertJsonConstant.STRING);
+                        fieldNode.put(ConvertJsonConstant.ITEMS, fieldTypeArray);
+                        objectNode.set(ConvertJsonConstant.TYPE, fieldNode);
                     } else {
-                        objectNode.set(TYPE, mapper.createObjectNode().put(TYPE, ARRAY).set(ITEMS, mapper.createObjectNode()
-                                .put(TYPE, RECORD).put(NAME, generateRandomNumber(map)).set(FIELDS, getFields(element))));
+                        objectNode.set(ConvertJsonConstant.TYPE,
+                                mapper.createObjectNode().put(ConvertJsonConstant.TYPE, ConvertJsonConstant.ARRAY).set(
+                                        ConvertJsonConstant.ITEMS,
+                                        mapper.createObjectNode().put(ConvertJsonConstant.TYPE, ConvertJsonConstant.RECORD)
+                                                .put(ConvertJsonConstant.NAME, generateRandomNumber(map))
+                                                .set(ConvertJsonConstant.FIELDS, getFields(element))));
                     }
                     fields.add(objectNode);
                     break;
 
                 case OBJECT:
                     ObjectNode node = mapper.createObjectNode();
-                    node.put(NAME, map.getKey());
-                    node.set(TYPE, mapper.createObjectNode().put(TYPE, RECORD).put(NAME, generateRandomNumber(map)).set(FIELDS,
-                            getFields(nextNode)));
+                    node.put(ConvertJsonConstant.NAME, map.getKey());
+                    node.set(ConvertJsonConstant.TYPE,
+                            mapper.createObjectNode().put(ConvertJsonConstant.TYPE, ConvertJsonConstant.RECORD)
+                                    .put(ConvertJsonConstant.NAME, generateRandomNumber(map))
+                                    .set(ConvertJsonConstant.FIELDS, getFields(nextNode)));
                     fields.add(node);
                     break;
 
@@ -191,10 +175,10 @@ public class ConvertJson implements AvroConverter<String, Schema> {
                     break;
                 }
             } else {
-                fieldNode.put(NAME, map.getKey());
-                fieldTypeArray.add(NULL);
-                fieldTypeArray.add(STRING);
-                fieldNode.put(TYPE, fieldTypeArray);
+                fieldNode.put(ConvertJsonConstant.NAME, map.getKey());
+                fieldTypeArray.add(ConvertJsonConstant.NULL);
+                fieldTypeArray.add(ConvertJsonConstant.STRING);
+                fieldNode.put(ConvertJsonConstant.TYPE, fieldTypeArray);
                 fields.add(fieldNode);
             }
         }

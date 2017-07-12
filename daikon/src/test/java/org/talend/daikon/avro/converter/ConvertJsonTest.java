@@ -15,6 +15,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+/**
+ * Test {@link ConvertJson}
+ */
 public class ConvertJsonTest {
 
     private final ConvertJson convertJson = new ConvertJson(new ObjectMapper());
@@ -30,6 +33,8 @@ public class ConvertJsonTest {
     private final String doubleJson = "{\"a\": 100.1}";
 
     /**
+     * Test {@link ConvertJson#getFields(JsonNode)}
+     *
      * Get fields of the input record: {@link ConvertJsonTest#simpleJson}
      *
      * Expected fields:
@@ -85,6 +90,8 @@ public class ConvertJsonTest {
     }
 
     /**
+     * Test {@link ConvertJson#getFields(JsonNode)}
+     *
      * Get fields of the input record: {@link ConvertJsonTest#arrayJson}
      *
      * Expected fields:
@@ -131,6 +138,8 @@ public class ConvertJsonTest {
     }
 
     /**
+     * Test {@link ConvertJson#getFields(JsonNode)}
+     * 
      * Get fields of the input record: {@link ConvertJsonTest#nullJson}
      *
      * Expected fields:
@@ -159,6 +168,8 @@ public class ConvertJsonTest {
     }
 
     /**
+     * Test {@link ConvertJson#getFields(JsonNode)}
+     * 
      * Get fields of the input record: {@link ConvertJsonTest#intJson}
      *
      * Expected fields:
@@ -187,6 +198,8 @@ public class ConvertJsonTest {
     }
 
     /**
+     * Test {@link ConvertJson#getFields(JsonNode)}
+     * 
      * Get fields of the input record: {@link ConvertJsonTest#doubleJson}
      *
      * Expected fields:
@@ -215,6 +228,8 @@ public class ConvertJsonTest {
     }
 
     /**
+     * Test {@link ConvertJson#convertToAvro(String)}
+     *
      * Convert the input record: {@link ConvertJsonTest#simpleJson} to avro schema
      *
      * Expected avro schema:
@@ -251,6 +266,11 @@ public class ConvertJsonTest {
         assertEquals("string", typesD.get(1).getName());
     }
 
+    /**
+     * Test {@link ConvertJson#generateRandomNumber(Map.Entry)}
+     *
+     * Check if random generated is not null
+     */
     @Test
     public void testGenerateRandomNumber() {
         Map.Entry<String, JsonNode> entry = new AbstractMap.SimpleEntry<String, JsonNode>("a", null);
