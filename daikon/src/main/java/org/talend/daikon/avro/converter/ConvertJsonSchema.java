@@ -20,8 +20,6 @@ public class ConvertJsonSchema {
 
     private ConvertJson convertJson;
 
-    private ObjectMapper mapper;
-
     /**
      * Constructor
      *
@@ -29,7 +27,6 @@ public class ConvertJsonSchema {
      */
     public ConvertJsonSchema(final ObjectMapper mapper) {
         this.convertJson = new ConvertJson(mapper);
-        this.mapper = mapper;
     }
 
     /**
