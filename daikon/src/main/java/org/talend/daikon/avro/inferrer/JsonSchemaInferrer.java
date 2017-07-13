@@ -54,7 +54,7 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
     }
 
     /**
-     * Convert json string to avro schema.
+     * Create an Avro Schema based on a JSON String.
      *
      * Example:
      *
