@@ -10,25 +10,21 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.di;
+package org.talend.daikon.avro.inferrer;
 
 import org.apache.avro.Schema;
-import org.apache.avro.generic.IndexedRecord;
 
 /**
- * Provides means to map design fields to runtime fields
+ * Infers (extracts) Avro {@link Schema} from specific data example (Datum)
+ * It can be used to guess schema from the first data arrived to particular part of the system
  */
-interface IndexMapper {
-
-    static final int DYNAMIC = -1;
+public interface SchemaInferrer<DatumT> {
 
     /**
-     * Computes map of correspondence between design fields (POJO fields) and runtime fields
-     * (IndexedRecord fields)
+     * Analyzes <code>datum<code> instance and creates Avro schema of this datum
      * 
-     * @param runtimeSchema runtime data schema, which goes along with {@link IndexedRecord}
-     * @return map of correspondence
+     * @param datum specific data
+     * @return Avro schema of datum
      */
-    int[] computeIndexMap(Schema runtimeSchema);
-
+    Schema inferSchema(DatumT datum);
 }
