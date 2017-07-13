@@ -23,9 +23,6 @@ import org.apache.avro.generic.GenericRecord;
 import org.junit.Test;
 import org.talend.daikon.avro.inferrer.JsonSchemaInferrer;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
  * Test {@link JsonGenericRecordConverter}
  */
@@ -52,8 +49,6 @@ public class JsonGenericRecordConverterTest {
      */
     @Test
     public void testConvertToAvroSimpleJson() throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = mapper.readTree(simpleJson);
         Schema schema = jsonSchemaInferrer.inferSchema(simpleJson);
         jsonGenericRecordConverter = new JsonGenericRecordConverter(schema);
 
