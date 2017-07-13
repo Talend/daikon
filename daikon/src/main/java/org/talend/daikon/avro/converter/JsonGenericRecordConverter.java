@@ -21,9 +21,8 @@ import java.util.Map;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.talend.daikon.avro.inferrer.JsonSchemaInferrer;
+import org.talend.daikon.exception.TalendRuntimeException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,11 +32,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
- * Converts json string to Avro Generic Record and vice-versa.
+ * Converts Json String to Avro Generic Record and vice-versa.
  */
 public class JsonGenericRecordConverter implements AvroConverter<String, GenericRecord> {
-
-    private static final Logger logger = LoggerFactory.getLogger(JsonGenericRecordConverter.class);
 
     private JsonSchemaInferrer jsonSchemaInferrer;
 
@@ -76,10 +73,12 @@ public class JsonGenericRecordConverter implements AvroConverter<String, Generic
     }
 
     /**
-     * Convert json string to Avro Generic Record.
+     * Convert Json String to Avro Generic Record.
+     *
+     * TalendRuntimeException thrown when an IOException or RuntimeException occurred.
      *
      * @param json string to convert
-     * @return Avro Generic Record or null if an IOException occured (an error message logged).
+     * @return Avro Generic Record.
      */
     @Override
     public GenericRecord convertToAvro(String json) {
@@ -87,10 +86,9 @@ public class JsonGenericRecordConverter implements AvroConverter<String, Generic
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(json);
             return getOutputRecord(jsonNode, schema);
-        } catch (IOException ex) {
-            logger.error(ex.getMessage());
+        } catch (IOException | TalendRuntimeException e) {
+            throw TalendRuntimeException.createUnexpectedException(e.getCause());
         }
-        return null;
     }
 
     /**

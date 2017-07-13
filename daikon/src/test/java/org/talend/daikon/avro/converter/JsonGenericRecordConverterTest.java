@@ -15,7 +15,6 @@ package org.talend.daikon.avro.converter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.avro.Schema;
@@ -79,7 +78,7 @@ public class JsonGenericRecordConverterTest {
      * @throws Exception
      */
     @Test
-    public void testConvertToAvroSimpleJson() throws IOException {
+    public void testConvertToAvroSimpleJson() {
         Schema schema = jsonSchemaInferrer.inferSchema(simpleJson);
         jsonGenericRecordConverter = new JsonGenericRecordConverter(schema);
 
@@ -106,7 +105,7 @@ public class JsonGenericRecordConverterTest {
      * @throws Exception
      */
     @Test
-    public void testConvertToAvroArrayJson() throws IOException {
+    public void testConvertToAvroArrayJson() {
         Schema schema = jsonSchemaInferrer.inferSchema(arrayJson);
         jsonGenericRecordConverter = new JsonGenericRecordConverter(schema);
 
@@ -136,7 +135,7 @@ public class JsonGenericRecordConverterTest {
      * @throws Exception
      */
     @Test
-    public void testConvertToAvroNullJson() throws IOException {
+    public void testConvertToAvroNullJson() {
         Schema schema = jsonSchemaInferrer.inferSchema(nullJson);
         jsonGenericRecordConverter = new JsonGenericRecordConverter(schema);
 

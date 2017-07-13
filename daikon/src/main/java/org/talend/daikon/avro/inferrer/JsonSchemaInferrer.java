@@ -22,6 +22,7 @@ import org.apache.avro.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.avro.AvroUtils;
+import org.talend.daikon.exception.TalendRuntimeException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,18 +66,19 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
      * "fields":[{"name":"a","type":{"type":"record","fields":[{"name":"b","type":["string","null"]}]}},
      * {"name":"d","type":["int","null"]}]}
      *
+     * TalendRuntimeException thrown when an IOException or RuntimeException occurred.
+     *
      * @param json string to convert
-     * @return Avro schema constructed or null if an IOException occured (an error message logged).
+     * @return Avro schema constructed
      */
     @Override
     public Schema inferSchema(String json) {
         try {
             final JsonNode jsonNode = mapper.readTree(json);
             return Schema.createRecord("outer_record", null, "org.talend", false, getFields(jsonNode));
-        } catch (IOException ex) {
-            logger.error(ex.getMessage());
+        } catch (IOException | TalendRuntimeException e) {
+            throw TalendRuntimeException.createUnexpectedException(e.getCause());
         }
-        return null;
     }
 
     /**
