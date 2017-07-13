@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.daikon.avro.inferrer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 
+/**
+ * Converts json string to avro schema.
+ */
 public class JsonSchemaInferrer implements SchemaInferrer<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaInferrer.class);
@@ -62,14 +66,14 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
      * {"name":"d","type":["int","null"]}]}
      *
      * @param json string to convert
-     * @return Avro schema constructed
+     * @return Avro schema constructed or null if an IOException occured (an error message logged).
      */
     @Override
     public Schema inferSchema(String json) {
         try {
             final JsonNode jsonNode = mapper.readTree(json);
             return Schema.createRecord("outer_record", null, "org.talend", false, getFields(jsonNode));
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             logger.error(ex.getMessage());
         }
         return null;
@@ -77,6 +81,8 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
 
     /**
      * Get the fields schema from json node. Supported data types are: INT, LONG, DOUBLE, STRING, ARRAY, OBJECT.
+     *
+     * A primitive field may be either a null or string|int|long|double.
      *
      * Example:
      *

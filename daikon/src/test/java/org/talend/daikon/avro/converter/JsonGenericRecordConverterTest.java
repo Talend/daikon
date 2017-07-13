@@ -39,6 +39,37 @@ public class JsonGenericRecordConverterTest {
     private JsonGenericRecordConverter jsonGenericRecordConverter;
 
     /**
+     * Test {@link JsonGenericRecordConverter#getSchema()}
+     */
+    @Test
+    public void testGetSchema() {
+        Schema schema = jsonSchemaInferrer.inferSchema(simpleJson);
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schema);
+        assertEquals(schema, jsonGenericRecordConverter.getSchema());
+    }
+
+    /**
+     * Test {@link JsonGenericRecordConverter#getDatumClass()}
+     */
+    @Test
+    public void testGetDatumClass() {
+        jsonGenericRecordConverter = new JsonGenericRecordConverter();
+        assertEquals(String.class, jsonGenericRecordConverter.getDatumClass());
+    }
+
+    /**
+     * Test {@link JsonGenericRecordConverter#convertToDatum(GenericRecord)}
+     */
+    @Test
+    public void testConvertToDatum() {
+        Schema schema = jsonSchemaInferrer.inferSchema(simpleJson);
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schema);
+        GenericRecord record = jsonGenericRecordConverter.convertToAvro(simpleJson);
+        String jsonConverted = jsonGenericRecordConverter.convertToDatum(record);
+        assertEquals(simpleJson, jsonConverted);
+    }
+
+    /**
      * Test {@link JsonGenericRecordConverter#convertToAvro(String)}
      *
      * Get Avro Generic Record and check its nested fields values.

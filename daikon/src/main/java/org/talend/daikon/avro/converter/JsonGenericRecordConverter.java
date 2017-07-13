@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.daikon.avro.converter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +32,9 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
+/**
+ * Converts json string to Avro Generic Record and vice-versa.
+ */
 public class JsonGenericRecordConverter implements AvroConverter<String, GenericRecord> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonGenericRecordConverter.class);
@@ -38,6 +42,13 @@ public class JsonGenericRecordConverter implements AvroConverter<String, Generic
     private JsonSchemaInferrer jsonSchemaInferrer;
 
     private Schema schema;
+
+    /**
+     * Constructor
+     */
+    public JsonGenericRecordConverter() {
+        this.jsonSchemaInferrer = JsonSchemaInferrer.createJsonSchemaInferrer();
+    }
 
     /**
      * Constructor
@@ -51,26 +62,32 @@ public class JsonGenericRecordConverter implements AvroConverter<String, Generic
 
     @Override
     public Schema getSchema() {
-        return null;
+        return schema;
     }
 
     @Override
     public Class<String> getDatumClass() {
-        return null;
+        return String.class;
     }
 
     @Override
-    public String convertToDatum(GenericRecord value) {
-        return null;
+    public String convertToDatum(GenericRecord record) {
+        return record.toString();
     }
 
+    /**
+     * Convert json string to Avro Generic Record.
+     *
+     * @param json string to convert
+     * @return Avro Generic Record or null if an IOException occured (an error message logged).
+     */
     @Override
     public GenericRecord convertToAvro(String json) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(json);
             return getOutputRecord(jsonNode, schema);
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             logger.error(ex.getMessage());
         }
         return null;
@@ -85,7 +102,7 @@ public class JsonGenericRecordConverter implements AvroConverter<String, Generic
      * @param schema of jsonNode
      * @return Avro Generic Record
      */
-    public GenericRecord getOutputRecord(final JsonNode jsonNode, Schema schema) {
+    private GenericRecord getOutputRecord(final JsonNode jsonNode, Schema schema) {
         GenericRecordBuilder outputRecord = new GenericRecordBuilder(schema);
         final Iterator<Map.Entry<String, JsonNode>> elements = jsonNode.fields();
         Map.Entry<String, JsonNode> mapEntry;
