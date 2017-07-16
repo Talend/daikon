@@ -27,8 +27,12 @@ import org.talend.daikon.exception.TalendRuntimeException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 
 /**
@@ -111,7 +115,15 @@ public class JsonGenericRecordConverter implements AvroConverter<String, Generic
 
             if (!(nextNode instanceof NullNode)) {
                 if (nextNode instanceof ValueNode) {
-                    outputRecord.set(mapEntry.getKey(), nextNode.textValue());
+                    if (nextNode instanceof TextNode) {
+                        outputRecord.set(mapEntry.getKey(), nextNode.textValue());
+                    } else if (nextNode instanceof IntNode) {
+                        outputRecord.set(mapEntry.getKey(), nextNode.intValue());
+                    } else if (nextNode instanceof LongNode) {
+                        outputRecord.set(mapEntry.getKey(), nextNode.longValue());
+                    } else if (nextNode instanceof DoubleNode) {
+                        outputRecord.set(mapEntry.getKey(), nextNode.doubleValue());
+                    }
                 } else if (nextNode instanceof ObjectNode) {
                     Schema schemaTo = jsonSchemaInferrer.inferSchema(nextNode.toString());
                     GenericRecord record = getOutputRecord(nextNode, schemaTo);
@@ -122,7 +134,15 @@ public class JsonGenericRecordConverter implements AvroConverter<String, Generic
                     while (elementsIterator.hasNext()) {
                         JsonNode nodeTo = elementsIterator.next();
                         if (nodeTo instanceof ValueNode) {
-                            listRecords.add(nodeTo.textValue());
+                            if (nodeTo instanceof TextNode) {
+                                listRecords.add(nodeTo.textValue());
+                            } else if (nodeTo instanceof IntNode) {
+                                listRecords.add(nodeTo.intValue());
+                            } else if (nodeTo instanceof LongNode) {
+                                listRecords.add(nodeTo.longValue());
+                            } else if (nodeTo instanceof DoubleNode) {
+                                listRecords.add(nodeTo.doubleValue());
+                            }
                         } else {
                             Schema schemaTo = jsonSchemaInferrer.inferSchema(nodeTo.toString());
                             listRecords.add(getOutputRecord(nodeTo, schemaTo));

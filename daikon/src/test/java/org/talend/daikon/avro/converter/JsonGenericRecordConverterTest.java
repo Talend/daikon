@@ -35,6 +35,8 @@ public class JsonGenericRecordConverterTest {
 
     private final String nullJson = "{\"a\": null}";
 
+    private final String intJson = "{\"a\": {\"b\": 10}, \"d\": 11}";
+
     private JsonGenericRecordConverter jsonGenericRecordConverter;
 
     /**
@@ -144,5 +146,32 @@ public class JsonGenericRecordConverterTest {
 
         // Check that `a` field is null
         assertNull(outputRecord.get("a"));
+    }
+
+    /**
+     * Test {@link JsonGenericRecordConverter#convertToAvro(String)}
+     *
+     * Get Avro Generic Record and check its nested fields values.
+     *
+     * Input record: {@link JsonGenericRecordConverterTest#intJson}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testConvertToAvroIntJson() {
+        Schema schema = jsonSchemaInferrer.inferSchema(intJson);
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schema);
+
+        // Get Avro Generic Record
+        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(intJson);
+
+        // Get `a` field
+        GenericRecord recordA = (GenericRecord) outputRecord.get(0);
+
+        // Check `b` field value
+        assertEquals(10, recordA.get("b"));
+
+        // Check `d` field value
+        assertEquals(11, outputRecord.get(1));
     }
 }
