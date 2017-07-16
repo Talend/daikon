@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 
 /**
  * Converts Json String to Avro Generic Record and vice-versa.
@@ -110,7 +110,7 @@ public class JsonGenericRecordConverter implements AvroConverter<String, Generic
             final JsonNode nextNode = mapEntry.getValue();
 
             if (!(nextNode instanceof NullNode)) {
-                if (nextNode instanceof TextNode) {
+                if (nextNode instanceof ValueNode) {
                     outputRecord.set(mapEntry.getKey(), nextNode.textValue());
                 } else if (nextNode instanceof ObjectNode) {
                     Schema schemaTo = jsonSchemaInferrer.inferSchema(nextNode.toString());
@@ -121,7 +121,7 @@ public class JsonGenericRecordConverter implements AvroConverter<String, Generic
                     Iterator<JsonNode> elementsIterator = ((ArrayNode) nextNode).elements();
                     while (elementsIterator.hasNext()) {
                         JsonNode nodeTo = elementsIterator.next();
-                        if (nodeTo instanceof TextNode) {
+                        if (nodeTo instanceof ValueNode) {
                             listRecords.add(nodeTo.textValue());
                         } else {
                             Schema schemaTo = jsonSchemaInferrer.inferSchema(nodeTo.toString());
