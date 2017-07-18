@@ -173,7 +173,7 @@ public class Widget implements ToStringIndent {
     /**
      * Code editor widget is designed to simplify and speed up input of source code.
      */
-    public static final String CODE_EDITOR_WIDGET_TYPE = "widget.type.codeEditor";
+    public static final String CODE_WIDGET_TYPE = "widget.type.code";
 
     /*
      * Widget configurations

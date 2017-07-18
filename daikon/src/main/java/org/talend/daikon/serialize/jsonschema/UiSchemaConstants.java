@@ -98,6 +98,11 @@ public class UiSchemaConstants {
     public static final String TYPE_TEXT_AREA = "textarea";
 
     /**
+     * Built-in widget type.
+     */
+    public static final String TYPE_CODE = "code";
+
+    /**
      * Custom widget type. Disply a table, with a fixed header, and user can add row below the header
      */
     // Disabled for products that create forms via JSON Schema. Can be restored when Talend ui
@@ -141,6 +146,7 @@ public class UiSchemaConstants {
         WIDGET_MAPPING.put(Widget.HIDDEN_TEXT_WIDGET_TYPE, UiSchemaConstants.TYPE_PASSWORD);
         WIDGET_MAPPING.put(Widget.FILE_WIDGET_TYPE, UiSchemaConstants.TYPE_FILE);
         WIDGET_MAPPING.put(Widget.TEXT_AREA_WIDGET_TYPE, UiSchemaConstants.TYPE_TEXT_AREA);
+        WIDGET_MAPPING.put(Widget.CODE_WIDGET_TYPE, UiSchemaConstants.TYPE_CODE);
 
         WIDGET_MAPPING.put(Widget.RADIO_WIDGET_TYPE, UiSchemaConstants.TYPE_RADIO);
         Map<String, String> options = new HashMap<>();
