@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,12 +24,9 @@ import org.talend.daikon.sandbox.properties.StandardPropertiesStrategyFactory;
 import org.talend.java.util.ClosableLRUMap;
 
 /**
- * this will create class instances from specifc classloader that should not interact with global system properties.
+ * this will create class instances from specific classloader that should not interact with global system properties.
  */
 public class SandboxInstanceFactory {
-
-    /** A useful constant value for ClassLoaders that can be reused and placed in the cache. */
-    public static final boolean CLASSLOADER_REUSABLE = true;
 
     /**
      * TODO: Add context variable to allow the user to configure the maximum size of the cache. Maybe using a
@@ -38,7 +35,7 @@ public class SandboxInstanceFactory {
     static Map<RuntimeInfo, ClassLoader> classLoaderCache = Collections
             .synchronizedMap(new ClosableLRUMap<RuntimeInfo, ClassLoader>(3, 10));
 
-    // this swith the current JVM System Properties with our own so that it can handle Thread/ClassLoader isolation
+    // this switch the current JVM System Properties with our own so that it can handle Thread/ClassLoader isolation
     static {
         ClassLoaderIsolatedSystemProperties isolatedSystemProperties = ClassLoaderIsolatedSystemProperties.getInstance();
         if (!(System.getProperties() instanceof ClassLoaderIsolatedSystemProperties)) {
@@ -64,16 +61,11 @@ public class SandboxInstanceFactory {
             throw new IllegalArgumentException("classToInstantiate should not be null");
         }
 
-        // Determine whether the ClassLoader for the runtimeInfo can be safely cached for performance.
         ClassLoader sandboxClassLoader;
-        boolean reusableClassLoader = CLASSLOADER_REUSABLE;
-        if (runtimeInfo instanceof SandboxControl)
-            reusableClassLoader = ((SandboxControl) runtimeInfo).isClassLoaderReusable();
-
-        if (reusableClassLoader == CLASSLOADER_REUSABLE) {
+        if (isClassLoaderReusable(runtimeInfo)) {
             // When the ClassLoader is reusable, use it from the cache.
             synchronized (classLoaderCache) {
-                if (classLoaderCache.containsKey(runtimeInfo) && classLoaderCache.get(runtimeInfo) != null) {
+                if (isClassLoaderCached(runtimeInfo)) {
                     sandboxClassLoader = classLoaderCache.get(runtimeInfo);
                 } else {
                     // the following classloader is closeable so there is a possible resource leak.
@@ -88,7 +80,7 @@ public class SandboxInstanceFactory {
         }
 
         return new SandboxedInstance(runtimeInfo.getRuntimeClassName(), useCurrentJvmProperties, sandboxClassLoader,
-                reusableClassLoader);
+                isClassLoaderReusable(runtimeInfo));
     }
 
     private static URLClassLoader createClassLoader(RuntimeInfo runtimeInfo, ClassLoader parentClassLoader) {
@@ -102,6 +94,33 @@ public class SandboxInstanceFactory {
                 ClassLoaderIsolatedSystemProperties.getInstance().stopIsolateClassLoader(this);
             }
         };
+    }
+
+    /**
+     * Determines whether {@link ClassLoader} for the runtimeInfo can be safely cached for performance reasons.
+     * By default {@link ClassLoader} is cached, but if control on caching is required {@link RuntimeInfo} instance should also
+     * implement
+     * {@link SandboxControl}. Thus, {@link RuntimeInfo} may define whether caching is required
+     * 
+     * @param runtimeInfo {@link RuntimeInfo}
+     * @return true, if caching is required, false - otherwise
+     */
+    private static boolean isClassLoaderReusable(RuntimeInfo runtimeInfo) {
+        if (runtimeInfo instanceof SandboxControl) {
+            return ((SandboxControl) runtimeInfo).isClassLoaderReusable();
+        } else {
+            return SandboxControl.CLASSLOADER_REUSABLE;
+        }
+    }
+
+    /**
+     * Checks whether {@link ClassLoader} was already cached or not
+     * 
+     * @param runtimeInfo {@link RuntimeInfo}
+     * @return true is {@link ClassLoader} and can be retrieved from cache, false - otherwise
+     */
+    private static boolean isClassLoaderCached(RuntimeInfo runtimeInfo) {
+        return classLoaderCache.containsKey(runtimeInfo) && classLoaderCache.get(runtimeInfo) != null;
     }
 
     public static void clearCache() {

@@ -13,7 +13,7 @@
 package org.talend.daikon.sandbox;
 
 import static org.junit.Assert.*;
-import static org.talend.daikon.sandbox.SandboxInstanceFactory.CLASSLOADER_REUSABLE;
+import static org.talend.daikon.sandbox.SandboxControl.CLASSLOADER_REUSABLE;
 
 import java.net.URL;
 import java.net.URLClassLoader;
