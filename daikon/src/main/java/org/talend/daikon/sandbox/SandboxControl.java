@@ -21,6 +21,16 @@ package org.talend.daikon.sandbox;
 public interface SandboxControl {
 
     /**
+     * Constant, which specifies ClassLoader is reusable
+     */
+    static final boolean CLASSLOADER_REUSABLE = true;
+
+    /**
+     * Constant, which specifies ClassLoader is not reusable
+     */
+    static final boolean CLASSLOADER_NOT_REUSABLE = false;
+
+    /**
      * Most {@link org.talend.daikon.runtime.RuntimeInfo} instances can reuse the classloader that dynamically adds
      * dependencies to the classpath. This can largely improve performance. However, in certain cases, the loaded
      * classes retain state between calls and should not be reused (notably when static members of loaded classes
