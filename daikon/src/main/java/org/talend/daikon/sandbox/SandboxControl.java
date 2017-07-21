@@ -21,14 +21,16 @@ package org.talend.daikon.sandbox;
 public interface SandboxControl {
 
     /**
-     * Constant, which specifies ClassLoader is reusable
+     * Constant, which specifies ClassLoader is reusable.
+     * If ClassLoader is not reusable then
+     * 
+     * <pre>
+     * !CLASSLOADER_REUSABLE
+     * </pre>
+     * 
+     * may be used
      */
     static final boolean CLASSLOADER_REUSABLE = true;
-
-    /**
-     * Constant, which specifies ClassLoader is not reusable
-     */
-    static final boolean CLASSLOADER_NOT_REUSABLE = false;
 
     /**
      * Most {@link org.talend.daikon.runtime.RuntimeInfo} instances can reuse the classloader that dynamically adds
