@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.avro.Schema;
 import org.slf4j.Logger;
@@ -139,15 +140,15 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
                     Iterator<JsonNode> nodeIterator = arrayNode.elements();
                     if (nodeIterator.hasNext()) {
                         field = new Schema.Field(mapEntry.getKey(), Schema.createArray(
-                                Schema.createRecord(mapEntry.getKey(), null, null, false, getFields(nodeIterator.next()))), null,
-                                null, Schema.Field.Order.ASCENDING);
+                                Schema.createRecord(getSubRecordRandomName(), null, null, false, getFields(nodeIterator.next()))),
+                                null, null, Schema.Field.Order.ASCENDING);
                     }
                     fields.add(field);
                     break;
 
                 case OBJECT:
                     field = new Schema.Field(mapEntry.getKey(),
-                            Schema.createRecord(mapEntry.getKey(), null, null, false, getFields(nextNode)), null, null,
+                            Schema.createRecord(getSubRecordRandomName(), null, null, false, getFields(nextNode)), null, null,
                             Schema.Field.Order.ASCENDING);
                     fields.add(field);
                     break;
@@ -163,5 +164,12 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
             }
         }
         return fields;
+    }
+
+    /**
+     * @return subrecord random name.
+     */
+    public String getSubRecordRandomName() {
+        return "subrecord" + UUID.randomUUID().toString().replace("-", "_");
     }
 }
