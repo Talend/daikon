@@ -138,15 +138,16 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
                     final ArrayNode arrayNode = (ArrayNode) nextNode;
                     Iterator<JsonNode> nodeIterator = arrayNode.elements();
                     if (nodeIterator.hasNext()) {
-                        field = new Schema.Field(mapEntry.getKey(),
-                                Schema.createArray(Schema.createRecord(getFields(nodeIterator.next()))), null, null,
-                                Schema.Field.Order.ASCENDING);
+                        field = new Schema.Field(mapEntry.getKey(), Schema.createArray(
+                                Schema.createRecord(mapEntry.getKey(), null, null, false, getFields(nodeIterator.next()))), null,
+                                null, Schema.Field.Order.ASCENDING);
                     }
                     fields.add(field);
                     break;
 
                 case OBJECT:
-                    field = new Schema.Field(mapEntry.getKey(), Schema.createRecord(getFields(nextNode)), null, null,
+                    field = new Schema.Field(mapEntry.getKey(),
+                            Schema.createRecord(mapEntry.getKey(), null, null, false, getFields(nextNode)), null, null,
                             Schema.Field.Order.ASCENDING);
                     fields.add(field);
                     break;
