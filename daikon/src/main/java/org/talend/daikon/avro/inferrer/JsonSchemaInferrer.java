@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.avro.Schema;
 import org.slf4j.Logger;
@@ -102,101 +101,67 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
         final Iterator<Map.Entry<String, JsonNode>> elements = jsonNode.fields();
         Map.Entry<String, JsonNode> mapEntry;
 
-        if (!elements.hasNext()) {
+        while (elements.hasNext()) {
+            mapEntry = elements.next();
+            final JsonNode nextNode = mapEntry.getValue();
             Schema.Field field = null;
-            if (jsonNode.isInt()) {
-                field = new Schema.Field(getSubRecordRandomName(), AvroUtils.wrapAsNullable(AvroUtils._int()), null, null,
-                        Schema.Field.Order.ASCENDING);
-            } else if (jsonNode.isLong()) {
-                field = new Schema.Field(getSubRecordRandomName(), AvroUtils.wrapAsNullable(AvroUtils._long()), null, null,
-                        Schema.Field.Order.ASCENDING);
-            } else if (jsonNode.isDouble()) {
-                field = new Schema.Field(getSubRecordRandomName(), AvroUtils.wrapAsNullable(AvroUtils._double()), null, null,
-                        Schema.Field.Order.ASCENDING);
-            } else if (jsonNode.isTextual()) {
-                field = new Schema.Field(getSubRecordRandomName(), AvroUtils.wrapAsNullable(AvroUtils._string()), null, null,
-                        Schema.Field.Order.ASCENDING);
-            }
-            fields.add(field);
-        } else {
-            while (elements.hasNext()) {
-                mapEntry = elements.next();
-                final JsonNode nextNode = mapEntry.getValue();
-                Schema.Field field = null;
 
-                if (!(nextNode instanceof NullNode)) {
-                    switch (nextNode.getNodeType()) {
-                    case NUMBER:
-                        if (nextNode.isInt()) {
-                            field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._int()), null, null,
-                                    Schema.Field.Order.ASCENDING);
-                        } else if (nextNode.isLong()) {
-                            field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._long()), null, null,
-                                    Schema.Field.Order.ASCENDING);
-                        } else {
-                            field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._double()), null, null,
-                                    Schema.Field.Order.ASCENDING);
-                        }
-                        fields.add(field);
-                        break;
-
-                    case STRING:
-                        field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._string()), null, null,
+            if (!(nextNode instanceof NullNode)) {
+                switch (nextNode.getNodeType()) {
+                case NUMBER:
+                    if (nextNode.isInt()) {
+                        field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._int()), null, null,
                                 Schema.Field.Order.ASCENDING);
-                        fields.add(field);
-                        break;
-
-                    case BOOLEAN:
-                        field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._boolean()), null, null,
+                    } else if (nextNode.isLong()) {
+                        field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._long()), null, null,
                                 Schema.Field.Order.ASCENDING);
-                        fields.add(field);
-                        break;
-
-                    case ARRAY:
-                        final ArrayNode arrayNode = (ArrayNode) nextNode;
-                        Iterator<JsonNode> nodeIterator = arrayNode.elements();
-                        if (nodeIterator.hasNext()) {
-                            field = new Schema.Field(
-                                    mapEntry.getKey(), Schema.createArray(Schema.createRecord(getSubRecordRandomName(), null,
-                                            null, false, getFields(nodeIterator.next()))),
-                                    null, null, Schema.Field.Order.ASCENDING);
-                        }
-                        // TODO: if array field is empty, example: b:[]
-                        /*
-                         * else {
-                         * field = new Schema.Field(mapEntry.getKey(),
-                         * Schema.createArray(Schema.createRecord(getSubRecordRandomName(), null, null, false)), null,
-                         * null, Schema.Field.Order.ASCENDING);
-                         * }
-                         */
-                        fields.add(field);
-                        break;
-
-                    case OBJECT:
-                        field = new Schema.Field(mapEntry.getKey(),
-                                Schema.createRecord(getSubRecordRandomName(), null, null, false, getFields(nextNode)), null, null,
+                    } else {
+                        field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._double()), null, null,
                                 Schema.Field.Order.ASCENDING);
-                        fields.add(field);
-                        break;
-
-                    default:
-                        logger.error("Node type not found - " + nextNode.getNodeType());
-                        break;
                     }
-                } else {
+                    fields.add(field);
+                    break;
+
+                case STRING:
                     field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._string()), null, null,
                             Schema.Field.Order.ASCENDING);
                     fields.add(field);
+                    break;
+
+                case BOOLEAN:
+                    field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._boolean()), null, null,
+                            Schema.Field.Order.ASCENDING);
+                    fields.add(field);
+                    break;
+
+                case ARRAY:
+                    final ArrayNode arrayNode = (ArrayNode) nextNode;
+                    Iterator<JsonNode> nodeIterator = arrayNode.elements();
+                    if (nodeIterator.hasNext()) {
+                        field = new Schema.Field(mapEntry.getKey(), Schema.createArray(
+                                Schema.createRecord(mapEntry.getKey(), null, null, false, getFields(nodeIterator.next()))), null,
+                                null, Schema.Field.Order.ASCENDING);
+                    }
+                    fields.add(field);
+                    break;
+
+                case OBJECT:
+                    field = new Schema.Field(mapEntry.getKey(),
+                            Schema.createRecord(mapEntry.getKey(), null, null, false, getFields(nextNode)), null, null,
+                            Schema.Field.Order.ASCENDING);
+                    fields.add(field);
+                    break;
+
+                default:
+                    logger.error("Node type not found - " + nextNode.getNodeType());
+                    break;
                 }
+            } else {
+                field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._string()), null, null,
+                        Schema.Field.Order.ASCENDING);
+                fields.add(field);
             }
         }
         return fields;
-    }
-
-    /**
-     * @return subrecord random name.
-     */
-    public String getSubRecordRandomName() {
-        return "subrecord" + UUID.randomUUID().toString().replace("-", "_");
     }
 }
