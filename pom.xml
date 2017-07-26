@@ -28,6 +28,7 @@
         <module>reporting</module>
         <module>daikon-content-service</module>
 		<module>daikon-logging</module>
+        <module>daikon-kafka</module>
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
@@ -127,7 +128,7 @@
 					<groupId>org.apache.felix</groupId>
 					<artifactId>maven-bundle-plugin</artifactId>
 					<version>3.0.1</version>
-				</plugin>				
+				</plugin>
 			</plugins>
         </pluginManagement>
         <plugins>
