@@ -58,7 +58,7 @@ public class JsonPropertiesResolver {
             InstantiationException, IOException {
         List<P> subProperties = new ArrayList<>();
         for (int i = 0; i < objectNode.size(); i++) {
-            P nestedProps = properties.createNestedProperties("row" + i);
+            P nestedProps = properties.getNestedPropertiesFactory().createAndInit("row" + i);
             subProperties.add(resolveJson((ObjectNode) objectNode.get(i), nestedProps));
         }
         properties.setRows(subProperties);

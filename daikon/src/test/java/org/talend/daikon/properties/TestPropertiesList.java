@@ -71,8 +71,8 @@ public class TestPropertiesList {
     {
 
         @Override
-        public TestProperties create(String name) {
-            return new TestProperties(name);
+        public TestProperties createAndInit(String name) {
+            return (TestProperties) new TestProperties(name).init();
         }
     }
 }

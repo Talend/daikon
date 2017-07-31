@@ -24,9 +24,9 @@ public class PropertiesListTest {
     @Test
     public void testSetRows() {
         PropertiesList<TestProperties> propertiesList = createPropertiesList();
-        TestProperties row1 = propertiesList.createNestedProperties("row1");
-        TestProperties row2 = propertiesList.createNestedProperties("row2");
-        TestProperties row3 = propertiesList.createNestedProperties("row3");
+        TestProperties row1 = propertiesList.getNestedPropertiesFactory().createAndInit("row1");
+        TestProperties row2 = propertiesList.getNestedPropertiesFactory().createAndInit("row2");
+        TestProperties row3 = propertiesList.getNestedPropertiesFactory().createAndInit("row3");
         propertiesList.setRows(Arrays.asList(row1, row2, row3));
 
         // check rows quantity and order
@@ -42,11 +42,11 @@ public class PropertiesListTest {
     public void testReSetRows() {
         PropertiesList<TestProperties> propertiesList = createPropertiesList();
         propertiesList.init();
-        TestProperties row1 = propertiesList.createNestedProperties("row1");
+        TestProperties row1 = propertiesList.getNestedPropertiesFactory().createAndInit("row1");
         propertiesList.setRows(Arrays.asList(row1));
 
-        TestProperties row2 = propertiesList.createNestedProperties("row2");
-        TestProperties row3 = propertiesList.createNestedProperties("row3");
+        TestProperties row2 = propertiesList.getNestedPropertiesFactory().createAndInit("row2");
+        TestProperties row3 = propertiesList.getNestedPropertiesFactory().createAndInit("row3");
         propertiesList.setRows(Arrays.asList(row2, row3));
 
         // check rows quantity and order
@@ -61,7 +61,7 @@ public class PropertiesListTest {
     public void testAddRow() {
         PropertiesList<TestProperties> propertiesList = createPropertiesList();
         propertiesList.init();
-        TestProperties row1 = propertiesList.createNestedProperties("row1");
+        TestProperties row1 = propertiesList.getNestedPropertiesFactory().createAndInit("row1");
         propertiesList.addRow(row1);
 
         ArrayList<TestProperties> subProps = new ArrayList<>(propertiesList.getPropertiesList());
@@ -73,9 +73,9 @@ public class PropertiesListTest {
     @Test
     public void testAddRows() {
         PropertiesList<TestProperties> propertiesList = createPropertiesList();
-        TestProperties row1 = propertiesList.createNestedProperties("row1");
-        TestProperties row2 = propertiesList.createNestedProperties("row2");
-        TestProperties row3 = propertiesList.createNestedProperties("row3");
+        TestProperties row1 = propertiesList.getNestedPropertiesFactory().createAndInit("row1");
+        TestProperties row2 = propertiesList.getNestedPropertiesFactory().createAndInit("row2");
+        TestProperties row3 = propertiesList.getNestedPropertiesFactory().createAndInit("row3");
         propertiesList.addAllRows(Arrays.asList(row1, row2, row3));
 
         // check rows quantity and order
@@ -86,8 +86,8 @@ public class PropertiesListTest {
         Assert.assertEquals(row2, subProps.get(1));
         Assert.assertEquals(row3, subProps.get(2));
 
-        TestProperties row4 = propertiesList.createNestedProperties("row4");
-        TestProperties row5 = propertiesList.createNestedProperties("row5");
+        TestProperties row4 = propertiesList.getNestedPropertiesFactory().createAndInit("row4");
+        TestProperties row5 = propertiesList.getNestedPropertiesFactory().createAndInit("row5");
         propertiesList.addAllRows(Arrays.asList(row4, row5));
         subProps = new ArrayList<>(propertiesList.getPropertiesList());
         Assert.assertEquals("Number of added properties is wrong", 5, subProps.size());
@@ -111,8 +111,8 @@ public class PropertiesListTest {
                 new PropertiesList.NestedPropertiesFactory<TestProperties>() {
 
                     @Override
-                    public TestProperties create(String name) {
-                        return new TestProperties(name);
+                    public TestProperties createAndInit(String name) {
+                        return (TestProperties) new TestProperties(name).init();
                     }
 
                 });

@@ -14,6 +14,7 @@ package org.talend.daikon.properties;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.talend.daikon.properties.presentation.Form;
@@ -43,7 +44,7 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
     public PropertiesList(String name, NestedPropertiesFactory<T> factory) {
         super(name);
         this.factory = factory;
-        this.defaultProperties = factory.create("defaultProperties");
+        this.defaultProperties = factory.createAndInit("defaultProperties");
     }
 
     @Override
@@ -59,7 +60,6 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
      */
     protected void layoutPropertiesOnForm(Form form) {
         for (Properties props : subProperties) {
-            props.init();
             form.addRow(props.getForm(Form.MAIN));
         }
     }
@@ -77,7 +77,7 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
      * Get list of properties defined for this object.
      */
     public Collection<T> getPropertiesList() {
-        return subProperties;
+        return Collections.unmodifiableCollection(subProperties);
     }
 
     /**
@@ -85,7 +85,6 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
      */
     public void addRow(T props) {
         subProperties.add(props);
-        props.init();
         getForm(Form.MAIN).addRow(props.getForm(Form.MAIN));
     }
 
@@ -99,7 +98,8 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
      * @return object created using factory and added to the list of properties.
      */
     public T createAndAddRow() {
-        T newRow = this.factory.create(ROW_NAME_PREFIX + (subProperties.size() + 1));
+        T newRow = this.factory.createAndInit(ROW_NAME_PREFIX + (subProperties.size() + 1));
+        newRow.init();
         this.addRow(newRow);
         return newRow;
     }
@@ -129,10 +129,10 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
     }
 
     /**
-     * Create a new properties instance for this properties list.
+     * Return factory which will create instance of generic Properties class.
      */
-    public T createNestedProperties(String name) {
-        return this.factory.create(name);
+    public NestedPropertiesFactory<T> getNestedPropertiesFactory() {
+        return factory;
     }
 
     /**
@@ -141,9 +141,9 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
     public static interface NestedPropertiesFactory<T extends Properties> {
 
         /**
-         * Create and return object with given name
+         * Create, initialize and return object with given name
          */
-        public T create(String name);
+        public T createAndInit(String name);
 
     }
 
