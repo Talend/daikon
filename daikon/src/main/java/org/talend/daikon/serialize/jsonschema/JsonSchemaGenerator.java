@@ -111,8 +111,17 @@ public class JsonSchemaGenerator {
                 boolean isVisible = widget != null && widget.isVisible();
                 // compute the formName is one of the properties form was added as a subform
                 String propertiesFormName = null;
-                if (isVisible && widget.getContent() instanceof Form) {
-                    propertiesFormName = widget.getContent().getName();
+                if (isVisible) {
+                    if (Form.class.isInstance(widget.getContent())) {
+                        propertiesFormName = widget.getContent().getName();
+                    } else if (Properties.class.isInstance(widget.getContent())) { // likely properties
+                        final Properties props = Properties.class.cast(widget.getContent());
+                        if (props.getForms().size() == 1) {
+                            propertiesFormName = props.getForms().iterator().next().getName();
+                        } else {
+                            throw new IllegalArgumentException("You need to wrap " + properties + " in a form in " + widget);
+                        }
+                    }
                 }
                 ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name,
                         processTProperties(properties, propertiesFormName, isVisible));

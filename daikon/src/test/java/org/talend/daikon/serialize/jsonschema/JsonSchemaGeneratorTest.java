@@ -1,7 +1,11 @@
 package org.talend.daikon.serialize.jsonschema;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 import org.json.JSONException;
 import org.junit.Rule;
@@ -78,6 +82,80 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
                 + "\"type\":\"array\",\"items\":{\"type\":\"string\",\"enum\":[\"col1\",\"col2\",\"col3\"],"
                 + "\"enumNames\":[\"Surname\",\"Name\",\"Phone\"]},\"uniqueItems\":\"true\",\"minItems\":1}}}";
         assertEquals(expectedPartial, genSchema.toString(), false);
+    }
+
+    @Test
+    public void indirectReferenceFormSerialization() {
+        final String json = JsonSchemaUtil.toJson(new ReferencingProperties() {
+
+            {
+                init();
+            }
+        }, "ref", "root");
+        assertNotNull(json);
+        // if we are here https://jira.talendforge.org/browse/TCOMP-471 is already fixed but
+        // add a contains just to check it is not skipped
+        assertThat(json, containsString("\"uiSchema\":{" + "\"middle1\":{\"middle2\":{\"ui:widget\":\"hidden\"}"));
+    }
+
+    public class SingleProperties extends PropertiesImpl {
+
+        public Property<String> value = newString("value");
+
+        public SingleProperties() {
+            super("single");
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form.create(this, "s").addRow(value);
+        }
+    }
+
+    public class PropertiesInTheMiddle1Properties extends PropertiesImpl {
+
+        public PropertiesInTheMiddle2Properties middle2 = new PropertiesInTheMiddle2Properties();
+
+        public PropertiesInTheMiddle1Properties() {
+            super("middle1");
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form.create(this, "m1").addRow(middle2);
+        }
+    }
+
+    public class PropertiesInTheMiddle2Properties extends PropertiesImpl {
+
+        public SingleProperties single = new SingleProperties();
+
+        public PropertiesInTheMiddle2Properties() {
+            super("middle2");
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form.create(this, "m2").addRow(single);
+        }
+    }
+
+    public class ReferencingProperties extends PropertiesImpl {
+
+        public PropertiesInTheMiddle1Properties middle1 = new PropertiesInTheMiddle1Properties();
+
+        public ReferencingProperties() {
+            super("referencing");
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form.create(this, "ref").addRow(middle1.getForm("m1"));
+        }
     }
 
     public class NestedProperties extends PropertiesImpl {
