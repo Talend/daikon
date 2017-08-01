@@ -44,8 +44,8 @@ public class Widget implements ToStringIndent {
     public static final String SCHEMA_EDITOR_WIDGET_TYPE = "widget.type.schema.editor";
 
     /**
-     * Presentation of a reference to a schema on one line. This shows the name of the schema and provides a button
-     * to open the schema editor/viewer in a dialog.
+     * Presentation of a reference to a schema on one line. This shows the name of the schema and provides a button to
+     * open the schema editor/viewer in a dialog.
      */
     public static final String SCHEMA_REFERENCE_WIDGET_TYPE = "widget.type.schema.reference";
 
@@ -94,13 +94,14 @@ public class Widget implements ToStringIndent {
     public static final String HIDDEN_TEXT_WIDGET_TYPE = "widget.type.hidden.text";
 
     /**
-     * A file widget with button select file from local system. The widget content shall be a {@link Property}<{@link String}>
+     * A file widget with button select file from local system. The widget content shall be a {@link Property}<
+     * {@link String}>
      */
     public static final String FILE_WIDGET_TYPE = "widget.type.file";
 
     /**
-     * A directory widget with button select directory from local system. The widget content shall be a {@link Property}<
-     * {@link String}>
+     * A directory widget with button select directory from local system. The widget content shall be a {@link Property}
+     * < {@link String}>
      */
     public static final String DIRECTORY_WIDGET_TYPE = "widget.type.directory";
 
@@ -165,10 +166,16 @@ public class Widget implements ToStringIndent {
     /**
      * This widget represents a multiple checkbox which allow to select or deselect each value among a list of values.
      *
-     * It is backed by a Property<List<String>> for the java model where the possible values are the one displayed in the widget
-     * for selection.
+     * It is backed by a Property<List<String>> for the java model where the possible values are the one displayed in
+     * the widget for selection.
      */
     public static final String MULTIPLE_VALUE_SELECTOR_WIDGET_TYPE = "widget.type.listview";
+
+    /**
+     * This widget represents a nested properties widget - a list of additional properties which can be added or
+     * removed.
+     */
+    public static final String NESTED_PROPERTIES = "widget.type.nestedProperties";
 
     /**
      * Code editor widget is designed to simplify and speed up input of source code.
@@ -448,8 +455,8 @@ public class Widget implements ToStringIndent {
     }
 
     /**
-     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because it may not
-     * be serialized.
+     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because
+     * it may not be serialized.
      *
      * @param key, key to store the object with
      * @param value, any object.
