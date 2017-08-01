@@ -1,8 +1,13 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
@@ -10,14 +15,11 @@ import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.serialize.jsonschema.mapping.Mapper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class UiSchemaGenerator {
 
@@ -149,27 +151,10 @@ public class UiSchemaGenerator {
                 return schema;
             }
         } else {
-            String widgetType = UiSchemaConstants.getWidgetMapping().get(widget.getWidgetType());
-            if (widgetType != null) {
-                if (widget.isAutoFocus()) {
-                    schema.put(UiSchemaConstants.TAG_AUTO_FOCUS, true);
-                }
-                schema.put(UiSchemaConstants.TAG_WIDGET, widgetType);
-                Map<String, String> optionsMap = UiSchemaConstants.getWidgetOptionsMapping().get(widget.getWidgetType());
-                if (optionsMap != null) {
-                    ObjectNode options = JsonNodeFactory.instance.objectNode();
-
-                    for (Map.Entry<String, String> entry : optionsMap.entrySet()) {
-                        options.put(entry.getKey(), entry.getValue());
-                    }
-
-                    schema.set(UiSchemaConstants.TAG_OPTIONS, options);
-                }
-                // Any other widget type than hidden causes means that it is visible.
-                if (!UiSchemaConstants.TYPE_HIDDEN.equals(widgetType)) {
-                    hasVisible[0] = true;
-                }
-            } else {//no supported widget for this, so if Properties then hide
+            Mapper uiMapper = UiSchemaConstants.getUiMappers().get(widget.getWidgetType());
+            if (uiMapper != null) {
+                uiMapper.processWidget(widget, schema, hasVisible);
+            } else {// no supported widget for this, so if Properties then hide
                 NamedThing content = widget.getContent();
                 if (content instanceof Properties) {
                     // hide the Properties that do not have a Widget to render it.
