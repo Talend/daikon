@@ -45,6 +45,14 @@ public class TestPropertiesList {
             main.addColumn(stringProp);
         }
 
+        public void afterIntProp() {
+            if (intProp.getValue() != null && intProp.getValue() == 1) {
+                stringProp.setValue(TestEnum.ONE);
+            } else {
+                stringProp.setValue(TestEnum.TWO);
+            }
+        }
+
     }
 
     public static class TestComponentProperties extends PropertiesImpl {
