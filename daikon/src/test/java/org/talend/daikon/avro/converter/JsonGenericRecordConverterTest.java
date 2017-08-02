@@ -23,49 +23,55 @@ import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericRecord;
 import org.junit.Test;
+import org.talend.daikon.avro.AvroUtils;
 
 /**
  * Test {@link JsonGenericRecordConverter}
  */
 public class JsonGenericRecordConverterTest {
 
-    private final Schema inputSchemaStrB = SchemaBuilder.record("b").fields().name("b").type().optional().stringType()
-            .endRecord();
+    private final Schema schemaStrB = SchemaBuilder.record("b").fields().name("b").type().optional().stringType().endRecord();
 
-    private final Schema inputSchemaIntB = SchemaBuilder.record("b").fields().name("b").type().optional().intType().endRecord();
+    private final Schema schemaIntB = SchemaBuilder.record("b").fields().name("b").type().optional().intType().endRecord();
 
-    private final Schema inputSchemaBoolB = SchemaBuilder.record("b").fields().name("b").type().optional().booleanType()
-            .endRecord();
+    private final Schema schemaBoolB = SchemaBuilder.record("b").fields().name("b").type().optional().booleanType().endRecord();
 
-    private final Schema inputSimpleSchema = SchemaBuilder.record("inputSimpleRow").fields().name("a").type(inputSchemaStrB)
-            .noDefault().name("d").type().optional().stringType().endRecord();
+    private final Schema schemaComplexRecordWithStrFields = SchemaBuilder.record("complexRecordWithStrFields").fields().name("a")
+            .type(schemaStrB).noDefault().name("d").type().optional().stringType().endRecord();
 
-    private final Schema inputArraySchema = SchemaBuilder.record("inputArrayRow").fields().name("a")
-            .type(SchemaBuilder.array().items(inputSchemaStrB)).noDefault().endRecord();
+    private final Schema schemaArrayOfComplexStringRecords = SchemaBuilder.record("arrayOfComplexStringRecords").fields()
+            .name("a").type(SchemaBuilder.array().items(schemaStrB)).noDefault().endRecord();
 
-    private final Schema inputNullSchema = SchemaBuilder.record("inputNull").fields().name("a").type().nullType().nullDefault()
-            .endRecord();
+    private final Schema schemaComplexRecordWithIntegerFields = SchemaBuilder.record("complexRecordWithIntegerFields").fields()
+            .name("a").type(schemaIntB).noDefault().name("d").type().optional().intType().endRecord();
 
-    private final Schema inputIntSchema = SchemaBuilder.record("inputIntRow").fields().name("a").type(inputSchemaIntB).noDefault()
-            .name("d").type().optional().intType().endRecord();
+    private final Schema schemaComplexRecordWithBooleanFields = SchemaBuilder.record("complexRecordWithBooleanFields").fields()
+            .name("a").type(schemaBoolB).noDefault().name("d").type().optional().booleanType().endRecord();
 
-    private final Schema inputBoolSchema = SchemaBuilder.record("inputBoolRow").fields().name("a").type(inputSchemaBoolB)
-            .noDefault().name("d").type().optional().booleanType().endRecord();
+    private final Schema schemaArrayOfComplexBooleanRecords = SchemaBuilder.record("arrayOfComplexBooleanRecords").fields()
+            .name("a").type(SchemaBuilder.array().items(schemaBoolB)).noDefault().endRecord();
 
-    private final Schema inputArrayBoolSchema = SchemaBuilder.record("inputArrayBoolRow").fields().name("a")
-            .type(SchemaBuilder.array().items(inputSchemaBoolB)).noDefault().endRecord();
+    private final Schema schemaArrayOfInteger = SchemaBuilder.record("arrayOfInteger").fields().name("a")
+            .type(SchemaBuilder.array().items(AvroUtils.wrapAsNullable(AvroUtils._int()))).noDefault().endRecord();
 
-    private final String simpleJson = "{\"a\": {\"b\": \"b1\"}, \"d\": \"d1\"}";
+    private final Schema schemaArrayOfString = SchemaBuilder.record("arrayOfString").fields().name("a")
+            .type(SchemaBuilder.array().items(AvroUtils.wrapAsNullable(AvroUtils._string()))).noDefault().endRecord();
 
-    private final String arrayJson = "{\"a\": [{\"b\": \"b1\"}, {\"b\": \"b2\"}]}";
+    private final String jsonComplexRecordWithStrFields = "{\"a\": {\"b\": \"b1\"}, \"d\": \"d1\"}";
 
-    private final String nullJson = "{\"a\": null}";
+    private final String jsonArrayOfComplexStringRecords = "{\"a\": [{\"b\": \"b1\"}, {\"b\": \"b2\"}]}";
 
-    private final String intJson = "{\"a\": {\"b\": 10}, \"d\": 11}";
+    private final String jsonComplexRecordWithIntegerFields = "{\"a\": {\"b\": 10}, \"d\": 11}";
 
-    private final String simpleBooleanJson = "{\"a\": {\"b\": false}, \"d\": true}";
+    private final String jsonComplexRecordWithBooleanFields = "{\"a\": {\"b\": false}, \"d\": true}";
 
-    private final String arrayBooleanJson = "{\"a\": [{\"b\": true}, {\"b\": false}]}";
+    private final String jsonArrayOfComplexBooleanRecords = "{\"a\": [{\"b\": true}, {\"b\": false}]}";
+
+    private final String jsonArrayOfInteger = "{\"a\": [10, 11]}";
+
+    private final String jsonArrayOfString = "{\"a\": [\"a1\", \"a2\"]}";
+
+    private final String jsonArrayOfNull = "{\"a\": [null]}";
 
     private JsonGenericRecordConverter jsonGenericRecordConverter;
 
@@ -74,8 +80,8 @@ public class JsonGenericRecordConverterTest {
      */
     @Test
     public void testGetSchema() {
-        jsonGenericRecordConverter = new JsonGenericRecordConverter(inputSimpleSchema);
-        assertThat(inputSimpleSchema, is(equalTo(jsonGenericRecordConverter.getSchema())));
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaComplexRecordWithStrFields);
+        assertThat(schemaComplexRecordWithStrFields, is(equalTo(jsonGenericRecordConverter.getSchema())));
     }
 
     /**
@@ -92,10 +98,10 @@ public class JsonGenericRecordConverterTest {
      */
     @Test
     public void testConvertToDatum() {
-        jsonGenericRecordConverter = new JsonGenericRecordConverter(inputSimpleSchema);
-        GenericRecord record = jsonGenericRecordConverter.convertToAvro(simpleJson);
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaComplexRecordWithStrFields);
+        GenericRecord record = jsonGenericRecordConverter.convertToAvro(jsonComplexRecordWithStrFields);
         String jsonConverted = jsonGenericRecordConverter.convertToDatum(record);
-        assertThat(simpleJson, is(equalTo(jsonConverted)));
+        assertThat(jsonComplexRecordWithStrFields, is(equalTo(jsonConverted)));
     }
 
     /**
@@ -103,16 +109,16 @@ public class JsonGenericRecordConverterTest {
      *
      * Get Avro Generic Record and check its nested fields values.
      *
-     * Input record: {@link JsonGenericRecordConverterTest#simpleJson}
+     * Input record: {@link JsonGenericRecordConverterTest#jsonComplexRecordWithStrFields}
      *
      * @throws Exception
      */
     @Test
-    public void testConvertToAvroSimpleJson() {
-        jsonGenericRecordConverter = new JsonGenericRecordConverter(inputSimpleSchema);
+    public void testConvertComplexRecordWithStrFieldsToAvro() {
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaComplexRecordWithStrFields);
 
         // Get Avro Generic Record
-        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(simpleJson);
+        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(jsonComplexRecordWithStrFields);
 
         // Get `a` field
         GenericRecord recordA = (GenericRecord) outputRecord.get(0);
@@ -124,21 +130,62 @@ public class JsonGenericRecordConverterTest {
         assertThat((String) outputRecord.get(1), is(equalTo("d1")));
     }
 
+    @Test
+    public void testConvertArrayOfIntegerToAvro() {
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaArrayOfInteger);
+
+        // Get Avro Generic Record
+        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(jsonArrayOfInteger);
+
+        // Get `a` field
+        ArrayList<Integer> arrayRecordA = (ArrayList<Integer>) outputRecord.get("a");
+
+        assertThat(arrayRecordA.get(0), is(equalTo(10)));
+        assertThat(arrayRecordA.get(1), is(equalTo(11)));
+    }
+
+    @Test
+    public void testConvertArrayOfStringToAvro() {
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaArrayOfString);
+
+        // Get Avro Generic Record
+        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(jsonArrayOfString);
+
+        // Get `a` field
+        ArrayList<String> arrayRecordA = (ArrayList<String>) outputRecord.get("a");
+
+        assertThat(arrayRecordA.get(0), is(equalTo("a1")));
+        assertThat(arrayRecordA.get(1), is(equalTo("a2")));
+    }
+
+    @Test
+    public void testConvertArrayOfNullToAvro() {
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaArrayOfString);
+
+        // Get Avro Generic Record
+        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(jsonArrayOfNull);
+
+        // Get `a` field
+        ArrayList<Object> arrayRecordA = (ArrayList<Object>) outputRecord.get("a");
+
+        assertThat(arrayRecordA.get(0), is(equalTo(null)));
+    }
+
     /**
      * Test {@link JsonGenericRecordConverter#convertToAvro(String)}
      *
      * Get Avro Generic Record and check its nested fields values.
      *
-     * Input record: {@link JsonGenericRecordConverterTest#arrayJson}
+     * Input record: {@link JsonGenericRecordConverterTest#jsonArrayOfComplexStringRecords}
      *
      * @throws Exception
      */
     @Test
-    public void testConvertToAvroArrayJson() {
-        jsonGenericRecordConverter = new JsonGenericRecordConverter(inputArraySchema);
+    public void testConvertArrayOfComplexStringRecordsToAvro() {
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaArrayOfComplexStringRecords);
 
         // Get Avro Generic Record
-        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(arrayJson);
+        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(jsonArrayOfComplexStringRecords);
 
         // Get `a` array field
         ArrayList<GenericRecord> arrayRecordA = (ArrayList<GenericRecord>) outputRecord.get(0);
@@ -158,36 +205,16 @@ public class JsonGenericRecordConverterTest {
      *
      * Get Avro Generic Record and check its nested fields values.
      *
-     * Input record: {@link JsonGenericRecordConverterTest#nullJson}
+     * Input record: {@link JsonGenericRecordConverterTest#jsonComplexRecordWithIntegerFields}
      *
      * @throws Exception
      */
     @Test
-    public void testConvertToAvroNullJson() {
-        jsonGenericRecordConverter = new JsonGenericRecordConverter(inputNullSchema);
+    public void testConvertComplexRecordWithIntegerFieldsToAvro() {
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaComplexRecordWithIntegerFields);
 
         // Get Avro Generic Record
-        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(nullJson);
-
-        // Check that `a` field is null
-        assertThat(outputRecord.get("a"), is(equalTo(null)));
-    }
-
-    /**
-     * Test {@link JsonGenericRecordConverter#convertToAvro(String)}
-     *
-     * Get Avro Generic Record and check its nested fields values.
-     *
-     * Input record: {@link JsonGenericRecordConverterTest#intJson}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testConvertToAvroIntJson() {
-        jsonGenericRecordConverter = new JsonGenericRecordConverter(inputIntSchema);
-
-        // Get Avro Generic Record
-        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(intJson);
+        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(jsonComplexRecordWithIntegerFields);
 
         // Get `a` field
         GenericRecord recordA = (GenericRecord) outputRecord.get(0);
@@ -204,16 +231,16 @@ public class JsonGenericRecordConverterTest {
      *
      * Get Avro Generic Record and check its nested fields values.
      *
-     * Input record: {@link JsonGenericRecordConverterTest#simpleBooleanJson}
+     * Input record: {@link JsonGenericRecordConverterTest#jsonComplexRecordWithBooleanFields}
      *
      * @throws Exception
      */
     @Test
-    public void testConvertToAvroSimpleBooleanJson() {
-        jsonGenericRecordConverter = new JsonGenericRecordConverter(inputBoolSchema);
+    public void testConvertComplexRecordWithBooleanFieldsToAvro() {
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaComplexRecordWithBooleanFields);
 
         // Get Avro Generic Record
-        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(simpleBooleanJson);
+        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(jsonComplexRecordWithBooleanFields);
 
         // Get `a` field
         GenericRecord recordA = (GenericRecord) outputRecord.get("a");
@@ -230,16 +257,16 @@ public class JsonGenericRecordConverterTest {
      *
      * Get Avro Generic Record and check its nested fields values.
      *
-     * Input record: {@link JsonGenericRecordConverterTest#arrayBooleanJson}
+     * Input record: {@link JsonGenericRecordConverterTest#jsonArrayOfComplexBooleanRecords}
      *
      * @throws Exception
      */
     @Test
-    public void testConvertToAvroArrayBooleanJson() {
-        jsonGenericRecordConverter = new JsonGenericRecordConverter(inputArrayBoolSchema);
+    public void testConvertArrayOfComplexBooleanRecordsToAvro() {
+        jsonGenericRecordConverter = new JsonGenericRecordConverter(schemaArrayOfComplexBooleanRecords);
 
         // Get Avro Generic Record
-        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(arrayBooleanJson);
+        GenericRecord outputRecord = jsonGenericRecordConverter.convertToAvro(jsonArrayOfComplexBooleanRecords);
 
         // Get `a` array field
         ArrayList<GenericRecord> arrayRecordA = (ArrayList<GenericRecord>) outputRecord.get("a");
