@@ -139,7 +139,10 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
                         field = new Schema.Field(mapEntry.getKey(), Schema.createArray(getAvroSchema(nodeIterator.next())), null,
                                 null, Schema.Field.Order.ASCENDING);
                     } else {
-                        // TODO: if array field is empty, example: b:[]
+                        // if array field is empty
+                        field = new Schema.Field(mapEntry.getKey(),
+                                Schema.createArray(AvroUtils.wrapAsNullable(AvroUtils._string())), null, null,
+                                Schema.Field.Order.ASCENDING);
                     }
                     fields.add(field);
                     break;
@@ -170,7 +173,7 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
      * @param node Json node.
      * @return an Avro schema using {@link AvroUtils#wrapAsNullable(Schema)} by node type.
      */
-    private Schema getAvroSchema(JsonNode node) {
+    public Schema getAvroSchema(JsonNode node) {
         if (node instanceof TextNode) {
             return AvroUtils.wrapAsNullable(AvroUtils._string());
         } else if (node instanceof IntNode) {
@@ -181,6 +184,8 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
             return AvroUtils.wrapAsNullable(AvroUtils._double());
         } else if (node instanceof BooleanNode) {
             return AvroUtils.wrapAsNullable(AvroUtils._boolean());
+        } else if (node instanceof NullNode) {
+            return AvroUtils.wrapAsNullable(AvroUtils._string());
         } else {
             return Schema.createRecord(getSubRecordRandomName(), null, null, false, getFields(node));
         }
