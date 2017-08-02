@@ -30,8 +30,8 @@ import org.talend.daikon.strings.ToStringIndentUtil;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 /**
- * Represents a collection of {@link Property} objects that are grouped into a form for display. This form
- * can be manifested for example as a tab in a view, a dialog, or a page in a wizard. It can also be a portion of any of those
+ * Represents a collection of {@link Property} objects that are grouped into a form for display. This form can be
+ * manifested for example as a tab in a view, a dialog, or a page in a wizard. It can also be a portion of any of those
  * things, as forms can contain other forms.
  */
 public class Form extends SimpleNamedThing implements ToStringIndent {
@@ -49,8 +49,8 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     public static final String MAIN = "Main"; //$NON-NLS-1$
 
     /**
-     * Standard form name for the citizen-user form associated with a component. This would typically
-     * have less content than the MAIN form, and is suitable for the less technical user.
+     * Standard form name for the citizen-user form associated with a component. This would typically have less content
+     * than the MAIN form, and is suitable for the less technical user.
      *
      * This has no significance in the Framework, it's just a usage convention.
      */
@@ -153,8 +153,8 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
     }
 
     /**
-     * Get the internationalized version of the displayName, with {@link Form#I18N_FORM_PREFIX} +
-     * {@link Form#getName()} + {@link NamedThing#I18N_DISPLAY_NAME_SUFFIX} to find the value from the i18n.
+     * Get the internationalized version of the displayName, with {@link Form#I18N_FORM_PREFIX} + {@link Form#getName()}
+     * + {@link NamedThing#I18N_DISPLAY_NAME_SUFFIX} to find the value from the i18n.
      */
     @Override
     public String getDisplayName() {
@@ -504,6 +504,12 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
             sb.append("\n" + w.toStringIndent(indent + 4));
         }
         return sb.toString();
+    }
+
+    public void clearForm() {
+        widgetMap.clear();
+        lastRow = 1;
+        lastColumn = 1;
     }
 
 }

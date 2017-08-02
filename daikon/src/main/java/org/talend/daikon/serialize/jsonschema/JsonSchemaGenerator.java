@@ -1,12 +1,17 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListType;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.util.Date;
 import java.util.List;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesList;
 import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
@@ -69,8 +74,14 @@ public class JsonSchemaGenerator {
             // Hide the current element on the UI schema
             schema.put(JsonSchemaConstants.TAG_TITLE, "");
         }
-        schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
-        schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
+        if (cProperties instanceof PropertiesList<?>) {
+            schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_ARRAY);
+            schema.set(JsonSchemaConstants.TAG_ITEMS,
+                    processTProperties(((PropertiesList<?>) cProperties).getDefaultProperties(), formName, visible));
+        } else {
+            schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
+            schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
+        }
 
         List<Property> propertyList = getSubProperty(cProperties);
         for (Property property : propertyList) {
