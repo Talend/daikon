@@ -28,7 +28,12 @@ import org.talend.daikon.exception.TalendRuntimeException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * Converts json string to avro schema.
@@ -110,16 +115,8 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
             if (!(nextNode instanceof NullNode)) {
                 switch (nextNode.getNodeType()) {
                 case NUMBER:
-                    if (nextNode.isInt()) {
-                        field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._int()), null, null,
-                                Schema.Field.Order.ASCENDING);
-                    } else if (nextNode.isLong()) {
-                        field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._long()), null, null,
-                                Schema.Field.Order.ASCENDING);
-                    } else {
-                        field = new Schema.Field(mapEntry.getKey(), AvroUtils.wrapAsNullable(AvroUtils._double()), null, null,
-                                Schema.Field.Order.ASCENDING);
-                    }
+                    field = new Schema.Field(mapEntry.getKey(), getAvroSchema(nextNode), null, null,
+                            Schema.Field.Order.ASCENDING);
                     fields.add(field);
                     break;
 
@@ -139,9 +136,13 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
                     final ArrayNode arrayNode = (ArrayNode) nextNode;
                     Iterator<JsonNode> nodeIterator = arrayNode.elements();
                     if (nodeIterator.hasNext()) {
-                        field = new Schema.Field(mapEntry.getKey(), Schema.createArray(
-                                Schema.createRecord(getSubRecordRandomName(), null, null, false, getFields(nodeIterator.next()))),
-                                null, null, Schema.Field.Order.ASCENDING);
+                        field = new Schema.Field(mapEntry.getKey(), Schema.createArray(getAvroSchema(nodeIterator.next())), null,
+                                null, Schema.Field.Order.ASCENDING);
+                    } else {
+                        // if array field is empty
+                        field = new Schema.Field(mapEntry.getKey(),
+                                Schema.createArray(AvroUtils.wrapAsNullable(AvroUtils._string())), null, null,
+                                Schema.Field.Order.ASCENDING);
                     }
                     fields.add(field);
                     break;
@@ -167,9 +168,33 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
     }
 
     /**
+     * Get an Avro schema using {@link AvroUtils#wrapAsNullable(Schema)} by node type.
+     * 
+     * @param node Json node.
+     * @return an Avro schema using {@link AvroUtils#wrapAsNullable(Schema)} by node type.
+     */
+    public Schema getAvroSchema(JsonNode node) {
+        if (node instanceof TextNode) {
+            return AvroUtils.wrapAsNullable(AvroUtils._string());
+        } else if (node instanceof IntNode) {
+            return AvroUtils.wrapAsNullable(AvroUtils._int());
+        } else if (node instanceof LongNode) {
+            return AvroUtils.wrapAsNullable(AvroUtils._long());
+        } else if (node instanceof DoubleNode) {
+            return AvroUtils.wrapAsNullable(AvroUtils._double());
+        } else if (node instanceof BooleanNode) {
+            return AvroUtils.wrapAsNullable(AvroUtils._boolean());
+        } else if (node instanceof NullNode) {
+            return AvroUtils.wrapAsNullable(AvroUtils._string());
+        } else {
+            return Schema.createRecord(getSubRecordRandomName(), null, null, false, getFields(node));
+        }
+    }
+
+    /**
      * @return subrecord random name.
      */
-    public String getSubRecordRandomName() {
+    private String getSubRecordRandomName() {
         return "subrecord" + UUID.randomUUID().toString().replace("-", "_");
     }
 }
