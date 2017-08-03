@@ -184,7 +184,7 @@ public class FormTest {
 
     @Test
     public void testReplaceWidgetOnForm() {
-        Form form = new Form(new PropertiesImpl("bar") { //$NON-NLS-1$
+        Form form = new Form(new PropertiesWithReplaceables("bar") { //$NON-NLS-1$
         }, "foo"); //$NON-NLS-1$
         Form nestedForm = new Form(new PropertiesImpl("foo") { //$NON-NLS-1$
         }, "bar"); //$NON-NLS-1$
@@ -194,10 +194,30 @@ public class FormTest {
         assertEquals(form.getWidget("w2").getRow(), 1);
         assertEquals(form.getWidget("w2").getOrder(), 2);
 
-        form.replaceRow("w2", widget(newString("w3")));
+        Widget newWidget = widget(newString("w3"));
+        form.replaceRow("w2", newWidget);
         assertTrue(form.getWidget("w2") == null);
         assertEquals(form.getWidget("w3").getRow(), 1);
         assertEquals(form.getWidget("w3").getOrder(), 2);
+
+        assertTrue(newWidget.isCallAfter());
+        assertTrue(newWidget.isCallBeforePresent());
+        assertFalse(newWidget.isCallBeforeActivate());
+        assertFalse(newWidget.isCallValidate());
+    }
+
+    private static class PropertiesWithReplaceables extends PropertiesImpl {
+
+        public PropertiesWithReplaceables(String name) {
+            super(name);
+        }
+
+        public void afterW3() {
+        }
+
+        public void beforeW3() {
+        }
+
     }
 
 }

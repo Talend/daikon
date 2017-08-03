@@ -410,7 +410,7 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
         if (wToReplace != null) {
             String newWidgetName = getWidgetContentName(widget);
             widgetMap.put(newWidgetName, widget.setRow(wToReplace.getRow()).setOrder(wToReplace.getOrder()));
-            PropertiesDynamicMethodHelper.setWidgetLayoutMethods(properties, widgetName, widget);
+            PropertiesDynamicMethodHelper.setWidgetLayoutMethods(properties, newWidgetName, widget);
         }
     }
 
