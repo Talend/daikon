@@ -212,9 +212,15 @@ public class FormTest {
             super(name);
         }
 
+        /**
+         * Method to test the layout methods setting during widget replacement
+         */
         public void afterW3() {
         }
 
+        /**
+         * Method to test the layout methods setting during widget replacement
+         */
         public void beforeW3() {
         }
 
