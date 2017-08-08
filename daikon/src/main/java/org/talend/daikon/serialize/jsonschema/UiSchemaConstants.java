@@ -1,13 +1,10 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.talend.daikon.properties.presentation.Widget;
-import org.talend.daikon.properties.presentation.WidgetCode;
 import org.talend.daikon.serialize.jsonschema.mapping.Mapper;
 import org.talend.daikon.serialize.jsonschema.mapping.NestedPropertiesFieldMapper;
 import org.talend.daikon.serialize.jsonschema.mapping.WidgetMapper;
@@ -150,19 +147,12 @@ public class UiSchemaConstants {
     // Mapping between Widget type and ui:options type
     private static Map<String, Map<String, String>> WIDGET_OPTIONS_MAPPING = new HashMap<>();
 
-    private static Map<String, Map<String, List<String>>> WIDGET_OPTIONS_MAPPING_MULTIPLE_VALUES = new HashMap<>();
-
     private static Map<String, Mapper> UI_MAPPERS = new HashMap<>();
 
     static {
         Map<String, String> options = new HashMap<>();
         options.put("inline", "true");
         WIDGET_OPTIONS_MAPPING.put(Widget.RADIO_WIDGET_TYPE, options);
-
-        Map<String, List<String>> codeWidgetOptions = new HashMap<>();
-        codeWidgetOptions.put("language",
-                Arrays.asList(WidgetCode.python.name(), WidgetCode.java.name(), WidgetCode.sql.name(), WidgetCode.scala.name()));
-        WIDGET_OPTIONS_MAPPING_MULTIPLE_VALUES.put(Widget.CODE_WIDGET_TYPE, codeWidgetOptions);
 
         // null means use the default
         // WIDGET_MAPPING.put(Widget.DEFAULT_WIDGET_TYPE, null);
@@ -195,10 +185,6 @@ public class UiSchemaConstants {
 
     public static Map<String, Map<String, String>> getWidgetOptionsMapping() {
         return WIDGET_OPTIONS_MAPPING;
-    }
-
-    public static Map<String, Map<String, List<String>>> getWidgetOptionsMappingMultipleValues() {
-        return WIDGET_OPTIONS_MAPPING_MULTIPLE_VALUES;
     }
 
     public static Map<String, Mapper> getUiMappers() {

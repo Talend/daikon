@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.daikon.serialize.jsonschema.mapping;
 
-import java.util.List;
 import java.util.Map;
 
 import org.talend.daikon.properties.presentation.Widget;
@@ -75,8 +74,6 @@ public class Mapper {
      */
     protected void processOptions(Widget widget, ObjectNode schema) {
         Map<String, String> optionsMap = UiSchemaConstants.getWidgetOptionsMapping().get(widget.getWidgetType());
-        Map<String, List<String>> optionsMapMultipleValues = UiSchemaConstants.getWidgetOptionsMappingMultipleValues()
-                .get(widget.getWidgetType());
         if (optionsMap != null) {
             ObjectNode options = JsonNodeFactory.instance.objectNode();
 
@@ -86,17 +83,9 @@ public class Mapper {
 
             schema.set(UiSchemaConstants.TAG_OPTIONS, options);
         }
-        if (optionsMapMultipleValues != null) {
+        if (widget.getWidgetCode() != null) {
             ObjectNode options = JsonNodeFactory.instance.objectNode();
-
-            for (Map.Entry<String, List<String>> entry : optionsMapMultipleValues.entrySet()) {
-                for (String value : entry.getValue()) {
-                    if (value.equals(widget.getWidgetCode().name())) {
-                        options.put(entry.getKey(), value);
-                    }
-                }
-            }
-
+            options.put("language", widget.getWidgetCode().name());
             schema.set(UiSchemaConstants.TAG_OPTIONS, options);
         }
     }
