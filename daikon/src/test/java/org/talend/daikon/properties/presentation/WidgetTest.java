@@ -1,14 +1,17 @@
 package org.talend.daikon.properties.presentation;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.talend.daikon.properties.presentation.Widget.widget;
+import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
+import static org.talend.daikon.properties.property.PropertyFactory.newString;
+
 import org.junit.Test;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.testproperties.TestProperties;
-
-import static org.junit.Assert.*;
-import static org.talend.daikon.properties.presentation.Widget.widget;
-import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
-import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 public class WidgetTest {
 
@@ -57,6 +60,13 @@ public class WidgetTest {
         assertTrue(widget.isAutoFocus());
         widget.setConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF, false);
         assertFalse(widget.isAutoFocus());
+    }
+
+    @Test
+    public void testWidgetCode() {
+        Widget widget = widget(newString("w1"));
+        widget.setWidgetCode(WidgetCode.python);
+        assertEquals(WidgetCode.python, widget.getWidgetCode());
     }
 
     class WidgetTestProperties extends TestProperties {
