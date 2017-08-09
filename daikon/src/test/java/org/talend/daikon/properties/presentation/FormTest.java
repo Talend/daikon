@@ -182,4 +182,48 @@ public class FormTest {
         assertTrue(nestedForm.getWidget("w3").isVisible());
     }
 
+    @Test
+    public void testReplaceWidgetOnForm() {
+        Form form = new Form(new PropertiesWithReplaceables("bar") { //$NON-NLS-1$
+        }, "foo"); //$NON-NLS-1$
+        Form nestedForm = new Form(new PropertiesImpl("foo") { //$NON-NLS-1$
+        }, "bar"); //$NON-NLS-1$
+        form.addRow(widget(newString("w1")));
+        form.addColumn(widget(newString("w2")));
+        form.addRow(widget(nestedForm));
+        assertEquals(form.getWidget("w2").getRow(), 1);
+        assertEquals(form.getWidget("w2").getOrder(), 2);
+
+        Widget newWidget = widget(newString("w3"));
+        form.replaceRow("w2", newWidget);
+        assertTrue(form.getWidget("w2") == null);
+        assertEquals(form.getWidget("w3").getRow(), 1);
+        assertEquals(form.getWidget("w3").getOrder(), 2);
+
+        assertTrue(newWidget.isCallAfter());
+        assertTrue(newWidget.isCallBeforePresent());
+        assertFalse(newWidget.isCallBeforeActivate());
+        assertFalse(newWidget.isCallValidate());
+    }
+
+    private static class PropertiesWithReplaceables extends PropertiesImpl {
+
+        public PropertiesWithReplaceables(String name) {
+            super(name);
+        }
+
+        /**
+         * Method to test the layout methods setting during widget replacement
+         */
+        public void afterW3() {
+        }
+
+        /**
+         * Method to test the layout methods setting during widget replacement
+         */
+        public void beforeW3() {
+        }
+
+    }
+
 }

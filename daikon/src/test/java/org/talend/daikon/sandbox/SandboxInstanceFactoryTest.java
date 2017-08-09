@@ -18,9 +18,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -36,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.runtime.RuntimeInfo;
 import org.talend.daikon.runtime.RuntimeUtil;
-import org.talend.daikon.runtime.RuntimeUtil.MavenUrlStreamHandler;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
 import org.talend.java.util.ClosableLRUMap;
 
@@ -402,26 +399,6 @@ public class SandboxInstanceFactoryTest {
         thread2.join();
         isol1.assertSuccess();
         isol2.assertSuccess();
-    }
-
-    @Test
-    public void testTCOMP402PreventResolutionIfVersionLooksLikeJar() throws MalformedURLException {
-        MavenUrlStreamHandler mavenUrlStreamHandler = new RuntimeUtil.MavenUrlStreamHandler();
-        try {
-            // should not throw IOException
-            mavenUrlStreamHandler.openConnection(new URL("mvn:org.talend.test/zeLib/0.0.1"));
-        } catch (IOException e) {
-            fail("IOException should not be thrown" + e.getMessage());
-        }
-
-        try {
-            // should throw IOException
-            mavenUrlStreamHandler.openConnection(new URL("mvn:org.talend.test/zeLib/somethig.jar"));
-            fail("The line above should throw an error");
-        } catch (IOException e) {
-            // expected
-        }
-
     }
 
     private void waitTrue(final AtomicBoolean valuetoWaitForTrue, String mess) {

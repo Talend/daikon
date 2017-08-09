@@ -401,6 +401,19 @@ public class Form extends SimpleNamedThing implements ToStringIndent {
         }
     }
 
+    public void replaceRow(String widgetName, NamedThing content) {
+        this.replaceRow(widgetName, Widget.widget(content));
+    }
+
+    public void replaceRow(String widgetName, Widget widget) {
+        Widget wToReplace = widgetMap.remove(widgetName);
+        if (wToReplace != null) {
+            String newWidgetName = getWidgetContentName(widget);
+            widgetMap.put(newWidgetName, widget.setRow(wToReplace.getRow()).setOrder(wToReplace.getOrder()));
+            PropertiesDynamicMethodHelper.setWidgetLayoutMethods(properties, newWidgetName, widget);
+        }
+    }
+
     public boolean isRefreshUI() {
         return refreshUI;
     }
