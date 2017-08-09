@@ -155,7 +155,7 @@ public class UiSchemaConstants {
         WIDGET_OPTIONS_MAPPING.put(Widget.RADIO_WIDGET_TYPE, options);
 
         options = new HashMap<>();
-        options.put("language", "python");
+        options.put(Widget.CODE_SYNTAX_WIDGET_CONF, "python");
         WIDGET_OPTIONS_MAPPING.put(Widget.CODE_WIDGET_TYPE, options);
 
         // null means use the default

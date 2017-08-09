@@ -55,7 +55,8 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         // "scalaCode": { "ui:widget": "code", "ui:options": { "language": "scala" } }
         ObjectNode scalaCodeUiSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("scalaCode");
         assertEquals("\"code\"", scalaCodeUiSchemaJsonObj.get("ui:widget").toString());
-        assertEquals("{\"language\":\"scala\"}", scalaCodeUiSchemaJsonObj.get("ui:options").toString());
+        assertEquals("{\"" + Widget.CODE_SYNTAX_WIDGET_CONF + "\":\"scala\"}",
+                scalaCodeUiSchemaJsonObj.get("ui:options").toString());
     }
 
     @Test

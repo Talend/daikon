@@ -178,9 +178,19 @@ public class Widget implements ToStringIndent {
     public static final String NESTED_PROPERTIES = "widget.type.nestedProperties";
 
     /**
-     * Code editor widget is designed to simplify and speed up input of source code.
+     * This widget is designed to simplify and speed up input of source code.
+     *
+     * We should set the language that will be used for this code widget by setting a configuration value with the following key:
+     * {@link Widget#CODE_SYNTAX_WIDGET_CONF }
+     *
+     * Using the following method: {@link Widget#setConfigurationValue(String, Object)}
+     *
+     * Example:
+     * setConfigurationValue(CODE_SYNTAX_WIDGET_CONF, "python")
      */
     public static final String CODE_WIDGET_TYPE = "widget.type.code";
+
+    public static final String CODE_SYNTAX_WIDGET_CONF = "language";
 
     /*
      * Widget configurations
