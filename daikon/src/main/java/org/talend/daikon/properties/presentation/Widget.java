@@ -181,7 +181,7 @@ public class Widget implements ToStringIndent {
      * This widget is designed to simplify and speed up input of source code.
      *
      * We should set the language that will be used for this code widget by setting a configuration value with the following key:
-     * {@link Widget#CODE_SYNTAX_WIDGET_CONF }
+     * {@link Widget#CODE_SYNTAX_WIDGET_CONF}
      *
      * Using the following method: {@link Widget#setConfigurationValue(String, Object)}
      *
