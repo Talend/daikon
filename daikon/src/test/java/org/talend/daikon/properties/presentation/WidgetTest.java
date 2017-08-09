@@ -62,13 +62,6 @@ public class WidgetTest {
         assertFalse(widget.isAutoFocus());
     }
 
-    @Test
-    public void testWidgetCode() {
-        Widget widget = widget(newString("w1"));
-        widget.setWidgetCode(WidgetCode.python);
-        assertEquals(WidgetCode.python, widget.getWidgetCode());
-    }
-
     class WidgetTestProperties extends TestProperties {
 
         public Property<String> confProperty = newProperty("confProperty");

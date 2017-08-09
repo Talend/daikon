@@ -154,6 +154,10 @@ public class UiSchemaConstants {
         options.put("inline", "true");
         WIDGET_OPTIONS_MAPPING.put(Widget.RADIO_WIDGET_TYPE, options);
 
+        options = new HashMap<>();
+        options.put("language", "python");
+        WIDGET_OPTIONS_MAPPING.put(Widget.CODE_WIDGET_TYPE, options);
+
         // null means use the default
         // WIDGET_MAPPING.put(Widget.DEFAULT_WIDGET_TYPE, null);
         // WIDGET_MAPPING.put(Widget.NAME_SELECTION_AREA_WIDGET_TYPE, null);

@@ -78,14 +78,12 @@ public class Mapper {
             ObjectNode options = JsonNodeFactory.instance.objectNode();
 
             for (Map.Entry<String, String> entry : optionsMap.entrySet()) {
-                options.put(entry.getKey(), entry.getValue());
+                if (widget.getConfigurationValue(entry.getKey()) != null) {
+                    options.put(entry.getKey(), widget.getConfigurationValue(entry.getKey()).toString());
+                } else {
+                    options.put(entry.getKey(), entry.getValue());
+                }
             }
-
-            schema.set(UiSchemaConstants.TAG_OPTIONS, options);
-        }
-        if (widget.getWidgetCode() != null) {
-            ObjectNode options = JsonNodeFactory.instance.objectNode();
-            options.put("language", widget.getWidgetCode().name());
             schema.set(UiSchemaConstants.TAG_OPTIONS, options);
         }
     }

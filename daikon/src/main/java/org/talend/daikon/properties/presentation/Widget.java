@@ -248,23 +248,12 @@ public class Widget implements ToStringIndent {
 
     private Map<String, Object> configurationValues = new HashMap<>();
 
-    private WidgetCode widgetCode;
-
     public Widget(NamedThing content) {
         this.content = content;
     }
 
     public static Widget widget(NamedThing content) {
         return new Widget(content);
-    }
-
-    public WidgetCode getWidgetCode() {
-        return this.widgetCode;
-    }
-
-    public Widget setWidgetCode(WidgetCode widgetCode) {
-        this.widgetCode = widgetCode;
-        return this;
     }
 
     public NamedThing getContent() {
