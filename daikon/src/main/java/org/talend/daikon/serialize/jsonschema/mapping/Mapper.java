@@ -84,6 +84,7 @@ public class Mapper {
                     options.put(entry.getKey(), entry.getValue());
                 }
             }
+
             schema.set(UiSchemaConstants.TAG_OPTIONS, options);
         }
     }
