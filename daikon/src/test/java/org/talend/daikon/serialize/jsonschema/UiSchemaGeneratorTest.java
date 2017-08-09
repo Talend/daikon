@@ -3,6 +3,7 @@ package org.talend.daikon.serialize.jsonschema;
 import static org.junit.Assert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONAssert.assertNotEquals;
+import static org.talend.daikon.properties.presentation.Widget.widget;
 
 import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
@@ -42,6 +43,19 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         UiSchemaGenerator generator = new UiSchemaGenerator();
         ObjectNode uiSchemaJsonObj = generator.genWidget(refEProp, Form.MAIN);
         assertEquals(jsonStr, uiSchemaJsonObj.toString());
+    }
+
+    @Test
+    public void checkUiOptions() throws Exception {
+        ScalaRowProperties properties = new ScalaRowProperties("scalaCodeProperties");
+        properties.init();
+        UiSchemaGenerator generator = new UiSchemaGenerator();
+        ObjectNode uiSchemaJsonObj = generator.genWidget(properties, "scalaCodeForm");
+
+        // "scalaCode": { "ui:widget": "code", "ui:options": { "language": "scala" } }
+        ObjectNode scalaCodeUiSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("scalaCode");
+        assertEquals("\"code\"", scalaCodeUiSchemaJsonObj.get("ui:widget").toString());
+        assertEquals("{\"language\":\"scala\"}", scalaCodeUiSchemaJsonObj.get("ui:options").toString());
     }
 
     @Test
@@ -141,6 +155,24 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
             super.setupLayout();
             Form form = new Form(this, "MyNestedForm");
             form.addRow(Widget.widget(myNestedStr).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
+        }
+    }
+
+    private class ScalaRowProperties extends PropertiesImpl {
+
+        private static final long serialVersionUID = 1L;
+
+        public final Property<String> scalaCode = PropertyFactory.newString("scalaCode");
+
+        public ScalaRowProperties(String name) {
+            super(name);
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form form = new Form(this, "scalaCodeForm");
+            form.addRow(widget(scalaCode).setWidgetType(Widget.CODE_WIDGET_TYPE).setConfigurationValue("language", "scala"));
         }
     }
 }
