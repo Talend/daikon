@@ -75,6 +75,8 @@ public class JsonSchemaGenerator {
             schema.put(JsonSchemaConstants.TAG_TITLE, "");
         }
         if (cProperties instanceof PropertiesList<?>) {
+            schema.put(JsonSchemaConstants.TAG_MIN_ITEMS, "1");
+            schema.put(JsonSchemaConstants.TAG_MAX_ITEMS, "3");
             schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_ARRAY);
             schema.set(JsonSchemaConstants.TAG_ITEMS,
                     processTProperties(((PropertiesList<?>) cProperties).getDefaultProperties(), formName, visible));
