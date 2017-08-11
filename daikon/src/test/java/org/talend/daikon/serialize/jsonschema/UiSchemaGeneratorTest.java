@@ -60,7 +60,7 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
     }
 
     @Test
-    public void checkUiOptionsFilterRowProperties() throws Exception {
+    public void checkFilterRowProperties() throws Exception {
         FilterRowProperties properties = new FilterRowProperties("filterRowProperties");
         properties.init();
         UiSchemaGenerator generator = new UiSchemaGenerator();
@@ -69,6 +69,8 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         ObjectNode filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("myProperty");
         assertEquals("{\"type\":\"filter\"}",
                 filterRowSchemaJsonObj.get("ui:options").toString());
+        filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("myProperty2");
+        assertEquals("\"datalist\"", filterRowSchemaJsonObj.get("ui:widget").toString());
     }
 
     @Test
@@ -195,6 +197,8 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
 
         public final Property<String> myProperty = PropertyFactory.newString("myProperty");
 
+        public final Property<String> myProperty2 = PropertyFactory.newString("myProperty2");
+
         public FilterRowProperties(String name) {
             super(name);
         }
@@ -203,6 +207,7 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         public void setupLayout() {
             super.setupLayout();
             Form form = new Form(this, "filterRowForm");
+            form.addRow(widget(myProperty2).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
             form.addRow(widget(myProperty).setWidgetType(Widget.NESTED_PROPERTIES).setConfigurationValue("type", "filter"));
         }
     }
