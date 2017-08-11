@@ -60,6 +60,18 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
     }
 
     @Test
+    public void checkUiOptionsFilterRowProperties() throws Exception {
+        FilterRowProperties properties = new FilterRowProperties("filterRowProperties");
+        properties.init();
+        UiSchemaGenerator generator = new UiSchemaGenerator();
+        ObjectNode uiSchemaJsonObj = generator.genWidget(properties, "filterRowForm");
+
+        ObjectNode filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("myProperty");
+        assertEquals("{\"type\":\"filter\"}",
+                filterRowSchemaJsonObj.get("ui:options").toString());
+    }
+
+    @Test
     public void testDoubleUiOrderElementIssue() throws Exception {
         AProperties aProperties = new AProperties("foo");
         aProperties.init();
@@ -176,4 +188,23 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
             form.addRow(widget(scalaCode).setWidgetType(Widget.CODE_WIDGET_TYPE).setConfigurationValue("language", "scala"));
         }
     }
+
+    private class FilterRowProperties extends PropertiesImpl {
+
+        private static final long serialVersionUID = 1L;
+
+        public final Property<String> myProperty = PropertyFactory.newString("myProperty");
+
+        public FilterRowProperties(String name) {
+            super(name);
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form form = new Form(this, "filterRowForm");
+            form.addRow(widget(myProperty).setWidgetType(Widget.NESTED_PROPERTIES).setConfigurationValue("type", "filter"));
+        }
+    }
+
 }
