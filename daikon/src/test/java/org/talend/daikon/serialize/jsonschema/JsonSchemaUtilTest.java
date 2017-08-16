@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -133,6 +135,17 @@ public class JsonSchemaUtilTest {
         java.net.URL url = JsonSchemaUtilTest.class.getResource(path);
         java.nio.file.Path resPath = java.nio.file.Paths.get(url.toURI());
         return new String(java.nio.file.Files.readAllBytes(resPath), "UTF8").trim();
+    }
+
+    public static void writeJson(String content, String path) throws URISyntaxException, IOException {
+        FileWriter fileWriter = null;
+        File file = new File(path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        fileWriter = new FileWriter(file);
+        fileWriter.write(content);
+        fileWriter.close();
     }
 
     @Test
