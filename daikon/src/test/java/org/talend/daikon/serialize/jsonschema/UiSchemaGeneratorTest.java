@@ -67,8 +67,7 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         ObjectNode uiSchemaJsonObj = generator.genWidget(properties, "filterRowForm");
 
         ObjectNode filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("myProperty");
-        assertEquals("{\"type\":\"filter\"}",
-                filterRowSchemaJsonObj.get("ui:options").toString());
+        assertEquals("{\"type\":\"filter\"}", filterRowSchemaJsonObj.get("ui:options").toString());
         filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("myProperty2");
         assertEquals("\"datalist\"", filterRowSchemaJsonObj.get("ui:widget").toString());
     }
