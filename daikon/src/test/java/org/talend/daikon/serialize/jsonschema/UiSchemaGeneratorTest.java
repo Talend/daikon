@@ -7,8 +7,10 @@ import static org.talend.daikon.properties.presentation.Widget.widget;
 
 import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
+import org.talend.daikon.properties.PropertiesList;
 import org.talend.daikon.properties.ReferenceExampleProperties;
 import org.talend.daikon.properties.ReferenceExampleProperties.TestAProperties;
+import org.talend.daikon.properties.TestPropertiesList.TestProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -66,9 +68,9 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         UiSchemaGenerator generator = new UiSchemaGenerator();
         ObjectNode uiSchemaJsonObj = generator.genWidget(properties, "filterRowForm");
 
-        ObjectNode filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("myProperty");
+        ObjectNode filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("nested");
         assertEquals("{\"type\":\"filter\"}", filterRowSchemaJsonObj.get("ui:options").toString());
-        filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("myProperty2");
+        filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("datalistProperty");
         assertEquals("\"datalist\"", filterRowSchemaJsonObj.get("ui:widget").toString());
     }
 
@@ -194,9 +196,18 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
 
         private static final long serialVersionUID = 1L;
 
-        public final Property<String> myProperty = PropertyFactory.newString("myProperty");
+        public final Property<String> datalistProperty = PropertyFactory.newString("datalistProperty");
 
-        public final Property<String> myProperty2 = PropertyFactory.newString("myProperty2");
+        // nested properties
+        public PropertiesList<TestProperties> nested = new PropertiesList<>("nested",
+                new PropertiesList.NestedPropertiesFactory<TestProperties>() {
+
+                    @Override
+                    public TestProperties createAndInit(String name) {
+                        return (TestProperties) new TestProperties(name).init();
+                    }
+
+                });
 
         public FilterRowProperties(String name) {
             super(name);
@@ -206,8 +217,8 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         public void setupLayout() {
             super.setupLayout();
             Form form = new Form(this, "filterRowForm");
-            form.addRow(widget(myProperty2).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
-            form.addRow(widget(myProperty).setWidgetType(Widget.NESTED_PROPERTIES).setConfigurationValue("type", "filter"));
+            form.addRow(widget(datalistProperty).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
+            form.addRow(widget(nested).setWidgetType(Widget.NESTED_PROPERTIES).setConfigurationValue("type", "filter"));
         }
     }
 
