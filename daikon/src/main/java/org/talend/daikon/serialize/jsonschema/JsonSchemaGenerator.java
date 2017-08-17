@@ -78,8 +78,14 @@ public class JsonSchemaGenerator {
             schema.put(JsonSchemaConstants.TAG_MIN_ITEMS, "1");
             schema.put(JsonSchemaConstants.TAG_MAX_ITEMS, "3");
             schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_ARRAY);
-            schema.set(JsonSchemaConstants.TAG_ITEMS,
-                    processTProperties(((PropertiesList<?>) cProperties).getDefaultProperties(), formName, visible));
+            // Generate items node
+            ObjectNode itemsObjectNode = processTProperties(((PropertiesList<?>) cProperties).getDefaultProperties(), formName,
+                    visible);
+            // Add default node to items node
+            itemsObjectNode.set(JsonSchemaConstants.TAG_DEFAULT,
+                    processDefaultValues(((PropertiesList<?>) cProperties).getDefaultProperties()));
+            // Attach items node
+            schema.set(JsonSchemaConstants.TAG_ITEMS, itemsObjectNode);
         } else {
             schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
             schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
@@ -220,4 +226,17 @@ public class JsonSchemaGenerator {
         requiredNode.add(name);
     }
 
+    private ObjectNode processDefaultValues(Properties defaultProperties) {
+        ObjectNode defaultValuesNode = JsonNodeFactory.instance.objectNode();
+        List<NamedThing> nestedProperties = defaultProperties.getProperties();
+        for (NamedThing namedThing : nestedProperties) {
+            NamedThing currentNamedThing = defaultProperties.getProperty(namedThing.getName());
+            if ((currentNamedThing != null) && (currentNamedThing instanceof Property<?>)) {
+                Property<?> currentProperty = (Property<?>) currentNamedThing;
+                defaultValuesNode.put(currentNamedThing.getName(), currentProperty.getStringValue());
+            }
+        }
+        
+        return defaultValuesNode;
+    }
 }
