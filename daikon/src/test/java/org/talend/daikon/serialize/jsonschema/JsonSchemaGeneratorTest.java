@@ -1,7 +1,6 @@
 package org.talend.daikon.serialize.jsonschema;
 
 import static org.junit.Assert.assertEquals;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import org.json.JSONException;
 import org.junit.Rule;
@@ -14,6 +13,8 @@ import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.StringProperty;
 import org.talend.daikon.properties.test.PropertiesTestUtils;
 import org.talend.daikon.serialize.FullExampleProperties;
+
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -63,7 +64,6 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         ObjectNode genSchema = generator.genSchema(aProperties, "MyForm");
         String expectedPartial = "{\"properties\":{\"np\":{\"properties\":{\"myNestedMultiValueStr\":"
                 + "{\"type\":\"string\",\"enum\":[\"a\",\"b\"],\"enumNames\":[\"Ai18n\",\"Bi18n\"]}}}}}\n";
-        System.out.println(genSchema.toString());
         assertEquals(expectedPartial, genSchema.toString(), false);
     }
 
@@ -80,6 +80,16 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         assertEquals(expectedPartial, genSchema.toString(), false);
     }
 
+    @Test()
+    public void testTDKN445_NPE_unusedDoubleNestedProps() throws JSONException {
+        UnusedNestedProperties props = new UnusedNestedProperties("foo");
+        props.init();
+        JsonSchemaGenerator generator = new JsonSchemaGenerator();
+        ObjectNode genSchema = generator.genSchema(props, Form.MAIN);
+        String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\":{\"nested2\":{\"title\":\"\",\"type\":\"object\",\"properties\":{\"nested\":{\"title\":\"\",\"type\":\"object\",\"properties\":{\"myNestedStr\":{\"title\":\"property.myNestedStr.displayName\",\"type\":\"string\"},\"myNestedMultiValueStr\":{\"title\":\"property.myNestedMultiValueStr.displayName\",\"type\":\"string\",\"enum\":[\"a\",\"b\"],\"enumNames\":[\"Ai18n\",\"Bi18n\"]}}}}}}}";
+        assertEquals(expectedPartial, genSchema.toString(), true);
+    }
+
     public class NestedProperties extends PropertiesImpl {
 
         private static final long serialVersionUID = 1L;
@@ -88,6 +98,7 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
 
         public final Property<String> myNestedMultiValueStr = new StringProperty("myNestedMultiValueStr") {
 
+            @Override
             public String getPossibleValuesDisplayName(Object possibleValue) {
                 switch ((String) possibleValue) {
                 case "a":
@@ -117,4 +128,41 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
             form.addRow(myNestedStr);
         }
     }
+
+    public class NestedNestedProperties extends PropertiesImpl {
+
+        private static final long serialVersionUID = 1L;
+
+        public final NestedProperties nested = new NestedProperties("nested");
+
+        public NestedNestedProperties(String name) {
+            super(name);
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form form = new Form(this, "MyNestedForm2");
+            form.addRow(nested.getForm("MyNestedForm"));
+        }
+    }
+
+    public class UnusedNestedProperties extends PropertiesImpl {
+
+        private static final long serialVersionUID = 1L;
+
+        public final NestedNestedProperties nested2 = new NestedNestedProperties("nested2");
+
+        public UnusedNestedProperties(String name) {
+            super(name);
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form form = new Form(this, Form.MAIN);
+            // the nested2 prop is not added intentionally
+        }
+    }
+
 }

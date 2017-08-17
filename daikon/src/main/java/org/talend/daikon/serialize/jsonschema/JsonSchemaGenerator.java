@@ -107,7 +107,7 @@ public class JsonSchemaGenerator {
                         processReferenceProperties(referenceProperties));
             } else {
                 // compute if the properties is visible, meaning it was added to the current form
-                Widget widget = form.getWidget(properties.getName());
+                Widget widget = form != null ? form.getWidget(properties.getName()) : null;
                 boolean isVisible = widget != null && widget.isVisible();
                 // compute the formName is one of the properties form was added as a subform
                 String propertiesFormName = null;
