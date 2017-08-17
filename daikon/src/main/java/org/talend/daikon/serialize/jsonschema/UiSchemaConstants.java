@@ -159,7 +159,7 @@ public class UiSchemaConstants {
         WIDGET_OPTIONS_MAPPING.put(Widget.CODE_WIDGET_TYPE, options);
 
         options = new HashMap<>();
-        options.put("type", "default");
+        options.put(Widget.NESTED_PROPERTIES_TYPE_OPTION, "default");
         WIDGET_OPTIONS_MAPPING.put(Widget.NESTED_PROPERTIES, options);
 
         // null means use the default

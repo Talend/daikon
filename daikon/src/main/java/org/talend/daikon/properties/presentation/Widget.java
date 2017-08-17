@@ -174,8 +174,21 @@ public class Widget implements ToStringIndent {
     /**
      * This widget represents a nested properties widget - a list of additional properties which can be added or
      * removed.
+     * 
+     * We can set the ui:options type of nested properties by setting a configuration value with the following key:
+     * {@link Widget#NESTED_PROPERTIES_TYPE_OPTION}
+     *
+     * Using the following method: {@link Widget#setConfigurationValue(String, Object)}
+     *
+     * Default value is "default"
+     *
+     * Example:
+     * setConfigurationValue(NESTED_PROPERTIES_TYPE_OPTION, "filter")
+     * 
      */
     public static final String NESTED_PROPERTIES = "widget.type.nestedProperties";
+
+    public static final String NESTED_PROPERTIES_TYPE_OPTION = "type";
 
     /**
      * This widget is designed to simplify and speed up input of source code.
