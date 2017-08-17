@@ -236,7 +236,6 @@ public class JsonSchemaGenerator {
                 defaultValuesNode.put(currentNamedThing.getName(), currentProperty.getStringValue());
             }
         }
-        
         return defaultValuesNode;
     }
 }
