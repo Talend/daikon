@@ -10,7 +10,6 @@ import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.PropertiesList;
 import org.talend.daikon.properties.ReferenceExampleProperties;
 import org.talend.daikon.properties.ReferenceExampleProperties.TestAProperties;
-import org.talend.daikon.properties.TestPropertiesList.TestProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -199,12 +198,12 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         public final Property<String> datalistProperty = PropertyFactory.newString("datalistProperty");
 
         // nested properties
-        public PropertiesList<TestProperties> nested = new PropertiesList<>("nested",
-                new PropertiesList.NestedPropertiesFactory<TestProperties>() {
+        public PropertiesList<FilterRowCriteriaProperties> nested = new PropertiesList<>("nested",
+                new PropertiesList.NestedPropertiesFactory<FilterRowCriteriaProperties>() {
 
                     @Override
-                    public TestProperties createAndInit(String name) {
-                        return (TestProperties) new TestProperties(name).init();
+                    public FilterRowCriteriaProperties createAndInit(String name) {
+                        return (FilterRowCriteriaProperties) new FilterRowCriteriaProperties(name).init();
                     }
 
                 });
@@ -220,6 +219,23 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
             form.addRow(widget(datalistProperty).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
             form.addRow(widget(nested).setWidgetType(Widget.NESTED_PROPERTIES).setConfigurationValue("type", "filter"));
         }
+    }
+
+    private class FilterRowCriteriaProperties extends PropertiesImpl {
+
+        public final Property<String> criteriaProperty = PropertyFactory.newString("criteriaProperty");
+
+        public FilterRowCriteriaProperties(String name) {
+            super(name);
+        }
+
+        @Override
+        public void setupLayout() {
+            super.setupLayout();
+            Form form = new Form(this, Form.MAIN);
+            form.addRow(widget(criteriaProperty).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
+        }
+
     }
 
 }
