@@ -30,7 +30,7 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
     public final static String ROW_NAME_PREFIX = "row";
 
     /**
-     * Min an d max items in the list
+     * Min and max items in the list
      */
     private String minItems = "1";
 
