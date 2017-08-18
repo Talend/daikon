@@ -148,6 +148,17 @@ public class PropertiesListTest {
         Assert.assertEquals(TestEnum.ONE, row1.stringProp.getValue());
     }
 
+    @Test
+    public void testMinMaxGetterSetter() {
+        PropertiesList<TestProperties> propertiesList = createPropertiesList();
+        Assert.assertEquals(propertiesList.getMinItems(), "1");
+        Assert.assertEquals(propertiesList.getMaxItems(), "10");
+        propertiesList.setMinItems("0");
+        propertiesList.setMaxItems("20");
+        Assert.assertEquals(propertiesList.getMinItems(), "0");
+        Assert.assertEquals(propertiesList.getMaxItems(), "20");
+    }
+
     private PropertiesList<TestProperties> createPropertiesList() {
         PropertiesList<TestProperties> propertiesList = new PropertiesList<>("propertiesList",
                 new PropertiesList.NestedPropertiesFactory<TestProperties>() {
