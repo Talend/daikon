@@ -3,6 +3,7 @@
 **What is the chosen solution to this problem?**
  
 **Link to the JIRA issue**
+
 e.g. https://jira.talendforge.org/browse/XXX
  
 **Please check if the Pull Request fulfills these requirements**
