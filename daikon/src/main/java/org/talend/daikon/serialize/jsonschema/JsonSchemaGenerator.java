@@ -56,11 +56,10 @@ public class JsonSchemaGenerator {
      */
     private ObjectNode processTProperties(Properties cProperties, String formName, boolean visible) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
-        Form form = null;
+        Form form = cProperties.getPreferredForm(formName);
         if (visible) {
             if (formName != null) {
-                form = cProperties.getPreferredForm(formName);
-                if (form != null) {
+                if (form != null) {// form found
                     schema.put(JsonSchemaConstants.TAG_TITLE, form.getDisplayName());
                 } else {// wrong form name so hide it.
                     // Hide the current element on the UI schema
@@ -86,9 +85,12 @@ public class JsonSchemaGenerator {
         List<Property> propertyList = getSubProperty(cProperties);
         for (Property property : propertyList) {
             String name = property.getName();
-            if (property.isRequired()) {
+            // record required field only if they are visible
+            Widget widget = form != null ? form.getWidget(property.getName()) : null;
+            boolean isVisible = widget != null && widget.isVisible();
+            if (isVisible && property.isRequired()) {
                 addToRequired(schema, name);
-            }
+            } // else not visible or required so not added to the required list.
 
             ObjectNode propertySchema = processTProperty(property);
             ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, propertySchema);
@@ -97,7 +99,7 @@ public class JsonSchemaGenerator {
 
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
-        form = cProperties.getPreferredForm(formName);
+
         for (Properties properties : propertiesList) {
             String name = properties.getName();
             // if this is a reference then just store it as a string and only store the definition

@@ -87,14 +87,25 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
         ObjectNode genSchema = generator.genSchema(props, Form.MAIN);
         String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\":{\"nested2\":{\"title\":\"\",\"type\":\"object\",\"properties\":{\"nested\":{\"title\":\"\",\"type\":\"object\",\"properties\":{\"myNestedStr\":{\"title\":\"property.myNestedStr.displayName\",\"type\":\"string\"},\"myNestedMultiValueStr\":{\"title\":\"property.myNestedMultiValueStr.displayName\",\"type\":\"string\",\"enum\":[\"a\",\"b\"],\"enumNames\":[\"Ai18n\",\"Bi18n\"]}}}}}}}";
-        assertEquals(expectedPartial, genSchema.toString(), true);
+        assertEquals(expectedPartial, genSchema.toString(), false);
+    }
+
+    @Test()
+    public void testRequiredOnlySetWhenVisible() throws JSONException {
+        NestedProperties props = new NestedProperties("foo");
+        props.init();
+        JsonSchemaGenerator generator = new JsonSchemaGenerator();
+        ObjectNode genSchema = generator.genSchema(props, Form.MAIN);
+        String expectedComplete = "{\"title\":\"\",\"type\":\"object\",\"properties\":{\"myNestedStr\":{\"title\":\"property.myNestedStr.displayName\",\"type\":\"string\"},\"myNestedMultiValueStr\":{\"title\":\"property.myNestedMultiValueStr.displayName\",\"type\":\"string\",\"enum\":[\"a\",\"b\"],\"enumNames\":[\"Ai18n\",\"Bi18n\"]}}}";
+        System.out.println(genSchema.toString());
+        assertEquals(expectedComplete, genSchema.toString(), true);
     }
 
     public class NestedProperties extends PropertiesImpl {
 
         private static final long serialVersionUID = 1L;
 
-        public final Property<String> myNestedStr = PropertyFactory.newString("myNestedStr");
+        public final Property<String> myNestedStr = PropertyFactory.newString("myNestedStr").setRequired();
 
         public final Property<String> myNestedMultiValueStr = new StringProperty("myNestedMultiValueStr") {
 
