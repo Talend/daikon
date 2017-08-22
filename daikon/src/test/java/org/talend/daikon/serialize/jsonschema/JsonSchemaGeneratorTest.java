@@ -34,7 +34,7 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         FullExampleProperties properties = new FullExampleProperties("fullexample");
         properties.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
-        assertEquals(jsonStr, generator.genSchema(properties, Form.MAIN).toString());
+        assertEquals(jsonStr, generator.generateJsonSchema(properties, Form.MAIN).toString());
     }
 
     @Test
@@ -49,7 +49,7 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         AProperties aProperties = new AProperties("foo");
         aProperties.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
-        ObjectNode genSchema = generator.genSchema(aProperties, "MyForm");
+        ObjectNode genSchema = generator.generateJsonSchema(aProperties, "MyForm");
         String expectedPartial = "{\"properties\": {\"np\": {\"title\": \"form.MyNestedForm.displayName\"},"
                 + "\"np2\": {\"title\": \"properties.np2.displayName\"},\"np3\": {\"title\": \"\"},"
                 + "\"np4\": {\"title\": \"\"},\"np5\": {\"title\": \"\"}},\"title\": \"form.MyForm.displayName\"}";
@@ -61,7 +61,7 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         AProperties aProperties = new AProperties("foo");
         aProperties.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
-        ObjectNode genSchema = generator.genSchema(aProperties, "MyForm");
+        ObjectNode genSchema = generator.generateJsonSchema(aProperties, "MyForm");
         String expectedPartial = "{\"properties\":{\"np\":{\"properties\":{\"myNestedMultiValueStr\":"
                 + "{\"type\":\"string\",\"enum\":[\"a\",\"b\"],\"enumNames\":[\"Ai18n\",\"Bi18n\"]}}}}}\n";
         assertEquals(expectedPartial, genSchema.toString(), false);
@@ -72,7 +72,7 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         StringListProperty stringListProperty = new StringListProperty("foot");
         stringListProperty.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
-        ObjectNode genSchema = generator.genSchema(stringListProperty, Form.MAIN);
+        ObjectNode genSchema = generator.generateJsonSchema(stringListProperty, Form.MAIN);
         String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\""
                 + ":{\"selectColumnIds\":{\"title\":\"property.selectColumnIds.displayName\","
                 + "\"type\":\"array\",\"items\":{\"type\":\"string\",\"enum\":[\"col1\",\"col2\",\"col3\"],"
@@ -85,7 +85,7 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         UnusedNestedProperties props = new UnusedNestedProperties("foo");
         props.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
-        ObjectNode genSchema = generator.genSchema(props, Form.MAIN);
+        ObjectNode genSchema = generator.generateJsonSchema(props, Form.MAIN);
         String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\":{\"nested2\":{\"title\":\"\",\"type\":\"object\",\"properties\":{\"nested\":{\"title\":\"\",\"type\":\"object\",\"properties\":{\"myNestedStr\":{\"title\":\"property.myNestedStr.displayName\",\"type\":\"string\"},\"myNestedMultiValueStr\":{\"title\":\"property.myNestedMultiValueStr.displayName\",\"type\":\"string\",\"enum\":[\"a\",\"b\"],\"enumNames\":[\"Ai18n\",\"Bi18n\"]}}}}}}}";
         assertEquals(expectedPartial, genSchema.toString(), false);
     }
@@ -95,9 +95,8 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         NestedProperties props = new NestedProperties("foo");
         props.init();
         JsonSchemaGenerator generator = new JsonSchemaGenerator();
-        ObjectNode genSchema = generator.genSchema(props, Form.MAIN);
+        ObjectNode genSchema = generator.generateJsonSchema(props, Form.MAIN);
         String expectedComplete = "{\"title\":\"\",\"type\":\"object\",\"properties\":{\"myNestedStr\":{\"title\":\"property.myNestedStr.displayName\",\"type\":\"string\"},\"myNestedMultiValueStr\":{\"title\":\"property.myNestedMultiValueStr.displayName\",\"type\":\"string\",\"enum\":[\"a\",\"b\"],\"enumNames\":[\"Ai18n\",\"Bi18n\"]}}}";
-        System.out.println(genSchema.toString());
         assertEquals(expectedComplete, genSchema.toString(), true);
     }
 
