@@ -65,12 +65,17 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         FilterRowProperties properties = new FilterRowProperties("filterRowProperties");
         properties.init();
         UiSchemaGenerator generator = new UiSchemaGenerator();
-        ObjectNode uiSchemaJsonObj = generator.genWidget(properties, "filterRowForm");
+        ObjectNode uiSchemaJsonObj = generator.genWidget(properties, Form.MAIN);
 
-        ObjectNode filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("nested");
-        assertEquals("{\"type\":\"filter\"}", filterRowSchemaJsonObj.get("ui:options").toString());
-        filterRowSchemaJsonObj = (ObjectNode) uiSchemaJsonObj.get("datalistProperty");
-        assertEquals("\"datalist\"", filterRowSchemaJsonObj.get("ui:widget").toString());
+        ObjectNode filtersNode = (ObjectNode) uiSchemaJsonObj.get("filters");
+        assertEquals("{\"type\":\"filter\"}", filtersNode.get("ui:options").toString());
+
+        ObjectNode itemsNode = (ObjectNode) filtersNode.get("items");
+        assertEquals("[\"columnName\",\"function\",\"operator\",\"value\"]", itemsNode.get("ui:order").toString());
+
+        ObjectNode columnNameNode = (ObjectNode) itemsNode.get("columnName");
+        assertEquals("\"datalist\"", columnNameNode.get("ui:widget").toString());
+
     }
 
     @Test
@@ -195,10 +200,8 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
 
         private static final long serialVersionUID = 1L;
 
-        public final Property<String> datalistProperty = PropertyFactory.newString("datalistProperty");
-
-        // nested properties
-        public PropertiesList<FilterRowCriteriaProperties> nested = new PropertiesList<>("nested",
+        // list of filters
+        public PropertiesList<FilterRowCriteriaProperties> filters = new PropertiesList<>("filters",
                 new PropertiesList.NestedPropertiesFactory<FilterRowCriteriaProperties>() {
 
                     @Override
@@ -210,32 +213,48 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
 
         public FilterRowProperties(String name) {
             super(name);
+            filters.init();
         }
 
         @Override
         public void setupLayout() {
             super.setupLayout();
-            Form form = new Form(this, "filterRowForm");
-            form.addRow(widget(datalistProperty).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
-            form.addRow(widget(nested).setWidgetType(Widget.NESTED_PROPERTIES).setConfigurationValue("type", "filter"));
+            Form mainForm = new Form(this, Form.MAIN);
+            mainForm.addRow(Widget.widget(filters).setWidgetType(Widget.NESTED_PROPERTIES)
+                    .setConfigurationValue(Widget.NESTED_PROPERTIES_TYPE_OPTION, "filter"));
+        }
+
+        @Override
+        public void setupProperties() {
+            super.setupProperties();
+            setupLayout();
+            // Add a default filter criteria
+            filters.createAndAddRow();
         }
     }
 
     private class FilterRowCriteriaProperties extends PropertiesImpl {
 
-        public final Property<String> criteriaProperty = PropertyFactory.newString("criteriaProperty");
-
         public FilterRowCriteriaProperties(String name) {
             super(name);
         }
 
+        public Property<String> columnName = PropertyFactory.newString("columnName", "");
+
+        public Property<String> function = PropertyFactory.newString("function", "EMPTY");
+
+        public Property<String> operator = PropertyFactory.newString("operator", "==");
+
+        public Property<String> value = PropertyFactory.newString("value", "");
+
         @Override
         public void setupLayout() {
             super.setupLayout();
-            Form form = new Form(this, Form.MAIN);
-            form.addRow(widget(criteriaProperty).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
+            Form mainForm = new Form(this, Form.MAIN);
+            mainForm.addRow(Widget.widget(columnName).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
+            mainForm.addColumn(function);
+            mainForm.addColumn(operator);
+            mainForm.addColumn(value);
         }
-
     }
-
 }

@@ -22,6 +22,7 @@ import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.serialize.jsonschema.JsonSchemaConstants;
 import org.talend.daikon.serialize.jsonschema.UiSchemaConstants;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -38,14 +39,19 @@ public class NestedPropertiesFieldMapper extends FieldMapper {
         // Create item tag
         ObjectNode items = JsonNodeFactory.instance.objectNode();
         schema.set(JsonSchemaConstants.TAG_ITEMS, items);
-        // Add type
+        // Add ui:field
         super.setType(items);
 
         // Process sub widgets
         PropertiesList<?> propertiesList = (PropertiesList<?>) widget.getContent();
         Properties defaultProp = propertiesList.getDefaultProperties();
         List<NamedThing> nestedThings = defaultProp.getProperties();
+
+        ArrayNode uiOrderNode = JsonNodeFactory.instance.arrayNode();
+
         for (NamedThing namedThing : nestedThings) {
+
+            uiOrderNode.add(namedThing.getName());
 
             Widget currentWidget = defaultProp.getPreferredForm(Form.MAIN).getWidget(namedThing);
             Mapper uiMapper = UiSchemaConstants.getUiMappers().get(currentWidget.getWidgetType());
@@ -57,6 +63,9 @@ public class NestedPropertiesFieldMapper extends FieldMapper {
                 items.set(namedThing.getName(), widgetNode);
             }
         }
+
+        // Add ui:order
+        items.set(UiSchemaConstants.TAG_ORDER, uiOrderNode);
     }
 
     @Override
