@@ -220,7 +220,7 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         public void setupLayout() {
             super.setupLayout();
             Form mainForm = new Form(this, Form.MAIN);
-            mainForm.addRow(Widget.widget(filters).setWidgetType(Widget.NESTED_PROPERTIES)
+            mainForm.addRow(widget(filters).setWidgetType(Widget.NESTED_PROPERTIES)
                     .setConfigurationValue(Widget.NESTED_PROPERTIES_TYPE_OPTION, "filter"));
         }
 
@@ -235,10 +235,6 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
 
     private class FilterRowCriteriaProperties extends PropertiesImpl {
 
-        public FilterRowCriteriaProperties(String name) {
-            super(name);
-        }
-
         public Property<String> columnName = PropertyFactory.newString("columnName", "");
 
         public Property<String> function = PropertyFactory.newString("function", "EMPTY");
@@ -247,11 +243,15 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
 
         public Property<String> value = PropertyFactory.newString("value", "");
 
+        public FilterRowCriteriaProperties(String name) {
+            super(name);
+        }
+
         @Override
         public void setupLayout() {
             super.setupLayout();
             Form mainForm = new Form(this, Form.MAIN);
-            mainForm.addRow(Widget.widget(columnName).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
+            mainForm.addRow(widget(columnName).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
             mainForm.addColumn(function);
             mainForm.addColumn(operator);
             mainForm.addColumn(value);
