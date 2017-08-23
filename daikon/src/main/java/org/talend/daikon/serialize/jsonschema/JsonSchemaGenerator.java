@@ -57,6 +57,8 @@ public class JsonSchemaGenerator {
     private ObjectNode processTProperties(Properties cProperties, String formName, boolean visible) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
         Form form = null;
+
+        // Set title tag
         if (visible) {
             if (formName != null) {
                 form = cProperties.getPreferredForm(formName);
@@ -74,6 +76,8 @@ public class JsonSchemaGenerator {
             // Hide the current element on the UI schema
             schema.put(JsonSchemaConstants.TAG_TITLE, "");
         }
+
+        // Handle PropertiesList type
         if (cProperties instanceof PropertiesList<?>) {
             schema.put(JsonSchemaConstants.TAG_MIN_ITEMS, ((PropertiesList<?>) cProperties).getMinItems());
             schema.put(JsonSchemaConstants.TAG_MAX_ITEMS, ((PropertiesList<?>) cProperties).getMaxItems());
@@ -159,10 +163,6 @@ public class JsonSchemaGenerator {
                 // Property
                 // support it
             }
-            if (property.hasDefaultValue()) {
-                schema.put(JsonSchemaConstants.TAG_DEFAULT, property.getDefaultStringValue());
-            }
-
         }
         return schema;
     }
@@ -183,6 +183,11 @@ public class JsonSchemaGenerator {
             enumNames = schema.putArray(JsonSchemaConstants.TAG_ENUM_NAMES);
         }
         addEnumsToProperty(enumList, enumNames, property);
+
+        // Set default value if one is stored at the property level
+        if (property.hasDefaultValue()) {
+            schema.put(JsonSchemaConstants.TAG_DEFAULT, property.getDefaultStringValue());
+        }
     }
 
     private void addEnumsToProperty(ArrayNode enumList, ArrayNode enumNames, Property property) {
