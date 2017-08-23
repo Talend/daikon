@@ -158,6 +158,10 @@ public class UiSchemaConstants {
         options.put(Widget.CODE_SYNTAX_WIDGET_CONF, "python");
         WIDGET_OPTIONS_MAPPING.put(Widget.CODE_WIDGET_TYPE, options);
 
+        options = new HashMap<>();
+        options.put(Widget.NESTED_PROPERTIES_TYPE_OPTION, "default");
+        WIDGET_OPTIONS_MAPPING.put(Widget.NESTED_PROPERTIES, options);
+
         // null means use the default
         // WIDGET_MAPPING.put(Widget.DEFAULT_WIDGET_TYPE, null);
         // WIDGET_MAPPING.put(Widget.NAME_SELECTION_AREA_WIDGET_TYPE, null);
