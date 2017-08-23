@@ -30,6 +30,13 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
     public final static String ROW_NAME_PREFIX = "row";
 
     /**
+     * Min and max items in the list
+     */
+    private String minItems = "1";
+
+    private String maxItems = "10";
+
+    /**
      * List of all properties present in the table
      */
     public List<T> subProperties = new ArrayList<>();
@@ -145,6 +152,22 @@ public class PropertiesList<T extends Properties> extends PropertiesImpl {
          */
         public T createAndInit(String name);
 
+    }
+
+    public String getMinItems() {
+        return minItems;
+    }
+
+    public void setMinItems(String minItems) {
+        this.minItems = minItems;
+    }
+
+    public String getMaxItems() {
+        return maxItems;
+    }
+
+    public void setMaxItems(String maxItems) {
+        this.maxItems = maxItems;
     }
 
 }
