@@ -89,24 +89,6 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         assertEquals(expectedPartial, genSchema.toString(), true);
     }
 
-    @Test
-    public void checkFilterRowProperties() throws Exception {
-        FilterRowProperties properties = new FilterRowProperties("filterRowProperties");
-        properties.init();
-        JsonSchemaGenerator generator = new JsonSchemaGenerator();
-        ObjectNode jsonSchema = generator.genSchema(properties, Form.MAIN);
-
-        ObjectNode prop1Node = (ObjectNode) jsonSchema.get("properties");
-
-        ObjectNode filtersNode = (ObjectNode) prop1Node.get("filters");
-
-        ObjectNode itemsNode = (ObjectNode) filtersNode.get("items");
-
-        ObjectNode functionNode = (ObjectNode) itemsNode.get("properties").get("function");
-        assertEquals("\"EMPTY\"", functionNode.get("default").toString());
-
-    }
-
     public class NestedProperties extends PropertiesImpl {
 
         private static final long serialVersionUID = 1L;
