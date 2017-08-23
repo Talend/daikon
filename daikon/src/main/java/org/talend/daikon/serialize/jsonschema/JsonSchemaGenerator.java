@@ -41,7 +41,7 @@ public class JsonSchemaGenerator {
      * @param formName the formName to use to get the title for the form.
      * @return the JSON Schema representation.
      */
-    protected ObjectNode genSchema(Properties properties, String formName) {
+    protected ObjectNode generateJsonSchema(Properties properties, String formName) {
         return processTProperties(properties, formName, true);
     }
 
@@ -56,26 +56,17 @@ public class JsonSchemaGenerator {
      */
     private ObjectNode processTProperties(Properties cProperties, String formName, boolean visible) {
         ObjectNode schema = JsonNodeFactory.instance.objectNode();
-        Form form = null;
+        Form form = cProperties.getPreferredForm(formName);
 
-        // Set title tag
-        if (visible) {
-            if (formName != null) {
-                form = cProperties.getPreferredForm(formName);
-                if (form != null) {
-                    schema.put(JsonSchemaConstants.TAG_TITLE, form.getDisplayName());
-                } else {// wrong form name so hide it.
-                    // Hide the current element on the UI schema
-                    schema.put(JsonSchemaConstants.TAG_TITLE, "");
-                }
-            } else {
-                // no associated form but visible so use the Properties display Name
-                schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getDisplayName());
-            }
-        } else {
-            // Hide the current element on the UI schema
-            schema.put(JsonSchemaConstants.TAG_TITLE, "");
-        }
+        setSchemaFieldTitle(cProperties, formName, visible, schema, form);
+        computeSchemaType(cProperties, formName, visible, schema);
+
+        traverseAllProperty(cProperties, schema, form);
+        traverseNestedProperties(cProperties, schema, form);
+        return schema;
+    }
+
+    private void computeSchemaType(Properties cProperties, String formName, boolean visible, ObjectNode schema) {
 
         // Handle PropertiesList type
         if (cProperties instanceof PropertiesList<?>) {
@@ -94,22 +85,11 @@ public class JsonSchemaGenerator {
             schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_OBJECT);
             schema.putObject(JsonSchemaConstants.TAG_PROPERTIES);
         }
+    }
 
-        List<Property> propertyList = getSubProperty(cProperties);
-        for (Property property : propertyList) {
-            String name = property.getName();
-            if (property.isRequired()) {
-                addToRequired(schema, name);
-            }
-
-            ObjectNode propertySchema = processTProperty(property);
-            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, propertySchema);
-
-            WidgetSpecificJsonSchemaUtils.listViewSpecific(form, property, propertySchema);
-
-        }
+    private void traverseNestedProperties(Properties cProperties, ObjectNode schema, Form form) {
         List<Properties> propertiesList = getSubProperties(cProperties);
-        form = cProperties.getPreferredForm(formName);
+
         for (Properties properties : propertiesList) {
             String name = properties.getName();
             // if this is a reference then just store it as a string and only store the definition
@@ -130,7 +110,44 @@ public class JsonSchemaGenerator {
                         processTProperties(properties, propertiesFormName, isVisible));
             }
         }
-        return schema;
+    }
+
+    private void traverseAllProperty(Properties cProperties, ObjectNode schema, Form form) {
+        List<Property> propertyList = getSubProperty(cProperties);
+        for (Property property : propertyList) {
+            String name = property.getName();
+            // record required field only if they are visible
+            Widget widget = form != null ? form.getWidget(property.getName()) : null;
+            boolean isVisible = widget != null && widget.isVisible();
+            if (isVisible && property.isRequired()) {
+                addToRequired(schema, name);
+            } // else not visible or required so not added to the required list.
+
+            ObjectNode propertySchema = processTProperty(property);
+            ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name, propertySchema);
+
+            WidgetSpecificJsonSchemaUtils.listViewSpecific(form, property, propertySchema);
+
+        }
+    }
+
+    private void setSchemaFieldTitle(Properties cProperties, String formName, boolean visible, ObjectNode schema, Form form) {
+        if (visible) {
+            if (formName != null) {
+                if (form != null) {// form found
+                    schema.put(JsonSchemaConstants.TAG_TITLE, form.getDisplayName());
+                } else {// wrong form name so hide it.
+                    // Hide the current element on the UI schema
+                    schema.put(JsonSchemaConstants.TAG_TITLE, "");
+                }
+            } else {
+                // no associated form but visible so use the Properties display Name
+                schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getDisplayName());
+            }
+        } else {
+            // Hide the current element on the UI schema
+            schema.put(JsonSchemaConstants.TAG_TITLE, "");
+        }
     }
 
     /**

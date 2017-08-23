@@ -125,7 +125,7 @@ public class JsonSchemaUtil {
      */
     public static String toJson(Properties cp, String formName, String definitionName) {
         ObjectNode objectNode = mapper.createObjectNode();
-        objectNode.set(TAG_JSON_SCHEMA, jsonSchemaGenerator.genSchema(cp, formName));
+        objectNode.set(TAG_JSON_SCHEMA, jsonSchemaGenerator.generateJsonSchema(cp, formName));
         objectNode.set(TAG_JSON_DATA, jsonDataGenerator.genData(cp, definitionName));
         if (!cp.getForms().isEmpty()) {
             objectNode.set(TAG_JSON_UI, uiSchemaGenerator.genWidget(cp, formName));
