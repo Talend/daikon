@@ -325,6 +325,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
         } // else not evaluator so return the storedValue
         return (T) storedValue;
     }
+
     /**
      * Get the default value of the property, resolving the stored value if required.
      *

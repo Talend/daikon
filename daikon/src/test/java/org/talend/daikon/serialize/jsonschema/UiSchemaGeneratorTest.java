@@ -195,4 +195,4 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         }
     }
 
-    }
+}
