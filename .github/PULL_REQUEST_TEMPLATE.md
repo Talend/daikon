@@ -8,7 +8,7 @@ e.g. https://jira.talendforge.org/browse/XXX
  
 **Please check if the Pull Request fulfills these requirements**
 - [ ] The PR commit message follows our [guidelines](https://github.com/talend/tools/blob/master/tools-root-github/CONTRIBUTING.md)
-- [ ] Tests for the changes have been added (for bug fixes / features)
+- [ ] Tests for the changes have been added (for bug fixes / features, coverage should be over 75% in the new code)
 - [ ] Docs have been added / updated (for bug fixes / features)
 - [ ] Related design / discussions / pages (not in JIRA), if any, are all linked or available in the Pull Request
 
