@@ -2,9 +2,7 @@
 
 :+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
 
-
-If you plan to add some changes to the project, please keep in mind that code is not all. In fact, we would like you to follow 
-some more steps to make sure that everything is done to prevent inconsistencies and other issues. Please, ascertain that:
+If you want to contribute, please make sure that:
 
 - [ ] A [Pull Request](#pull-request) is created with 
   - valid [commit](#commit) messages
