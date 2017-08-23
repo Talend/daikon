@@ -159,6 +159,10 @@ public class JsonSchemaGenerator {
                 // Property
                 // support it
             }
+            if (property.hasDefaultValue()) {
+                schema.put(JsonSchemaConstants.TAG_DEFAULT, property.getDefaultStringValue());
+            }
+
         }
         return schema;
     }

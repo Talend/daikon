@@ -1,6 +1,7 @@
 package org.talend.daikon.serialize.jsonschema;
 
 import static org.junit.Assert.assertEquals;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import org.json.JSONException;
 import org.junit.Rule;
@@ -13,8 +14,6 @@ import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.StringProperty;
 import org.talend.daikon.properties.test.PropertiesTestUtils;
 import org.talend.daikon.serialize.FullExampleProperties;
-
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -88,6 +87,24 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         ObjectNode genSchema = generator.genSchema(props, Form.MAIN);
         String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\":{\"nested2\":{\"title\":\"\",\"type\":\"object\",\"properties\":{\"nested\":{\"title\":\"\",\"type\":\"object\",\"properties\":{\"myNestedStr\":{\"title\":\"property.myNestedStr.displayName\",\"type\":\"string\"},\"myNestedMultiValueStr\":{\"title\":\"property.myNestedMultiValueStr.displayName\",\"type\":\"string\",\"enum\":[\"a\",\"b\"],\"enumNames\":[\"Ai18n\",\"Bi18n\"]}}}}}}}";
         assertEquals(expectedPartial, genSchema.toString(), true);
+    }
+
+    @Test
+    public void checkFilterRowProperties() throws Exception {
+        FilterRowProperties properties = new FilterRowProperties("filterRowProperties");
+        properties.init();
+        JsonSchemaGenerator generator = new JsonSchemaGenerator();
+        ObjectNode jsonSchema = generator.genSchema(properties, Form.MAIN);
+
+        ObjectNode prop1Node = (ObjectNode) jsonSchema.get("properties");
+
+        ObjectNode filtersNode = (ObjectNode) prop1Node.get("filters");
+
+        ObjectNode itemsNode = (ObjectNode) filtersNode.get("items");
+
+        ObjectNode functionNode = (ObjectNode) itemsNode.get("properties").get("function");
+        assertEquals("\"EMPTY\"", functionNode.get("default").toString());
+
     }
 
     public class NestedProperties extends PropertiesImpl {
