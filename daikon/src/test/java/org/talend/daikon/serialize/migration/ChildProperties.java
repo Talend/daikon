@@ -15,6 +15,7 @@ package org.talend.daikon.serialize.migration;
 import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 import org.talend.daikon.properties.PropertiesImpl;
+import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.serialize.PostDeserializeSetup;
 
@@ -37,6 +38,22 @@ public class ChildProperties extends PropertiesImpl implements SerializeSetVersi
     public void setupProperties() {
         super.setupProperties();
         versionOneProp.setValue("I'm born since version 1");
+    }
+
+    @Override
+    public void setupLayout() {
+        super.setupLayout();
+        Form mainForm = new Form(this, Form.MAIN);
+    }
+
+    @Override
+    public void refreshLayout(Form form) {
+        super.refreshLayout(form);
+        switch (versionTwoProp.getValue()) {
+        case "aValue":
+            break;
+
+        }
     }
 
     @Override
