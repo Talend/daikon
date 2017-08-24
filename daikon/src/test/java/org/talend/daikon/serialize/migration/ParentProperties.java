@@ -18,6 +18,9 @@ import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.serialize.PostDeserializeSetup;
 
+/**
+ * A parent propertie containing some child properties
+ */
 public class ParentProperties extends PropertiesImpl implements SerializeSetVersion {
 
     private static final long serialVersionUID = -2970103646514440665L;
@@ -42,7 +45,6 @@ public class ParentProperties extends PropertiesImpl implements SerializeSetVers
     public int getVersionNumber() {
         return 1;
     }
-
 
     @Override
     public boolean postDeserialize(int version, PostDeserializeSetup setup, boolean persistent) {

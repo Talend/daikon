@@ -18,6 +18,9 @@ import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.serialize.PostDeserializeSetup;
 
+/**
+ * A child properties used in {@link ParentProperties}
+ */
 public class ChildProperties extends PropertiesImpl implements SerializeSetVersion {
 
     private static final long serialVersionUID = -8028841548094758928L;
