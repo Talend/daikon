@@ -23,6 +23,7 @@ import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.serialize.SerializerDeserializer;
+import org.talend.daikon.serialize.SerializerDeserializer.Deserialized;
 import org.talend.daikon.strings.ToStringIndent;
 
 /**
@@ -111,6 +112,11 @@ public interface Properties extends AnyProperty, ToStringIndent {
      * @return this instance
      */
     Properties init();
+
+    /**
+     * setup layout and refresh all it forms
+     */
+    void initLayout();
 
     /**
      * Initialize the properties without any layout initialization.
@@ -264,13 +270,26 @@ public interface Properties extends AnyProperty, ToStringIndent {
 
         public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedPersistent(
                 String serialized, Class<T> propertiesclass, PostDeserializeSetup postSetup) {
-            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, postSetup,
+            Deserialized<T> prop = SerializerDeserializer.fromSerialized(serialized, propertiesclass, postSetup,
                     SerializerDeserializer.PERSISTENT);
+
+            if (prop.object instanceof Properties) {
+                ((Properties) prop.object).initLayout();
+            }
+
+            return prop;
         }
 
         public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedPersistent(
                 String serialized, Class<T> propertiesclass) {
-            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, null, SerializerDeserializer.PERSISTENT);
+            Deserialized<T> prop = SerializerDeserializer.fromSerialized(serialized, propertiesclass, null,
+                    SerializerDeserializer.PERSISTENT);
+
+            if (prop.object instanceof Properties) {
+                ((Properties) prop.object).initLayout();
+            }
+
+            return prop;
         }
 
         public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedTransient(

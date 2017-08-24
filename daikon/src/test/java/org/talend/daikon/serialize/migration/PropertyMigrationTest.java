@@ -16,7 +16,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.talend.daikon.serialize.SerializerDeserializer;
+import org.talend.daikon.properties.Properties;
+import org.talend.daikon.serialize.SerializerDeserializer.Deserialized;
 
 /**
  * Properties migration test after deserialization
@@ -27,8 +28,8 @@ public class PropertyMigrationTest {
 
     @Test
     public void postDeserializationTest() {
-        SerializerDeserializer.Deserialized<ParentProperties> deser = SerializerDeserializer
-                .fromSerialized(propertyWithNestedPropToMigrate, ParentProperties.class, null, SerializerDeserializer.PERSISTENT);
+        Deserialized<ParentProperties> deser = Properties.Helper.fromSerializedPersistent(propertyWithNestedPropToMigrate,
+                ParentProperties.class);
 
         ParentProperties properties = deser.object;
         assertTrue("should be true, but not", deser.migrated);
