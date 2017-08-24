@@ -77,11 +77,12 @@ public class SerializerDeserializer {
             if (versionObj != null) {
                 version = ((Long) versionObj).longValue();
             }
-            resolver.traverseFields(stack, (JsonObject<String, Object>) jOb);
+
             Object target = ((JsonObject<String, Object>) jOb).getTarget();
             if (target instanceof PostDeserializeHandler) {
                 postDeserializeHandlers.put((PostDeserializeHandler) target, (int) version);
             }
+            resolver.traverseFields(stack, (JsonObject<String, Object>) jOb);
             return target;
         }
     }
