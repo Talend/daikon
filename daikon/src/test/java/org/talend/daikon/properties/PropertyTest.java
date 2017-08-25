@@ -259,6 +259,7 @@ public class PropertyTest {
         assertEquals("defaultValue2", prop2.getStringDefaultValue());
         StringProperty prop3 = PropertyFactory.newString("prop3", "value3");
         prop3.setValueEvaluator(new PropertyValueEvaluator() {
+
             @Override
             public <T> T evaluate(Property<T> property, Object storedValue) {
                 return (T) storedValue;
