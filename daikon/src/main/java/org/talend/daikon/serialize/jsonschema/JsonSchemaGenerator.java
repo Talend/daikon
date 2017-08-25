@@ -202,8 +202,8 @@ public class JsonSchemaGenerator {
         addEnumsToProperty(enumList, enumNames, property);
 
         // Set default value if one is stored at the property level
-        if (property.hasDefaultValue()) {
-            schema.put(JsonSchemaConstants.TAG_DEFAULT, property.getDefaultStringValue());
+        if (property.getDefaultValue() != null) {
+            schema.put(JsonSchemaConstants.TAG_DEFAULT, property.getStringDefaultValue());
         }
     }
 

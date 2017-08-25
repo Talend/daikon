@@ -32,6 +32,8 @@ import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.Property.Flags;
+import org.talend.daikon.properties.property.PropertyFactory;
+import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.properties.property.StringProperty;
 
 import com.cedarsoftware.util.io.JsonReader;
@@ -247,4 +249,32 @@ public class PropertyTest {
         assertThat(s, is("Name"));
     }
 
+    @Test
+    public void testDefaultValue() {
+        StringProperty prop1 = PropertyFactory.newString("prop1", "value1");
+        assertNull(prop1.getDefaultValue());
+        assertNull(prop1.getStringDefaultValue());
+        StringProperty prop2 = PropertyFactory.newString("prop2", "value2", "defaultValue2");
+        assertEquals("defaultValue2", prop2.getDefaultValue());
+        assertEquals("defaultValue2", prop2.getStringDefaultValue());
+        StringProperty prop3 = PropertyFactory.newString("prop3", "value3");
+        prop3.setValueEvaluator(new PropertyValueEvaluator() {
+            @Override
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                return (T) storedValue;
+            }
+        });
+        assertNull(prop3.getDefaultValue());
+        assertNull(prop3.getStringDefaultValue());
+        StringProperty prop4 = PropertyFactory.newString("prop4", "value4", "defaultValue4");
+        prop3.setValueEvaluator(new PropertyValueEvaluator() {
+
+            @Override
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                return (T) storedValue;
+            }
+        });
+        assertEquals("defaultValue4", prop4.getDefaultValue());
+        assertEquals("defaultValue4", prop4.getStringDefaultValue());
+    }
 }

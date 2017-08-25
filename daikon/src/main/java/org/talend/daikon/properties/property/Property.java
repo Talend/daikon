@@ -355,7 +355,7 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
     /**
      * Set the default stored value for this property.
      */
-    public Property<T> setDefaultValue(T value) {
+    protected Property<T> setDefaultValue(T value) {
         storedDefaultValue = value;
         return this;
     }
@@ -372,18 +372,11 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
         return null;
     }
 
-    /** 
-     * Check if this property has a default value 
-     */
-    public boolean hasDefaultValue() {
-        return getDefaultValue() != null;
-    }
-
     /**
      * Cast the default value to a string
      */
-    public String getDefaultStringValue() {
-        if (!hasDefaultValue()) {
+    public String getStringDefaultValue() {
+        if (getDefaultValue() == null) {
             return null;
         } else {
             return String.valueOf(getDefaultValue());
