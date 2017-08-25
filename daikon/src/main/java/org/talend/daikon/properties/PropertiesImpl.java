@@ -89,7 +89,6 @@ public class PropertiesImpl extends TranslatableTaggedImpl
             setup.setup(this);
         }
 
-
         // setup i18n for direct property and presentation item
         List<NamedThing> properties = getProperties();
         for (NamedThing prop : properties) {
