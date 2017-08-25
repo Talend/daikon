@@ -114,11 +114,6 @@ public interface Properties extends AnyProperty, ToStringIndent {
     Properties init();
 
     /**
-     * setup layout and refresh all it forms
-     */
-    void initLayout();
-
-    /**
      * Initialize the properties without any layout initialization.
      *
      * @return this instance
@@ -274,7 +269,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
                     SerializerDeserializer.PERSISTENT);
 
             if (prop.object instanceof Properties) {
-                ((Properties) prop.object).initLayout();
+                ((Properties) prop.object).init();
             }
 
             return prop;
@@ -286,7 +281,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
                     SerializerDeserializer.PERSISTENT);
 
             if (prop.object instanceof Properties) {
-                ((Properties) prop.object).initLayout();
+                ((Properties) prop.object).init();
             }
 
             return prop;
