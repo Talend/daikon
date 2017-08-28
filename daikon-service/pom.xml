@@ -80,11 +80,23 @@
 			<id>talend_nexus</id>
 			<name>talend-opensource-snapshot</name>
 			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
 		</repository>
 		<repository>
 			<id>talend-opensource-release</id>
 			<name>talend-opensource-release</name>
 			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
 		</repository>
 	</repositories>
 	<distributionManagement>
