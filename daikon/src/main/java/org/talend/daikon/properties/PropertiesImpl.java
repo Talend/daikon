@@ -89,10 +89,6 @@ public class PropertiesImpl extends TranslatableTaggedImpl
             setup.setup(this);
         }
 
-        if (persistent) {
-            initLayout();
-        }
-
         // setup i18n for direct property and presentation item
         List<NamedThing> properties = getProperties();
         for (NamedThing prop : properties) {
@@ -100,6 +96,8 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                 prop.setI18nMessageFormatter(getI18nMessageFormatter());
             }
         }
+
+        propsAlreadyInitialized = true;
         return false;
     }
 
