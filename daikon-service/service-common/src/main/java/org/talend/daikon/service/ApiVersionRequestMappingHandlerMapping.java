@@ -24,7 +24,7 @@ import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.talend.daikon.annotation.ApiVersion;;
+import org.talend.daikon.annotation.ApiVersion;
 
 /**
  * This create a Spring request mapping that prepend {prefix}version to all web requests routes annotated with
