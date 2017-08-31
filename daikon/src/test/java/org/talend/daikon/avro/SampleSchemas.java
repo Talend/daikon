@@ -66,6 +66,27 @@ public class SampleSchemas {
     }
 
     /**
+     * A simple {@link Schema.Type#ARRAY} schema with {@link #arraySimple()} elements.
+     */
+    public static final Schema arrayOfArraySimple() {
+        return SchemaBuilder.array().items(recordSimple());
+    }
+
+    /**
+     * A simple {@link Schema.Type#ARRAY} schema with LONG elements (to demonstrate arrays of primitives).
+     */
+    public static final Schema arrayOfLong() {
+        return SchemaBuilder.array().items(Schema.create(Schema.Type.LONG));
+    }
+
+    /**
+     * A simple {@link Schema.Type#ARRAY} schema with nullable or LONG elements (to demonstrate arrays of primitives).
+     */
+    public static final Schema arrayOfNullableLong() {
+        return SchemaBuilder.array().items(AvroUtils.wrapAsNullable(Schema.create(Schema.Type.LONG)));
+    }
+
+    /**
      * A simple {@link Schema.Type#ENUM} schema with the symbols: "one", "two", "three".
      */
     public static final Schema enumSimple() {
@@ -154,4 +175,14 @@ public class SampleSchemas {
                 .name("col5").type(enumSimple()).noDefault() //
                 .endRecord();
     }
+
+    public static final Schema recordArraysRequired() {
+        return SchemaBuilder.record("recordArrays").fields() //
+                .name("col1").type(arraySimple()).noDefault() //
+                .name("col2").type(arrayOfArraySimple()).noDefault() //
+                .name("col3").type(arrayOfLong()).noDefault() //
+                .name("col4").type(arrayOfNullableLong()).noDefault() //
+                .endRecord();
+    }
+
 }
