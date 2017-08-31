@@ -70,6 +70,9 @@ public class JsonSchemaGenerator {
 
         // Handle PropertiesList type
         if (cProperties instanceof PropertiesList<?>) {
+            // Override the title to always use the property display name.  This is necessary because PropertyList UI
+            // representations use the title to describe the type of element it contains.
+            schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getDisplayName());
             schema.put(JsonSchemaConstants.TAG_MIN_ITEMS, ((PropertiesList<?>) cProperties).getMinItems());
             schema.put(JsonSchemaConstants.TAG_MAX_ITEMS, ((PropertiesList<?>) cProperties).getMaxItems());
             schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_ARRAY);
@@ -103,8 +106,13 @@ public class JsonSchemaGenerator {
                 boolean isVisible = widget != null && widget.isVisible();
                 // compute the formName is one of the properties form was added as a subform
                 String propertiesFormName = null;
-                if (isVisible && widget.getContent() instanceof Form) {
-                    propertiesFormName = widget.getContent().getName();
+                if (isVisible) {
+                    if (widget.getContent() instanceof Form) {
+                        propertiesFormName = widget.getContent().getName();
+                    } else if (properties instanceof PropertiesList) {
+                        // PropertiesLists that do not have a Form contents can still be associated with a default form.
+                        propertiesFormName = properties.getForm(null).getName();
+                    }
                 }
                 ((ObjectNode) schema.get(JsonSchemaConstants.TAG_PROPERTIES)).set(name,
                         processTProperties(properties, propertiesFormName, isVisible));

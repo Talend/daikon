@@ -28,7 +28,7 @@ public class TestPropertiesList {
 
     public static class TestProperties extends PropertiesImpl {
 
-        public Property<Integer> intProp = PropertyFactory.newInteger("intProp");
+        public Property<Integer> intProp = PropertyFactory.newInteger("intProp").setRequired();
 
         public EnumProperty<TestEnum> stringProp = PropertyFactory.newEnum("stringProp", TestEnum.class);
 
