@@ -13,7 +13,6 @@ import java.util.UUID;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;
 import org.apache.avro.generic.IndexedRecord;
-import org.apache.avro.util.Utf8;
 import org.talend.daikon.avro.converter.AvroConverter;
 import org.talend.daikon.avro.converter.ConvertBigDecimal;
 import org.talend.daikon.avro.converter.ConvertBigInteger;
@@ -77,7 +76,6 @@ public class AvroRegistry {
     static {
         // The Avro types that have direct mappings to primitive types.
         // STRING,BYTES,INT,LONG,FLOAT,DOUBLE,BOOLEAN
-        registerSharedPrimitiveClass(Utf8.class, Schema.create(Type.STRING));
         registerSharedPrimitiveClass(String.class, Schema.create(Type.STRING));
         registerSharedPrimitiveClass(ByteBuffer.class, Schema.create(Type.BYTES));
         registerSharedPrimitiveClass(Integer.class, Schema.create(Type.INT));
