@@ -173,6 +173,7 @@ The field names listed here are the default field names.
 | `stackTrace`      | (Only if a throwable was logged) The stacktrace of the throwable.  Stackframes are separated by line endings.
 | `correaltionId`   | The correlationd ids if it's enabled [Tracking user activity ids using Slf4j](#correlation_id)
 
+<a name="LocationInfo"/></a>
 If you set `LocationInfo` property  to `true` in your layout log4j/logback configuration you will have these more following fields
 
 | Field             | Description
