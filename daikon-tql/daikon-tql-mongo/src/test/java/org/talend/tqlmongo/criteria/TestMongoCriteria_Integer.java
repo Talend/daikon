@@ -11,49 +11,49 @@ import org.talend.tqlmongo.excp.TqlMongoException;
 public class TestMongoCriteria_Integer extends TestMongoCriteria_Abstract {
 
     @Test
-    public void testInteger_eq() throws Exception {
+    public void testIntegerEq() throws Exception {
         Criteria criteria = doTest("field1 = 123");
         Criteria expectedCriteria = Criteria.where("field1").is(123L);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testInteger_ne() throws Exception {
+    public void testIntegerNe() throws Exception {
         Criteria criteria = doTest("field1 != 123");
         Criteria expectedCriteria = Criteria.where("field1").ne(123L);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testInteger_lt() throws Exception {
+    public void testIntegerLt() throws Exception {
         Criteria criteria = doTest("field1 < 123");
         Criteria expectedCriteria = Criteria.where("field1").lt(123L);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testInteger_gt() throws Exception {
+    public void testIntegerGt() throws Exception {
         Criteria criteria = doTest("field1 > 123");
         Criteria expectedCriteria = Criteria.where("field1").gt(123L);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testInteger_gte() throws Exception {
+    public void testIntegerGte() throws Exception {
         Criteria criteria = doTest("field1 >= 123");
         Criteria expectedCriteria = Criteria.where("field1").gte(123L);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testInteger_lte() throws Exception {
+    public void testIntegerLte() throws Exception {
         Criteria criteria = doTest("field1 <= 123");
         Criteria expectedCriteria = Criteria.where("field1").lte(123L);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testInteger_negative() throws Exception {
+    public void testIntegerNegative() throws Exception {
         Criteria criteria = doTest("field1 = -123");
         Criteria expectedCriteria = Criteria.where("field1").is(-123L);
         Assert.assertEquals(expectedCriteria, criteria);
@@ -64,7 +64,7 @@ public class TestMongoCriteria_Integer extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testInteger_outOfRange() throws Exception {
+    public void testIntegerOutOfRange() throws Exception {
         expectedException.expect(TqlMongoException.class);
         doTest("field1 = 99999999999999999999999999999999999999999999999999");
     }

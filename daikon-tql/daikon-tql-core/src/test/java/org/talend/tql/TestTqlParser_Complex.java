@@ -16,7 +16,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseLiteralComparison_withParenthesis() throws Exception {
+    public void testParseLiteralComparisonWithParenthesis() throws Exception {
         TqlElement tqlElement = doTest("(((field1='value1')))");
         String expected = "OrExpression{expressions=[AndExpression{expressions=["
                 + "OrExpression{expressions=[AndExpression{expressions=[OrExpression{expressions=[AndExpression{expressions=[OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{"
@@ -67,7 +67,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern_wrongPattern() throws Exception {
+    public void testParseFieldCompliesPatternWrongPattern() throws Exception {
         expectedException.expect(Exception.class);
         doTest("field1 complies 123");
     }
@@ -81,7 +81,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseFieldMatchesRegex_wrongRegex() throws Exception {
+    public void testParseFieldMatchesRegexWrongRegex() throws Exception {
         expectedException.expect(Exception.class);
         doTest("field1 ~ 123");
     }
@@ -95,7 +95,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseFieldContainsValue_wrongValue() throws Exception {
+    public void testParseFieldContainsValueWrongValue() throws Exception {
         expectedException.expect(Exception.class);
         doTest("field1 contains 123");
     }
@@ -133,7 +133,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseAndExpressions_parenthesis1() throws Exception {
+    public void testParseAndExpressionsParenthesis1() throws Exception {
         TqlElement tqlElement = doTest("(field1='value1' and field2='value2') or field3='value3'");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}"
                 + ", ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field2'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value2'}}]}]}]}"
@@ -142,7 +142,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseAndExpressions_parenthesis2() throws Exception {
+    public void testParseAndExpressionsParenthesis2() throws Exception {
         TqlElement tqlElement = doTest("field1='value1' and (field2='value2' or field3='value3')");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}"
                 + ", OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field2'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value2'}}]}"
@@ -151,7 +151,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseComplexExpressions_noParenthesis() throws Exception {
+    public void testParseComplexExpressionsNoParenthesis() throws Exception {
         TqlElement tqlElement = doTest("field1='value1' or field2='value2' and field3='value3'");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}]}"
                 + ", AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field2'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value2'}}"

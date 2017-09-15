@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 public class TestMongoCriteria_Between extends TestMongoCriteria_Abstract {
 
     @Test
-    public void testParseFieldBetween_quoted() throws Exception {
+    public void testParseFieldBetweenQuoted() throws Exception {
         Criteria criteria = doTest("name between ['A', 'Z']");
         Criteria expectedCriteria = Criteria.where("name").gte("A").lt("Z");
         Assert.assertEquals(expectedCriteria, criteria);
@@ -24,7 +24,7 @@ public class TestMongoCriteria_Between extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldBetween_INT() throws Exception {
+    public void testParseFieldBetweenInt() throws Exception {
         Criteria criteria = doTest("age between [27, 29]");
         Criteria expectedCriteria = Criteria.where("age").gte(27L).lt(29L);
         Assert.assertEquals(expectedCriteria, criteria);
@@ -35,7 +35,7 @@ public class TestMongoCriteria_Between extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldBetween_DECIMAL() throws Exception {
+    public void testParseFieldBetweenDecimal() throws Exception {
         Criteria criteria = doTest("age between [27.0, 30.0]");
         Criteria expectedCriteria = Criteria.where("age").gte(27.0).lt(30.0);
         Assert.assertEquals(expectedCriteria, criteria);

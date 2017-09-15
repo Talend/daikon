@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
 
     @Test
-    public void testBoolean_eqTrue() throws Exception {
+    public void testBooleanEqTrue() throws Exception {
         Criteria criteria = doTest("isGoodBoy = true");
         Criteria expectedCriteria = Criteria.where("isGoodBoy").is(true);
         Assert.assertEquals(expectedCriteria, criteria);
@@ -22,7 +22,7 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testBoolean_neTrue() throws Exception {
+    public void testBooleanNeTrue() throws Exception {
         Criteria criteria = doTest("isGoodBoy != true");
         Criteria expectedCriteria = Criteria.where("isGoodBoy").ne(true);
         Assert.assertEquals(expectedCriteria, criteria);
@@ -35,7 +35,7 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testBoolean_eqFalse() throws Exception {
+    public void testBooleanEqFalse() throws Exception {
         Criteria criteria = doTest("isGoodBoy = false");
         Criteria expectedCriteria = Criteria.where("isGoodBoy").is(false);
         Assert.assertEquals(expectedCriteria, criteria);
@@ -47,7 +47,7 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testBoolean_neFalse() throws Exception {
+    public void testBooleanNeFalse() throws Exception {
         Criteria criteria = doTest("isGoodBoy != false");
         Criteria expectedCriteria = Criteria.where("isGoodBoy").ne(false);
         Assert.assertEquals(expectedCriteria, criteria);

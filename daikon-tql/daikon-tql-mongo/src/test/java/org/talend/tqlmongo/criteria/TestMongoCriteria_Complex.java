@@ -23,7 +23,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseLiteralComparison_withParenthesis() throws Exception {
+    public void testParseLiteralComparisonWithParenthesis() throws Exception {
         Criteria criteria = doTest("(((field1='value1')))");
         Criteria expectedCriteria = Criteria.where("field1").is("value1");
         Assert.assertEquals(expectedCriteria, criteria);
@@ -56,7 +56,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testInteger_compound() throws Exception {
+    public void testIntegerCompound() throws Exception {
         Criteria criteria = doTest("field1 <= 123 and field2 = 456");
         Criteria c1 = Criteria.where("field1").lte(123L);
         Criteria c2 = Criteria.where("field2").is(456L);
@@ -87,7 +87,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseAndExpressions_parenthesis1() throws Exception {
+    public void testParseAndExpressionsParenthesis1() throws Exception {
         Criteria criteria = doTest("(field1='value1' and field2='value2') or field3='value3'");
         Criteria c1 = Criteria.where("field1").is("value1");
         Criteria c2 = Criteria.where("field2").is("value2");
@@ -99,7 +99,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseAndExpressions_parenthesis2() throws Exception {
+    public void testParseAndExpressionsParenthesis2() throws Exception {
         Criteria criteria = doTest("field1='value1' and (field2='value2' or field3='value3')");
         Criteria c1 = Criteria.where("field1").is("value1");
         Criteria c2 = Criteria.where("field2").is("value2");
@@ -111,7 +111,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseComplexExpressions_noParenthesis() throws Exception {
+    public void testParseComplexExpressionsNoParenthesis() throws Exception {
         Criteria criteria = doTest("field1='value1' or field2='value2' and field3='value3'");
         Criteria c1 = Criteria.where("field1").is("value1");
         Criteria c2 = Criteria.where("field2").is("value2");

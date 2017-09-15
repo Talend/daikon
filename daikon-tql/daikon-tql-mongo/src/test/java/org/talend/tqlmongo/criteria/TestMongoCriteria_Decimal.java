@@ -10,49 +10,49 @@ import org.springframework.data.mongodb.core.query.Criteria;
 public class TestMongoCriteria_Decimal extends TestMongoCriteria_Abstract {
 
     @Test
-    public void testDecimal_eq() throws Exception {
+    public void testDecimalEq() throws Exception {
         Criteria criteria = doTest("field1 = 123.45");
         Criteria expectedCriteria = Criteria.where("field1").is(123.45);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testDecimal_ne() throws Exception {
+    public void testDecimalNe() throws Exception {
         Criteria criteria = doTest("field1 != 123.45");
         Criteria expectedCriteria = Criteria.where("field1").ne(123.45);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testDecimal_lt() throws Exception {
+    public void testDecimalLt() throws Exception {
         Criteria criteria = doTest("field1 < 123.45");
         Criteria expectedCriteria = Criteria.where("field1").lt(123.45);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testDecimal_gt() throws Exception {
+    public void testDecimalGt() throws Exception {
         Criteria criteria = doTest("field1 > 123.45");
         Criteria expectedCriteria = Criteria.where("field1").gt(123.45);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testDecimal_gte() throws Exception {
+    public void testDecimalGte() throws Exception {
         Criteria criteria = doTest("field1 >= 123.45");
         Criteria expectedCriteria = Criteria.where("field1").gte(123.45);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testDecimal_lte() throws Exception {
+    public void testDecimalLte() throws Exception {
         Criteria criteria = doTest("field1 <= 123.45");
         Criteria expectedCriteria = Criteria.where("field1").lte(123.45);
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testDecimal_negative() throws Exception {
+    public void testDecimalNegative() throws Exception {
         Criteria criteria = doTest("field1 = -123.45");
         Criteria expectedCriteria = Criteria.where("field1").is(-123.45);
         Assert.assertEquals(expectedCriteria, criteria);

@@ -10,42 +10,42 @@ import org.springframework.data.mongodb.core.query.Criteria;
 public class TestMongoCriteria_FieldComparison extends TestMongoCriteria_Abstract {
 
     @Test
-    public void testField_eq() throws Exception {
+    public void testFieldEq() throws Exception {
         Criteria criteria = doTest("field1 = field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").is("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testField_ne() throws Exception {
+    public void testFieldNe() throws Exception {
         Criteria criteria = doTest("field1 != field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").ne("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testField_lt() throws Exception {
+    public void testFieldLt() throws Exception {
         Criteria criteria = doTest("field1 < field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").lt("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testField_gt() throws Exception {
+    public void testFieldGt() throws Exception {
         Criteria criteria = doTest("field1 > field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").gt("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testField_gte() throws Exception {
+    public void testFieldGte() throws Exception {
         Criteria criteria = doTest("field1 >= field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").gte("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testField_lte() throws Exception {
+    public void testFieldLte() throws Exception {
         Criteria criteria = doTest("field1 <= field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").lte("field2");
         Assert.assertEquals(expectedCriteria, criteria);

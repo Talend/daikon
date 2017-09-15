@@ -7,7 +7,7 @@ import org.talend.tql.model.TqlElement;
 public class TestTqlParser_Decimal extends TestTqlParser_Abstract {
 
     @Test
-    public void testParseLiteralComparison_eq() throws Exception {
+    public void testParseLiteralComparisonEq() throws Exception {
         TqlElement tqlElement = doTest("field1=123.456");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[" + "ComparisonExpression{"
                 + "operator=ComparisonOperator{operator=EQ}, " + "field=FieldReference{path='field1'}, "
@@ -16,7 +16,7 @@ public class TestTqlParser_Decimal extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseLiteralComparison_neq() throws Exception {
+    public void testParseLiteralComparisonNeq() throws Exception {
         TqlElement tqlElement = doTest("field1!=123.456");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[" + "ComparisonExpression{"
                 + "operator=ComparisonOperator{operator=NEQ}, " + "field=FieldReference{path='field1'}, "
@@ -25,7 +25,7 @@ public class TestTqlParser_Decimal extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseLiteralComparison_lt() throws Exception {
+    public void testParseLiteralComparisonLt() throws Exception {
         TqlElement tqlElement = doTest("field1<123.456");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[" + "ComparisonExpression{"
                 + "operator=ComparisonOperator{operator=LT}, " + "field=FieldReference{path='field1'}, "
@@ -34,7 +34,7 @@ public class TestTqlParser_Decimal extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseLiteralComparison_gt() throws Exception {
+    public void testParseLiteralComparisonGt() throws Exception {
         TqlElement tqlElement = doTest("field1>123.456");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[" + "ComparisonExpression{"
                 + "operator=ComparisonOperator{operator=GT}, " + "field=FieldReference{path='field1'}, "
@@ -43,7 +43,7 @@ public class TestTqlParser_Decimal extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseLiteralComparison_let() throws Exception {
+    public void testParseLiteralComparisonLet() throws Exception {
         TqlElement tqlElement = doTest("field1<=123.456");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[" + "ComparisonExpression{"
                 + "operator=ComparisonOperator{operator=LET}, " + "field=FieldReference{path='field1'}, "
@@ -52,7 +52,7 @@ public class TestTqlParser_Decimal extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseLiteralComparison_get() throws Exception {
+    public void testParseLiteralComparisonGet() throws Exception {
         TqlElement tqlElement = doTest("field1>=123.456");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[" + "ComparisonExpression{"
                 + "operator=ComparisonOperator{operator=GET}, " + "field=FieldReference{path='field1'}, "
@@ -61,7 +61,7 @@ public class TestTqlParser_Decimal extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testParseLiteralComparison_negative() throws Exception {
+    public void testParseLiteralComparisonNegative() throws Exception {
         TqlElement tqlElement = doTest("field1=-123.456");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[" + "ComparisonExpression{"
                 + "operator=ComparisonOperator{operator=EQ}, " + "field=FieldReference{path='field1'}, "
