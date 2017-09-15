@@ -2,6 +2,7 @@ package org.talend.daikon.spring.mongo;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,23 +12,29 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
 /**
- * A very simple implementation of {@link MongoClientProvider}. This provider does not allow selected eviction of cached
+ * A very simple implementation of {@link MongoClientProvider}.
+ * This provider does not allow selected eviction of cached
  * instances.
+ *
+ * This class should be instantiate only once.
  */
 public class SimpleMongoClientProvider implements MongoClientProvider {
 
-    private final Map<MongoClientURI, MongoClient> clients = new HashMap<>();
+    // ensure the map is synchronized
+    private final Map<MongoClientURI, MongoClient> clients = Collections.synchronizedMap(new HashMap<>(100));
+
+    protected MongoClient createMongoClient(MongoClientURI uri) {
+        try {
+            return new MongoClient(uri);
+        } catch (UnknownHostException e) {
+            throw new InvalidDataAccessResourceUsageException("Unable to retrieve host information.", e);
+        }
+    }
 
     @Override
     public MongoClient get(TenantInformationProvider provider) {
         final MongoClientURI databaseURI = provider.getDatabaseURI();
-        clients.computeIfAbsent(databaseURI, uri -> {
-            try {
-                return new MongoClient(uri);
-            } catch (UnknownHostException e) {
-                throw new InvalidDataAccessResourceUsageException("Unable to retrieve host information.", e);
-            }
-        });
+        clients.computeIfAbsent(databaseURI, this::createMongoClient);
         return clients.get(databaseURI);
     }
 
