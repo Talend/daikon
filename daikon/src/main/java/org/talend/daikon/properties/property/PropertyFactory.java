@@ -47,6 +47,13 @@ public class PropertyFactory {
         return property;
     }
 
+    public static StringProperty newString(String name, String initialValue, String defaultValue) {
+        StringProperty property = newString(name);
+        property.setValue(initialValue);
+        property.setDefaultValue(defaultValue);
+        return property;
+    }
+
     public static Property<Integer> newInteger(String name) {
         return new Property<>(Integer.class, name);
     }

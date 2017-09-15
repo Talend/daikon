@@ -18,7 +18,7 @@ import org.talend.daikon.properties.presentation.Form;
 
 public class ConnectionProperties extends PropertiesImpl {
 
-    public PresentationItem presItem = new PresentationItem("foo", "bar");
+    public PresentationItem presItem = new PresentationItem("presItem");
 
     public ConnectionProperties(String name) {
         super(name);

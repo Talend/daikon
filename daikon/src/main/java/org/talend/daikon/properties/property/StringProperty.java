@@ -21,6 +21,8 @@ import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.security.CryptoHelper;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * This property has an extra method to handle possible values of type NamedThing
  */
@@ -39,8 +41,8 @@ public class StringProperty extends Property<String> {
     }
 
     /**
-     * Adds all {@link NamedThing#getName()} as possible values for this string property
-     * and use the {@link NamedThing#getDisplayName()} as display name for the associated possible value
+     * Adds all {@link NamedThing#getName()} as possible values for this string property and use the
+     * {@link NamedThing#getDisplayName()} as display name for the associated possible value
      */
     public Property<String> setPossibleNamedThingValues(List<NamedThing> possibleValues) {
         this.possibleValues2 = possibleValues;
@@ -49,17 +51,29 @@ public class StringProperty extends Property<String> {
         for (NamedThing nt : possibleValues2) {
             realPossibleValues.add(nt.getName());
         }
-        setPossibleValues(realPossibleValues);
+        super.setPossibleValues(realPossibleValues);
+        return this;
+    }
+
+    @JsonIgnore
+    // to avoid swagger failure because of the 2 similar following methods.
+    public Property<String> setPossibleValues(List<?> possibleValues) {
+        // check is the type is a NamedThing
+        if (possibleValues != null && !possibleValues.isEmpty() && possibleValues.get(0) instanceof NamedThing) {
+            setPossibleNamedThingValues((List<NamedThing>) possibleValues);
+        } else {
+            super.setPossibleValues(possibleValues);
+        }
         return this;
     }
 
     /**
-     * This will look if {@link NamedThing} where used as possible values and use associated {@link NamedThing#getDisplayName()}.
-     * If there are possible Values as NamedThing and the value is not found the an exception is thrown. If no NamedThing was set
-     * as possible values it will delegate to {@link Property#getPossibleValuesDisplayName(Object)}
+     * This will look if {@link NamedThing} where used as possible values and use associated
+     * {@link NamedThing#getDisplayName()}. If there are possible Values as NamedThing and the value is not found the an
+     * exception is thrown. If no NamedThing was set as possible values it will delegate to
+     * {@link Property#getPossibleValuesDisplayName(Object)}
      * 
-     * @return the associated {@link NamedThing#getDisplayName()} if found or the default i18n
-     *         value from super.
+     * @return the associated {@link NamedThing#getDisplayName()} if found or the default i18n value from super.
      * @throws TalendRuntimeException is the possible value does not belong to the list of possible values.
      */
     @Override
@@ -74,7 +88,7 @@ public class StringProperty extends Property<String> {
         if (possibleValues2 != null && !possibleValues2.isEmpty()) {
             for (NamedThing nt : possibleValues2) {
                 if (possibleValue != null && possibleValue.equals(nt.getName())) {
-                    possibleValueDisplayName = nt.getDisplayName();
+                    possibleValueDisplayName = (nt.getDisplayName() != null ? nt.getDisplayName() : nt.getName());
                     break;
                 } // else keep looking
             }

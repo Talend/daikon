@@ -47,7 +47,7 @@ public class TestProperties extends PropertiesImpl {
 
     public Form restoreForm;
 
-    public PresentationItem testPI = new PresentationItem("testPI", "testPI display name");
+    public PresentationItem testPI = new PresentationItem("testPI");
 
     public Property<String> userId = newProperty(USER_ID_PROP_NAME).setRequired();
 
@@ -110,11 +110,11 @@ public class TestProperties extends PropertiesImpl {
     }
 
     public ValidationResult afterFormFinishMain(Repository<Properties> repo) {
-        return new ValidationResult().setStatus(Result.ERROR);
+        return new ValidationResult(Result.ERROR);
     }
 
     public ValidationResult afterInteger() {
-        return new ValidationResult().setStatus(Result.WARNING);
+        return new ValidationResult(Result.WARNING);
     }
 
     @Override

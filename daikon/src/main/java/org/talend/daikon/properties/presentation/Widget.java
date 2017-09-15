@@ -44,18 +44,18 @@ public class Widget implements ToStringIndent {
     public static final String SCHEMA_EDITOR_WIDGET_TYPE = "widget.type.schema.editor";
 
     /**
-     * Presentation of a reference to a schema on one line. This shows the name of the schema and provides a button
-     * to open the schema editor/viewer in a dialog.
+     * Presentation of a reference to a schema on one line. This shows the name of the schema and provides a button to
+     * open the schema editor/viewer in a dialog.
      */
     public static final String SCHEMA_REFERENCE_WIDGET_TYPE = "widget.type.schema.reference";
 
     /**
-     * Provides a means of selecting a name or name/description from a set of names, possibly arranged in a
-     * hierarchy. This is to be used for a large number of names, as this has search capability.
+     * Provides a means of selecting a name or name/description from a set of names, possibly arranged in a hierarchy.
+     * This is to be used for a large number of names, as this has search capability.
      *
-     * The NAME_SELECTION_AREA will operate on a property whose occur max times is -1, and whose possible values can be picked
-     * in {@code List<NamedThing>} and that will set the values as another {@code List<NamedThing>}. It will show everything
-     * on the list and then once complete will set the values of the list only to those that are selected.
+     * The NAME_SELECTION_AREA will operate on a property whose occur max times is -1, and whose possible values can be
+     * picked in {@code List<NamedThing>} and that will set the values as another {@code List<NamedThing>}. It will show
+     * everything on the list and then once complete will set the values of the list only to those that are selected.
      */
     public static final String NAME_SELECTION_AREA_WIDGET_TYPE = "widget.type.name.selection.area";
 
@@ -79,12 +79,11 @@ public class Widget implements ToStringIndent {
     public static final String BUTTON_WIDGET_TYPE = "widget.type.button";
 
     /**
-     * A table, the widget content shall be a {@link Properties} that will provide a MAIN form (see {@link Form#MAIN}). The main
-     * form shall contain a list of widget that will represent each table column and
-     * which content should be a Property. Each Property is going to be used as the column definition, the
-     * {@link Property#getDisplayName()} shall be used as the Column header. Each Property (=column) has a value of
-     * type List<T> in which the first element is the first row element for this column and the second in the list
-     * is the second row value for this column.
+     * A table, the widget content shall be a {@link Properties} that will provide a MAIN form (see {@link Form#MAIN}).
+     * The main form shall contain a list of widget that will represent each table column and which content should be a
+     * Property. Each Property is going to be used as the column definition, the {@link Property#getDisplayName()} shall
+     * be used as the Column header. Each Property (=column) has a value of type List<T> in which the first element is
+     * the first row element for this column and the second in the list is the second row value for this column.
      *
      */
     public static final String TABLE_WIDGET_TYPE = "widget.type.table";
@@ -95,25 +94,43 @@ public class Widget implements ToStringIndent {
     public static final String HIDDEN_TEXT_WIDGET_TYPE = "widget.type.hidden.text";
 
     /**
-     * A file widget with button select file from local system. The widget content shall be a {@link Property}<{@link String}>
+     * A file widget with button select file from local system. The widget content shall be a {@link Property}<
+     * {@link String}>
      */
     public static final String FILE_WIDGET_TYPE = "widget.type.file";
 
     /**
-     * A directory widget with button select directory from local system. The widget content shall be a {@link Property}<{@link String}>
+     * A directory widget with button select directory from local system. The widget content shall be a {@link Property}
+     * < {@link String}>
      */
     public static final String DIRECTORY_WIDGET_TYPE = "widget.type.directory";
 
     /**
-     * Tell the client that the property possible values ({@link Property#getPossibleValues()} must be used as
-     * unique choice for the value of the property.
+     * Tell the client that the property possible values ({@link Property#getPossibleValues()} must be used as unique
+     * choice for the value of the property.
      **/
     public static final String ENUMERATION_WIDGET_TYPE = "widget.type.enumeration";
 
     public static final String TEXT_AREA_WIDGET_TYPE = "widget.type.textArea";
 
     /**
+     * now it works for dataprep only
+     */
+    public static final String RADIO_WIDGET_TYPE = "widget.type.radio";
+
+    /**
+     * now it works for dataprep only
+     */
+    public static final String SELECT_WIDGET_TYPE = "widget.type.select";
+
+    /**
+     * now it works for dataprep only
+     */
+    public static final String DATALIST_WIDGET_TYPE = "widget.type.datalist";
+
+    /**
      * A table widget which use json as input. Below is a sample:
+     * 
      * <pre>
      * {
      *  "columnNames": [
@@ -140,13 +157,58 @@ public class Widget implements ToStringIndent {
      *  ]
      * }
      * </pre>
-     * Notes: The "columnNames" is a column names array. If there is not this element table will use "Column 1, Column 2, ..." as column names by default.
-     * The "data" is a data array. Every subset is a row of table.
+     * 
+     * Notes: The "columnNames" is a column names array. If there is not this element table will use "Column 1, Column
+     * 2, ..." as column names by default. The "data" is a data array. Every subset is a row of table.
      */
     public static final String JSON_TABLE_WIDGET_TYPE = "widget.type.jsonTable";
 
+    /**
+     * This widget represents a multiple checkbox which allow to select or deselect each value among a list of values.
+     *
+     * It is backed by a Property<List<String>> for the java model where the possible values are the one displayed in
+     * the widget for selection.
+     */
+    public static final String MULTIPLE_VALUE_SELECTOR_WIDGET_TYPE = "widget.type.listview";
+
+    /**
+     * This widget represents a nested properties widget - a list of additional properties which can be added or
+     * removed.
+     * 
+     * We can set the ui:options type of nested properties by setting a configuration value with the following key:
+     * {@link Widget#NESTED_PROPERTIES_TYPE_OPTION}
+     *
+     * Using the following method: {@link Widget#setConfigurationValue(String, Object)}
+     *
+     * Default value is "default"
+     *
+     * Example:
+     * setConfigurationValue(NESTED_PROPERTIES_TYPE_OPTION, "filter")
+     * 
+     */
+    public static final String NESTED_PROPERTIES = "widget.type.nestedProperties";
+
+    public static final String NESTED_PROPERTIES_TYPE_OPTION = "type";
+
+    /**
+     * This widget is designed to simplify and speed up input of source code.
+     *
+     * We can set the language that will be used for this code widget by setting a configuration value with the following key:
+     * {@link Widget#CODE_SYNTAX_WIDGET_CONF}
+     *
+     * Using the following method: {@link Widget#setConfigurationValue(String, Object)}
+     *
+     * Python is the default language if no configuration value for code syntax is specified.
+     *
+     * Example:
+     * setConfigurationValue(CODE_SYNTAX_WIDGET_CONF, "java")
+     */
+    public static final String CODE_WIDGET_TYPE = "widget.type.code";
+
+    public static final String CODE_SYNTAX_WIDGET_CONF = "language";
+
     /*
-    Widget configurations
+     * Widget configurations
      */
 
     /**
@@ -155,7 +217,13 @@ public class Widget implements ToStringIndent {
     public static final String READ_ONLY_WIDGET_CONF = "widget.conf.readonly";
 
     /**
-     * Tell the client whether hide the toolbar or not. For example can set it as "true" to hide the toolbar of a table widget.
+     * Tell the client whether the widget is autofocus or not.
+     */
+    public static final String AUTO_FOCUS_WIDGET_CONF = "widget.conf.autofocus";
+
+    /**
+     * Tell the client whether hide the toolbar or not. For example can set it as "true" to hide the toolbar of a table
+     * widget.
      */
     public static final String HIDE_TOOLBAR_WIDGET_CONF = "widget.conf.hide.toolbar";
 
@@ -205,12 +273,12 @@ public class Widget implements ToStringIndent {
 
     private Map<String, Object> configurationValues = new HashMap<>();
 
-    public static Widget widget(NamedThing content) {
-        return new Widget(content);
-    }
-
     public Widget(NamedThing content) {
         this.content = content;
+    }
+
+    public static Widget widget(NamedThing content) {
+        return new Widget(content);
     }
 
     public NamedThing getContent() {
@@ -258,13 +326,6 @@ public class Widget implements ToStringIndent {
     /**
      * Set or reset this as hidden and mark the underlying {@link Property} or {@link Form} as hidden or not.
      */
-    public Widget setHidden(Property<Boolean> hidden) {
-        return setHidden(hidden.getValue());
-    }
-
-    /**
-     * Set or reset this as hidden and mark the underlying {@link Property} or {@link Form} as hidden or not.
-     */
     public Widget setHidden() {
         return setHidden(true);
     }
@@ -279,13 +340,6 @@ public class Widget implements ToStringIndent {
     /**
      * Set or reset this as visible and mark the underlying {@link Property} or {@link Form} as visible or not.
      */
-    public Widget setVisible(Property<Boolean> visible) {
-        return setHidden(!visible.getValue());
-    }
-
-    /**
-     * Set or reset this as visible and mark the underlying {@link Property} or {@link Form} as visible or not.
-     */
     public Widget setVisible() {
         return setVisible(true);
     }
@@ -295,10 +349,24 @@ public class Widget implements ToStringIndent {
     }
 
     /**
+     * Set or reset this as hidden and mark the underlying {@link Property} or {@link Form} as hidden or not.
+     */
+    public Widget setHidden(Property<Boolean> hidden) {
+        return setHidden(hidden.getValue());
+    }
+
+    /**
      * return if the current Widget is visible or not.
      */
     public boolean isVisible() {
         return !hidden;
+    }
+
+    /**
+     * Set or reset this as visible and mark the underlying {@link Property} or {@link Form} as visible or not.
+     */
+    public Widget setVisible(Property<Boolean> visible) {
+        return setHidden(!visible.getValue());
     }
 
     public String getWidgetType() {
@@ -392,6 +460,15 @@ public class Widget implements ToStringIndent {
         return this;
     }
 
+    public boolean isAutoFocus() {
+        return Boolean.valueOf(String.valueOf(getConfigurationValue(AUTO_FOCUS_WIDGET_CONF)));
+    }
+
+    public Widget setAutoFocus(boolean autoFocus) {
+        setConfigurationValue(AUTO_FOCUS_WIDGET_CONF, autoFocus);
+        return this;
+    }
+
     /**
      * Return the previously stored value using {@link Widget#setConfigurationValue(String, Object)} with the given key.
      *
@@ -403,7 +480,8 @@ public class Widget implements ToStringIndent {
     }
 
     /**
-     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because it may not be serialized.
+     * This stores a value with the given key in a map. It is only settable in {@link Properties#setupLayout()} because
+     * it may not be serialized.
      *
      * @param key, key to store the object with
      * @param value, any object.

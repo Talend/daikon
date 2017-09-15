@@ -23,6 +23,7 @@ import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.serialize.SerializerDeserializer;
+import org.talend.daikon.serialize.SerializerDeserializer.Deserialized;
 import org.talend.daikon.strings.ToStringIndent;
 
 /**
@@ -33,75 +34,60 @@ import org.talend.daikon.strings.ToStringIndent;
  * include those for desktop (Eclipse), web, and scripting. All of these will use the code defined here for their
  * construction and validation.
  * <p/>
- * All aspects of the properties are defined in a subclass of this class using the {@link Property}, {@link PresentationItem},
- * {@link Widget}, and {@link Form} classes. In addition in cases where user interface decisions are made in code, methods can be
- * added to the subclass to influence the flow of the user interface and help with validation.
+ * All aspects of the properties are defined in a subclass of this class using the {@link Property},
+ * {@link PresentationItem}, {@link Widget}, and {@link Form} classes. In addition in cases where user interface
+ * decisions are made in code, methods can be added to the subclass to influence the flow of the user interface and help
+ * with validation.
  * <p/>
- * Each property can be a Java type, both simple types and collections are permitted. In addition, {@code Properties} classes can
- * be composed allowing hierarchies of properties and collections of properties to be reused.
+ * Each property can be a Java type, both simple types and collections are permitted. In addition, {@code Properties}
+ * classes can be composed allowing hierarchies of properties and collections of properties to be reused.
  * <p/>
- * A property is defined using a field in a subclass of this class. Each property field is initialized with one of the following:
+ * A property is defined using a field in a subclass of this class. Each property field is initialized with one of the
+ * following:
  * <ol>
- * <li>For a single property, a {@link Property} object, usually using a static method from the {@link PropertyFactory}.</li>
+ * <li>For a single property, a {@link Property} object, usually using a static method from the
+ * {@link PropertyFactory}.</li>
  * <li>For a reference to other properties, a subclass of {@code Properties}.</li>
- * <li>For a presentation item that's not actually a property, but is necessary for the user interface, a {@link PresentationItem}
- * .</li>
+ * <li>For a presentation item that's not actually a property, but is necessary for the user interface, a
+ * {@link PresentationItem} .</li>
  * </ol>
  * <p/>
- * For construction of user interfaces, properties are grouped into {@link Form} objects which can be presented in various ways by
- * the user interface (for example, a wizard page, a tab in a property sheet, or a dialog). The same property can appear in
- * multiple forms.
+ * For construction of user interfaces, properties are grouped into {@link Form} objects which can be presented in
+ * various ways by the user interface (for example, a wizard page, a tab in a property sheet, or a dialog). The same
+ * property can appear in multiple forms.
  * <p/>
  * Methods can be added in subclasses according to the conventions below to help direct the UI. These methods will be
  * automatically called by the UI code.
  * <ul>
- * <li>{@code before<PropertyName>} - Called before the property is presented in the UI. This can be used to compute anything
- * required to display the property.</li>
- * <li>{@code after<PropertyName>} - Called after the property is presented and validated in the UI. This can be used to update
- * the properties state to consider the changed in this property.</li>
- * <li>{@code validate<PropertyName>} - Called to validate the property value that has been entered in the UI. This will return a
- * {@link ValidationResult} object with any error information.</li>
+ * <li>{@code before<PropertyName>} - Called before the property is presented in the UI. This can be used to compute
+ * anything required to display the property.</li>
+ * <li>{@code after<PropertyName>} - Called after the property is presented and validated in the UI. This can be used to
+ * update the properties state to consider the changed in this property.</li>
+ * <li>{@code validate<PropertyName>} - Called to validate the property value that has been entered in the UI. This will
+ * return a {@link ValidationResult} object with any error information.</li>
  * <li>{@code beforeFormPresent<FormName>} - Called before the form is displayed.</li>
  * </ul>
  * {@code PropertyName} and {@code FormName} are the property or form name with their first in letter uppercase.
  * </p>
  * wizard lifecycle related form methods are :
  * <ul>
- * <li>{@code afterFormBack<FormName>} - Called when the current edited form is &lt;FormName&gt; and when the user has pressed the
- * back button.</li>
- * <li>{@code afterFormNext<FormName>} - Called when the current edited form is &lt;FormName&gt; and when the user has pressed the
- * next button.</li>
- * <li>{@code afterFormFinish<FormName>(Repository<Properties> prop)} - Called when the current edited form is &lt;FormName&gt;
- * and when the finish button is pressed. this method is supposed to serialize the current Properties instance and it's sub
- * properties</li>
+ * <li>{@code afterFormBack<FormName>} - Called when the current edited form is &lt;FormName&gt; and when the user has
+ * pressed the back button.</li>
+ * <li>{@code afterFormNext<FormName>} - Called when the current edited form is &lt;FormName&gt; and when the user has
+ * pressed the next button.</li>
+ * <li>{@code afterFormFinish<FormName>(Repository<Properties> prop)} - Called when the current edited form is
+ * &lt;FormName&gt; and when the finish button is pressed. this method is supposed to serialize the current Properties
+ * instance and it's sub properties</li>
  * </ul>
  * <p/>
- * Once the Properties is create by the service, the {@link Properties#setupProperties()} and {@link Properties#setupLayout()} is
- * called.
+ * Once the Properties is create by the service, the {@link Properties#setupProperties()} and
+ * {@link Properties#setupLayout()} is called.
  * <p/>
- * <b>WARNING</b> - It is not recommanded to instanciate a Property field after {@link Properties#setupProperties()} is called. If
- * you want to create the property later you'll have to call {@link Property#setI18nMessageFormatter(I18nMessages)} manually.
+ * <b>WARNING</b> - It is not recommanded to instanciate a Property field after {@link Properties#setupProperties()} is
+ * called. If you want to create the property later you'll have to call
+ * {@link Property#setI18nMessageFormatter(I18nMessages)} manually.
  */
 public interface Properties extends AnyProperty, ToStringIndent {
-
-    class Helper {
-
-        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedPersistent(
-                String serialized, Class<T> propertiesclass, PostDeserializeSetup postSetup) {
-            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, postSetup,
-                    SerializerDeserializer.PERSISTENT);
-        }
-
-        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedPersistent(
-                String serialized, Class<T> propertiesclass) {
-            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, null, SerializerDeserializer.PERSISTENT);
-        }
-
-        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedTransient(
-                String serialized, Class<T> propertiesclass) {
-            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, null, SerializerDeserializer.TRANSIENT);
-        }
-    }
 
     String METHOD_BEFORE = "before";
 
@@ -122,28 +108,28 @@ public interface Properties extends AnyProperty, ToStringIndent {
 
     /**
      * Must be called once the class is instantiated to setup the properties and the layout
-     * 
+     *
      * @return this instance
      */
     Properties init();
 
     /**
      * Initialize the properties without any layout initialization.
-     * 
+     *
      * @return this instance
      */
     Properties initForRuntime();
 
     /**
      * Initialize this object, all subclass initialization should override this, and call the super. <br>
-     * 
+     *
      * @warning call super() first.
      */
     void setupProperties();
 
     /**
      * Declare the widget layout information for each of the properties.<br>
-     * 
+     *
      * @warning call super() first.
      */
     void setupLayout();
@@ -151,8 +137,8 @@ public interface Properties extends AnyProperty, ToStringIndent {
     /**
      * Returns a serialized version of this for storage in a repository.
      *
-     * @return the serialized {@code String}, use {@link Helper#fromSerializedPersistent(String, Class)} to materialize the
-     * object.
+     * @return the serialized {@code String}, use {@link Helper#fromSerializedPersistent(String, Class)} to materialize
+     * the object.
      */
     String toSerialized();
 
@@ -172,14 +158,17 @@ public interface Properties extends AnyProperty, ToStringIndent {
 
     /**
      * Gets a particular {@link Form} object.
-     * @param formName the wanted form name. If null, the default form will be {@link org.talend.daikon.properties.presentation.Form.MAIN}
+     *
+     * @param formName the wanted form name. If null, the default form will be
+     * {@link org.talend.daikon.properties.presentation.Form.MAIN}
      */
     Form getForm(String formName);
 
     /**
-     * Returns the requested {@link Form} object, but if that's not defined for this object, returns
-     * the first defined form that exists. For example, the {@code Form.CITIZEN_USER} might be requested,
-     * but not defined, so the {@code Form.MAIN} is returned instead.
+     * Returns the requested {@link Form} object, but if that's not defined for this object, returns the first defined
+     * form that exists. For example, the {@code Form.CITIZEN_USER} might be requested, but not defined, so the
+     * {@code Form.MAIN} is returned instead. Return null if form is null
+     *
      */
     Form getPreferredForm(String formName);
 
@@ -190,7 +179,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
 
     /**
      * Returns the list of properties associated with this object.
-     * 
+     *
      * @return all properties associated with this object (including those defined in superclasses).
      */
     List<NamedThing> getProperties();
@@ -199,8 +188,8 @@ public interface Properties extends AnyProperty, ToStringIndent {
      * Returns {@link Property} or a {@link Properties} as specified by a qualifed property name string representing the
      * field name.
      * <p/>
-     * The first component is the property name within this object. The optional subsequent components, separated by a "." are
-     * property names in the nested {@link Properties} objects.
+     * The first component is the property name within this object. The optional subsequent components, separated by a
+     * "." are property names in the nested {@link Properties} objects.
      *
      * @param propName a qualified property name, should never be null
      * @return the object denoted with the name or null if not found
@@ -213,12 +202,14 @@ public interface Properties extends AnyProperty, ToStringIndent {
     Property<?> getValuedProperty(String propPath);
 
     /**
-     * same as {@link Properties#getProperty(String)} but returns null if the property is not of type {@link Properties} .
+     * same as {@link Properties#getProperty(String)} but returns null if the property is not of type {@link Properties}
+     * .
      */
     Properties getProperties(String propPath);
 
     /**
      * Sets the stored value associated with the specified {@link Property} object.
+     *
      * @param property the name of the {@code Property} object.
      * @param value the value to set
      */
@@ -227,7 +218,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
     /**
      * Helper method to set the evaluator to all properties handled by this instance and all the nested Properties
      * instances.
-     * 
+     *
      * @param ve value evaluator to be used for evaluation.
      */
     void setValueEvaluator(PropertyValueEvaluator ve);
@@ -244,7 +235,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
      * parameters as long as they are assignable to the Properties type. <br/>
      * Once the property is assigned it will not be recursively scanned. But if many nested Properties have the
      * appropriate type they will all be assigned to the new value.
-     * 
+     *
      * @param newValueProperties list of Properties to be assigned to this instance nested Properties
      */
     void assignNestedProperties(Properties... newValueProperties);
@@ -259,7 +250,7 @@ public interface Properties extends AnyProperty, ToStringIndent {
      * Copy all of the values from the specified {@link Properties} object. This includes the values from any nested
      * objects. This can be used even if the {@code Properties} objects are not the same class. Fields that are not
      * present in the this {@code Properties} object are ignored.
-     * 
+     *
      * @param props pros to copy into this Properties
      * @param copyTaggedValues if true all tagged values are copied
      * @param copyEvaluators if true all evaluators are copied
@@ -269,5 +260,37 @@ public interface Properties extends AnyProperty, ToStringIndent {
     NamedThing createPropertyInstance(NamedThing otherProp) throws ReflectiveOperationException;
 
     Properties setName(String name);
+
+    class Helper {
+
+        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedPersistent(
+                String serialized, Class<T> propertiesclass, PostDeserializeSetup postSetup) {
+            Deserialized<T> prop = SerializerDeserializer.fromSerialized(serialized, propertiesclass, postSetup,
+                    SerializerDeserializer.PERSISTENT);
+
+            if (prop.object instanceof Properties) {
+                ((Properties) prop.object).init();
+            }
+
+            return prop;
+        }
+
+        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedPersistent(
+                String serialized, Class<T> propertiesclass) {
+            Deserialized<T> prop = SerializerDeserializer.fromSerialized(serialized, propertiesclass, null,
+                    SerializerDeserializer.PERSISTENT);
+
+            if (prop.object instanceof Properties) {
+                ((Properties) prop.object).init();
+            }
+
+            return prop;
+        }
+
+        public static synchronized <T extends Properties> SerializerDeserializer.Deserialized<T> fromSerializedTransient(
+                String serialized, Class<T> propertiesclass) {
+            return SerializerDeserializer.fromSerialized(serialized, propertiesclass, null, SerializerDeserializer.TRANSIENT);
+        }
+    }
 
 }

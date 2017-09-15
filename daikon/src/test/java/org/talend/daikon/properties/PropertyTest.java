@@ -27,9 +27,12 @@ import java.util.EnumSet;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
+import org.talend.daikon.NamedThing;
+import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.Property.Flags;
+import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.properties.property.StringProperty;
 
 import com.cedarsoftware.util.io.JsonReader;
@@ -235,4 +238,46 @@ public class PropertyTest {
 
     }
 
+    @Test
+    public void testDisplayName() {
+        Property<String> prop1 = newProperty("name");
+        NamedThing possibleValue = new SimpleNamedThing("col1", "Name");
+        prop1.setPossibleValues(possibleValue);
+
+        String s = prop1.getPossibleValuesDisplayName(possibleValue);
+        assertThat(s, is("Name"));
+    }
+
+    @Test
+    public void testDefaultValue() {
+        StringProperty prop1 = newString("prop1", "value1");
+        assertNull(prop1.getDefaultValue());
+        assertNull(prop1.getStringDefaultValue());
+
+        StringProperty prop2 = newString("prop2", "value2", "defaultValue2");
+        assertEquals("defaultValue2", prop2.getDefaultValue());
+        assertEquals("defaultValue2", prop2.getStringDefaultValue());
+
+        StringProperty prop3 = newString("prop3", "value3");
+        prop3.setValueEvaluator(new PropertyValueEvaluator() {
+
+            @Override
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                return storedValue == null ? null : (T) "prop3".concat((String) storedValue);
+            }
+        });
+        assertNull(prop3.getDefaultValue());
+        assertNull(prop3.getStringDefaultValue());
+
+        StringProperty prop4 = newString("prop4", "value4", "defaultValue4");
+        prop4.setValueEvaluator(new PropertyValueEvaluator() {
+
+            @Override
+            public <T> T evaluate(Property<T> property, Object storedValue) {
+                return storedValue == null ? null : (T) "prop4".concat((String) storedValue);
+            }
+        });
+        assertEquals("prop4defaultValue4", prop4.getDefaultValue());
+        assertEquals("prop4defaultValue4", prop4.getStringDefaultValue());
+    }
 }

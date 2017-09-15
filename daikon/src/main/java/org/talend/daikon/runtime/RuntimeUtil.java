@@ -23,7 +23,6 @@ import org.ops4j.pax.url.mvn.MavenResolver;
 import org.ops4j.pax.url.mvn.MavenResolvers;
 import org.ops4j.pax.url.mvn.ServiceConstants;
 import org.ops4j.pax.url.mvn.internal.Connection;
-import org.ops4j.pax.url.mvn.internal.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.sandbox.SandboxInstanceFactory;
@@ -33,20 +32,34 @@ public class RuntimeUtil {
 
     static private final Logger LOG = LoggerFactory.getLogger(RuntimeUtil.class);
 
+    /**
+     *
+     */
     public static final class MavenUrlStreamHandler extends URLStreamHandler {
 
         @Override
         public URLConnection openConnection(URL url) throws IOException {
-            // check for URL to not have library name instead of version see (TCOMP-402)
-            // unfortunately we need to use an pax mvn internal api (Parser).
-            if (new Parser(url.getPath()).getVersion().endsWith(".jar")) {
-                LOG.debug("Ignor this artifact : " + url.toString());
-                throw new IOException("Ignoring supposedly wrong URL :" + url.toString());
-            }
             MavenResolver resolver = MavenResolvers.createMavenResolver(null, ServiceConstants.PID);
             Connection conn = new Connection(url, resolver);
             conn.setUseCaches(false);// to avoid concurent thread to have an IllegalStateException.
             return conn;
+        }
+
+        /**
+         * only allow parsing of url with "mvn:" if, the url is a complete mvn url then no spec can be added. We hereby
+         * assume all urls are set using the complete url and filter the one that may construct url from an existing one
+         * This would prevent the UrlClassloader isung mvn protocol to try to load class-path jars and INDEX.LIST jar
+         * resources by adding them to a complete mvn url (TCOMP-402)
+         *
+         */
+        @Override
+        protected void parseURL(URL u, String spec, int start, int limit) {
+            if (!"mvn:".equals(u.toString())) {// remove the spec to only return the url.
+                LOG.debug("ignoring specs for parseUrl with url[" + u + "] and spec[" + spec + "]");
+                super.parseURL(u, "", 0, 0);
+            } else {// simple url being "mvn:" and the rest is specs.
+                super.parseURL(u, spec, start, limit);
+            }
         }
     }
 

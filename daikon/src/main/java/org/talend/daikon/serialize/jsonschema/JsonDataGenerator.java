@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.avro.Schema;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesList;
 import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.property.Property;
 
@@ -32,7 +33,7 @@ public class JsonDataGenerator {
 
         List<Property> propertyList = getSubProperty(cProperties);
         for (Property property : propertyList) {
-            processTPropertyValue(property, rootNode);
+            processTPropertyValue(cProperties.getClass().getClassLoader(), property, rootNode);
         }
         List<Properties> propertiesList = getSubProperties(cProperties);
         for (Properties properties : propertiesList) {
@@ -41,6 +42,11 @@ public class JsonDataGenerator {
             if (properties instanceof ReferenceProperties<?>) {
                 ReferenceProperties<?> referenceProperties = (ReferenceProperties<?>) properties;
                 rootNode.put(properties.getName(), referenceProperties.referenceDefinitionName.getValue());
+            } else if (properties instanceof PropertiesList) {
+                ArrayNode arrayNode = rootNode.putArray(properties.getName());
+                for (Properties props : ((PropertiesList<?>) properties).getPropertiesList()) {
+                    fillValue(arrayNode, Properties.class, props);
+                }
             } else {
                 rootNode.set(name, processTPropertiesData(properties));
             }
@@ -48,7 +54,7 @@ public class JsonDataGenerator {
         return rootNode;
     }
 
-    private ObjectNode processTPropertyValue(Property property, ObjectNode node) {
+    private ObjectNode processTPropertyValue(ClassLoader classLoader, Property property, ObjectNode node) {
         String javaType = property.getType();
         String pName = property.getName();
         Object pValue = property.getValue();
@@ -56,13 +62,13 @@ public class JsonDataGenerator {
             // unset if the value is null
             // node.set(pName, node.nullNode());
         } else if (isListClass(javaType)) {
-            Class type = findClass(getListInnerClassName(javaType));
+            Class type = findClass(classLoader, getListInnerClassName(javaType));
             ArrayNode arrayNode = node.putArray(pName);
             for (Object value : ((List) pValue)) {
                 fillValue(arrayNode, type, value);
             }
         } else {
-            fillValue(node, findClass(javaType), pName, pValue);
+            fillValue(node, findClass(classLoader, javaType), pName, pValue);
         }
         return node;
     }
@@ -86,6 +92,8 @@ public class JsonDataGenerator {
             node.add((Long) value);
         } else if (Date.class.equals(type)) {
             node.add(dateFormatter.format((Date) value));
+        } else if (Properties.class.equals(type)) {
+            node.add(processTPropertiesData((Properties) value));
         } else {
             throw new RuntimeException("Do not support type " + type + " yet.");
         }

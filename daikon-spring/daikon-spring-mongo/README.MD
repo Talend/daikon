@@ -16,28 +16,31 @@ Using multi tenancy support
 
 1) Include artifact in your application:
 
-
+```xml
     <dependency>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-spring-mongo</artifactId>
         <version>0.16.0-SNAPSHOT</version>
     </dependency>
+```
 
 2) Make sure, `org.talend.daikon` in included in the Spring component scan
 
-
-    @ComponentScan(basePackages = { "org.talend.myapp", "org.talend.daikon" })
+```java
+@ComponentScan(basePackages = { "org.talend.myapp", "org.talend.daikon" })
+```
 
 3) Include property in your application configuration:
 
-
-    multi-tenancy.mongodb.active=true
+```properties
+multi-tenancy.mongodb.active=true
+```
     
 Note: property defaults to `false`, so your application configuration to explicitly enable multi tenancy support.
 
 4) Add a `org.talend.daikon.spring.mongo.TenantInformationProvider` implementation in your application and expose it as a Spring Bean. For example:
 
-
+```java
     @Bean
     public TenantInformationProvider tenantProvider() {
         return new TenantInformationProvider() {
@@ -52,15 +55,16 @@ Note: property defaults to `false`, so your application configuration to explici
             }
         };
     }
+```
 
 5) Add a `org.talend.daikon.spring.mongo.MongoClientProvider` implementation in your application and expose it as a Spring Bean. The implementation `org.talend.daikon.spring.mongo.SimpleMongoClientProvider` is available for quick start.
 If you need more advanced cache management, consider providing a custom implementation. 
 
 5) On startup of your application, you should see:
 
-
+```
     09:41:53.236 [main] INFO  o.t.d.s.m.MultiTenancyMongoDbConfiguration - Enabling MongoDB multi tenancy support on 'class org.springframework.data.mongodb.core.SimpleMongoDbFactory' (wrapped bean: defaultMongoDbFactory)...
-
+```
 
 6) And it's done, all the `MongoTemplate` or `MongoRepository` will work with multi tenancy without changing a line of code in them.
 

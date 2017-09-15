@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Contains the result of the validation of a components property.
+ * This class is immutable, you can use {@link ValidationResultMutable} for a mutable version
  * <p/>
  * This is to be returned from the {@code validate} methods in {@link Properties}. The ValidationResult with the status
  * {@link ValidationResult.Result#OK} will be shown to the user if a message is set.
@@ -33,19 +34,46 @@ public class ValidationResult {
         ERROR
     }
 
-    public static ValidationResult OK = new ValidationResult().setStatus(Result.OK);
+    public static final ValidationResult OK = new ValidationResult(Result.OK);
 
     @JsonIgnore
-    public Result status = Result.OK;
+    protected Result status = Result.OK;
+
+    @JsonIgnore
+    protected String message;
 
     public int number;
 
+    /**
+     * Construct an immutable {@link ValidationResult} with a {@link #OK} status and a <code>null</code> message
+     */
     public ValidationResult() {
     }
 
     /**
-     * Use the TalendRuntimeException to construct a Validation message. By default the status is set to Error but this
-     * may be changed by the user after creation.
+     * construct an immutable {@link ValidationResult} with a status and a <code>null</code> message
+     * 
+     * @param status {@link Result}
+     */
+    public ValidationResult(Result status) {
+        this.status = status;
+    }
+
+    /**
+     * Construct an immutable {@link ValidationResult} with a {@link Result} status and a message
+     * 
+     * @param status {@link Result}
+     * @param message validation message
+     */
+    public ValidationResult(Result status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+    /**
+     * Use the TalendRuntimeException to construct a Validation message. By default the status is set to Error, and the message to
+     * Exception message.
+     * if you need to change the status for this, please use {@link ValidationResultMutable}
      * 
      * @param tre exception used to construct the message
      */
@@ -58,11 +86,6 @@ public class ValidationResult {
         return status;
     }
 
-    public ValidationResult setStatus(Result status) {
-        this.status = status;
-        return this;
-    }
-
     /**
      * @return the message previously set or null if none. If a message is returned the client will display it.
      */
@@ -70,18 +93,6 @@ public class ValidationResult {
     public String getMessage() {
         return message;
     }
-
-    /**
-     * Set the text message related to this validation result. This method must be called with a non null value when the
-     * status is {@link Result#ERROR}.
-     */
-    public ValidationResult setMessage(String message) {
-        this.message = message;
-        return this;
-    }
-
-    @JsonIgnore
-    public String message;
 
     @Override
     public String toString() {

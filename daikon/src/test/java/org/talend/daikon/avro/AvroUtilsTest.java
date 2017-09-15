@@ -12,8 +12,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -73,7 +75,7 @@ public class AvroUtilsTest {
 
         Schema s = SchemaBuilder.record("test").fields().name("field1").type().booleanType().noDefault().name("field2").type()
                 .stringType().noDefault().endRecord();
-        Map map = AvroUtils.makeFieldMap(s);
+        Map<String, Field> map = AvroUtils.makeFieldMap(s);
         assertEquals("field1", ((Schema.Field) map.get("field1")).name());
         assertEquals("field2", ((Schema.Field) map.get("field2")).name());
     }
@@ -86,6 +88,31 @@ public class AvroUtilsTest {
         assertThat(s.getProp("where"), is("here"));
         s = AvroUtils.setProperty(s, "where", "there");
         assertThat(s.getProp("where"), is("there"));
+    }
+
+    @Test
+    public void testAppendFields() {
+        Schema s = SchemaBuilder.record("test").fields().name("field1").type().booleanType().noDefault().name("field2").type()
+                .stringType().noDefault().endRecord();
+        s = AvroUtils.appendFields(s, new Field("a1", SchemaBuilder.builder().stringType(), null, (Object) null),
+                new Field("a2", SchemaBuilder.builder().intType(), null, (Object) null));
+        assertEquals(4, s.getFields().size());
+        assertEquals("a1", s.getFields().get(2).name());
+        assertEquals("a2", s.getFields().get(3).name());
+    }
+
+    @Test
+    public void testRemoveFields() {
+        Schema s = SchemaBuilder.record("test").fields().name("field1").type().booleanType().noDefault().name("field2").type()
+                .stringType().noDefault().name("a1").type().stringType().noDefault().name("a2").type().intType().noDefault()
+                .endRecord();
+        Set<String> columns = new HashSet<>();
+        columns.add("field1");
+        columns.add("a1");
+        s = AvroUtils.removeFields(s, columns);
+        assertEquals(2, s.getFields().size());
+        assertEquals("field2", s.getFields().get(0).name());
+        assertEquals("a2", s.getFields().get(1).name());
     }
 
     @Test
@@ -272,5 +299,45 @@ public class AvroUtilsTest {
         assertFalse(AvroUtils.isString(Schema.Type.RECORD));
         assertTrue(AvroUtils.isString(Schema.Type.STRING));
         assertFalse(AvroUtils.isString(Schema.Type.UNION));
+    }
+
+    @Test
+    public void testLogicalDate() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"int\",\"logicalType\":\"date\"}");
+
+        Schema actual = AvroUtils._logicalDate();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLogicalTimeMillis() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"int\",\"logicalType\":\"time-millis\"}");
+
+        Schema actual = AvroUtils._logicalTime();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLogicalTimeMicros() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"long\",\"logicalType\":\"time-micros\"}");
+
+        Schema actual = AvroUtils._logicalTimeMicros();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLogicalTimestampMillis() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}");
+
+        Schema actual = AvroUtils._logicalTimestamp();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testLogicalTimestampMicros() {
+        Schema expected = new Schema.Parser().parse("{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}");
+
+        Schema actual = AvroUtils._logicalTimestampMicros();
+        assertEquals(expected, actual);
     }
 }

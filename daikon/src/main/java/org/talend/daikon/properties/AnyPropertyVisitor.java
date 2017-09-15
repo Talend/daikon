@@ -15,7 +15,7 @@ package org.talend.daikon.properties;
 import org.talend.daikon.properties.property.Property;
 
 /**
- * Visit all members of a {@link Properties} object.
+ * Visit all members of a {@link Properties} object except {@link PresentationItem}
  */
 public interface AnyPropertyVisitor {
 

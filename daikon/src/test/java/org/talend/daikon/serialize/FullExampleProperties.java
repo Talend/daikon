@@ -1,5 +1,17 @@
 package org.talend.daikon.serialize;
 
+import static org.talend.daikon.properties.presentation.Widget.BUTTON_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.DATALIST_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.FILE_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.HIDDEN_TEXT_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.NAME_SELECTION_AREA_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.NAME_SELECTION_REFERENCE_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.RADIO_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.SCHEMA_EDITOR_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.SCHEMA_REFERENCE_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.SELECT_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.TABLE_WIDGET_TYPE;
+import static org.talend.daikon.properties.presentation.Widget.TEXT_AREA_WIDGET_TYPE;
 import static org.talend.daikon.properties.presentation.Widget.widget;
 import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
 import static org.talend.daikon.properties.property.PropertyFactory.newDate;
@@ -23,7 +35,6 @@ import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
-import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.EnumListProperty;
 import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
@@ -54,7 +65,7 @@ public class FullExampleProperties extends PropertiesImpl {
     public final Property<String> multipleSelectionProp = newProperty("multipleSelectionProp");
 
     /** checking {@link WidgetType#BUTTON} */
-    public final PresentationItem showNewForm = new PresentationItem("showNewForm", "Show new form");
+    public final PresentationItem showNewForm = new PresentationItem("showNewForm");
 
     /** checking {@link WidgetType#TABLE} */
     public final TableProperties tableProp = new TableProperties("tableProp");
@@ -80,14 +91,22 @@ public class FullExampleProperties extends PropertiesImpl {
     /** checking {@link WidgetType#TEXT_AREA} */
     public final Property<String> textareaProp = newString("textareaProp");
 
+    /** checking {@link WidgetType#RADIO} */
+    public final Property<String> radioProp = newString("radioProp");
+
+    /** checking {@link WidgetType#SELECT} */
+    public final Property<String> selectProp = newString("selectProp");
+
+    /** checking {@link WidgetType#DATALIST} */
+    public final Property<String> datalistProp = newString("datalistProp");
+
     /**
      * uses 2 widgets, {@link WidgetType#SCHEMA_EDITOR} in the Main form and {@link WidgetType#SCHEMA_REFERENCE} on the
      * REFERENCE form
      */
     public final Property<Schema> schema = newSchema("schema"); //$NON-NLS-1$
 
-    public final PresentationItem validateAllCallbackCalled = new PresentationItem("validateAllCallbackCalled",
-            "Validate All Callbacks called");
+    public final PresentationItem validateAllCallbackCalled = new PresentationItem("validateAllCallbackCalled");
 
     private List<String> methodCalled = new ArrayList<>();
 
@@ -104,10 +123,28 @@ public class FullExampleProperties extends PropertiesImpl {
         super.setupProperties();
         // setup multipleSelectionProp
         ArrayList<NamedThing> multipleSelectableList = new ArrayList<NamedThing>();
-        multipleSelectableList.add(new SimpleNamedThing("foo"));
-        multipleSelectableList.add(new SimpleNamedThing("bar"));
-        multipleSelectableList.add(new SimpleNamedThing("foobar"));
+        multipleSelectableList.add(new SimpleNamedThing("foo", "fooo"));
+        multipleSelectableList.add(new SimpleNamedThing("bar", "barr"));
+        multipleSelectableList.add(new SimpleNamedThing("foobar", "foobarr"));
         multipleSelectionProp.setPossibleValues(multipleSelectableList);
+
+        List<String> values4Radio = new ArrayList<>();
+        values4Radio.add("option1");
+        values4Radio.add("option2");
+        values4Radio.add("option3");
+        radioProp.setPossibleValues(values4Radio);
+
+        List<String> values4Select = new ArrayList<>();
+        values4Select.add("table1");
+        values4Select.add("table2");
+        values4Select.add("table3");
+        selectProp.setPossibleValues(values4Select);
+
+        List<String> values4Datalist = new ArrayList<>();
+        values4Datalist.add("data1");
+        values4Datalist.add("data2");
+        values4Datalist.add("data3");
+        datalistProp.setPossibleValues(values4Datalist);
     }
 
     @Override
@@ -115,22 +152,27 @@ public class FullExampleProperties extends PropertiesImpl {
         super.setupLayout();
         Form mainForm = new Form(this, Form.MAIN);
         mainForm.addRow(stringProp);
-        mainForm.addRow(widget(schema).setWidgetType(Widget.SCHEMA_EDITOR_WIDGET_TYPE));
-        mainForm.addRow(widget(schema).setWidgetType(Widget.SCHEMA_REFERENCE_WIDGET_TYPE));
-        mainForm.addRow(widget(multipleSelectionProp).setWidgetType(Widget.NAME_SELECTION_AREA_WIDGET_TYPE));
-        mainForm.addRow(widget(multipleSelectionProp).setWidgetType(Widget.NAME_SELECTION_REFERENCE_WIDGET_TYPE));
-        mainForm.addRow(widget(showNewForm).setWidgetType(Widget.BUTTON_WIDGET_TYPE));
+        mainForm.addRow(widget(schema).setWidgetType(SCHEMA_EDITOR_WIDGET_TYPE));
+        mainForm.addRow(widget(schema).setWidgetType(SCHEMA_REFERENCE_WIDGET_TYPE));
+        mainForm.addRow(widget(multipleSelectionProp).setWidgetType(NAME_SELECTION_AREA_WIDGET_TYPE));
+        mainForm.addRow(widget(multipleSelectionProp).setWidgetType(NAME_SELECTION_REFERENCE_WIDGET_TYPE));
+        mainForm.addRow(widget(showNewForm).setWidgetType(BUTTON_WIDGET_TYPE));
         Form popUpForm = new Form(this, POPUP_FORM_NAME);
         showNewForm.setFormtoShow(popUpForm);
         mainForm.addColumn(commonProp);
-        mainForm.addColumn(widget(hiddenTextProp).setWidgetType(Widget.HIDDEN_TEXT_WIDGET_TYPE));
-        mainForm.addColumn(widget(filepathProp).setWidgetType(Widget.FILE_WIDGET_TYPE));
+        mainForm.addColumn(widget(hiddenTextProp).setWidgetType(HIDDEN_TEXT_WIDGET_TYPE));
+        mainForm.addColumn(widget(filepathProp).setWidgetType(FILE_WIDGET_TYPE));
         mainForm.addRow(integerProp);
         mainForm.addRow(longProp);
         mainForm.addRow(dateProp);
-        mainForm.addRow(widget(tableProp).setWidgetType(Widget.TABLE_WIDGET_TYPE));
+        mainForm.addRow(widget(tableProp).setWidgetType(TABLE_WIDGET_TYPE));
+        mainForm.addRow(widget(radioProp).setWidgetType(RADIO_WIDGET_TYPE));
+        mainForm.addRow(widget(selectProp).setWidgetType(SELECT_WIDGET_TYPE));
+        mainForm.addRow(widget(datalistProp).setWidgetType(DATALIST_WIDGET_TYPE));
+
         Form advancedForm = new Form(this, Form.ADVANCED);
-        advancedForm.addRow(widget(textareaProp).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
+        advancedForm.addRow(widget(textareaProp).setWidgetType(TEXT_AREA_WIDGET_TYPE));
+
     }
 
     @Override
@@ -258,7 +300,7 @@ public class FullExampleProperties extends PropertiesImpl {
         if (methodCalled.size() == 25) {
             return ValidationResult.OK;
         } else {
-            return new ValidationResult().setStatus(Result.ERROR).setMessage("some method where not called :" + methodCalled);
+            return new ValidationResult(Result.ERROR, "some method where not called :" + methodCalled);
         }
     }
 

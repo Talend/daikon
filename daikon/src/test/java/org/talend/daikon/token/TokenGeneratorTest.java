@@ -3,6 +3,8 @@ package org.talend.daikon.token;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +33,10 @@ public class TokenGeneratorTest {
         assertTrue(decryptedToken.contains(hostNamePart));
         // Contains OS information
         assertTrue(decryptedToken.contains(osPart));
-        // Remaining has length of one or more MAC addresses.
-        assertTrue((decryptedToken.length() - hostNamePart.length() - osPart.length()) % 12 == 0);
+        // Remaining is constructed from of one or more MAC addresses, so it should contain only hexadecimal characters
+        final String patternString = "^[A-Fa-f0-9]*$";
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(decryptedToken.substring(0, decryptedToken.indexOf("-")));
+        assertTrue(matcher.matches());
     }
 }

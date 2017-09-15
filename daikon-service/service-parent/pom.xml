@@ -5,11 +5,10 @@
 	<parent>
 		<groupId>org.talend.daikon</groupId>
 		<artifactId>daikon-service</artifactId>
-		<version>0.16.0-SNAPSHOT</version>
+		<version>0.19.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>service-parent</artifactId>
-	<version>0.16.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>service-parent</name>
 	<properties>
@@ -17,14 +16,12 @@
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<enunciate-version>2.5.0</enunciate-version>
-		<talend_snapshots>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
+		<talend_snapshots>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.talend.daikon</groupId>
 			<artifactId>service-common</artifactId>
-			<version>0.16.0-SNAPSHOT</version>
 		</dependency>
 		<!-- Common service dependencies -->
 		<dependency>
@@ -43,11 +40,6 @@
 			<artifactId>enunciate-core-annotations</artifactId>
 			<version>${enunciate-version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.talend.daikon</groupId>
-			<artifactId>service-docs</artifactId>
-			<version>0.16.0-SNAPSHOT</version>
-		</dependency>
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -58,22 +50,46 @@
     <repositories>
         <repository>
             <id>releases</id>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>talend_nexus</id>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
  	<!-- for the enunciate plugin that depends on our artifact. -->
     <pluginRepositories>
         <pluginRepository>
             <id>releases</id>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </pluginRepository>
         <pluginRepository>
             <id>talend_nexus</id>
-            <url>http://newbuild.talend.com:8081/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </pluginRepository>
     </pluginRepositories>        
 	<build>
@@ -98,7 +114,7 @@
 					<dependency>
 						<groupId>org.talend.daikon</groupId>
 						<artifactId>service-docs</artifactId>
-						<version>0.16.0-SNAPSHOT</version>
+						<version>0.19.0-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 			</plugin>

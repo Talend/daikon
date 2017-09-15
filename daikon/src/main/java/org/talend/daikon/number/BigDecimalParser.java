@@ -38,6 +38,12 @@ public class BigDecimalParser {
     public static final DecimalFormat US_SCIENTIFIC_DECIMAL_PATTERN = new DecimalFormat("0.###E0",
             DecimalFormatSymbols.getInstance(Locale.US));
 
+    public static final DecimalFormat EU_PERCENTAGE_DECIMAL_PATTERN = new DecimalFormat("#.##%",
+            DecimalFormatSymbols.getInstance(Locale.FRENCH));
+
+    public static final DecimalFormat US_PERCENTAGE_DECIMAL_PATTERN = new DecimalFormat("#.##%",
+            DecimalFormatSymbols.getInstance(Locale.US));
+
     private BigDecimalParser() {
     }
 
@@ -90,8 +96,15 @@ public class BigDecimalParser {
             from = "-" + from.substring(1, from.length() - 1);
         }
 
+        // Detect a percentage
+        boolean isPercentage = from.endsWith("%");
+        if (isPercentage) {
+            from = from.substring(0, from.length() - 1);
+        }
+
         try {
-            return new BigDecimal(from);
+            BigDecimal bigDecimal = new BigDecimal(from);
+            return isPercentage ? bigDecimal.movePointLeft(2) : bigDecimal;
         } catch (NumberFormatException e) {
             throw new NumberFormatException("'" + from + "' can not parsed as a number");
         }
@@ -142,7 +155,7 @@ public class BigDecimalParser {
         /*
          * This part checks cases where a single separator is present, but many times. In this case, it's probably a
          * grouping separator.
-         * 
+         *
          * Like in 2.452.254 or 1 454 888
          */
         matcher = FEW_GROUP_SEP_PATTERN.matcher(from);

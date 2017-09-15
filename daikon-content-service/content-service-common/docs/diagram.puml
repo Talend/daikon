@@ -1,0 +1,52 @@
+@startuml
+
+package s3 {
+  class S3Loader {
+  }
+
+  class S3Resource {
+  }
+}
+
+package local {
+  class LocalLoader {
+  }
+
+  class LocalResource {
+  }
+}
+
+
+interface ContentService {
+  + OutputStream get(String)
+  + InputStream put(String)
+  + void delete(String)
+  + void clear()
+}
+
+interface ContentCacheService {
+  + InputStream put(TimeToLive ttl)
+  + void evict(String)
+}
+
+interface WritableResource <<Spring>> {
+}
+
+interface DeletableResource {
+  + void delete()
+}
+
+interface DeletableResourceLoader {
+  + DeletableResource getResource(String location)
+}
+
+
+DeletableResourceLoader -> DeletableResource
+DeletableResource --|> WritableResource
+ContentService -> DeletableResourceLoader
+ContentService <|-- ContentCacheService
+DeletableResource <|-- S3Resource
+DeletableResource <|-- LocalResource
+DeletableResourceLoader <|-- S3Loader
+DeletableResourceLoader <|-- LocalLoader
+@enduml

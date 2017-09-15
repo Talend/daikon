@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -135,6 +137,17 @@ public class JsonSchemaUtilTest {
         return new String(java.nio.file.Files.readAllBytes(resPath), "UTF8").trim();
     }
 
+    public static void writeJson(String content, String path) throws URISyntaxException, IOException {
+        FileWriter fileWriter = null;
+        File file = new File(path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        fileWriter = new FileWriter(file);
+        fileWriter.write(content);
+        fileWriter.close();
+    }
+
     @Test
     public void testDeserializeEmptyProperties() throws ParseException, JsonProcessingException, IOException {
         TestEmptyProperties properties = TestEmptyProperties.createASetupOptionalProperties();
@@ -157,4 +170,5 @@ public class JsonSchemaUtilTest {
                 TestEmptyProperties.createASetupOptionalProperties());
         assertEquals(properties, propertiesNoData);
     }
+
 }

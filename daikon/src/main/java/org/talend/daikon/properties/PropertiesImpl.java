@@ -24,19 +24,21 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
-import org.talend.daikon.i18n.TranslatableImpl;
+import org.talend.daikon.i18n.tag.TranslatableTaggedImpl;
 import org.talend.daikon.properties.error.PropertiesErrorCode;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.Property.Flags;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.properties.property.PropertyVisitor;
-import org.talend.daikon.serialize.PostDeserializeHandler;
 import org.talend.daikon.serialize.PostDeserializeSetup;
+import org.talend.daikon.serialize.migration.PostDeserializeHandler;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
@@ -45,7 +47,10 @@ import com.cedarsoftware.util.io.JsonWriter;
 /**
  * Implementation of {@link Properties} which must be subclassed to define your properties.
  */
-public class PropertiesImpl extends TranslatableImpl implements Properties, AnyProperty, PostDeserializeHandler, ToStringIndent {
+public class PropertiesImpl extends TranslatableTaggedImpl
+        implements Properties, AnyProperty, PostDeserializeHandler, ToStringIndent {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PropertiesImpl.class);
 
     private static final long serialVersionUID = -7970336622844281900L;
 
@@ -76,7 +81,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                     if (property.isFlag(Flags.ENCRYPT)) {
                         property.encryptStoredValue(!ENCRYPT);
                     } // else not an encrypted property
-                } // else not a Property so ignors it.
+                } // else not a Property so ignore it.
             }
         }
 
@@ -84,16 +89,15 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
             setup.setup(this);
         }
 
-        if (persistent) {
-            initLayout();
-        }
-
+        // setup i18n for direct property and presentation item
         List<NamedThing> properties = getProperties();
         for (NamedThing prop : properties) {
-            if (prop instanceof Property) {
+            if (!(prop instanceof Properties)) {
                 prop.setI18nMessageFormatter(getI18nMessageFormatter());
             }
         }
+
+        propsAlreadyInitialized = true;
         return false;
     }
 
@@ -134,7 +138,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                     se = (NamedThing) f.get(this);
                     if (se != null) {
                         initializeField(f, se);
-                    } else {// field not initilaized but is should be (except for returns field)
+                    } else {// field not initialized but is should be (except for returns field)
                         if (!acceptUninitializedField(f)) {
                             throw new TalendRuntimeException(PropertiesErrorCode.PROPERTIES_HAS_UNITIALIZED_PROPS,
                                     ExceptionContext.withBuilder().put("name", this.getClass().getCanonicalName())
@@ -146,7 +150,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                 }
             }
             propsAlreadyInitialized = true;
-        } // else already intialized
+        } // else already initialized
     }
 
     protected List<Field> initializeFields() {
@@ -159,7 +163,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                     NamedThing se = (NamedThing) f.get(this);
                     if (se != null) {
                         initializeField(f, se);
-                    } else {// not yet initialized to record it
+                    } else {// not yet initialized so record it
                         uninitializedProperties.add(f);
                     }
                 } // else not a field that ought to be initialized
@@ -184,7 +188,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     /**
      * This shall set the value holder for all the properties, set the i18n formatter of this current class to the
-     * properties so that the i18n values are computed agains this class message properties. This calls the
+     * properties so that the i18n values are computed against this class message properties. This calls the
      * initProperties for all field of type {@link Property}
      *
      * @param f field to be initialized
@@ -196,12 +200,12 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
             throw new IllegalArgumentException("The java field [" + this.getClass().getCanonicalName() + "." + f.getName()
                     + "] should be named identically to the instance name [" + value.getName() + "]");
         }
-        if (value instanceof Property) {
+        if (value instanceof PropertiesImpl) {// a nested Properties so recurse
             // Do not set the i18N for nested Properties, they already handle their i18n
-            value.setI18nMessageFormatter(getI18nMessageFormatter());
-        } else if (value instanceof PropertiesImpl) {// a property so setit up
             ((PropertiesImpl) value).initProperties();
-        } // else nothing to initialize.
+        } else {// a simple Property or PresentationItem so just set i18n
+            value.setI18nMessageFormatter(getI18nMessageFormatter());
+        }
     }
 
     private void initLayout() {
@@ -298,6 +302,9 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     @Override
     public Form getPreferredForm(String formName) {
+        if (formName == null) {
+            return null;
+        }
         Form form = getForm(formName);
         if (form != null) {
             return form;
@@ -330,7 +337,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                     if (fValue != null) {
                         NamedThing se = (NamedThing) fValue;
                         properties.add(se);
-                    } // else not initalized but this is already handled in the initProperties that must be called
+                    } // else not initialized but this is already handled in the initProperties that must be called
                       // before the getProperties
                 }
             } catch (IllegalAccessException e) {
@@ -356,7 +363,8 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
 
     @Override
     public void accept(AnyPropertyVisitor visitor, Properties parent) {
-        // uses a set that uses reference-equality instead of instance-equality to avoid stackoveflow with hashcode() using a
+        // uses a set that uses reference-equality instead of instance-equality to avoid stackoveflow with hashcode()
+        // using a
         // visitor.
         Set<Properties> visited = Collections.newSetFromMap(new IdentityHashMap<Properties, Boolean>());
         acceptInternal(visitor, parent, visited);
@@ -367,15 +375,57 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
             return;
         }
         visited.add(this);
+        acceptForAllProperties(visitor, visited);
+        visitor.visit(this, parent);
+    }
+
+    /**
+     * Traverse all visitable properties and accept <code>AnyPropertyVisitor</code>.
+     *
+     * <p>
+     * Can be overriden by subclasses to visit extra properties that are not exposed but should be visited.
+     *
+     * <p>
+     * Example:<blockquote>
+     * 
+     * <pre>
+     *     {@literal @Override}
+     *     protected void acceptForAllProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
+     *         super.acceptForAllProperties(visitor, visited);
+     *
+     *         if (someSpecialProperty != null) {
+     *             acceptForProperty(visitor, visited, someSpecialProperty);
+     *         }
+     *     }
+     * </pre>
+     * 
+     * </blockquote>
+     *
+     * @see #acceptForProperty(AnyPropertyVisitor, Set, NamedThing)
+     *
+     * @param visitor visitor to be accepted
+     * @param visited collection to register visited properties
+     */
+    protected void acceptForAllProperties(AnyPropertyVisitor visitor, Set<Properties> visited) {
         List<NamedThing> properties = getProperties();
         for (NamedThing nt : properties) {
-            if (nt instanceof PropertiesImpl) {
-                ((PropertiesImpl) nt).acceptInternal(visitor, this, visited);
-            } else if (nt instanceof AnyProperty) {
-                ((AnyProperty) nt).accept(visitor, this);
-            }
+            acceptForProperty(visitor, visited, nt);
         }
-        visitor.visit(this, parent);
+    }
+
+    /**
+     * Accept visitor for a single property.
+     *
+     * @param visitor visitor to be accepted
+     * @param visited collection to register visited properties
+     * @param nt object to be visited
+     */
+    protected final void acceptForProperty(AnyPropertyVisitor visitor, Set<Properties> visited, NamedThing nt) {
+        if (nt instanceof PropertiesImpl) {
+            ((PropertiesImpl) nt).acceptInternal(visitor, this, visited);
+        } else if (nt instanceof AnyProperty) {
+            ((AnyProperty) nt).accept(visitor, this);
+        }
     }
 
     /**
@@ -389,8 +439,8 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
     }
 
     /**
-     * @return a Namething from a property path wich allow to recurse into nested properties using the . as a separator
-     *         for Properties names and the final Property. Or null if none found
+     * @return a NamedThing from a property path which allow to recurse into nested properties using the . as a
+     * separator for Properties names and the final Property. Or null if none found
      */
     @Override
     public NamedThing getProperty(String propPath) {
@@ -513,17 +563,16 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
             if (thisProp == null) {
                 // the current Property or Properties is null so we need to create a new instance
                 try {
+                    Field f = getClass().getField(otherProp.getName());
+                    // the field exists in this class so create an instance and set it
                     thisProp = createPropertyInstance(otherProp);
                     // assign the newly created instance to the field.
-                    try {
-                        Field f = getClass().getField(otherProp.getName());
-                        f.set(this, thisProp);
-                    } catch (NoSuchFieldException e) {
-                        // A field exists in the other that's not in ours, just ignore it
-                        continue;
-                    }
+                    f.set(this, thisProp);
+                } catch (NoSuchFieldException e) {
+                    // A field exists in the other that's not in ours, just ignore it
+                    continue;
                 } catch (ReflectiveOperationException | SecurityException e) {
-                    TalendRuntimeException.unexpectedException(e);
+                    throw TalendRuntimeException.createUnexpectedException(e);
                 }
             }
 
@@ -543,8 +592,7 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                     ((Property) thisProp).setValueEvaluator(((Property) otherProp).getValueEvaluator());
                 }
             } else {
-                TalendRuntimeException
-                        .unexpectedException("The property " + otherProp.getClass().getName() + " is not of the expected type.");
+                LOG.debug("Do not copy [" + otherProp + "]");
             }
 
         }
@@ -576,12 +624,12 @@ public class PropertiesImpl extends TranslatableImpl implements Properties, AnyP
                 }
             }
             if (thisProp == null) {
-                TalendRuntimeException
-                        .unexpectedException("Failed to find a proper constructor in Properties : " + otherClass.getName());
+                throw TalendRuntimeException
+                        .createUnexpectedException("Failed to find a proper constructor in Properties : " + otherClass.getName());
             }
         } else {
-            TalendRuntimeException
-                    .unexpectedException("Unexpected property class: " + otherProp.getClass() + " prop: " + otherProp);
+            throw TalendRuntimeException
+                    .createUnexpectedException("Unexpected property class: " + otherProp.getClass() + " prop: " + otherProp);
         }
         return thisProp;
     }

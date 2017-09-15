@@ -1,6 +1,11 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.*;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.dateFormatter;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.findClass;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getListInnerClassName;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperties;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.getSubProperty;
+import static org.talend.daikon.serialize.jsonschema.JsonBaseTool.isListClass;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +17,7 @@ import java.util.List;
 import org.apache.avro.Schema;
 import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesList;
 import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.property.Property;
 
@@ -26,7 +32,8 @@ public class JsonPropertiesResolver {
 
         List<Property> propertyList = getSubProperty(cProperties);
         for (Property property : propertyList) {
-            Object newProperty = getTPropertyValue(property, jsonData.get(property.getName()));
+            Object newProperty = getTPropertyValue(cProperties.getClass().getClassLoader(), property,
+                    jsonData.get(property.getName()));
             // when the Property is empty, keep the default one
             if (newProperty != null) {
                 property.setValue(newProperty);
@@ -36,18 +43,33 @@ public class JsonPropertiesResolver {
         for (Properties properties : propertiesList) {
             if (jsonData.get(properties.getName()) != null
                     && !ReferenceProperties.class.isAssignableFrom(properties.getClass())) {
-                resolveJson((ObjectNode) jsonData.get(properties.getName()), cProperties.getProperties(properties.getName()));
+                if (properties instanceof PropertiesList<?>) {
+                    resolvePropertiesList((ArrayNode) jsonData.get(properties.getName()), (PropertiesList<?>) properties);
+                } else {
+                    resolveJson((ObjectNode) jsonData.get(properties.getName()), cProperties.getProperties(properties.getName()));
+                }
             }
         }
         return cProperties;
     }
 
-    private Object getTPropertyValue(Property property, JsonNode dataNode) {
+    private <P extends Properties> void resolvePropertiesList(ArrayNode objectNode, PropertiesList<P> properties)
+            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+            InstantiationException, IOException {
+        List<P> subProperties = new ArrayList<>();
+        for (int i = 0; i < objectNode.size(); i++) {
+            P nestedProps = properties.getNestedPropertiesFactory().createAndInit(PropertiesList.ROW_NAME_PREFIX + i);
+            subProperties.add(resolveJson((ObjectNode) objectNode.get(i), nestedProps));
+        }
+        properties.setRows(subProperties);
+    }
+
+    private Object getTPropertyValue(ClassLoader classLoader, Property property, JsonNode dataNode) {
         String javaType = property.getType();
         if (dataNode == null || dataNode.isNull()) {
             return null;
         } else if (isListClass(javaType)) {
-            Class type = findClass(getListInnerClassName(javaType));
+            Class type = findClass(classLoader, getListInnerClassName(javaType));
             ArrayNode arrayNode = ((ArrayNode) dataNode);
             List values = new ArrayList();
             for (int i = 0; i < arrayNode.size(); i++) {
@@ -55,7 +77,7 @@ public class JsonPropertiesResolver {
             }
             return values;
         } else {
-            return getValue(dataNode, findClass(javaType));
+            return getValue(dataNode, findClass(classLoader, javaType));
         }
     }
 
