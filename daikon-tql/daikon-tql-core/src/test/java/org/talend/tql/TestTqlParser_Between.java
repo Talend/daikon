@@ -32,13 +32,15 @@ public class TestTqlParser_Between extends TestTqlParser_Abstract {
 
     @Test
     public void testParseFieldBetweenWrongValueString() throws Exception {
-        expectedException.expect(Exception.class);
+        expectedException.expect(IllegalArgumentException.class);
         doTest("field1 between [a, b]");
+        Assert.fail();
     }
 
     @Test
     public void testParseFieldBetweenWrongValueBoolean() throws Exception {
-        expectedException.expect(Exception.class);
+        expectedException.expect(IllegalArgumentException.class);
         doTest("field1 between [true, false]");
+        Assert.fail();
     }
 }

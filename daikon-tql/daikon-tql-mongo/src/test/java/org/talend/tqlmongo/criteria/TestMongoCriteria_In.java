@@ -6,6 +6,7 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.talend.tql.excp.TqlException;
 
 /**
  * Created by gmzoughi on 06/07/16.
@@ -77,8 +78,9 @@ public class TestMongoCriteria_In extends TestMongoCriteria_Abstract {
 
     @Test
     public void testParseFieldInString() throws Exception {
-        expectedException.expect(Exception.class);
-        Criteria criteria = doTest("field1 in [a, b]");
+        expectedException.expect(TqlException.class);
+        doTest("field1 in [a, b]");
+        Assert.fail();
     }
 
     @Test

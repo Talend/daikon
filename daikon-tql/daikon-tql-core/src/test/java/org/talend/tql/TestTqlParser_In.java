@@ -2,6 +2,7 @@ package org.talend.tql;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.talend.tql.excp.TqlException;
 import org.talend.tql.model.TqlElement;
 
 public class TestTqlParser_In extends TestTqlParser_Abstract {
@@ -104,7 +105,8 @@ public class TestTqlParser_In extends TestTqlParser_Abstract {
 
     @Test
     public void testParseFieldBetweenWrongValueString() throws Exception {
-        expectedException.expect(Exception.class);
+        expectedException.expect(TqlException.class);
         doTest("field1 in [a, b]");
+        Assert.fail();
     }
 }

@@ -67,5 +67,6 @@ public class TestMongoCriteria_Integer extends TestMongoCriteria_Abstract {
     public void testIntegerOutOfRange() throws Exception {
         expectedException.expect(TqlMongoException.class);
         doTest("field1 = 99999999999999999999999999999999999999999999999999");
+        Assert.fail();
     }
 }

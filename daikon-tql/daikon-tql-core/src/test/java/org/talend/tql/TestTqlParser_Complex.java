@@ -2,6 +2,7 @@ package org.talend.tql;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.talend.tql.excp.TqlException;
 import org.talend.tql.model.TqlElement;
 
 public class TestTqlParser_Complex extends TestTqlParser_Abstract {
@@ -68,8 +69,9 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
 
     @Test
     public void testParseFieldCompliesPatternWrongPattern() throws Exception {
-        expectedException.expect(Exception.class);
+        expectedException.expect(TqlException.class);
         doTest("field1 complies 123");
+        Assert.fail();
     }
 
     @Test
@@ -82,8 +84,9 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
 
     @Test
     public void testParseFieldMatchesRegexWrongRegex() throws Exception {
-        expectedException.expect(Exception.class);
+        expectedException.expect(TqlException.class);
         doTest("field1 ~ 123");
+        Assert.fail();
     }
 
     @Test
@@ -96,8 +99,9 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
 
     @Test
     public void testParseFieldContainsValueWrongValue() throws Exception {
-        expectedException.expect(Exception.class);
+        expectedException.expect(TqlException.class);
         doTest("field1 contains 123");
+        Assert.fail();
     }
 
     @Test

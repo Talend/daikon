@@ -13,7 +13,7 @@ import org.talend.tql.model.TqlElement;
 public class TestTqlApi_Between extends TestTqlParser_Abstract {
 
     @Test
-    public void testApiFieldBetween_quoted() throws Exception {
+    public void testApiFieldBetweenQuoted() throws Exception {
 
         // TQL native query
         TqlElement expected = doTest("field1 between ['value1', 'value2']");
@@ -26,7 +26,7 @@ public class TestTqlApi_Between extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testApiFieldBetween_INT() throws Exception {
+    public void testApiFieldBetweenInt() throws Exception {
 
         // TQL native query
         TqlElement expected = doTest("field1 between [123, 456]");
@@ -39,7 +39,7 @@ public class TestTqlApi_Between extends TestTqlParser_Abstract {
     }
 
     @Test
-    public void testApiFieldBetween_DECIMAL() throws Exception {
+    public void testApiFieldBetweenDecimal() throws Exception {
 
         // TQL native query
         TqlElement expected = doTest("field1 between [123.45, 456.78]");

@@ -40,12 +40,14 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     public void testParseFieldIsValid() throws Exception {
         expectedException.expect(TqlMongoException.class);
         doTest("field1 is valid");
+        Assert.fail();
     }
 
     @Test
     public void testParseFieldIsInvalid() throws Exception {
         expectedException.expect(TqlMongoException.class);
         doTest("field1 is invalid");
+        Assert.fail();
     }
 
     @Test
