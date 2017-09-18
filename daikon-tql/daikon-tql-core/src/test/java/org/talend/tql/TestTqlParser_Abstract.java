@@ -7,6 +7,10 @@ import org.junit.rules.ExpectedException;
 import org.talend.tql.model.TqlElement;
 import org.talend.tql.parser.TqlExpressionVisitor;
 
+/**
+ * Test general method that parses a string query to the target {@link TqlElement} tree,
+ * according to the defined lexer and parser.
+ */
 public abstract class TestTqlParser_Abstract {
 
     @Rule
