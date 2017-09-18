@@ -240,7 +240,7 @@ public class ASTVisitor implements IASTVisitor<Object> {
         return fieldName;
     }
 
-    private String patternToMongoRegex(String pattern) {
+    protected String patternToMongoRegex(String pattern) {
         StringBuilder sb = new StringBuilder();
         sb.append("^");
         for (int i = 0; i < pattern.length(); i++) {
