@@ -231,6 +231,10 @@ public class ASTVisitor implements IASTVisitor<Object> {
         return c;
     }
 
+    public boolean isNegation() {
+        return isNegation;
+    }
+
     private String getFieldName(String fieldName) {
         return fieldName;
     }
