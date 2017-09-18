@@ -17,40 +17,29 @@ public class TestTqlApi_Not extends TestTqlParser_Abstract {
 
     @Test
     public void testApiNotExpression() throws Exception {
-
         // TQL native query
         TqlElement expected = doTest("not (field1='value1')");
-
         // TQL Built query
         Expression actual = not(eq("field1", "value1"));
-
         Assert.assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     public void testApiNotExpression2() throws Exception {
-
         // TQL native query
         TqlElement expected = doTest("not(not (field1='value1'))");
-
         // TQL Built query
         Expression actual = not(not(eq("field1", "value1")));
-
         Assert.assertEquals(expected.toString(), actual.toString());
-
     }
 
     @Test
     public void testApiNotExpression3() throws Exception {
-
         // TQL native query
         TqlElement expected = doTest("not ((field1='value1' and field1 complies 'aaa9') or field1>999)");
-
         // TQL Built query
         Expression actual = not(or(and(eq("field1", "value1"), complies("field1", "aaa9")), gt("field1", 999)));
-
         Assert.assertEquals(expected.toString(), actual.toString());
-
     }
 
     /*
