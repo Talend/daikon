@@ -2,13 +2,10 @@ package org.talend.tql.visitor;
 
 import org.talend.tql.model.*;
 
-/*
+/**
  * Visitor contract to be used whenever the TQL tree should be parsed.
  */
 
-/**
- * Created by gmzoughi on 30/06/16.
- */
 public interface IASTVisitor<T> {
 
     T visit(TqlElement elt);

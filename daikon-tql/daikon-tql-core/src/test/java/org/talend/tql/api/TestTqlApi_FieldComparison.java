@@ -140,7 +140,7 @@ public class TestTqlApi_FieldComparison extends TestTqlParser_Abstract {
         // TQL native query
         TqlElement expected = doTest("field1 <= 2");
         // TQL api query
-        TqlElement tqlElement = TqlBuilder.lte("field1", 2);
+        TqlElement tqlElement = lte("field1", 2);
         Assert.assertEquals(expected.toString(), tqlElement.toString());
     }
 
@@ -176,7 +176,7 @@ public class TestTqlApi_FieldComparison extends TestTqlParser_Abstract {
         // TQL native query
         TqlElement expected = doTest("field1 >= 123.456");
         // TQL api query
-        TqlElement tqlElement = TqlBuilder.gte("field1", 123.456);
+        TqlElement tqlElement = gte("field1", 123.456);
         Assert.assertEquals(expected.toString(), tqlElement.toString());
     }
 
