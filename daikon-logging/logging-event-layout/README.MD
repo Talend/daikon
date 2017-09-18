@@ -85,7 +85,7 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
       <maxHistory>30</maxHistory>
     </rollingPolicy>
     <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
-        <param name="UserFields" value="field1:value1,field2:value2" />
+        <param name="UserFields" value="service:dataset,application:tdp" />
         <param name="LocationInfo" value="false"/>
     </layout>
  </appender>
@@ -108,7 +108,7 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
         <param name="MaxBackupIndex" value="20" />
         <param name="encoding" value="UTF-8" />
         <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout">
-            <param name="UserFields" value="field1:value1,field2:value2" />
+            <param name="UserFields" value="service:dataset,application:tdp" />
             <param name="LocationInfo" value="false"/>
         </layout>
     </appender>   
@@ -128,8 +128,8 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
     <RollingFile name="File" fileName="${LOG_PATH}/application.log"
         filePattern="${LOG_PATH}/application-%d{yyyy-MM-dd}.log">
         <Log4j2JSONLayout charset="UTF-8" skipJsonEscapeSubLayout="true" locationInfo="false" subLayoutAsElement="true">
-            <KeyValuePair key="field1" value="value1"/>
-            <KeyValuePair key="field2" value="value2"/>
+            <KeyValuePair key="service" value="dataset"/>
+            <KeyValuePair key="application" value="tdp"/>
         </Log4j2JSONLayout>
         <Policies>
           <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
@@ -204,36 +204,38 @@ In addition to the fields above, you can add other fields to the LoggingEvent ei
 <a name="loggingevent_custom_global"/></a>
 #### Global Custom Fields
 
-Add custom fields that will appear in every LoggingEvent like this : 
+In all the Talend services developers should provide 2 custom fields.
+* service : this represent the service name and more precisely the releasable entity abbreviation as defined in the Naming Policy (available in the wiki).
+* application : this represent the application or project abbreviation that this service belongs to (like *tdp* for Talend Dataprep), the project name is defined in the Talend Naming Policy (available in the wiki).
 
 Log4j config
 
 ```xml
 <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout">
-  <param name="UserFields" value="Application_NAME:APP_NAME,Application_ID:APP_ID" />
+  <param name="UserFields" value="service:dataset,application:tdp" />
 </layout>
 ```
 Logback config
  
 ```xml
 <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
-  <param name="UserFields" value="Application_NAME:APP_NAME,Application_ID:APP_ID" />
+  <param name="UserFields" value="service:dataset,application:tdp" />
 </layout>
 ```
 Log4j2  config
 
 ```xml
 <Log4j2JSONLayout charset="UTF-8" skipJsonEscapeSubLayout="true" subLayoutAsElement="true">
-    <KeyValuePair key="Application_NAME" value="APP_NAME"/>
-    <KeyValuePair key="Application_ID" value="IAM_ID"/>
+    <KeyValuePair key="service" value="dataset"/>
+    <KeyValuePair key="application" value="tdp"/>
 </Log4j2JSONLayout>
 ```
 In these  examples we will have in log file these json : 
 
 ```
 {
-  "Application_NAME":"APP_NAME",
-  "Application_ID":"APP_ID"
+  "service":"dataset",
+  "application":"tdp"
 }
 ```
 
