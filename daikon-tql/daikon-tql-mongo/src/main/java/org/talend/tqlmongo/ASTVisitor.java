@@ -231,7 +231,7 @@ public class ASTVisitor implements IASTVisitor<Object> {
         return c;
     }
 
-    public boolean isNegation() {
+    protected boolean isNegation() {
         return isNegation;
     }
 
