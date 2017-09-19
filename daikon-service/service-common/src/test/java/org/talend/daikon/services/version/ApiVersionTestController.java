@@ -19,4 +19,10 @@ public class ApiVersionTestController {
         return "bar";
     }
 
+    @ApiVersion({ "new" })
+    @RequestMapping("methodVersionRoute")
+    public String methodeVersionRouteNew() {
+        return "newbar";
+    }
+
 }

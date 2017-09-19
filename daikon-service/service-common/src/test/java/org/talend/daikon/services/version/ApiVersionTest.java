@@ -32,6 +32,7 @@ public class ApiVersionTest {
         given().when().get("v1/classVersionRoute").then().assertThat().body(is("foo"));
         given().when().get("v2-SNAPSHOT/methodVersionRoute").then().assertThat().body(is("bar"));
         given().when().get("vBAR/methodVersionRoute").then().assertThat().body(is("bar"));
+        given().when().get("vnew/methodVersionRoute").then().assertThat().body(is("newbar"));
     }
 
 }
