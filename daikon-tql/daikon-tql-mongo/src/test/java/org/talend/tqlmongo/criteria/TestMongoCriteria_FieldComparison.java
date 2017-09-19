@@ -1,0 +1,54 @@
+package org.talend.tqlmongo.criteria;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.data.mongodb.core.query.Criteria;
+
+/**
+ * Created by gmzoughi on 06/07/16.
+ */
+public class TestMongoCriteria_FieldComparison extends TestMongoCriteria_Abstract {
+
+    @Test
+    public void testFieldEq() throws Exception {
+        Criteria criteria = doTest("field1 = field(field2)");
+        Criteria expectedCriteria = Criteria.where("field1").is("field2");
+        Assert.assertEquals(expectedCriteria, criteria);
+    }
+
+    @Test
+    public void testFieldNe() throws Exception {
+        Criteria criteria = doTest("field1 != field(field2)");
+        Criteria expectedCriteria = Criteria.where("field1").ne("field2");
+        Assert.assertEquals(expectedCriteria, criteria);
+    }
+
+    @Test
+    public void testFieldLt() throws Exception {
+        Criteria criteria = doTest("field1 < field(field2)");
+        Criteria expectedCriteria = Criteria.where("field1").lt("field2");
+        Assert.assertEquals(expectedCriteria, criteria);
+    }
+
+    @Test
+    public void testFieldGt() throws Exception {
+        Criteria criteria = doTest("field1 > field(field2)");
+        Criteria expectedCriteria = Criteria.where("field1").gt("field2");
+        Assert.assertEquals(expectedCriteria, criteria);
+    }
+
+    @Test
+    public void testFieldGte() throws Exception {
+        Criteria criteria = doTest("field1 >= field(field2)");
+        Criteria expectedCriteria = Criteria.where("field1").gte("field2");
+        Assert.assertEquals(expectedCriteria, criteria);
+    }
+
+    @Test
+    public void testFieldLte() throws Exception {
+        Criteria criteria = doTest("field1 <= field(field2)");
+        Criteria expectedCriteria = Criteria.where("field1").lte("field2");
+        Assert.assertEquals(expectedCriteria, criteria);
+    }
+
+}

@@ -1,0 +1,59 @@
+/* Lexer grammar for Tql filters lexicon.*/
+
+lexer grammar TqlLexer;
+
+@header {
+package org.talend.tql;
+}
+
+/**
+ * Tokens
+ **/
+
+// language structure tokens
+LPAREN : '(';
+RPAREN : ')';
+LBRACK : '[';
+RBRACK : ']';
+COMMA : ',';
+WHITESPACE : ( '\t' | ' ' | '\r' | '\n'| '\u000C' )+ -> skip ;
+
+// logical operators
+NOT: 'not';
+AND : 'and';
+OR : 'or';
+
+// comparison operators
+EQ : '=';
+NEQ: '!=';
+LT : '<';
+LET: '<=';
+GT : '>';
+GET: '>=';
+
+// advanced comparison operators
+IS : 'is';
+CONTAINS : 'contains';
+MATCHES : '~';
+COMPLIES : 'complies';
+BETWEEN : 'between';
+IN : 'in';
+FIELD_REFERENCE: 'field';
+
+// special values
+EMPTY : 'empty';
+VALID : 'valid';
+INVALID : 'invalid';
+TRUE : 'true';
+FALSE : 'false';
+
+// data types
+INT: ('-')?('0' .. '9')+;
+DECIMAL: ('-')?('0' .. '9')+('.')('0' .. '9')*;
+
+// Field name
+// Side note: order highly matters so INT matches first (to prevent "n = 1000" to be a "field = field" expression)
+FIELD: ('a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '.' )+;
+
+// literal values
+QUOTED_VALUE : ( '\'' ( ~ '\'' )* '\'' );
