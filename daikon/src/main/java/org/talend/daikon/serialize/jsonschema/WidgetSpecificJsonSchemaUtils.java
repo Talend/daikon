@@ -39,7 +39,7 @@ class WidgetSpecificJsonSchemaUtils {
                 }
 
                 // TDKN-179: ensure "min_items=0" if widget is hidden in form to prevent validation issues.
-                if(widget.isHidden()) {
+                if (widget.isHidden()) {
                     schema.put(JsonSchemaConstants.TAG_MIN_ITEMS, 0);
                 }
             }

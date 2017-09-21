@@ -83,6 +83,7 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
     @Test
     public void testStringListProperty_whenHidden() throws JSONException {
         StringListProperty stringListProperty = new StringListProperty("selectColumnIds") {
+
             @Override
             public Form getPreferredForm(String formName) {
                 final Form form = new Form(this, formName);
