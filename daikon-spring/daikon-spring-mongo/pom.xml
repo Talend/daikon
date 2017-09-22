@@ -45,7 +45,7 @@
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver</artifactId>
 			<version>3.2.2</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

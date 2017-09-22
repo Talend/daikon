@@ -59,6 +59,7 @@ public class CachedMongoClientProvider implements MongoClientProvider {
                     LOGGER.debug("Adding new mongo client for '{}'.", uri);
                     return new MongoClient(uri);
                 } catch (Exception e) {
+                    // 3.x client throws UnknownHostException, keep catch block for compatibility with 3.x version
                     throw new InvalidDataAccessResourceUsageException("Unable to retrieve host information.", e);
                 }
             }

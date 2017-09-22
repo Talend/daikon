@@ -26,6 +26,7 @@ public class SimpleMongoClientProvider implements MongoClientProvider {
         try {
             return new MongoClient(uri);
         } catch (Exception e) {
+            // 3.x client throws UnknownHostException, keep catch block for compatibility with 3.x version
             throw new InvalidDataAccessResourceUsageException("Unable to retrieve host information.", e);
         }
     }
