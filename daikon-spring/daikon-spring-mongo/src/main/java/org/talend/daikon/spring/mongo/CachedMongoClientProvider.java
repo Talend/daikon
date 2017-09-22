@@ -24,7 +24,26 @@ public class CachedMongoClientProvider implements MongoClientProvider {
 
     private final LoadingCache<MongoClientURI, MongoClient> cache;
 
+    /**
+     * Creates an instance with <code>concurrencyLevel = 100</code> and <code>maximumSize = 100</code>.
+     * 
+     * @param duration The time after which a cache entry is removed if cache entry wasn't accessed for this time. For
+     * example, 10 minutes means any cached mongo client not used within the last 10 minutes will be removed.
+     * @param unit The time unit for <code>duration</code>.
+     */
     public CachedMongoClientProvider(int duration, TimeUnit unit) {
+        this(duration, unit, 100, 100);
+    }
+
+    /**
+     *
+     * @param duration The time after which a cache entry is removed if cache entry wasn't accessed for this time. For
+     * example, 10 minutes means any cached mongo client not used within the last 10 minutes will be removed.
+     * @param unit The time unit for <code>duration</code>.
+     * @param concurrencyLevel Max number of concurrent access to a cached mongo client (see {@link CacheBuilder#concurrencyLevel}).
+     * @param maximumSize Max size for the cache (see {@link CacheBuilder#maximumSize}).
+     */
+    public CachedMongoClientProvider(int duration, TimeUnit unit, int concurrencyLevel, int maximumSize) {
         final RemovalListener<MongoClientURI, MongoClient> removalListener = notification -> {
             final MongoClient client = notification.getValue();
             try {
@@ -47,11 +66,10 @@ public class CachedMongoClientProvider implements MongoClientProvider {
         };
 
         cache = CacheBuilder.newBuilder() //
-                .concurrencyLevel(100) //
-                .maximumSize(100) //
+                .concurrencyLevel(concurrencyLevel) //
+                .maximumSize(maximumSize) //
                 .expireAfterAccess(duration, unit) //
-                .removalListener(removalListener)
-                .build(factory);
+                .removalListener(removalListener).build(factory);
     }
 
     @Override
