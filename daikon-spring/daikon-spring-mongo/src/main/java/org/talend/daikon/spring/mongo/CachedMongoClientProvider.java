@@ -1,7 +1,6 @@
 package org.talend.daikon.spring.mongo;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class CachedMongoClientProvider implements MongoClientProvider {
                 try {
                     LOGGER.debug("Adding new mongo client for '{}'.", uri);
                     return new MongoClient(uri);
-                } catch (UnknownHostException e) {
+                } catch (Exception e) {
                     throw new InvalidDataAccessResourceUsageException("Unable to retrieve host information.", e);
                 }
             }

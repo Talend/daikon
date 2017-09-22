@@ -1,7 +1,6 @@
 package org.talend.daikon.spring.mongo;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +25,7 @@ public class SimpleMongoClientProvider implements MongoClientProvider {
     protected MongoClient createMongoClient(MongoClientURI uri) {
         try {
             return new MongoClient(uri);
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             throw new InvalidDataAccessResourceUsageException("Unable to retrieve host information.", e);
         }
     }
