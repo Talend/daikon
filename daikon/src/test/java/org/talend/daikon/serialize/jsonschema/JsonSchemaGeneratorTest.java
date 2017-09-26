@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.properties.property.StringProperty;
@@ -76,6 +77,32 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
                 + ":{\"selectColumnIds\":{\"title\":\"property.selectColumnIds.displayName\","
                 + "\"type\":\"array\",\"items\":{\"type\":\"string\",\"enum\":[\"col1\",\"col2\",\"col3\"],"
                 + "\"enumNames\":[\"Surname\",\"Name\",\"Phone\"]},\"uniqueItems\":\"true\",\"minItems\":1}}}";
+        assertEquals(expectedPartial, genSchema.toString(), false);
+    }
+
+    @Test
+    public void testStringListProperty_whenHidden() throws JSONException {
+        StringListProperty stringListProperty = new StringListProperty("selectColumnIds") {
+
+            @Override
+            public Form getPreferredForm(String formName) {
+                final Form form = new Form(this, formName);
+
+                final Widget widget = new Widget(this);
+                widget.setHidden();
+
+                form.addRow(widget);
+                return form;
+            }
+        };
+        stringListProperty.init();
+        JsonSchemaGenerator generator = new JsonSchemaGenerator();
+        ObjectNode genSchema = generator.generateJsonSchema(stringListProperty, Form.MAIN);
+        // Only difference is the "minItems=0" since widget is hidden
+        String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\""
+                + ":{\"selectColumnIds\":{\"title\":\"property.selectColumnIds.displayName\","
+                + "\"type\":\"array\",\"items\":{\"type\":\"string\",\"enum\":[\"col1\",\"col2\",\"col3\"],"
+                + "\"enumNames\":[\"Surname\",\"Name\",\"Phone\"]},\"minItems\":0}}}";
         assertEquals(expectedPartial, genSchema.toString(), false);
     }
 

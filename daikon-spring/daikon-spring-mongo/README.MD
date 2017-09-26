@@ -68,6 +68,13 @@ If you need more advanced cache management, consider providing a custom implemen
 
 6) And it's done, all the `MongoTemplate` or `MongoRepository` will work with multi tenancy without changing a line of code in them.
 
+Cache of MongoDB clients
+------------------------
+
+Be aware the implementation `org.talend.daikon.spring.mongo.SimpleMongoClientProvider` does **not** perform any cache clean up (and may create memory leaks in your application, if you have many tenants).
+
+You may use `org.talend.daikon.spring.mongo.CachedMongoClientProvider` to have a provider implementation that allows cached entry to have expiration dates (i.e. Mongo clients not used after given duration are automatically removed).
+
 How it works
 -----------
 In `org.talend.daikon.spring.mongo.MultiTenancyMongoDbConfiguration` a `BeanPostProcessor` will wrap existing `MongoDBFactory` and intercept all calls to retrieve a MongoDB database. Information given my implementation of `TenantInformationProvider` do the rest.
