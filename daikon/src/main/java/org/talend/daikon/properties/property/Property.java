@@ -564,7 +564,12 @@ public class Property<T> extends SimpleNamedThing implements AnyProperty {
          * cleared independently. This is used to cause properties to not be visible and processed at runtime if
          * necessary.
          */
-        HIDDEN
+        HIDDEN,
+
+        /**
+         * Need to convert it to one line for the multi line parameter, mark it by this flag.
+         */
+        MULTI_LINE
 
     }
 }
