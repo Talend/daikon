@@ -55,7 +55,7 @@ public abstract class I18nMessages {
     protected String getFormattedMessage(String key, ClassLoader classLoader, String baseName, Object... arguments)
             throws MissingResourceException {
         Locale locale = getLocale();
-        ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale, classLoader);
+        ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale, classLoader, new UTF8Control());
         String bundleValue = bundle.getString(key);
         // format it now
         formatter.setLocale(locale);
