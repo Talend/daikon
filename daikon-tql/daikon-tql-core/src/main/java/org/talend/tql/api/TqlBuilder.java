@@ -25,7 +25,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression eq(String fieldname, String value) {
+    public static Expression eq(String fieldname, String value) {
         return comparisonOperationString(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.EQ));
     }
 
@@ -36,7 +36,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression eq(String fieldname, boolean value) {
+    public static Expression eq(String fieldname, boolean value) {
         return comparisonOperationBoolean(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.EQ));
     }
 
@@ -47,7 +47,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression eq(String fieldname, int value) {
+    public static Expression eq(String fieldname, int value) {
         return comparisonOperationInt(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.EQ));
     }
 
@@ -58,7 +58,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression eq(String fieldname, double value) {
+    public static Expression eq(String fieldname, double value) {
         return comparisonOperationDouble(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.EQ));
     }
 
@@ -69,7 +69,7 @@ public class TqlBuilder {
      * @param fieldname2 field
      * @return TQL Expression
      */
-    static Expression eqFields(String fieldname1, String fieldname2) {
+    public static Expression eqFields(String fieldname1, String fieldname2) {
         return comparisonOperationField(fieldname1, fieldname2, new ComparisonOperator(ComparisonOperator.Enum.EQ));
     }
 
@@ -80,7 +80,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression neq(String fieldname, String value) {
+    public static Expression neq(String fieldname, String value) {
         return comparisonOperationString(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.NEQ));
     }
 
@@ -91,7 +91,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression neq(String fieldname, boolean value) {
+    public static Expression neq(String fieldname, boolean value) {
         return comparisonOperationBoolean(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.NEQ));
     }
 
@@ -102,7 +102,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression neq(String fieldname, int value) {
+    public static Expression neq(String fieldname, int value) {
         return comparisonOperationInt(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.NEQ));
     }
 
@@ -113,7 +113,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression neq(String fieldname, double value) {
+    public static Expression neq(String fieldname, double value) {
         return comparisonOperationDouble(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.NEQ));
     }
 
@@ -124,7 +124,7 @@ public class TqlBuilder {
      * @param fieldname2 field
      * @return TQL Expression
      */
-    static Expression neqFields(String fieldname1, String fieldname2) {
+    public static Expression neqFields(String fieldname1, String fieldname2) {
         return comparisonOperationField(fieldname1, fieldname2, new ComparisonOperator(ComparisonOperator.Enum.NEQ));
     }
 
@@ -135,7 +135,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression lt(String fieldname, int value) {
+    public static Expression lt(String fieldname, int value) {
         return comparisonOperationInt(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.LT));
     }
 
@@ -146,7 +146,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression lt(String fieldname, double value) {
+    public static Expression lt(String fieldname, double value) {
         return comparisonOperationDouble(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.LT));
     }
 
@@ -157,7 +157,7 @@ public class TqlBuilder {
      * @param fieldname2 field
      * @return TQL Expression
      */
-    static Expression ltFields(String fieldname1, String fieldname2) {
+    public static Expression ltFields(String fieldname1, String fieldname2) {
         return comparisonOperationField(fieldname1, fieldname2, new ComparisonOperator(ComparisonOperator.Enum.LT));
     }
 
@@ -168,7 +168,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression gt(String fieldname, int value) {
+    public static Expression gt(String fieldname, int value) {
         return comparisonOperationInt(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.GT));
     }
 
@@ -179,7 +179,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression gt(String fieldname, double value) {
+    public static Expression gt(String fieldname, double value) {
         return comparisonOperationDouble(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.GT));
     }
 
@@ -190,7 +190,7 @@ public class TqlBuilder {
      * @param fieldname2 field
      * @return TQL Expression
      */
-    static Expression gtFields(String fieldname1, String fieldname2) {
+    public static Expression gtFields(String fieldname1, String fieldname2) {
         return comparisonOperationField(fieldname1, fieldname2, new ComparisonOperator(ComparisonOperator.Enum.GT));
     }
 
@@ -201,7 +201,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression lte(String fieldname, int value) {
+    public static Expression lte(String fieldname, int value) {
         return comparisonOperationInt(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.LET));
     }
 
@@ -212,7 +212,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression lte(String fieldname, double value) {
+    public static Expression lte(String fieldname, double value) {
         return comparisonOperationDouble(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.LET));
     }
 
@@ -223,7 +223,7 @@ public class TqlBuilder {
      * @param fieldname2 field
      * @return TQL Expression
      */
-    static Expression lteFields(String fieldname1, String fieldname2) {
+    public static Expression lteFields(String fieldname1, String fieldname2) {
         return comparisonOperationField(fieldname1, fieldname2, new ComparisonOperator(ComparisonOperator.Enum.LET));
     }
 
@@ -234,7 +234,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression gte(String fieldname, int value) {
+    public static Expression gte(String fieldname, int value) {
         return comparisonOperationInt(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.GET));
     }
 
@@ -245,7 +245,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression gte(String fieldname, double value) {
+    public static Expression gte(String fieldname, double value) {
         return comparisonOperationDouble(fieldname, value, new ComparisonOperator(ComparisonOperator.Enum.GET));
     }
 
@@ -256,7 +256,7 @@ public class TqlBuilder {
      * @param fieldname2 field
      * @return TQL Expression
      */
-    static Expression gteFields(String fieldname1, String fieldname2) {
+    public static Expression gteFields(String fieldname1, String fieldname2) {
         return comparisonOperationField(fieldname1, fieldname2, new ComparisonOperator(ComparisonOperator.Enum.GET));
     }
 
@@ -268,7 +268,7 @@ public class TqlBuilder {
      * @param value2    field
      * @return TQL Expression
      */
-    static Expression between(String fieldname, int value1, int value2) {
+    public static Expression between(String fieldname, int value1, int value2) {
         return between(fieldname, String.valueOf(value1), String.valueOf(value2), LiteralValue.Enum.INT);
     }
 
@@ -280,7 +280,7 @@ public class TqlBuilder {
      * @param value2    field
      * @return TQL Expression
      */
-    static Expression between(String fieldname, double value1, double value2) {
+    public static Expression between(String fieldname, double value1, double value2) {
         return between(fieldname, String.valueOf(value1), String.valueOf(value2), LiteralValue.Enum.DECIMAL);
     }
 
@@ -292,7 +292,7 @@ public class TqlBuilder {
      * @param value2    field
      * @return TQL Expression
      */
-    static Expression between(String fieldname, String value1, String value2) {
+    public static Expression between(String fieldname, String value1, String value2) {
         return between(fieldname, String.valueOf(value1), String.valueOf(value2), LiteralValue.Enum.QUOTED_VALUE);
     }
 
@@ -303,7 +303,7 @@ public class TqlBuilder {
      * @param value     value
      * @return TQL Expression
      */
-    static Expression contains(String fieldname, String value) {
+    public static Expression contains(String fieldname, String value) {
 
         // Creating simple contains expression
         FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(fieldname, value);
@@ -322,7 +322,7 @@ public class TqlBuilder {
      * @param pattern   pattern
      * @return TQL Expression
      */
-    static Expression complies(String fieldname, String pattern) {
+    public static Expression complies(String fieldname, String pattern) {
 
         // Creating simple complies expression
         FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldname, pattern);
@@ -341,7 +341,7 @@ public class TqlBuilder {
      * @param regexp    regexp
      * @return TQL Expression
      */
-    static Expression match(String fieldname, String regexp) {
+    public static Expression match(String fieldname, String regexp) {
 
         // Creating simple match expression
         FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldname, regexp);
@@ -359,7 +359,7 @@ public class TqlBuilder {
      * @param fieldname field
      * @return TQL Expression
      */
-    static Expression isEmpty(String fieldname) {
+    public static Expression isEmpty(String fieldname) {
 
         // Creating simple isEmpty expression
         FieldIsEmptyExpression fieldIsEmptyExpression = new FieldIsEmptyExpression(fieldname);
@@ -377,7 +377,7 @@ public class TqlBuilder {
      * @param fieldname field
      * @return TQL Expression
      */
-    static Expression isInvalid(String fieldname) {
+    public static Expression isInvalid(String fieldname) {
 
         // Creating simple isInvalid expression
         FieldIsInvalidExpression fieldIsInvalidExpression = new FieldIsInvalidExpression(fieldname);
@@ -395,7 +395,7 @@ public class TqlBuilder {
      * @param fieldname field
      * @return TQL Expression
      */
-    static Expression isValid(String fieldname) {
+    public static Expression isValid(String fieldname) {
 
         // Creating simple isValid expression
         FieldIsValidExpression fieldIsValidExpression = new FieldIsValidExpression(fieldname);
@@ -414,7 +414,7 @@ public class TqlBuilder {
      * @param values    values
      * @return TQL Expression
      */
-    static Expression in(String fieldname, String... values) {
+    public static Expression in(String fieldname, String... values) {
 
         // Converting String to literal values
         LiteralValue[] literalValues = Arrays.stream(values).map(v -> new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, v))
@@ -431,7 +431,7 @@ public class TqlBuilder {
      * @param values    values
      * @return TQL Expression
      */
-    static Expression in(String fieldname, int... values) {
+    public static Expression in(String fieldname, int... values) {
 
         LiteralValue[] literalValues = Arrays.stream(values)
                 .mapToObj(v -> new LiteralValue(LiteralValue.Enum.INT, String.valueOf(v))).toArray(LiteralValue[]::new);
@@ -447,7 +447,7 @@ public class TqlBuilder {
      * @param values    values
      * @return TQL Expression
      */
-    static Expression in(String fieldname, double... values) {
+    public static Expression in(String fieldname, double... values) {
 
         LiteralValue[] literalValues = Arrays.stream(values)
                 .mapToObj(v -> new LiteralValue(LiteralValue.Enum.DECIMAL, String.valueOf(v))).toArray(LiteralValue[]::new);
@@ -463,7 +463,7 @@ public class TqlBuilder {
      * @param values    values
      * @return TQL Expression
      */
-    static Expression in(String fieldname, Boolean... values) {
+    public static Expression in(String fieldname, Boolean... values) {
 
         BooleanValue[] booleanValues = Arrays.stream(values).map(v -> new BooleanValue(String.valueOf(v)))
                 .toArray(BooleanValue[]::new);
@@ -478,7 +478,7 @@ public class TqlBuilder {
      * @param expression tql expression
      * @return TQL Expression
      */
-    static Expression not(Expression expression) {
+    public static Expression not(Expression expression) {
 
         // Cloning the expression
         Expression newSubtreeExpression = cloneExpression(expression);
@@ -515,7 +515,7 @@ public class TqlBuilder {
      * @param expressions tql expressions
      * @return TQL Expression
      */
-    static Expression or(Expression... expressions) {
+    public static Expression or(Expression... expressions) {
 
         /*
          * Note :
@@ -568,7 +568,7 @@ public class TqlBuilder {
      * @param expressions tql expressions
      * @return TQL Expression
      */
-    static Expression and(Expression... expressions) {
+    public static Expression and(Expression... expressions) {
 
         /*
          * Note :
@@ -655,7 +655,7 @@ public class TqlBuilder {
      * @param expression TQL to be cloned
      * @return cloned TQL expression
      */
-    static Expression cloneExpression(Expression expression) {
+    public static Expression cloneExpression(Expression expression) {
 
         List<Expression> currentAndExpressions = Arrays.asList(((OrExpression) expression).getExpressions());
 
