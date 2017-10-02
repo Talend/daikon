@@ -1,0 +1,11 @@
+{
+  "intField": 123,
+  "arrayOfRecords": [ {
+      "innerIntField" : 456,
+      "innerLongField" : 456789
+    } , {
+      "innerIntField" : 789,
+    "innerLongField" :  789123
+  }
+  ]
+}

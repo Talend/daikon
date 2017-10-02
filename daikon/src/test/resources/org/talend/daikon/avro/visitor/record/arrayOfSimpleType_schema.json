@@ -1,0 +1,14 @@
+{
+  "type" : "record",
+  "name" : "withArrayOfSimpleTypes",
+  "fields" : [ {
+    "name" : "intField",
+    "type" : "int"
+  }, {
+    "name" : "arrayOfSimpleTypes",
+    "type" : {
+      "type" : "array",
+      "items" : "long"
+    }
+  } ]
+}

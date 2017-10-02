@@ -1,0 +1,12 @@
+{
+  "type" : "record",
+  "name" : "simpleTypes",
+  "fields" : [ {
+    "name" : "intField",
+    "type" : "int"
+  }, {
+    "name" : "optionalLongField",
+    "type" : ["long", "null"],
+    "default": null
+  } ]
+}

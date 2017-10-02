@@ -1,0 +1,8 @@
+{
+  "intField": 123,
+  "mapOfSimpleTypes": {
+    "key1" : 345,
+    "key2" : 546,
+    "key3" : 125
+  }
+}

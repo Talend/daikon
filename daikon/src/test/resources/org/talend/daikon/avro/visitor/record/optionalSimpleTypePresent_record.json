@@ -1,0 +1,4 @@
+{
+  "intField" : 123,
+  "optionalLongField" : {"long": 123456789}
+}

@@ -1,0 +1,27 @@
+{
+  "type" : "record",
+  "name" : "withMapOfRecords",
+  "fields" : [ {
+    "name" : "intField",
+    "type" : "int"
+  }, {
+    "name" : "mapOfRecords",
+    "type" : {
+      "type" : "map",
+      "values" : {
+        "type" : "record",
+        "name" : "innerRecord",
+        "fields" : [
+          {
+            "name" : "innerInt",
+            "type" : "int"
+          },
+          {
+            "name" : "innerString",
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  } ]
+}

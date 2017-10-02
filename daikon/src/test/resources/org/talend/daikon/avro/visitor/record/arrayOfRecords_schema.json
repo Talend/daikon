@@ -1,0 +1,25 @@
+{
+  "type" : "record",
+  "name" : "withArrayOfSimpleTypes",
+  "fields" : [ {
+    "name" : "intField",
+    "type" : "int"
+  }, {
+    "name" : "arrayOfRecords",
+    "type" : {
+      "type" : "array",
+      "items" : {
+        "name" : "innerRecord",
+        "type" : "record",
+        "fields" : [ {
+          "name" : "innerIntField",
+          "type" : "int"
+          } , {
+          "name" : "innerLongField",
+          "type" : "long"
+        }
+        ]
+      }
+    }
+  } ]
+}

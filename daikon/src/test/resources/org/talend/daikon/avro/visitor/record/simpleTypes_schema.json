@@ -1,0 +1,47 @@
+{
+  "type" : "record",
+  "name" : "simpleTypes",
+  "fields" : [ {
+    "name" : "intField",
+    "type" : "int"
+  }, {
+    "name" : "longField",
+    "type" : "long"
+  }, {
+    "name" : "stringField",
+    "type" : "string"
+  }, {
+    "name" : "booleanField",
+    "type" : "boolean"
+  }, {
+    "name" : "floatField",
+    "type" : "float"
+  }, {
+    "name" : "doubleField",
+    "type" : "double"
+  }, {
+    "name" : "nullField",
+    "type" : "null"
+  }, {
+    "name" : "enumField",
+    "type" : {
+      "type" : "enum",
+      "name" : "FirstLetters",
+      "symbols" : [ "A", "B", "C", "D"]
+    }
+  }, {
+    "name" : "fixedField",
+    "type" : {
+      "type" : "fixed",
+      "name" : "md5",
+      "size" : 16
+    }
+  }, {
+    "name" : "bytesField",
+    "type": "bytes"
+  }
+
+
+
+  ]
+}

@@ -757,4 +757,9 @@ public class PropertiesImpl extends TranslatableTaggedImpl
 
     }
 
+    @Override
+    public ValidationResults validate() {
+        return new ValidationResults();
+    }
+
 }

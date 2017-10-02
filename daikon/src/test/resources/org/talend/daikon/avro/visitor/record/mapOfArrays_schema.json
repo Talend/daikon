@@ -1,0 +1,18 @@
+{
+  "type" : "record",
+  "name" : "withMapOfArrays",
+  "fields" : [ {
+    "name" : "intField",
+    "type" : "int"
+  }, {
+    "name" : "mapOfArrays",
+    "type" : {
+      "type" : "map",
+      "values" : {
+        "type" : "array",
+        "name" : "innerArray",
+        "items" : "string"
+      }
+    }
+  } ]
+}
