@@ -41,7 +41,7 @@ public class BigDecimalConverter extends Converter<BigDecimal> {
                     try {
                         convertedValue = getDecimalFormat().parse(value.toString());
                     } catch (ParseException e) {
-                        TalendRuntimeException.createUnexpectedException("Unable to parse " + value + "with format "+ getDecimalFormat().toString());
+                        throw TalendRuntimeException.createUnexpectedException("Unable to parse " + value);
                     }
                     return new BigDecimal(convertedValue.toString());
                 }
