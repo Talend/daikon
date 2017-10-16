@@ -2,6 +2,8 @@ package org.talend.daikon.converter;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class TypeConverter {
@@ -31,6 +33,10 @@ public class TypeConverter {
             return (Converter<T>) asShort();
         } else if (clazz.equals(String.class)) {
             return (Converter<T>) asString();
+        } else if (clazz.equals(LocalTime.class)) {
+            return (Converter<T>) asLocalTime();
+        } else if (clazz.equals(LocalDateTime.class)) {
+            return (Converter<T>) asLocalDateTime();
         } else { // Object
             return (Converter<T>) asObject();
         }
@@ -86,6 +92,14 @@ public class TypeConverter {
 
     public static ObjectConverter asObject() {
         return new ObjectConverter();
+    }
+
+    public static LocalTimeConverter asLocalTime() {
+        return new LocalTimeConverter();
+    }
+
+    public static LocalDateTimeConverter asLocalDateTime() {
+        return new LocalDateTimeConverter();
     }
 
 }

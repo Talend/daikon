@@ -1,8 +1,12 @@
 package org.talend.daikon.converter;
 
+import org.talend.daikon.exception.TalendRuntimeException;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 
 public class BigDecimalConverter extends Converter<BigDecimal> {
 
@@ -12,8 +16,10 @@ public class BigDecimalConverter extends Converter<BigDecimal> {
 
     public static String ROUNDING_MODE = "roundingMode";
 
+    public static String DECIMAL_FORMAT = "decimalFormat";
+
     @Override
-    public BigDecimal convert(Object value) {
+    public BigDecimal convert(Object value) throws TalendRuntimeException {
         if (value == null) {
             return returnDefaultValue();
         } else {
@@ -30,8 +36,17 @@ public class BigDecimalConverter extends Converter<BigDecimal> {
                     return castedValue;
                 }
             } else {
+                if (properties.containsKey(BigDecimalConverter.DECIMAL_FORMAT)){
+                    Number convertedValue = null;
+                    try {
+                        convertedValue = getDecimalFormat().parse(value.toString());
+                    } catch (ParseException e) {
+                        TalendRuntimeException.createUnexpectedException("Unable to parse " + value + "with format "+ getDecimalFormat().toString());
+                    }
+                    return new BigDecimal(convertedValue.toString());
+                }
                 // When the value is a anything else, we can change the precision
-                if (properties.containsKey(BigDecimalConverter.PRECISION)) {
+                else if (properties.containsKey(BigDecimalConverter.PRECISION)) {
                     if (properties.containsKey(BigDecimalConverter.ROUNDING_MODE)) {
                         return convertValue(value, new MathContext(getPrecision(), getRoundingMode()));
                     } else {
@@ -83,6 +98,15 @@ public class BigDecimalConverter extends Converter<BigDecimal> {
     public BigDecimalConverter withPrecision(Integer precision) {
         properties.put(BigDecimalConverter.PRECISION, precision);
         return this;
+    }
+
+    public BigDecimalConverter withDecimalFormat(DecimalFormat decimalFormat){
+        properties.put(BigDecimalConverter.DECIMAL_FORMAT, decimalFormat);
+        return this;
+    }
+
+    public DecimalFormat getDecimalFormat() {
+        return (DecimalFormat) properties.get(BigDecimalConverter.DECIMAL_FORMAT);
     }
 
     public Integer getPrecision() {

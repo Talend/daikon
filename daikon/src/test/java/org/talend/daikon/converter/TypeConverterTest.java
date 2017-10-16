@@ -1,10 +1,12 @@
 package org.talend.daikon.converter;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class TypeConverterTest {
 
@@ -960,5 +962,16 @@ public class TypeConverterTest {
         assertEquals(inputBoolean, TypeConverter.as(Boolean.class).convert(inputStringDefaultBoolean));
         assertEquals(inputBoolean, TypeConverter.as(Boolean.class).convert(inputStringDefaultBooleanNumber));
         assertEquals(inputBooleanNull, TypeConverter.as(Boolean.class).convert(inputStringNull));
+    }
+
+    @Test
+    public void testAsLocalTime() {
+        assertEquals(LocalTime.of(8, 15, 20), TypeConverter.as(LocalTime.class).convert("08:15:20"));
+    }
+
+    @Test
+    public void testAsLocalDateTime() {
+        assertEquals(LocalDateTime.of(2007, 12, 03, 10, 15, 30),
+                TypeConverter.as(LocalDateTime.class).convert("2007-12-03T10:15:30"));
     }
 }
