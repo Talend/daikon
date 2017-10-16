@@ -1,7 +1,5 @@
 package org.talend.daikon.converter;
 
-import org.talend.daikon.exception.TalendRuntimeException;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +9,7 @@ public abstract class Converter<T> {
 
     protected Map<String, Object> properties = new HashMap<>();
 
-    public abstract T convert(Object value) throws TalendRuntimeException;
+    public abstract T convert(Object value);
 
     public Converter<T> with(String key, Object value) {
         properties.put(key, value);

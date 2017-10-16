@@ -19,7 +19,7 @@ public class BigDecimalConverter extends Converter<BigDecimal> {
     public static String DECIMAL_FORMAT = "decimalFormat";
 
     @Override
-    public BigDecimal convert(Object value) throws TalendRuntimeException {
+    public BigDecimal convert(Object value) {
         if (value == null) {
             return returnDefaultValue();
         } else {
