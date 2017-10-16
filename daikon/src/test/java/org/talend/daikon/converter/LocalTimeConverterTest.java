@@ -15,17 +15,15 @@ import static org.junit.Assert.assertEquals;
 public class LocalTimeConverterTest {
 
     @Test
-    public void testAsLocalTimeWithDateTimeFormatter(){
+    public void testAsLocalTimeWithDateTimeFormatter() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ss:mm:HH");
-        assertEquals(LocalTime.of(8,15,20),
-                TypeConverter.asLocalTime().withDateTimeFormatter(formatter).convert("20:15:08"));
+        assertEquals(LocalTime.of(8, 15, 20), TypeConverter.asLocalTime().withDateTimeFormatter(formatter).convert("20:15:08"));
     }
 
-    @Test(expected=TalendRuntimeException.class)
-    public void testAsLocalTimeParseException(){
+    @Test(expected = TalendRuntimeException.class)
+    public void testAsLocalTimeParseException() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ss:mm:HH");
-        assertEquals(LocalTime.of(8,15,20),
-                TypeConverter.asLocalTime().withDateTimeFormatter(formatter).convert("ss:15:08"));
+        assertEquals(LocalTime.of(8, 15, 20), TypeConverter.asLocalTime().withDateTimeFormatter(formatter).convert("ss:15:08"));
     }
 
 }

@@ -159,8 +159,9 @@ public class BigDecimalConverterTest {
     }
 
     @Test
-    public void testAsBigDecimalWithDecimalFormat(){
+    public void testAsBigDecimalWithDecimalFormat() {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
         symbols.setGroupingSeparator(',');
         String pattern = "#,###";
         DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
@@ -169,8 +170,8 @@ public class BigDecimalConverterTest {
         assertEquals(new BigDecimal(1234), TypeConverter.asBigDecimal().withDecimalFormat(decimalFormat).convert("1,234"));
     }
 
-    @Test(expected=TalendRuntimeException.class)
-    public void testAsBigDecimalParseException(){
+    @Test(expected = TalendRuntimeException.class)
+    public void testAsBigDecimalParseException() {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setGroupingSeparator(',');
         String pattern = "#,###";

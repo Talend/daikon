@@ -36,7 +36,7 @@ public class BigDecimalConverter extends Converter<BigDecimal> {
                     return castedValue;
                 }
             } else {
-                if (properties.containsKey(BigDecimalConverter.DECIMAL_FORMAT)){
+                if (properties.containsKey(BigDecimalConverter.DECIMAL_FORMAT)) {
                     Number convertedValue = null;
                     try {
                         convertedValue = getDecimalFormat().parse(value.toString());
@@ -100,7 +100,7 @@ public class BigDecimalConverter extends Converter<BigDecimal> {
         return this;
     }
 
-    public BigDecimalConverter withDecimalFormat(DecimalFormat decimalFormat){
+    public BigDecimalConverter withDecimalFormat(DecimalFormat decimalFormat) {
         properties.put(BigDecimalConverter.DECIMAL_FORMAT, decimalFormat);
         return this;
     }
