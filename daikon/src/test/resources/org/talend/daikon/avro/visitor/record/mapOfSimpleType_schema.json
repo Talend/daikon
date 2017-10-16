@@ -1,0 +1,14 @@
+{
+  "type" : "record",
+  "name" : "withMapOfSimpleTypes",
+  "fields" : [ {
+    "name" : "intField",
+    "type" : "int"
+  }, {
+    "name" : "mapOfSimpleTypes",
+    "type" : {
+      "type" : "map",
+      "values" : "long"
+    }
+  } ]
+}

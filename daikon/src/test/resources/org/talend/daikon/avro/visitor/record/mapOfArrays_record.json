@@ -1,0 +1,8 @@
+{
+  "intField": 123,
+  "mapOfArrays": {
+    "key1" : ["A", "B", "C"],
+    "key2" : ["D", "E"],
+    "key3" : ["F"]
+  }
+}

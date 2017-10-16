@@ -1,0 +1,13 @@
+{
+  "intField" : 123,
+  "longField" : 123456789,
+  "stringField" : "stringValue",
+  "booleanField" : true,
+  "floatField" : 1.234,
+  "doubleField" : 4.5678,
+  "nullField": null,
+  "enumField" : "B",
+  "fixedField" : "c24d3c52ec03b24f",
+  "bytesField" : "ABCD"
+
+}

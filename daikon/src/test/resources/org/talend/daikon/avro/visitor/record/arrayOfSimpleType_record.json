@@ -1,0 +1,4 @@
+{
+  "intField": 123,
+  "arrayOfSimpleTypes": [456, 789, 123456789]
+}

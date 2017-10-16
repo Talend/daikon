@@ -1,0 +1,17 @@
+{
+  "intField": 123,
+  "mapOfRecords": {
+    "key1" : {
+      "innerInt": 1,
+      "innerString" : "value1"
+    },
+    "key2" : {
+      "innerInt": 2,
+      "innerString" : "value2"
+    },
+    "key3" : {
+      "innerInt": 3,
+      "innerString" : "value3"
+    }
+  }
+}

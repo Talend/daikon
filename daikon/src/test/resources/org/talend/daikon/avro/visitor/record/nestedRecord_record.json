@@ -1,0 +1,8 @@
+{
+  "intField": 123,
+  "longField": 123456789,
+  "inner": {
+    "innerIntField": 321,
+    "innerLongField": 987654321
+  }
+}

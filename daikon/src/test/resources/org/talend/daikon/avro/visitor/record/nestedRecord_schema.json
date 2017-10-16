@@ -1,0 +1,24 @@
+{
+  "type" : "record",
+  "name" : "withInnerRecordType",
+  "fields" : [ {
+    "name" : "intField",
+    "type" : "int"
+  }, {
+    "name" : "longField",
+    "type" : "long"
+  }, {
+    "name" : "inner",
+    "type" : {
+      "type" : "record",
+      "name" : "innerRecordType",
+      "fields" : [ {
+        "name" : "innerIntField",
+        "type" : "int"
+      }, {
+        "name" : "innerLongField",
+        "type" : "long"
+      } ]
+    }
+  } ]
+}
