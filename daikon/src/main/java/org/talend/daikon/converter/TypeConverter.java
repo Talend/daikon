@@ -94,6 +94,10 @@ public class TypeConverter {
         return new ObjectConverter();
     }
 
+    public static LocalDateConverter asLocalDate() {
+        return new LocalDateConverter();
+    }
+
     public static LocalTimeConverter asLocalTime() {
         return new LocalTimeConverter();
     }
