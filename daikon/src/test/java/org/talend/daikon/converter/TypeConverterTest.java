@@ -3,6 +3,7 @@ package org.talend.daikon.converter;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -962,6 +963,11 @@ public class TypeConverterTest {
         assertEquals(inputBoolean, TypeConverter.as(Boolean.class).convert(inputStringDefaultBoolean));
         assertEquals(inputBoolean, TypeConverter.as(Boolean.class).convert(inputStringDefaultBooleanNumber));
         assertEquals(inputBooleanNull, TypeConverter.as(Boolean.class).convert(inputStringNull));
+    }
+
+    @Test
+    public void testAsLocalDate() {
+        assertEquals(LocalDate.of(2007, 12, 03), TypeConverter.as(LocalDate.class).convert("2007-12-03"));
     }
 
     @Test
