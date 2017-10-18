@@ -130,11 +130,11 @@ public class Log4jJSONLayout extends Layout {
             logSourceEvent.put(LayoutFields.LINE_NUMBER, info.getLineNumber());
             logSourceEvent.put(LayoutFields.CLASS_NAME, info.getClassName());
             logSourceEvent.put(LayoutFields.METHOD_NAME, info.getMethodName());
-            logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
             RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
             String jvmName = runtimeBean.getName();
             logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
         }
+        logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
         logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
         logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
         return logSourceEvent;
