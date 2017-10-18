@@ -112,8 +112,8 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
     private void handleThrown(ILoggingEvent loggingEvent) {
         if (loggingEvent.getThrowableProxy() != null) {
 
-            if (loggingEvent.getThrowableProxy().getClass().getCanonicalName() != null) {
-                addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrowableProxy().getClass().getCanonicalName());
+            if (loggingEvent.getThrowableProxy().getClassName() != null) {
+                addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrowableProxy().getClassName());
             }
 
             if (loggingEvent.getThrowableProxy().getMessage() != null) {
@@ -137,12 +137,12 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
                 logSourceEvent.put(LayoutFields.LINE_NUMBER, callerData.getLineNumber());
                 logSourceEvent.put(LayoutFields.CLASS_NAME, callerData.getClassName());
                 logSourceEvent.put(LayoutFields.METHOD_NAME, callerData.getMethodName());
-                logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
             }
             RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
             String jvmName = runtimeBean.getName();
             logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
         }
+        logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
         logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
         logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
         return logSourceEvent;
