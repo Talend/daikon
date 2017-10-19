@@ -162,7 +162,8 @@ The field names listed here are the default field names.
 | `agentTimestamp`  | Time of the agent that logged the event (can be the same value with logTimestamp). (`yyyy-MM-dd'T'HH:mm:ss.SSSZZ`).
 | `serverTimestamp`  | Time of the logstash sever when event arrive.
 | `@version`        | The format version (e.g. 1) 
-| `logMessage`      | Formatted log message of the event 
+| `logger.name`     | Name of the logger that logged the event
+| `logMessage`      | Formatted log message of the event
 | `threadName`      | Name of the thread that logged the event
 | `severity`        | String name of the level of the event
 | `stackTrace`      | (Only if a throwable was logged) The stacktrace of the throwable.  Stackframes are separated by line endings.
@@ -182,7 +183,6 @@ If you set `LocationInfo` property  to `true` in your layout log4j/logback confi
 | `class.name`      | Fully qualified class name of the class that logged the event
 | `method.name`     | Name of the method that logged the event
 | `line.number`     | Line number of the file where the event was logged
-| `logger.name`     | Name of the logger that logged the event
 | `process.id`      | The id of the jvm process
 
 
