@@ -20,5 +20,6 @@
     <modules>
         <module>daikon-tql-core</module>
         <module>daikon-tql-mongo</module>
+        <module>daikon-tql-bean</module>
     </modules>
 </project>

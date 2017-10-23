@@ -1,11 +1,14 @@
 package org.talend.daikon.converter;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.talend.daikon.exception.TalendRuntimeException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * To find more test, please refer to TypeCOnverterTest
@@ -153,6 +156,29 @@ public class BigDecimalConverterTest {
                 TypeConverter.asBigDecimal().withPrecision(5).withRoundingMode(RoundingMode.CEILING).convert(inputshort));
         assertEquals(inputBigDecimal,
                 TypeConverter.asBigDecimal().withPrecision(5).withRoundingMode(RoundingMode.CEILING).convert(inputShort));
+    }
+
+    @Test
+    public void testAsBigDecimalWithDecimalFormat() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        symbols.setGroupingSeparator(',');
+        String pattern = "#,###";
+        DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
+        decimalFormat.setParseBigDecimal(true);
+
+        assertEquals(new BigDecimal(1234), TypeConverter.asBigDecimal().withDecimalFormat(decimalFormat).convert("1,234"));
+    }
+
+    @Test(expected = TalendRuntimeException.class)
+    public void testAsBigDecimalParseException() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator(',');
+        String pattern = "#,###";
+        DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
+        decimalFormat.setParseBigDecimal(true);
+
+        assertEquals(new BigDecimal(1234), TypeConverter.asBigDecimal().withDecimalFormat(decimalFormat).convert("BAD1,234"));
     }
 
 }

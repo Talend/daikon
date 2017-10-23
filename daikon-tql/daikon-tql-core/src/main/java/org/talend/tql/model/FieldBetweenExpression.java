@@ -43,7 +43,7 @@ public class FieldBetweenExpression implements Atom {
     }
 
     @Override
-    public Object accept(IASTVisitor visitor) {
+    public <T> T accept(IASTVisitor<T> visitor) {
         return visitor.visit(this);
     }
 }

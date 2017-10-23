@@ -12,5 +12,5 @@ import org.talend.tql.visitor.IASTVisitor;
 @FunctionalInterface
 public interface TqlElement {
 
-    Object accept(IASTVisitor visitor);
+    <T> T accept(IASTVisitor<T> visitor);
 }
