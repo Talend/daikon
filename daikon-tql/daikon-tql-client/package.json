@@ -54,7 +54,6 @@
 		"roots": ["src"],
 		"transform": {
 			".*": "<rootDir>/node_modules/babel-jest"
-		},
-		"setupFiles": ["./env__tests.js"]
+		}
 	}
 }
