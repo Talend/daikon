@@ -6,5 +6,6 @@ import GreaterThan from './greater-than';
 import LessThan from './less-than';
 import Valid from './valid';
 import Invalid from './invalid';
+import And from './and';
 
-export { Empty, Equal, Contains, CompliesTo, GreaterThan, LessThan, Valid, Invalid };
+export { Empty, Equal, Contains, CompliesTo, GreaterThan, LessThan, Valid, Invalid, And };
