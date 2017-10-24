@@ -5,13 +5,12 @@ describe('TEST TEMP QUERY', () => {
 		const op = new Operation();
 
 		op
-			.equal('f1', 1)
-			.and()
-			.empty('f2')
-			.and()
-			.contains('f3', 'yolo')
-			.toTQL();
+			.Equal('f1', 1)
+			.And()
+			.Empty('f2')
+			.And()
+			.Contains('f3', 'yolo');
 
-		console.log('[NC] op: ', op);
+		console.log('[NC] op: ', op.toTQL());
 	});
 });

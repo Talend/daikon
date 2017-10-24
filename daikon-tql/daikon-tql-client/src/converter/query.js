@@ -1,8 +1,12 @@
-import { Empty, Equal, Contains, And } from './operators';
+import * as operators from './operators';
 
 export default class Query {
 	constructor() {
 		this.stack = [];
+
+		Object.keys(operators).forEach((k) => {
+			this[k] = (...args) => this.add(new operators[k](...args));
+		});
 	}
 
 	add(op) {
@@ -13,9 +17,4 @@ export default class Query {
 	toTQL() {
 		return this.stack.map(o => o.toTQL()).join(' ');
 	}
-
-	and = () => this.add(new And());
-	empty = field => this.add(new Empty(field));
-	equal = (field, op) => this.add(new Equal(field, op));
-	contains = (field, op) => this.add(new Contains(field, op));
 }
