@@ -1,3 +1,3 @@
 import boolean from './boolean';
 
-export default boolean('and');
+export default boolean('or');
