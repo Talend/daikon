@@ -109,4 +109,10 @@ public interface IASTVisitor<T> {
      * @param elt element to visit
      */
     T visit(FieldContainsExpression elt);
+
+    /**
+     * Visits a {@link AllFields}
+     * @param allFields the element that represent all fields.
+     */
+    T visit(AllFields allFields);
 }

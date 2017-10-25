@@ -12,35 +12,37 @@ options { tokenVocab=TqlLexer; }
  * Syntax
  **/
 
+allFields : ALL_FIELDS;
+
 comparisonOperator : EQ | LT | GT | NEQ | LET | GET;
 
 booleanValue : TRUE | FALSE;
 
-booleanComparison :  (FIELD | ~INT | ~DECIMAL) EQ booleanValue | (FIELD | ~INT | ~DECIMAL) NEQ booleanValue;
+booleanComparison :  (FIELD | allFields | ~INT | ~DECIMAL) EQ booleanValue | (FIELD | allFields | ~INT | ~DECIMAL) NEQ booleanValue;
 
 literalValue : QUOTED_VALUE | INT | DECIMAL;
 
-fieldReference : FIELD_REFERENCE LPAREN FIELD RPAREN;
+fieldReference : (FIELD_REFERENCE | allFields) LPAREN FIELD RPAREN;
 
-literalComparison : (FIELD | ~INT | ~DECIMAL) comparisonOperator literalValue;
+literalComparison : (FIELD | allFields | ~INT | ~DECIMAL) comparisonOperator literalValue;
 
-fieldComparison : (FIELD | ~INT | ~DECIMAL) comparisonOperator fieldReference;
+fieldComparison : (FIELD | allFields | ~INT | ~DECIMAL) comparisonOperator fieldReference;
 
-fieldIsEmpty : (FIELD | ~INT | ~DECIMAL) IS EMPTY;
+fieldIsEmpty : (FIELD | allFields | ~INT | ~DECIMAL) IS EMPTY;
 
-fieldIsValid : (FIELD | ~INT | ~DECIMAL) IS VALID;
+fieldIsValid : (FIELD | allFields | ~INT | ~DECIMAL) IS VALID;
 
-fieldIsInvalid : (FIELD | ~INT | ~DECIMAL) IS INVALID;
+fieldIsInvalid : (FIELD | allFields | ~INT | ~DECIMAL) IS INVALID;
 
-fieldContains : (FIELD | ~INT | ~DECIMAL) CONTAINS QUOTED_VALUE;
+fieldContains : (FIELD | allFields | ~INT | ~DECIMAL) CONTAINS QUOTED_VALUE;
 
-fieldMatchesRegexp : (FIELD | ~INT | ~DECIMAL) MATCHES QUOTED_VALUE;
+fieldMatchesRegexp : (FIELD | allFields | ~INT | ~DECIMAL) MATCHES QUOTED_VALUE;
 
-fieldCompliesPattern : (FIELD | ~INT | ~DECIMAL) COMPLIES QUOTED_VALUE;
+fieldCompliesPattern : (FIELD | allFields | ~INT | ~DECIMAL) COMPLIES QUOTED_VALUE;
 
-fieldBetween : (FIELD | ~INT | ~DECIMAL) BETWEEN LBRACK literalValue COMMA literalValue RBRACK;
+fieldBetween : (FIELD | allFields | ~INT | ~DECIMAL) BETWEEN LBRACK literalValue COMMA literalValue RBRACK;
 
-fieldIn : (FIELD | ~INT | ~DECIMAL) IN LBRACK (literalValue | booleanValue) (COMMA (literalValue | booleanValue))* RBRACK;
+fieldIn : (FIELD | allFields | ~INT | ~DECIMAL) IN LBRACK (literalValue | booleanValue) (COMMA (literalValue | booleanValue))* RBRACK;
 
 notExpression : NOT LPAREN expression RPAREN;
 

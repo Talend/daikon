@@ -290,6 +290,18 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
+    public void equalsOnAllFields() throws Exception {
+        // given
+        final Expression query = Tql.parse("* = 10");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
+    @Test
     public void equalsShouldNotMatchBeanOnValue() throws Exception {
         // given
         final Expression query = Tql.parse("value = 'non match'");

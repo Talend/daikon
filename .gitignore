@@ -29,3 +29,4 @@ hs_err_pid*
 .classpath
 Supprimerait content-service-common/src/main/resources/
 Supprimerait local-content-service/src/main/resources/
+/daikon-tql/daikon-tql-core/src/main/antlr4/TqlLexer.tokens

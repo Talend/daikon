@@ -92,7 +92,7 @@ public class ASTVisitor implements IASTVisitor<Object> {
 
     @Override
     public Object visit(ComparisonExpression elt) {
-        FieldReference field = elt.getField();
+        TqlElement field = elt.getField();
         ComparisonOperator operator = elt.getOperator();
         TqlElement valueOrField = elt.getValueOrField();
         String f = (String) field.accept(this);
@@ -204,6 +204,11 @@ public class ASTVisitor implements IASTVisitor<Object> {
         if (!isNegation)
             return Criteria.where(fieldName).regex(value);
         return Criteria.where(fieldName).not().regex(value);
+    }
+
+    @Override
+    public Object visit(AllFields allFields) {
+        throw new UnsupportedOperationException("Not supported on MongoDB");
     }
 
     @Override

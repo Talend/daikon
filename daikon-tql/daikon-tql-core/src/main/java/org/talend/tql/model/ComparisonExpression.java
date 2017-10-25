@@ -13,11 +13,11 @@ public class ComparisonExpression implements Atom {
 
     private final ComparisonOperator operator;
 
-    private final FieldReference field;
+    private final TqlElement field;
 
     private final TqlElement valueOrField;
 
-    public ComparisonExpression(ComparisonOperator operator, FieldReference field, TqlElement valueOrField) {
+    public ComparisonExpression(ComparisonOperator operator, TqlElement field, TqlElement valueOrField) {
         this.operator = operator;
         this.field = field;
         this.valueOrField = valueOrField;
@@ -27,7 +27,7 @@ public class ComparisonExpression implements Atom {
         return operator;
     }
 
-    public FieldReference getField() {
+    public TqlElement getField() {
         return field;
     }
 

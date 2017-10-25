@@ -31,6 +31,14 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     }
 
     @Override
+    public TqlElement visitAllFields(TqlParser.AllFieldsContext ctx) {
+        LOG.debug("Visit all fields.");
+        AllFields allFields = new AllFields();
+        LOG.debug("End visit all fields.");
+        return allFields;
+    }
+
+    @Override
     public TqlElement visitComparisonOperator(TqlParser.ComparisonOperatorContext ctx) {
         LOG.debug("Visit comparison operator: " + ctx.getText());
         TerminalNode child = ctx.getChild(TerminalNode.class, 0);
@@ -79,8 +87,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitLiteralComparison(TqlParser.LiteralComparisonContext ctx) {
         LOG.debug("Visit literal comparison: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        FieldReference fieldTqlElement = (FieldReference) field.accept(this);
+        TqlElement fieldTqlElement = ctx.getChild(0).accept(this);
         TqlParser.ComparisonOperatorContext comparisonOperator = ctx.getChild(TqlParser.ComparisonOperatorContext.class, 0);
         ComparisonOperator comparisonOperatorTqlElement = (ComparisonOperator) comparisonOperator.accept(this);
         TqlParser.LiteralValueContext literalValue = ctx.getChild(TqlParser.LiteralValueContext.class, 0);
@@ -94,8 +101,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitBooleanComparison(TqlParser.BooleanComparisonContext ctx) {
         LOG.debug("Visit boolean comparison: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        FieldReference fieldTqlElement = (FieldReference) field.accept(this);
+        TqlElement fieldTqlElement = ctx.getChild(0).accept(this);
         TerminalNode comparisonOperator = ctx.getChild(TerminalNode.class, 1);
         Token symbol = comparisonOperator.getSymbol();
         String symbolicName = TqlLexer.VOCABULARY.getSymbolicName(symbol.getType());
@@ -110,8 +116,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldComparison(TqlParser.FieldComparisonContext ctx) {
         LOG.debug("Visit field comparison: " + ctx.getText());
-        TerminalNode field1 = ctx.getChild(TerminalNode.class, 0);
-        FieldReference field1TqlElement = (FieldReference) field1.accept(this);
+        TqlElement field1TqlElement = ctx.getChild(0).accept(this);
         TqlParser.ComparisonOperatorContext comparisonOperator = ctx.getChild(TqlParser.ComparisonOperatorContext.class, 0);
         ComparisonOperator comparisonOperatorTqlElement = (ComparisonOperator) comparisonOperator.accept(this);
         TqlParser.FieldReferenceContext field2 = ctx.getChild(TqlParser.FieldReferenceContext.class, 0);

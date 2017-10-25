@@ -14,7 +14,9 @@ package org.talend.tql.bean;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.String.valueOf;
+import static java.util.Collections.singleton;
 import static java.util.Optional.of;
+import static java.util.stream.Stream.concat;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 import java.lang.reflect.Method;
@@ -23,6 +25,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -154,27 +158,37 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         }
 
         Class currentClass = targetClass;
-        Method[] methods = new Method[methodNames.size()];
-        for (int i = 0; i < methodNames.size(); i++) {
-            String[] getterCandidates = new String[] { "get" + WordUtils.capitalize(methodNames.get(i)), //
-                    methodNames.get(i), //
-                    "is" + WordUtils.capitalize(methodNames.get(i)) };
-
-            for (String getterCandidate : getterCandidates) {
+        LinkedList<Method> methods = new LinkedList<>();
+        for (String methodName : methodNames) {
+            if ("_class".equals(methodName)) {
                 try {
-                    methods[i] = currentClass.getMethod(getterCandidate);
-                    break;
-                } catch (Exception e) {
-                    LOGGER.debug("Can't find getter '{}'.", field, e);
+                    methods.add(Class.class.getMethod("getClass"));
+                    methods.add(Class.class.getMethod("getName"));
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalArgumentException("Unable to get methods for class' name.", e);
+                }
+            } else {
+                String[] getterCandidates = new String[] { "get" + WordUtils.capitalize(methodName), //
+                        methodName, //
+                        "is" + WordUtils.capitalize(methodName) };
+
+                final int beforeFind = methods.size();
+                for (String getterCandidate : getterCandidates) {
+                    try {
+                        methods.add(currentClass.getMethod(getterCandidate));
+                        break;
+                    } catch (Exception e) {
+                        LOGGER.debug("Can't find getter '{}'.", field, e);
+                    }
+                }
+                if (beforeFind == methods.size()) {
+                    throw new UnsupportedOperationException("Can't find getter '" + field + "'.");
+                } else {
+                    currentClass = methods.getLast().getReturnType();
                 }
             }
-            if (methods[i] == null) {
-                throw new UnsupportedOperationException("Can't find getter '" + field + "'.");
-            } else {
-                currentClass = methods[i].getReturnType();
-            }
         }
-        return methods;
+        return methods.toArray(new Method[0]);
     }
 
     @Override
@@ -215,21 +229,21 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     public Predicate<T> visit(ComparisonExpression comparisonExpression) {
         comparisonExpression.getValueOrField().accept(this);
         final Object value = literals.pop();
-        final String path = comparisonExpression.getField().getPath();
 
-        // Handle predicate on "_class"
-        if (path.endsWith("._class")) {
-            String field = StringUtils.substringBefore(path, "._class");
-            final Method[] methods = getMethods(field);
-            return unchecked(o -> {
-                final Object fieldValue = invoke(o, methods);
-                return valueOf(value).equals(fieldValue.getClass().getName());
-            });
-        }
-
-        // Standard methods
         comparisonExpression.getField().accept(this);
-        final Method[] getters = currentMethods.pop();
+        if (!currentMethods.isEmpty()) {
+            Predicate<T> predicate = getComparisonPredicate(currentMethods.pop(), comparisonExpression, value);
+            while (!currentMethods.isEmpty()) {
+                predicate = predicate.or(getComparisonPredicate(currentMethods.pop(), comparisonExpression, value));
+            }
+            return predicate;
+        } else {
+            return o -> true;
+        }
+    }
+
+    private Predicate<T> getComparisonPredicate(Method[] getters, ComparisonExpression comparisonExpression, Object value) {
+        // Standard methods
         final ComparisonOperator operator = comparisonExpression.getOperator();
         switch (operator.getOperator()) {
         case EQ:
@@ -351,6 +365,31 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     public Predicate<T> visit(FieldContainsExpression fieldContainsExpression) {
         final Method[] methods = getMethods(fieldContainsExpression.getFieldName());
         return unchecked(o -> StringUtils.containsIgnoreCase(valueOf(invoke(o, methods)), fieldContainsExpression.getValue()));
+    }
+
+    @Override
+    public Predicate<T> visit(AllFields allFields) {
+        final Set<Class> initialClasses = new HashSet<>(singleton(targetClass));
+        visitClassMethods(targetClass, initialClasses);
+
+        return null;
+    }
+
+    private void visitClassMethods(Class targetClass, Set<Class> visitedClasses, Method... previous) {
+        List<Method> previousMethods = Arrays.asList(previous);
+        for (Method method : targetClass.getMethods()) {
+            if (method.getName().startsWith("get") || method.getName().startsWith("is")) {
+                final Method[] path = concat(previousMethods.stream(), Stream.of(method)).collect(Collectors.toList())
+                        .toArray(new Method[0]);
+                currentMethods.push(path);
+
+                // Recursively get methods to nested classes (and prevent infinite recursions).
+                final Class<?> returnType = method.getReturnType();
+                if (!returnType.isPrimitive() && visitedClasses.add(returnType)) {
+                    visitClassMethods(returnType, visitedClasses, path);
+                }
+            }
+        }
     }
 
     private static class Unchecked<T> implements Predicate<T> {
