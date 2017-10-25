@@ -6,8 +6,7 @@ Operator
 ----------
 
 An Operator inherits from the `Operator` class (which implements the `ISerializable` interface).
-All operators are daed-simple Javascript classes which has the `Value` and `HasOperand` properties exported.
-These two properties describes the operator and helps the `serialize()` method to do his job.
+All operators are simple Javascript classes which has the `Value` and `HasOperand` properties exported.
 
 The following operators are supported :
 
