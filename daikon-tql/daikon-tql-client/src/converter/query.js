@@ -27,13 +27,13 @@ export default class Query extends ISerializable {
 	nest(op) {
 		if (
 			op instanceof Query &&
-			(this.last instanceof operators.And || this.last instanceof operators.Or)
+			!(this.last instanceof operators.And || this.last instanceof operators.Or)
 		) {
-			this.stack.push(op);
-			return this;
+			throw new Error("You can't nest a query if there is no AND or OR statement before.");
 		}
 
-		throw new Error("You can't nest a query if there is no AND or OR statement before.");
+		this.stack.push(op);
+		return this;
 	}
 
 	serialize() {
