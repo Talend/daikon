@@ -11,18 +11,18 @@ describe('complies to', () => {
 	it('should be convertible to a valid TQL query', () => {
 		const test = new CompliesTo('f1', 666);
 
-		expect(test.toTQL()).toBe('(f1 complies to 666)');
+		expect(test.serialize()).toBe('(f1 complies to 666)');
 	});
 
 	it('should wrap strings', () => {
 		const test = new CompliesTo('f1', 'Charles');
 
-		expect(test.toTQL()).toBe("(f1 complies to 'Charles')");
+		expect(test.serialize()).toBe("(f1 complies to 'Charles')");
 	});
 
 	it('should handle an empty operand', () => {
 		const test = new CompliesTo('f1', '');
 
-		expect(test.toTQL()).toBe('(f1 is empty)');
+		expect(test.serialize()).toBe('(f1 is empty)');
 	});
 });

@@ -11,6 +11,6 @@ describe('greater than', () => {
 	it('should be convertible to a valid TQL query', () => {
 		const test = new GreaterThan('f1', 666);
 
-		expect(test.toTQL()).toBe('(f1 > 666)');
+		expect(test.serialize()).toBe('(f1 > 666)');
 	});
 });

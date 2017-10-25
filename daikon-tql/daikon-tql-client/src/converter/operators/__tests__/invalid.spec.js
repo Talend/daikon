@@ -10,6 +10,6 @@ describe('invalid', () => {
 	it('should be convertible to a valid TQL query', () => {
 		const test = new Invalid('f1');
 
-		expect(test.toTQL()).toBe('(f1 is invalid)');
+		expect(test.serialize()).toBe('(f1 is invalid)');
 	});
 });

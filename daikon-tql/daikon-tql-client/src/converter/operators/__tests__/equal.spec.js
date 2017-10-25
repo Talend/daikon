@@ -11,18 +11,18 @@ describe('equal', () => {
 	it('should be convertible to a valid TQL query', () => {
 		const test = new Equal('f1', 666);
 
-		expect(test.toTQL()).toBe('(f1 = 666)');
+		expect(test.serialize()).toBe('(f1 = 666)');
 	});
 
 	it('should wrap strings', () => {
 		const test = new Equal('f1', 'Charles');
 
-		expect(test.toTQL()).toBe("(f1 = 'Charles')");
+		expect(test.serialize()).toBe("(f1 = 'Charles')");
 	});
 
 	it('should handle an empty operand', () => {
 		const test = new Equal('f1', '');
 
-		expect(test.toTQL()).toBe('(f1 is empty)');
+		expect(test.serialize()).toBe('(f1 is empty)');
 	});
 });

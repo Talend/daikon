@@ -7,5 +7,6 @@ import LessThan from './less-than';
 import Valid from './valid';
 import Invalid from './invalid';
 import And from './and';
+import Or from './or';
 
-export { Empty, Equal, Contains, CompliesTo, GreaterThan, LessThan, Valid, Invalid, And };
+export { Empty, Equal, Contains, CompliesTo, GreaterThan, LessThan, Valid, Invalid, And, Or };

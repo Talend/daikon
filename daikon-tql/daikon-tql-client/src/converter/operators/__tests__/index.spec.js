@@ -1,19 +1,16 @@
-import { Empty, Equal } from '../';
+import * as operators from '../index';
 
-describe('empty', () => {
-	it('should do something', () => {
-		// const test = new Empty('f1');
-		// console.log(test.toTQL());
-
-		expect(true).toBe(true);
+describe('operators', () => {
+	it('should export every operators', () => {
+		expect(operators.And).toBeTruthy();
+		expect(operators.CompliesTo).toBeTruthy();
+		expect(operators.Contains).toBeTruthy();
+		expect(operators.Empty).toBeTruthy();
+		expect(operators.Equal).toBeTruthy();
+		expect(operators.GreaterThan).toBeTruthy();
+		expect(operators.Invalid).toBeTruthy();
+		expect(operators.LessThan).toBeTruthy();
+		expect(operators.Or).toBeTruthy();
+		expect(operators.Valid).toBeTruthy();
 	});
 });
-//
-// describe('equal', () => {
-// 	it('should do something', () => {
-// 		const test = new Equal('f1', 666);
-// 		console.log(test.toTQL());
-//
-// 		expect(true).toBe(true);
-// 	});
-// });

@@ -10,6 +10,6 @@ describe('empty', () => {
 	it('should be convertible to a valid TQL query', () => {
 		const test = new Empty('f1');
 
-		expect(test.toTQL()).toBe('(f1 is empty)');
+		expect(test.serialize()).toBe('(f1 is empty)');
 	});
 });
