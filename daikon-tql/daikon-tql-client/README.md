@@ -1,8 +1,12 @@
-There is no common library to convert javascript-style filters to TQL.
+The goal of this library is to provide a NPM package that helps to convert javascript-style filters to TQL queries.
 
 
+Operator
+----------
 
-Provide a NPM package that helps to convert javascript-style filters to TQL queries. The following operators are supported :
+An Operator inherits from the `Operator` class (which implements the `ISerializable` interface). All operators are simple Javascript classes which has the `Value` and `HasOperand` properties exported.
+
+The following operators are supported :
 
 - `and`
 - `or`
