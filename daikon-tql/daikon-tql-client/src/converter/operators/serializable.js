@@ -1,5 +1,7 @@
 export default class ISerializable {
+	/* eslint-disable class-methods-use-this */
 	serialize() {
-		console.error('serialize() must be implemented.');
+		throw new Error('serialize() must be implemented.');
 	}
+	/* eslint-enable class-methods-use-this */
 }

@@ -1,7 +1,9 @@
 import * as operators from './operators';
+import ISerializable from './operators/serializable';
 
-export default class Query {
+export default class Query extends ISerializable {
 	constructor() {
+		super();
 		this.stack = [];
 
 		Object.keys(operators).forEach((k) => {
