@@ -15,6 +15,7 @@ The following operators are supported :
 - `is empty`
 - `is invalid`
 - `is valid`
+- `between`
 - `=`
 - `>`
 - `<`
@@ -183,5 +184,4 @@ query.serialize(); // -> '(f1 > 42)  and  (f2 is toto)'
 TODO
 -----
 
-- `between` operator
 - Javascript filters tree to TQL

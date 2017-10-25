@@ -10,10 +10,10 @@ function wrap(value) {
 }
 
 export default class Operator extends ISerializable {
-	constructor(field, operand) {
+	constructor(field, ...operands) {
 		super();
 		this.field = field;
-		this.operand = operand;
+		this.operand = operands.length > 1 ? operands : operands[0];
 	}
 
 	serialize() {
