@@ -7,6 +7,7 @@ import LessThan from './less-than';
 import Valid from './valid';
 import Invalid from './invalid';
 import Between from './between';
+import Quality from './quality';
 import And from './and';
 import Or from './or';
 
@@ -20,6 +21,7 @@ export {
 	Valid,
 	Invalid,
 	Between,
+	Quality,
 	And,
 	Or,
 };
