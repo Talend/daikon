@@ -1,7 +1,7 @@
 import Empty from './empty';
 import Equal from './equal';
 import Contains from './contains';
-import CompliesTo from './complies-to';
+import Complies from './complies';
 import GreaterThan from './greater-than';
 import LessThan from './less-than';
 import Valid from './valid';
@@ -15,7 +15,7 @@ export {
 	Empty,
 	Equal,
 	Contains,
-	CompliesTo,
+	Complies,
 	GreaterThan,
 	LessThan,
 	Valid,

@@ -22,7 +22,7 @@ const mapping = {
 		getValues: () => [],
 	},
 	matches: {
-		operator: 'compliesTo',
+		operator: 'complies',
 		getValues: node => node.args.patterns,
 	},
 	empty_records: {
