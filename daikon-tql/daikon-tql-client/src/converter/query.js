@@ -27,6 +27,7 @@ export default class Query extends ISerializable {
 	nest(op) {
 		if (
 			op instanceof Query &&
+			this.last &&
 			!(this.last instanceof operators.And || this.last instanceof operators.Or)
 		) {
 			throw new Error("You can't nest a query if there is no AND or OR statement before.");

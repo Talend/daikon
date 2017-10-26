@@ -44,6 +44,7 @@ describe('Query', () => {
 		const q1 = new Query();
 		const q2 = new Query();
 		const q3 = new Query();
+		const q4 = new Query();
 
 		q2
 			.equal('q2f1', 76)
@@ -55,19 +56,26 @@ describe('Query', () => {
 			.and()
 			.equal('q3f2', 79);
 
-		q1
-			.greaterThan('f2', 42)
+		q4
+			.equal('q4f1', 80)
 			.and()
+			.equal('q4f2', 81);
+
+		q1
 			.nest(q2)
+			.and()
+			.greaterThan('f2', 42)
 			.and()
 			.lessThan('f2', 666)
 			.or()
 			.nest(q3)
 			.or()
-			.equal('f2', 777);
+			.equal('f2', 777)
+			.and()
+			.nest(q4);
 
 		expect(q1.serialize()).toBe(
-			'(f2 > 42)  and  ((q2f1 = 76)  or  (q2f2 = 77))  and  (f2 < 666)  or  ((q3f1 = 78)  and  (q3f2 = 79))  or  (f2 = 777)',
+			'((q2f1 = 76)  or  (q2f2 = 77))  and  (f2 > 42)  and  (f2 < 666)  or  ((q3f1 = 78)  and  (q3f2 = 79))  or  (f2 = 777)  and  ((q4f1 = 80)  and  (q4f2 = 81))',
 		);
 	});
 
