@@ -12,7 +12,7 @@ function wrap(value) {
 export default class Operator extends ISerializable {
 	constructor(field, ...operands) {
 		super();
-		this.field = field;
+		this.field = field || '*';
 		this.operand = operands.length > 1 ? operands : operands[0];
 	}
 

@@ -81,7 +81,7 @@ describe('Parser', () => {
 		const query = Parser.parse(mock);
 
 		expect(query.serialize()).toEqual(
-			"((0001 contains 'euge')  or  (0001 contains 'secondtestvalue'))  and  (0000 between [342273, 542874])  and  (* is invalid)  and  (* is empty)  and  ((* is empty) or (* is invalid))  and  ((0006 = 'Indonesia')  or  (0006 = 'Russia'))",
+			"((0001 contains 'euge')  or  (0001 contains 'secondtestvalue'))  and  ((0000 between [342273, 542874]))  and  (* is invalid)  and  (* is empty)  and  (((* is empty) or (* is invalid)))  and  ((0006 = 'Indonesia')  or  (0006 = 'Russia'))",
 		);
 	});
 });

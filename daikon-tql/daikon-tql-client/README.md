@@ -16,6 +16,7 @@ The following operators are supported :
 - `is invalid`
 - `is valid`
 - `between`
+- `quality`
 - `=`
 - `>`
 - `<`
@@ -181,7 +182,12 @@ query.serialize(); // -> '(f1 > 42)  and  (f2 is toto)'
 ```
 
 
-TODO
+Parser
 -----
 
-- Javascript filters tree to TQL
+The `Parser` class helps to transform a Javascript-style filters tree to a serializable query :
+
+```javascript
+const query = Parser.parse(myTree);
+query.serialize();
+```

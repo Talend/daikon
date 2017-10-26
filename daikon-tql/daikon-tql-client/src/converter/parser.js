@@ -38,9 +38,9 @@ const mapping = {
 function buildSubQuery(values, operator, column) {
 	const sub = new Query();
 
-	values.reduce((subAcc, subValue, subIndex) => {
-		subAcc[operator](column, subValue.value);
-		return subIndex < values.length - 1 ? subAcc.or() : subAcc;
+	values.reduce((acc, value, index) => {
+		acc[operator](column, value.value);
+		return index < values.length - 1 ? acc.or() : acc;
 	}, sub);
 
 	return sub;
@@ -53,12 +53,10 @@ export default class Parser {
 		tree.reduce((acc, value, index) => {
 			const current = mapping[value.type];
 			const values = current.getValues(value);
-			const column = value.colId || '*';
+			const column = value.colId;
 
 			if (!values.length) {
 				acc[current.operator](column);
-			} else if (values.length === 1) {
-				acc[current.operator](column, values[0].value);
 			} else {
 				acc.nest(buildSubQuery(values, current.operator, column));
 			}
