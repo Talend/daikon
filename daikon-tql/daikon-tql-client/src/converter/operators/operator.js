@@ -12,7 +12,7 @@ function wrap(value) {
 }
 
 function isDefined(value) {
-	return value != null && value !== '' && value !== 0;
+	return value != null && value !== '';
 }
 
 /**
