@@ -1,0 +1,27 @@
+{
+  "name": "MessageKey",
+  "namespace": "org.talend.daikon.messages",
+  "doc" : "Defines a common structure for message keys",
+  "type": "record",
+  "fields" : [
+    {
+      "name" : "tenantId",
+      "type" : ["null", "string"],
+      "doc" : "The tenant identifier. Can be null in a single-tenant context."
+    },
+    {
+      "name" : "random",
+      "doc" : "A random string value to balance messages partitioning when no no keys are provided",
+      "type" : ["null", "string"],
+      "default" : null
+    },
+    {
+      "name" : "keys",
+      "doc" : "Partitioning keys to be used when messages partitioning must be predictable",
+      "type" : ["null", {
+        "type" : "map",
+        "values" : "string"
+      }]
+    }
+  ]
+}

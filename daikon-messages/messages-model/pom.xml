@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.talend.daikon</groupId>
+        <artifactId>daikon-messages</artifactId>
+        <version>0.18.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>messages-model</artifactId>
+    <name>messages-model</name>
+
+    <properties>
+        <avro.version>1.8.1</avro.version>
+    </properties>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/avro</directory>
+            </resource>
+        </resources>
+       <plugins>
+           <plugin>
+               <groupId>org.apache.avro</groupId>
+               <artifactId>avro-maven-plugin</artifactId>
+               <version>${avro.version}</version>
+               <executions>
+                   <execution>
+                       <phase>generate-sources</phase>
+                       <goals>
+                           <goal>schema</goal>
+                       </goals>
+                       <configuration>
+                           <stringType>String</stringType>
+                           <imports>
+                               <import>${project.basedir}/src/main/avro/MessageHeader.avsc</import>
+                               <import>${project.basedir}/src/main/avro/MessagePayload.avsc</import>
+                           </imports>
+                       </configuration>
+                   </execution>
+               </executions>
+           </plugin>
+       </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>${avro.version}</version>
+        </dependency>
+       <!-- Tests -->
+       <dependency>
+           <groupId>junit</groupId>
+           <artifactId>junit</artifactId>
+           <scope>test</scope>
+       </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+        </dependency>
+    </dependencies>
+</project>

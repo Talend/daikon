@@ -30,6 +30,7 @@
         <module>daikon-logging</module>
         <module>daikon-multitenant</module>
         <module>daikon-tql</module>
+        <module>daikon-messages</module>
         <module>daikon-audit</module>
       <module>daikon-i18n</module>
     </modules>

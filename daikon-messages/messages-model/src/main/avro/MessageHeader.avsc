@@ -1,0 +1,73 @@
+{
+  "name": "MessageHeader",
+  "namespace": "org.talend.daikon.messages",
+  "doc" : "Defines common message header",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "doc": "Message unique identifier - Must be globally unique - typically UUID",
+      "type": "string"
+    },
+    {
+      "name": "timestamp",
+      "doc": "Message creation timestamp (number of milliseconds since Epoch)",
+      "type": "long"
+    },
+    {
+      "name": "issuer",
+      "doc": "Message creator description - what about application? service instance?",
+      "type": {
+        "name": "MessageIssuer",
+        "namespace": "org.talend.daikon.messages",
+        "type": "record",
+        "fields": [
+          {
+            "name": "service",
+            "doc" : "Service identifier (e.g dataset, streams-inventory ...)",
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "doc" : "Service version (e.g X-Y-Z-qualifier)",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "type",
+      "doc": "A message can be either a command or an event.",
+      "type" : {
+        "name" : "MessageTypes",
+        "type" : "enum",
+        "symbols" : ["COMMAND", "EVENT", "QUERY"]
+      }
+    },
+    {
+      "name" : "name",
+      "doc" : "The message name - identifies the purpose of the message (e.g. datasetCreated, createUser)",
+      "type" : "string"
+    },
+    {
+      "name": "correlationId",
+      "doc": "Id of the request that initiated this message.",
+      "type": "string"
+    },
+    {
+      "name": "tenantId",
+      "doc": "Tenant identifier in case of multi-tenancy. Null value means not in the context of a tenant",
+      "type": ["null", "string"]
+    },
+    {
+      "name": "userId",
+      "doc": "Id of the user who initiated this message. Null value means not authenticated",
+      "type": ["null", "string"]
+    },
+    {
+      "name" : "securityToken",
+      "doc" : "User's security token",
+      "type" : ["null", "string"]
+    }
+  ]
+}
