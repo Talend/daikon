@@ -46,9 +46,7 @@ export default class Operator extends ISerializable {
 			return `(${this.field} ${this.constructor.value} ${wrap(this.operand)})`;
 		} else if (this.constructor.hasOperand === false) {
 			return `(${this.field} ${this.constructor.value})`;
-		}
-
-		if (this.constructor.allowEmpty === true) {
+		} else if (this.constructor.allowEmpty === true) {
 			return `(${this.field} ${Empty.value})`;
 		}
 
