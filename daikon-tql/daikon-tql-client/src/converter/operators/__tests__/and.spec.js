@@ -4,7 +4,7 @@ describe('and', () => {
 	it('should create a new empty operator', () => {
 		const test = new And();
 
-		expect(test.constructor.Value).toBe('and');
+		expect(test.constructor.value).toBe('and');
 	});
 
 	it('should be serializable to a valid TQL operator', () => {

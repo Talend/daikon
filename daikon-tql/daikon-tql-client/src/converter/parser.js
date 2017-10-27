@@ -46,7 +46,15 @@ function buildSubQuery(values, operator, column) {
 	return sub;
 }
 
+/**
+ * Class representing the Parser.
+ */
 export default class Parser {
+	/**
+	 * Convert a Javascript-style filters tree to a serializable query.
+	 * @param {object} tree - The Javascript-style filters tree.
+	 * @return {Query} The serializable query.
+	 */
 	static parse(tree) {
 		const query = new Query();
 

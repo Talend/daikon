@@ -1,5 +1,5 @@
 import * as operators from './operators';
-import ISerializable from './operators/serializable';
+import ISerializable from './operators/iserializable';
 
 export default class Query extends ISerializable {
 	constructor() {

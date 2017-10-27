@@ -1,9 +1,13 @@
-import ISerializable from './serializable';
+import ISerializable from './iserializable';
 
+/**
+ * Class representing the And operator.
+ * Will be serialized as follows : and
+ */
 export default class And extends ISerializable {
-	static Value = 'and';
+	static value = 'and';
 
 	serialize() {
-		return ` ${this.constructor.Value} `;
+		return ` ${this.constructor.value} `;
 	}
 }

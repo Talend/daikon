@@ -10,7 +10,7 @@ The following operators are supported :
 
 - `and`
 - `or`
-- `complies to`
+- `complies`
 - `contains`
 - `is empty`
 - `is invalid`
@@ -148,8 +148,8 @@ For example, to create a new `toto` operator, create `src/converter/operators/to
 import Operator from './operator';
 
 export default class Toto extends Operator {
-	static Value = 'is toto';
-	static HasOperand = false;
+	static value = 'is toto';
+	static hasOperand = false;
 }
 ```
 

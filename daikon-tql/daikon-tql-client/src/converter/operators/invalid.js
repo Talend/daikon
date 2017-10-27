@@ -1,6 +1,10 @@
 import Operator from './operator';
 
+/**
+ * Class representing the Invalid operator.
+ * Will be serialized as follows : (field1 is invalid)
+ */
 export default class Invalid extends Operator {
-	static Value = 'is invalid';
-	static HasOperand = false;
+	static value = 'is invalid';
+	static hasOperand = false;
 }

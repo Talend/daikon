@@ -1,9 +1,13 @@
-import ISerializable from './serializable';
+import ISerializable from './iserializable';
 
+/**
+ * Class representing the Or operator.
+ * Will be serialized as follows : or
+ */
 export default class Or extends ISerializable {
-	static Value = 'or';
+	static value = 'or';
 
 	serialize() {
-		return ` ${this.constructor.Value} `;
+		return ` ${this.constructor.value} `;
 	}
 }
