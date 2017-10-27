@@ -8,4 +8,5 @@ import Operator from './operator';
 export default class Equal extends Operator {
 	static value = '=';
 	static hasOperand = true;
+	static allowEmpty = true;
 }

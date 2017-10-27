@@ -26,7 +26,7 @@ Operator
 ----------
 
 An Operator inherits from the `Operator` class (which implements the `ISerializable` interface).
-All operators are daed-simple Javascript classes which has the `Value` and `HasOperand` properties exported.
+All operators are dead-simple Javascript classes which has the `Value` and `HasOperand` properties exported.
 These two properties describes the operator and helps the `serialize()` method to do his job.
 
 Query
@@ -140,7 +140,7 @@ Will produce :
 How to create an operator ?
 ---------------------------
 
-To add you own operator, you just have to create a new class under `src/converter/operators/`.
+To add your own operator, you just have to create a new class under `src/converter/operators/`.
 
 For example, to create a new `toto` operator, create `src/converter/operators/toto.js` :
 

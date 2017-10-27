@@ -1,5 +1,6 @@
 import Operator from './operator';
-import { Empty, Invalid, Or } from './';
+import { Empty, Invalid } from './';
+import Compositor from '../compositor';
 
 /**
  * Class representing the Quality operator.
@@ -7,6 +8,6 @@ import { Empty, Invalid, Or } from './';
  */
 export default class Quality extends Operator {
 	serialize() {
-		return `((${this.field} ${Empty.value}) ${Or.value} (${this.field} ${Invalid.value}))`;
+		return `((${this.field} ${Empty.value}) ${Compositor.or} (${this.field} ${Invalid.value}))`;
 	}
 }
