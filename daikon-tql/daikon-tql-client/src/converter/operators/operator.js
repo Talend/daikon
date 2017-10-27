@@ -1,6 +1,8 @@
 import Empty from './empty';
 import ISerializable from './iserializable';
 
+const WILDCARD = '*';
+
 function isString(value) {
 	return typeof value === 'string';
 }
@@ -26,7 +28,7 @@ export default class Operator extends ISerializable {
 	 */
 	constructor(field, operands) {
 		super();
-		this.field = field || '*';
+		this.field = field || WILDCARD;
 
 		if (Array.isArray(operands)) {
 			this.operand = operands.length > 1 ? operands : operands[0];
