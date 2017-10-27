@@ -21,12 +21,18 @@ export default class Operator extends ISerializable {
 	/**
 	 * Create an Operator.
 	 * @param {string} field - The field on which to apply the operator.
-	 * @param {Array} operands - The operand(s) of the operation.
+	 * @param {any} operands - The operand(s) of the operation.
+	 * This could be an array or a single value.
 	 */
-	constructor(field, ...operands) {
+	constructor(field, operands) {
 		super();
 		this.field = field || '*';
-		this.operand = operands.length > 1 ? operands : operands[0];
+
+		if (Array.isArray(operands)) {
+			this.operand = operands.length > 1 ? operands : operands[0];
+		} else {
+			this.operand = operands;
+		}
 	}
 
 	/**
