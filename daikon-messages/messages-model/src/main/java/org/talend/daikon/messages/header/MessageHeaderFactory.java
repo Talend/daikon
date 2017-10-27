@@ -13,6 +13,7 @@
 package org.talend.daikon.messages.header;
 
 import org.talend.daikon.messages.MessageHeader;
+import org.talend.daikon.messages.MessageTypes;
 
 /**
  * A factory for normalized {@link MessageHeader}
@@ -20,18 +21,12 @@ import org.talend.daikon.messages.MessageHeader;
 public interface MessageHeaderFactory {
 
     /**
-     * Creates a new message header for a command with the provided name
+     * Creates a new message header for the provided message type and name
      * 
-     * @param commandName the name of the command
-     * @return the header
+     * @param type the message type
+     * @param messageName the message name
+     * @return the newly created message header
      */
-    MessageHeader createCommandHeader(String commandName);
-
-    /**
-     * Creates a new message header for an event with the provided name
-     * @param eventName the name of the event
-     * @return the header
-     */
-    MessageHeader createEventHeader(String eventName);
+    MessageHeader createMessageHeader(MessageTypes type, String messageName);
 
 }

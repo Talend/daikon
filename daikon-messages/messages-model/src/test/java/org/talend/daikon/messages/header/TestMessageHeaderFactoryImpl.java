@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.talend.daikon.messages.MessageHeader;
 import org.talend.daikon.messages.MessageTypes;
-import org.talend.daikon.messages.header.*;
 
 public class TestMessageHeaderFactoryImpl {
 
@@ -48,7 +47,7 @@ public class TestMessageHeaderFactoryImpl {
     public void testCommandCreation() {
         String name = "commandName";
         MessageHeaderFactory factory = createFactory();
-        MessageHeader commandHeader = factory.createCommandHeader(name);
+        MessageHeader commandHeader = factory.createMessageHeader(MessageTypes.COMMAND, name);
         assertMessageHeader(commandHeader, MessageTypes.COMMAND, name);
     }
 
@@ -56,7 +55,7 @@ public class TestMessageHeaderFactoryImpl {
     public void testEventCreation() {
         String name = "eventName";
         MessageHeaderFactory factory = createFactory();
-        MessageHeader eventHeader = factory.createEventHeader(name);
+        MessageHeader eventHeader = factory.createMessageHeader(MessageTypes.EVENT, name);
         assertMessageHeader(eventHeader, MessageTypes.EVENT, name);
     }
 
@@ -65,7 +64,7 @@ public class TestMessageHeaderFactoryImpl {
         String name = "eventName";
         messageIdMock = null;
         MessageHeaderFactory factory = createFactory();
-        factory.createEventHeader(name);
+        factory.createMessageHeader(MessageTypes.EVENT, name);
     }
 
     private void assertMessageHeader(MessageHeader header, MessageTypes type, String name) {

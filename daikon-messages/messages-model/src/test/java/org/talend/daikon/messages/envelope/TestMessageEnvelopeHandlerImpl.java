@@ -39,7 +39,7 @@ public class TestMessageEnvelopeHandlerImpl {
 
         Mockito.when(messageConverterRegistry.getMessageConverter(FORMAT)).thenReturn(new TestMessageConverter());
 
-        Mockito.when(messageHeaderFactory.createCommandHeader(MESSAGE_NAME)).thenReturn(messageHeader);
+        Mockito.when(messageHeaderFactory.createMessageHeader(MessageTypes.COMMAND, MESSAGE_NAME)).thenReturn(messageHeader);
     }
 
     @Test

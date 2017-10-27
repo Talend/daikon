@@ -50,14 +50,7 @@ public class MessageEnvelopeHandlerImpl implements MessageEnvelopeHandler {
     }
 
     private MessageHeader createMessageHeader(MessageTypes type, String messageName) {
-        switch (type) {
-        case COMMAND:
-            return messageHeaderFactory.createCommandHeader(messageName);
-        case EVENT:
-            return messageHeaderFactory.createEventHeader(messageName);
-        default:
-            throw new IllegalArgumentException("Unsupported message type " + type);
-        }
+        return messageHeaderFactory.createMessageHeader(type, messageName);
     }
 
     private MessageConverter getMessageConverter(String format) {

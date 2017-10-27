@@ -51,16 +51,7 @@ public class MessageHeaderFactoryImpl implements MessageHeaderFactory {
     }
 
     @Override
-    public MessageHeader createCommandHeader(String commandName) {
-        return createMessageHeader(MessageTypes.COMMAND, commandName);
-    }
-
-    @Override
-    public MessageHeader createEventHeader(String eventName) {
-        return createMessageHeader(MessageTypes.EVENT, eventName);
-    }
-
-    protected MessageHeader createMessageHeader(MessageTypes type, String name) {
+    public MessageHeader createMessageHeader(MessageTypes type, String name) {
         return MessageHeader.newBuilder().setId(idGenerator.generateEventId())
                 .setTimestamp(timestampProvider.getCurrentTimestamp()).setIssuer(createMessageIssuer()).setType(type)
                 .setName(name).setTenantId(tenantIdProvider.getTenantId()).setUserId(userProvider.getUserId())

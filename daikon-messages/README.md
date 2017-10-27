@@ -2,7 +2,7 @@
 
 ## Overview
 
-The purpose of this module is to provide a common infrastructure to normalize messages exchanged by Talend services.
+The purpose of this module is to provide a common infrastructure to normalize asynchronous messages exchanged by Talend services.
 
 Messages can either be events or commands:
 - events relate past actions or modifications that were processed by the issuing service. 
@@ -11,25 +11,27 @@ Messages can either be events or commands:
 When a command is executed by a service, this service will generate events once the action is completed. 
 When a service consumes an event, it can issue new commands or events as a consequence.
 
-TODO: asynchronous communication only.
-
 ### Messages standardization levels and benefits
 
-This implementation provides normalization at 3 levels:
+This implementation provides standardization at 3 levels:
 
-**Messages format normalization** using Apache Avro, all messages will use the same serialization mechanism and schema definition
-framework. This level is a mandatory piece to achieve the other levels. 
+**Messages format standardization** using Apache Avro, all messages will use the same serialization mechanism and schema definition
+framework. This level is a mandatory piece to achieve the other levels.
+ 
+The reasons why Apache Avro was selected are:
+- it is open-source and standard implementations are provided in different languages and framework (Java, C, C++, C#, Python)
+- it ensures the messages sent across the platform are valid as it enforces data types and schema validation (not the case in JSON natively)  
+- it minimizes the size of messages payload (compared to JSON or XML)
+- it integrates well with Apache Kafka (See [Confluent platform](https://docs.confluent.io/current/platform.html) 
+ and [Spring boot](https://docs.spring.io/spring-cloud-stream/docs/current/reference/html/schema-evolution.html))
+- it is designed for schema evolution
 
-TODO: reasons why Avro
-
-TODO: use standardization
-
-**Infrastructure metadata normalization** is mandatory to achieve technical and functional integration and ensure interoperability. 
+**Infrastructure metadata standardization** is mandatory to achieve technical and functional integration and ensure interoperability. 
  It mainly focuses on execution context propagation (messages correlation, security context propagation) but will help in other subjects as 
  messages routing, filtering and basic audit trail construction. To achieve this part, this module provides a normalized message header and 
  a framework to generate this header as well as a normalized message key.
 
-**Domain metadata normalization** will help creating generic added-value services (lineage, human readable audit, ...) by 
+**Domain metadata standardization** will help creating generic added-value services (lineage, human readable audit, ...) by 
  making messages interpretation a generic process. To achieve this part, this module provides a way to normalize semantic information in 
  messages Avro schemas.
 
@@ -75,13 +77,34 @@ to access the content of this normalized header by using
  MessageHeader header = (MessageHeader)message.get(0);
 ```
 
-A [MessageHeaderExtractor](messages-model/src/main/java/org/talend/daikon/messages/MessageHeaderExtractor.java) utility is provided to extract message headers from
+A [MessageHeaderExtractor](messages-model/src/main/java/org/talend/daikon/messages/header/MessageHeaderExtractor.java) utility is provided to extract message headers from
 an IndexedRecord
 
 ```
 MessageHeaderExtractor extractor = new MessageHeaderExtractor();
 IndexedRecord message = ...;
 MessageHeader header = exactor.extractMessageHeader(message);
+```
+
+The [MessageHeaderFactory](messages-model/src/main/java/org/talend/daikon/messages/header/MessageHeaderFactory.java) interface should be the main entry point to create
+ message header objects. Its default [implementation](messages-model/src/main/java/org/talend/daikon/messages/header/MessageHeaderFactoryImpl.java) delegates header information retrieval
+ to different providers:
+ 
+- [IdGenerator](messages-model/src/main/java/org/talend/daikon/messages/header/IdGenerator.java): responsible to generate messages unique identified. A default implementation uses Java UUID  
+- [ServiceInfoProvider](messages-model/src/main/java/org/talend/daikon/messages/header/ServiceInfoProvider.java): provides current service information
+- [TimestampProvider](messages-model/src/main/java/org/talend/daikon/messages/header/TimestampProvider.java): current timestamp provider. A default implementation uses local timestamp
+- [UserProvider](messages-model/src/main/java/org/talend/daikon/messages/header/UserProvider.java): provides the current user id
+- [TenantIdProvider](messages-model/src/main/java/org/talend/daikon/messages/header/TenantIdProvider.java): provides the current tenant id  
+- [CorrelationIdProvider](messages-model/src/main/java/org/talend/daikon/messages/header/CorrelationIdProvider.java): provides the current correlation id 
+- [SecurityTokenProvider](messages-model/src/main/java/org/talend/daikon/messages/header/SecurityTokenProvider.java): provides the current security token 
+ 
+These provides should be implemented by the different framework supports project (Spring boot support, Scala stack support ...)
+
+As a result, generating a message header should be as simple as:
+
+```
+MessageHeaderFactory factory = ...;
+MessageHeader header = factory.createMessageHeader(MessageTypes.COMMAND, "CreateDataset");
 ```
 
 ### Message envelope
@@ -126,6 +149,42 @@ MyMessage message = (MyMessage) handler.unwrap(envelope);
 ```
 
 ### Common message keys
+
+As messages are distributed by Apache Kafka, messages keys should also be normalized.
+
+Message keys are involved in the process of messages partitioning in Kafka, the provided design addresses the following use cases:
+- the message key should contain the tenant identifier in a multi-tenant context so that the message payload can be entirely encrypted and decrypted using a tenant specific key
+- by default, messages should be randomly partitioned in a topic to make sure the load is correctly balanced
+- if required, message partitioning mechanism should influenced by implementation-specific partitioning keys so that messages with the same keys should be routed to the same partition.
+
+The latest use case is important if messages ordering is required. In this case tenant identifier should be taken into account in the partitioning strategy.
+
+The [messages-model](messages-model) module provides a common [Avro schema to represent message keys](messages-model/src/main/avro/MessageKey.avsc) for message keys and a 
+[framework](messages-model/src/main/java/org/talend/daikon/messages/keys/MessageKeyFactory.java) to manipulate these keys.
+
+To generate a message key that will fit random partitioning (either multi-tenant or not)
+ 
+```
+MessageKeyFactory factory = ...;
+MessageKey key = factory.createMessageKey();
+```
+
+The MessageKeyFactory implementation will ensure the tenant id is extracted from the current execution context. The implementation will add a random string in the message key
+payload to enforce random distribution across tenants.
+
+In order to implement a predictable partitioning strategy on messages based on 3 functional properties (property1, property2, property3)
+
+```
+MessageKeyFactory factory = ...;
+MessageKey key = factory.buildMessageKey()
+.withKey("property1", value1)
+.withKey("property2", value2)
+.withKey("property3", value3)
+.buid();
+```
+
+Again, the MessageKeyFactory implementation will integrate current tenant id and will add the provided partitioning keys in the message key and do not add additional
+information.
 
 
 
