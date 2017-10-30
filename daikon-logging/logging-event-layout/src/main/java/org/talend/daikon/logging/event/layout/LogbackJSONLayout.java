@@ -29,11 +29,10 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
     private JSONObject logstashEvent;
 
     /**
-     * For backwards compatibility, the default is to generate location information
-     * in the log messages.
+     * Print no location info by default.
      */
     public LogbackJSONLayout() {
-        this(true);
+        this(false);
     }
 
     /**
