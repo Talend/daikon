@@ -11,7 +11,7 @@ describe('Query', () => {
 			.and()
 			.valid('f3');
 
-		expect(q.serialize()).toBe('(f1 = 42)  and  (f2 is empty)  and  (f3 is valid)');
+		expect(q.serialize()).toBe('(f1 = 42) and (f2 is empty) and (f3 is valid)');
 	});
 
 	it('should be able to perform OR statements', () => {
@@ -24,7 +24,7 @@ describe('Query', () => {
 			.or()
 			.equal('f2', 666);
 
-		expect(q.serialize()).toBe("(f1 contains 'heho')  or  (f2 > 42)  or  (f2 = 666)");
+		expect(q.serialize()).toBe("(f1 contains 'heho') or (f2 > 42) or (f2 = 666)");
 	});
 
 	it('should be able to mix OR and AND statements', () => {
@@ -37,7 +37,7 @@ describe('Query', () => {
 			.or()
 			.equal('f2', 777);
 
-		expect(q.serialize()).toBe('(f2 > 42)  and  (f2 < 666)  or  (f2 = 777)');
+		expect(q.serialize()).toBe('(f2 > 42) and (f2 < 666) or (f2 = 777)');
 	});
 
 	it('should be able to nest queries', () => {
@@ -75,7 +75,7 @@ describe('Query', () => {
 			.nest(q4);
 
 		expect(q1.serialize()).toBe(
-			'((q2f1 = 76)  or  (q2f2 = 77))  and  (f2 > 42)  and  (f2 < 666)  or  ((q3f1 = 78)  and  (q3f2 = 79))  or  (f2 = 777)  and  ((q4f1 = 80)  and  (q4f2 = 81))',
+			'((q2f1 = 76) or (q2f2 = 77)) and (f2 > 42) and (f2 < 666) or ((q3f1 = 78) and (q3f2 = 79)) or (f2 = 777) and ((q4f1 = 80) and (q4f2 = 81))',
 		);
 	});
 
@@ -113,5 +113,29 @@ describe('Query', () => {
 				.nest(q2)
 				.lessThan('f2', 666);
 		}).toThrow('Only AND or OR operators are allowed after a query.');
+	});
+
+	it('should modify the query', () => {
+		const q1 = new Query();
+		const q2 = new Query();
+		const q3 = new Query();
+
+		q2
+			.equal('q2f1', 76)
+			.or()
+			.greaterThan('q2f2', 666);
+
+		q3.equal('q3f1', 78);
+
+		const test = q1
+			.greaterThan('f2', 42)
+			.or()
+			.not(q2)
+			.and()
+			.lessThan('f2', 666);
+
+		expect(test.serialize()).toEqual(
+			'(f2 > 42) or not((q2f1 = 76) or (q2f2 > 666)) and (f2 < 666)',
+		);
 	});
 });
