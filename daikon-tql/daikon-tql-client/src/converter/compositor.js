@@ -18,6 +18,6 @@ export default class Compositor extends ISerializable {
 	}
 
 	serialize() {
-		return ` ${this.type} `;
+		return this.type;
 	}
 }

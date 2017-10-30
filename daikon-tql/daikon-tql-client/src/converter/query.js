@@ -1,6 +1,8 @@
 import * as operators from './operators';
 import ISerializable from './operators/iserializable';
 import Compositor from './compositor';
+import Modifier from './modifier';
+import Operator from './operators/operator';
 
 export default class Query extends ISerializable {
 	constructor() {
@@ -14,11 +16,22 @@ export default class Query extends ISerializable {
 
 		this.and = () => this.add(Compositor.get(Compositor.and));
 		this.or = () => this.add(Compositor.get(Compositor.or));
+
+		this.not = query => this.add(new Modifier(Modifier.not, query));
 	}
 
 	add(op) {
-		if (this.last instanceof Query && !(op instanceof Compositor)) {
+		if (
+			(this.last instanceof Query ||
+				this.last instanceof Modifier ||
+				this.last instanceof Operator) &&
+			!(op instanceof Compositor)
+		) {
 			throw new Error('Only AND or OR operators are allowed after a query.');
+		}
+
+		if (op instanceof Modifier && !(this.last instanceof Compositor)) {
+			throw new Error('Only Compositors are allowed after a Modifier.');
 		}
 
 		this.stack.push(op);

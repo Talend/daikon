@@ -5,13 +5,13 @@ describe('Compositor', () => {
 		const c = Compositor.get(Compositor.and);
 
 		expect(c instanceof Compositor).toBe(true);
-		expect(c.serialize()).toBe(' and ');
+		expect(c.serialize()).toBe('and');
 	});
 
 	it('should create a OR compositor', () => {
 		const c = Compositor.get(Compositor.or);
 
 		expect(c instanceof Compositor).toBe(true);
-		expect(c.serialize()).toBe(' or ');
+		expect(c.serialize()).toBe('or');
 	});
 });

@@ -37,6 +37,23 @@ query.equal('f1', 666).or().equal('f2', 777);
 ```
 
 
+Modifier
+-------
+
+A Modifier changes the meaning of an operator or a query.
+
+The following modifiers are supported :
+
+- `not`
+
+They can be part of a query :
+
+
+```javascript
+query.equal('f1', 666).or().not(new Equal('f2', 777));
+```
+
+
 Query
 -------
 
@@ -101,7 +118,7 @@ query
 	.or()
 	.equal('f2', 777);
 
-query.serialize(); // -> '(f2 > 42)  and  (f2 < 76)  or  (f2 = 777)'
+query.serialize(); // -> '(f2 > 42) and (f2 < 76)  or  (f2 = 777)'
 ```
 
 Obviously, priority is conserved on nested queries :
@@ -140,8 +157,8 @@ Will produce :
 ```sql
 (f2 > 42)  and (
 	(q2f1 = 76)  or  (q2f2 = 77)
-)  and  (f2 < 666)  or  (
-	(q3f1 = 78)  and  (q3f2 = 79)
+) and (f2 < 666)  or  (
+	(q3f1 = 78) and (q3f2 = 79)
 )  or  (f2 = 777)
 ```
 
@@ -186,7 +203,7 @@ query
 	.and()
 	.toto('f2');
 
-query.serialize(); // -> '(f1 > 42)  and  (f2 is toto)'
+query.serialize(); // -> '(f1 > 42) and (f2 is toto)'
 ```
 
 
