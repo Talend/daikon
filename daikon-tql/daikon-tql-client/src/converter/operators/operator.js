@@ -24,11 +24,13 @@ export default class Operator extends ISerializable {
 	 * Create an Operator.
 	 * @param {string} field - The field on which to apply the operator.
 	 * @param {any} operands - The operand(s) of the operation.
+	 * @param {object} options - The options of the operator.
 	 * This could be an array or a single value.
 	 */
-	constructor(field, operands) {
+	constructor(field, operands, options) {
 		super();
 		this.field = field || WILDCARD;
+		this.options = options || {};
 
 		if (Array.isArray(operands)) {
 			this.operand = operands.length > 1 ? operands : operands[0];
@@ -50,6 +52,6 @@ export default class Operator extends ISerializable {
 			return `(${this.field} ${Empty.value})`;
 		}
 
-		throw new Error(`${this.constructor.valud} does not allow empty.`);
+		throw new Error(`${this.constructor.value} does not allow empty.`);
 	}
 }
