@@ -1,5 +1,5 @@
 import Operator from './operator';
-import { Empty, Invalid } from './';
+import { Empty, Invalid, Valid } from './';
 import Compositor from '../compositor';
 
 /**
@@ -8,6 +8,22 @@ import Compositor from '../compositor';
  */
 export default class Quality extends Operator {
 	serialize() {
-		return `((${this.field} ${Empty.value}) ${Compositor.or} (${this.field} ${Invalid.value}))`;
+		const operations = [];
+
+		if (this.options.empty) {
+			operations.push(new Empty(this.field));
+		}
+		if (this.options.invalid) {
+			operations.push(new Invalid(this.field));
+		}
+		if (this.options.valid) {
+			operations.push(new Valid(this.field));
+		}
+
+		if (!operations.length) {
+			throw new Error('Invalid options given to quality operator.');
+		}
+
+		return `(${operations.map(o => o.serialize()).join(` ${Compositor.or} `)})`;
 	}
 }
