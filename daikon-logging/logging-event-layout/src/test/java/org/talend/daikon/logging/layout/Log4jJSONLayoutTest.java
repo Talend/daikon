@@ -1,5 +1,7 @@
 package org.talend.daikon.logging.layout;
 
+import static org.junit.Assert.assertFalse;
+
 import java.util.Properties;
 
 import org.apache.log4j.Level;
@@ -7,11 +9,18 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
+import org.junit.Test;
 import org.talend.daikon.logging.event.layout.Log4jJSONLayout;
 
 public class Log4jJSONLayoutTest extends AbstractLayoutTest {
 
     static final Logger LOGGER = Logger.getRootLogger();
+
+    @Test
+    public void testDefaultLocationInfo() {
+        Log4jJSONLayout layout = new Log4jJSONLayout();
+        assertFalse(layout.getLocationInfo());
+    }
 
     @Override
     protected Object newEvent(LogDetails logDetails) {

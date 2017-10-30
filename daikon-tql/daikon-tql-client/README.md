@@ -8,8 +8,6 @@ An Operator inherits from the `Operator` class (which implements the `ISerializa
 
 The following operators are supported :
 
-- `and`
-- `or`
 - `complies`
 - `contains`
 - `is empty`
@@ -22,12 +20,22 @@ The following operators are supported :
 - `<`
 
 
-Operator
-----------
+Compositor
+-------
 
-An Operator inherits from the `Operator` class (which implements the `ISerializable` interface).
-All operators are dead-simple Javascript classes which has the `Value` and `HasOperand` properties exported.
-These two properties describes the operator and helps the `serialize()` method to do his job.
+A Compositor is the only way to join operators in a query.
+
+The following compositors are supported :
+
+- `and`
+- `or`
+
+They can be used as the same way as an operator in a query :
+
+```javascript
+query.equal('f1', 666).or().equal('f2', 777);
+```
+
 
 Query
 -------
