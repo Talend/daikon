@@ -13,30 +13,116 @@
 
     <properties>
         <antlr.version>4.5.3</antlr.version>
+        <node.version>v7.7.4</node.version>
+        <npm.version>3.10.10</npm.version>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>yyyyMMddHHmmssSSS</maven.build.timestamp.format>
     </properties>
 
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/generated-modules/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <version>${antlr.version}</version>
-                <configuration>
-                    <outputDirectory>${basedir}/target/generated-sources/antlr/org/talend/tql</outputDirectory>
-                    <visitor>true</visitor>
-                    <treatWarningsAsErrors>true</treatWarningsAsErrors>
-                </configuration>
                 <executions>
                     <execution>
                         <id>generate</id>
                         <goals>
                             <goal>antlr4</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/generated-sources/antlr/org/talend/tql</outputDirectory>
+                            <visitor>true</visitor>
+                            <treatWarningsAsErrors>true</treatWarningsAsErrors>
+                            <arguments>
+                                <argument>-package</argument>
+                                <argument>org.talend.tql</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-javaScript</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/generated-modules/tql</outputDirectory>
+                            <visitor>true</visitor>
+                            <treatWarningsAsErrors>true</treatWarningsAsErrors>
+                            <options>
+                                <language>JavaScript</language>
+                            </options>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>npm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.5</version>
+
+                        <executions>
+                            <execution>
+
+                                <id>install node and yarn</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <nodeVersion>${node.version}</nodeVersion>
+                                    <npmVersion>${npm.version}</npmVersion>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm build module</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <arguments>publish ${basedir}/target/generated-modules/tql</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>

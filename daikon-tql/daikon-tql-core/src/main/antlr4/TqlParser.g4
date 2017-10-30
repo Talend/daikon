@@ -2,10 +2,6 @@
 
 parser grammar TqlParser;
 
-@header {
-package org.talend.tql;
-}
-
 options { tokenVocab=TqlLexer; }
 
 /**
