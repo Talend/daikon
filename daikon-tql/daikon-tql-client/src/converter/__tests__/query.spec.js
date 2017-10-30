@@ -127,14 +127,14 @@ describe('Query', () => {
 
 		q3.equal('q3f1', 78);
 
-		const test = q1
+		q1
 			.greaterThan('f2', 42)
 			.or()
 			.not(q2)
 			.and()
 			.lessThan('f2', 666);
 
-		expect(test.serialize()).toEqual(
+		expect(q1.serialize()).toEqual(
 			'(f2 > 42) or not((q2f1 = 76) or (q2f2 > 666)) and (f2 < 666)',
 		);
 	});
