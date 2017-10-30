@@ -52,6 +52,6 @@ export default class Operator extends ISerializable {
 			return `(${this.field} ${Empty.value})`;
 		}
 
-		throw new Error(`${this.constructor.valud} does not allow empty.`);
+		throw new Error(`${this.constructor.value} does not allow empty.`);
 	}
 }
