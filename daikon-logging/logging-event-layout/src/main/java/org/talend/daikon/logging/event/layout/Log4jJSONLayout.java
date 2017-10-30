@@ -31,11 +31,10 @@ public class Log4jJSONLayout extends Layout {
     private JSONObject logstashEvent;
 
     /**
-     * For backwards compatibility, the default is to generate location information
-     * in the log messages.
+     * Print no location info by default.
      */
     public Log4jJSONLayout() {
-        this(true);
+        this(false);
     }
 
     /**

@@ -86,7 +86,6 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
     </rollingPolicy>
     <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
         <param name="UserFields" value="service:dataset,application:tdp" />
-        <param name="LocationInfo" value="false"/>
     </layout>
  </appender>
   <root level="INFO">
@@ -109,7 +108,6 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
         <param name="encoding" value="UTF-8" />
         <layout class="org.talend.daikon.logging.event.layout.Log4jJSONLayout">
             <param name="UserFields" value="service:dataset,application:tdp" />
-            <param name="LocationInfo" value="false"/>
         </layout>
     </appender>   
     <root> 
@@ -127,7 +125,7 @@ with the `RollingFileAppender` in your `logback.xml`, `log4j.xml` or `log4j2.xml
   <appenders>
     <RollingFile name="File" fileName="${LOG_PATH}/application.log"
         filePattern="${LOG_PATH}/application-%d{yyyy-MM-dd}.log">
-        <Log4j2JSONLayout charset="UTF-8" skipJsonEscapeSubLayout="true" locationInfo="false" subLayoutAsElement="true">
+        <Log4j2JSONLayout charset="UTF-8" skipJsonEscapeSubLayout="true" subLayoutAsElement="true">
             <KeyValuePair key="service" value="dataset"/>
             <KeyValuePair key="application" value="tdp"/>
         </Log4j2JSONLayout>
