@@ -37,6 +37,23 @@ query.equal('f1', 666).or().equal('f2', 777);
 ```
 
 
+Modifier
+-------
+
+A Modifier changes the meaning of an operator or a query.
+
+The following modifiers are supported :
+
+- `not`
+
+They can be part of a query :
+
+
+```javascript
+query.equal('f1', 666).or().not(new Equal('f2', 777));
+```
+
+
 Query
 -------
 
