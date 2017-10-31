@@ -1,0 +1,14 @@
+{
+  "name": "@talend/tql",
+  "version": "${project.version}",
+  "description": "A TQL Parser and Lexer in JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "antlr4": "^4.7.0"
+  }
+}

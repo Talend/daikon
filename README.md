@@ -15,8 +15,12 @@ It contains:
 * daikon: The core library with a restricted set of dependencies.
 * daikon-spring: Spring specific classes that can be shared by projects.
 * daikon-service: Common service utilities.
+* daikon-tql: Talend Query Language. Generate artifacts in Java and Javascript to read TQL.
 * reporting: Module used to aggregate jacoco converage reports and send them to codacy during the deploy phase.
 
+## Release TQL Javascript module
+
+To publish on npm repository the TQL module on a release of daikon use the maven profile npm.
 
 ## Support
 
