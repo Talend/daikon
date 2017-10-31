@@ -15,6 +15,7 @@ package org.talend.daikon.properties.service;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesDynamicMethodHelper;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.runtime.RuntimeContext;
 
 /**
  * Implementation of the {@link PropertiesService}.
@@ -52,8 +53,20 @@ public class PropertiesServiceImpl implements PropertiesService<Properties> {
     }
 
     @Override
+    public Properties validateProperty(String propName, Properties properties, RuntimeContext context) throws Throwable {
+        PropertiesDynamicMethodHelper.validateProperty(properties, propName, context);
+        return properties;
+    }
+
+    @Override
     public Properties beforePropertyActivate(String propName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.beforePropertyActivate(properties, propName);
+        return properties;
+    }
+
+    @Override
+    public Properties beforePropertyActivate(String propName, Properties properties, RuntimeContext context) throws Throwable {
+        PropertiesDynamicMethodHelper.beforePropertyActivate(properties, propName, context);
         return properties;
     }
 
@@ -64,8 +77,20 @@ public class PropertiesServiceImpl implements PropertiesService<Properties> {
     }
 
     @Override
+    public Properties beforePropertyPresent(String propName, Properties properties, RuntimeContext context) throws Throwable {
+        PropertiesDynamicMethodHelper.beforePropertyPresent(properties, propName, context);
+        return properties;
+    }
+
+    @Override
     public Properties afterProperty(String propName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.afterProperty(properties, propName);
+        return properties;
+    }
+
+    @Override
+    public Properties afterProperty(String propName, Properties properties, RuntimeContext context) throws Throwable {
+        PropertiesDynamicMethodHelper.afterProperty(properties, propName, context);
         return properties;
     }
 
@@ -76,8 +101,20 @@ public class PropertiesServiceImpl implements PropertiesService<Properties> {
     }
 
     @Override
+    public Properties beforeFormPresent(String formName, Properties properties, RuntimeContext context) throws Throwable {
+        PropertiesDynamicMethodHelper.beforeFormPresent(properties, formName, context);
+        return properties;
+    }
+
+    @Override
     public Properties afterFormNext(String formName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.afterFormNext(properties, formName);
+        return properties;
+    }
+
+    @Override
+    public Properties afterFormNext(String formName, Properties properties, RuntimeContext context) throws Throwable {
+        PropertiesDynamicMethodHelper.afterFormNext(properties, formName, context);
         return properties;
     }
 
@@ -88,8 +125,20 @@ public class PropertiesServiceImpl implements PropertiesService<Properties> {
     }
 
     @Override
+    public Properties afterFormBack(String formName, Properties properties, RuntimeContext context) throws Throwable {
+        PropertiesDynamicMethodHelper.afterFormBack(properties, formName, context);
+        return properties;
+    }
+
+    @Override
     public Properties afterFormFinish(String formName, Properties properties) throws Throwable {
         PropertiesDynamicMethodHelper.afterFormFinish(properties, formName, repository);
+        return properties;
+    }
+
+    @Override
+    public Properties afterFormFinish(String formName, Properties properties, RuntimeContext context) throws Throwable {
+        PropertiesDynamicMethodHelper.afterFormFinish(properties, formName, repository, context);
         return properties;
     }
 
