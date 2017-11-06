@@ -66,8 +66,6 @@ public class NestedPropertiesFieldMapper extends FieldMapper {
 
         // Add ui:order
         items.set(UiSchemaConstants.TAG_ORDER, uiOrderNode);
-        // Add ui:options
-        processOptions(widget, items);
     }
 
     @Override
@@ -76,6 +74,7 @@ public class NestedPropertiesFieldMapper extends FieldMapper {
             schema.put(UiSchemaConstants.TAG_AUTO_FOCUS, true);
         }
         setItems(schema, widget);
+        processOptions(widget, schema);
         // Any other widget type than hidden causes means that it is visible.
         if (!UiSchemaConstants.TYPE_HIDDEN.equals(uiType)) {
             hasVisible[0] = true;
