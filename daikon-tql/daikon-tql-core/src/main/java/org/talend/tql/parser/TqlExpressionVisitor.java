@@ -191,14 +191,13 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldCompliesPattern(TqlParser.FieldCompliesPatternContext ctx) {
         LOG.debug("Visit field complies: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        TqlElement fieldName = field.accept(this);
-        TerminalNode patternNode = ctx.getChild(TerminalNode.class, 2);
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        ParseTree patternNode = ctx.getChild(2);
 
         if (patternNode instanceof ErrorNode)
             throw new TqlException(patternNode.getText());
 
-        String quotedPattern = patternNode.getSymbol().getText();
+        String quotedPattern = patternNode.getText();
         String pattern = quotedPattern.substring(1, quotedPattern.length() - 1);
         FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldName, pattern);
         LOG.debug("End visit field complies: " + ctx.getText());
