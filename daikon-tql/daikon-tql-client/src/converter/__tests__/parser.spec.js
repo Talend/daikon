@@ -25,7 +25,13 @@ const mock = [
 				{
 					label: '[342,273 .. 542,874[',
 					value: [342273, 542874],
+					excludeMax: true,
 					isMaxReached: false,
+				},
+				{
+					label: '[13,456 .. 789,1011]',
+					value: [13456, 7891011],
+					isMaxReached: true,
 				},
 			],
 			type: 'integer',
@@ -37,6 +43,11 @@ const mock = [
 				value: [342273, 542874],
 				isMaxReached: false,
 			},
+			{
+				label: '[13,456 .. 789,1011]',
+				value: [13456, 7891011],
+				isMaxReached: false,
+			},
 		],
 	},
 	{
@@ -44,6 +55,12 @@ const mock = [
 		editable: false,
 		badgeClass: 'invalid_records',
 		value: [{ label: 'rows with invalid values' }],
+	},
+	{
+		type: 'valid_records',
+		editable: false,
+		badgeClass: 'valid_records',
+		value: [{ label: 'rows with valid values' }],
 	},
 	{
 		type: 'empty_records',
@@ -81,7 +98,7 @@ describe('Parser', () => {
 		const query = Parser.parse(mock);
 
 		expect(query.serialize()).toEqual(
-			"((0001 contains 'euge') or (0001 contains 'secondtestvalue')) and ((0000 between [342273, 542874])) and (* is invalid) and (* is empty) and (((* is empty) or (* is invalid))) and ((0006 = 'Indonesia') or (0006 = 'Russia'))",
+			"((0001 contains 'euge') or (0001 contains 'secondtestvalue')) and ((0000 between [342273, 542874[) or (0000 between [13456, 7891011])) and (* is invalid) and (* is valid) and (* is empty) and ((* is empty) or (* is invalid)) and ((0006 = 'Indonesia') or (0006 = 'Russia'))",
 		);
 	});
 });

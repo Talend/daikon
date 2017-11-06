@@ -14,7 +14,7 @@ const mapping = {
 	inside_range: {
 		operator: 'between',
 		getValues: node => node.args.intervals,
-		getOptions: () => {},
+		getOptions: ({ excludeMax, excludeMin }) => ({ excludeMax, excludeMin }),
 	},
 	invalid_records: {
 		operator: 'invalid',
@@ -38,20 +38,20 @@ const mapping = {
 	},
 	quality: {
 		operator: 'quality',
-		getValues: () => ['*'],
-		getOptions: node => node.args,
+		getValues: () => [],
+		getOptions: value => value,
 	},
 };
 
-function buildSubQuery(values, operator, field, options) {
-	const sub = new Query();
+function buildSubQuery(current, filter) {
+	const values = current.getValues(filter);
+	const operator = current.operator;
 
-	values.reduce((acc, { value }, index) => {
-		acc[operator](field, value, options);
+	return values.reduce((acc, item, index) => {
+		const options = current.getOptions(item);
+		acc[operator](filter.colId, item.value, options);
 		return index < values.length - 1 ? acc.or() : acc;
-	}, sub);
-
-	return sub;
+	}, new Query());
 }
 
 /**
@@ -67,15 +67,14 @@ export default class Parser {
 		const query = new Query();
 
 		tree.reduce((acc, filter, index) => {
-			const field = filter.colId;
 			const current = mapping[filter.type];
 			const values = current.getValues(filter);
-			const options = current.getOptions(filter);
 
 			if (!values.length) {
-				acc[current.operator](field, null, options);
+				const opt = current.getOptions(filter.args);
+				acc[current.operator](filter.colId, null, opt);
 			} else {
-				acc.nest(buildSubQuery(values, current.operator, field, options));
+				acc.nest(buildSubQuery(current, filter));
 			}
 
 			return index < tree.length - 1 ? acc.and() : acc;

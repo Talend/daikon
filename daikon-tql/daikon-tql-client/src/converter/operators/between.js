@@ -9,6 +9,8 @@ export default class Between extends Operator {
 	static hasOperand = true;
 
 	serialize() {
-		return `(${this.field} ${this.constructor.value} [${this.operand.join(', ')}])`;
+		const min = this.options.excludeMin ? ']' : '[';
+		const max = this.options.excludeMax ? '[' : ']';
+		return `(${this.field} ${this.constructor.value} ${min}${this.operand.join(', ')}${max})`;
 	}
 }

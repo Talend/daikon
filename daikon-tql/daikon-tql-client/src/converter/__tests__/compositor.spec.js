@@ -14,4 +14,10 @@ describe('Compositor', () => {
 		expect(c instanceof Compositor).toBe(true);
 		expect(c.serialize()).toBe('or');
 	});
+
+	it('should throw if the given compositor does not exist', () => {
+		expect(() => {
+			Compositor.get('héhé');
+		}).toThrow('Unknown compositor');
+	});
 });

@@ -7,7 +7,6 @@ import static org.talend.daikon.properties.presentation.Widget.widget;
 
 import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
-import org.talend.daikon.properties.PropertiesList;
 import org.talend.daikon.properties.ReferenceExampleProperties;
 import org.talend.daikon.properties.ReferenceExampleProperties.TestAProperties;
 import org.talend.daikon.properties.presentation.Form;
@@ -68,10 +67,10 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         ObjectNode uiSchemaJsonObj = generator.genWidget(properties, Form.MAIN);
 
         ObjectNode filtersNode = (ObjectNode) uiSchemaJsonObj.get("filters");
-        assertEquals("{\"type\":\"filter\"}", filtersNode.get("ui:options").toString());
 
         ObjectNode itemsNode = (ObjectNode) filtersNode.get("items");
         assertEquals("[\"columnName\",\"function\",\"operator\",\"value\"]", itemsNode.get("ui:order").toString());
+        assertEquals("{\"type\":\"filter\"}", itemsNode.get("ui:options").toString());
 
         ObjectNode columnNameNode = (ObjectNode) itemsNode.get("columnName");
         assertEquals("\"datalist\"", columnNameNode.get("ui:widget").toString());
