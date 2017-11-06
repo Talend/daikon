@@ -40,4 +40,11 @@ public class TestTqlParser_AllFields extends TestTqlParser_Abstract {
         String expected = "OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=GET}, field=AllFields{}, valueOrField=LiteralValue{literal=INT, value='0'}}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
+
+    @Test
+    public void testParseLiteralComparisonInvalid() throws Exception {
+        TqlElement tqlElement = doTest("* is invalid");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldIsInvalidExpression{field='AllFields{}'}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
 }

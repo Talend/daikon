@@ -130,9 +130,8 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldIsEmpty(TqlParser.FieldIsEmptyContext ctx) {
         LOG.debug("Visit is field empty expression: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
-        FieldIsEmptyExpression isEmptyExpression = new FieldIsEmptyExpression(new FieldReference(fieldName));
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        FieldIsEmptyExpression isEmptyExpression = new FieldIsEmptyExpression(fieldName);
         LOG.debug("End visit is field empty expression: " + ctx.getText());
         return isEmptyExpression;
     }
@@ -140,9 +139,8 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldIsValid(TqlParser.FieldIsValidContext ctx) {
         LOG.debug("Visit is field valid expression: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
-        FieldIsValidExpression isValidExpression = new FieldIsValidExpression(new FieldReference(fieldName));
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        FieldIsValidExpression isValidExpression = new FieldIsValidExpression(fieldName);
         LOG.debug("End visit is field valid expression: " + ctx.getText());
         return isValidExpression;
     }
@@ -150,9 +148,8 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldIsInvalid(TqlParser.FieldIsInvalidContext ctx) {
         LOG.debug("Visit is field invalid expression: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
-        FieldIsInvalidExpression isInvalidExpression = new FieldIsInvalidExpression(new FieldReference(fieldName));
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        FieldIsInvalidExpression isInvalidExpression = new FieldIsInvalidExpression(fieldName);
         LOG.debug("End visit is field invalid expression: " + ctx.getText());
         return isInvalidExpression;
     }
