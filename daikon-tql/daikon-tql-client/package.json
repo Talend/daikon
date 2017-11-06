@@ -1,6 +1,6 @@
 {
 	"name": "@talend/daikon-tql-client",
-	"version": "0.19.3-SNAPSHOT",
+	"version": "0.19.4",
 	"description": "",
 	"main": "lib/index.js",
 	"scripts": {
