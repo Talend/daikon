@@ -220,8 +220,8 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
         String lowerBound = ctx.getChild(TerminalNode.class, 2).getSymbol().getText();
         String upperBound = ctx.getChild(TerminalNode.class, 4).getSymbol().getText();
 
-        FieldBetweenExpression fieldBetween = new FieldBetweenExpression(fieldName, v1, v2,
-                "]".equals(lowerBound), "[".equals(upperBound));
+        FieldBetweenExpression fieldBetween = new FieldBetweenExpression(fieldName, v1, v2, "]".equals(lowerBound),
+                "[".equals(upperBound));
         LOG.debug("End visit field between: " + ctx.getText());
         return fieldBetween;
     }
