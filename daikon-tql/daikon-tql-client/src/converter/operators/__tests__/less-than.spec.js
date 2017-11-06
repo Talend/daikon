@@ -13,4 +13,12 @@ describe('less than', () => {
 
 		expect(test.serialize()).toBe('(f1 < 666)');
 	});
+
+	it('should not allow empty operand', () => {
+		const test = new LessThan('f1');
+
+		expect(() => {
+			test.serialize();
+		}).toThrow('< does not allow empty.');
+	});
 });
