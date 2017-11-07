@@ -72,7 +72,7 @@ public class TestTqlParser_AllFields extends TestTqlParser_Abstract {
     @Test
     public void testParseLiteralComparisonBetween() throws Exception {
         TqlElement tqlElement = doTest("* between [0, 5]");
-        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldIsEmptyExpression{field='AllFields{}'}]}]}";
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldBetweenExpression{field='AllFields{}', left=LiteralValue{literal=INT, value='0'}, right=LiteralValue{literal=INT, value='5'}, isLowerOpen=false, isUpperOpen=false}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 }

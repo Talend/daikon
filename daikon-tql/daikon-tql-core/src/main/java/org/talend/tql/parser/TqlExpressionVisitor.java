@@ -207,14 +207,13 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldBetween(TqlParser.FieldBetweenContext ctx) {
         LOG.debug("Visit field between: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        TqlElement fieldName = field.accept(this);
+        TqlElement fieldName = ctx.getChild(0).accept(this);
         TqlParser.LiteralValueContext value1Node = ctx.getChild(TqlParser.LiteralValueContext.class, 0);
         TqlParser.LiteralValueContext value2Node = ctx.getChild(TqlParser.LiteralValueContext.class, 1);
         LiteralValue v1 = (LiteralValue) value1Node.accept(this);
         LiteralValue v2 = (LiteralValue) value2Node.accept(this);
-        String lowerBound = ctx.getChild(TerminalNode.class, 2).getSymbol().getText();
-        String upperBound = ctx.getChild(TerminalNode.class, 4).getSymbol().getText();
+        String lowerBound = ctx.getChild(value1Node.getRuleIndex() - 2).getText();
+        String upperBound = ctx.getChild(value2Node.getRuleIndex() + 2).getText();
 
         FieldBetweenExpression fieldBetween = new FieldBetweenExpression(fieldName, v1, v2, "]".equals(lowerBound),
                 "[".equals(upperBound));
