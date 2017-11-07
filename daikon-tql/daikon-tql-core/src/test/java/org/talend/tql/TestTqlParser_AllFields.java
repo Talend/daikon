@@ -49,9 +49,31 @@ public class TestTqlParser_AllFields extends TestTqlParser_Abstract {
     }
 
     @Test
+    public void testParseLiteralComparisonValid() throws Exception {
+        TqlElement tqlElement = doTest("* is valid");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldIsValidExpression{field='AllFields{}'}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
     public void testParseLiteralComparisonComplies() throws Exception {
         TqlElement tqlElement = doTest("* complies ''");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldCompliesPattern{field='AllFields{}', pattern=''}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
+
+    @Test
+    public void testParseLiteralComparisonIsEmpty() throws Exception {
+        TqlElement tqlElement = doTest("* is empty");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldIsEmptyExpression{field='AllFields{}'}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
+    public void testParseLiteralComparisonBetween() throws Exception {
+        TqlElement tqlElement = doTest("* between [0, 5]");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldIsEmptyExpression{field='AllFields{}'}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
 }
