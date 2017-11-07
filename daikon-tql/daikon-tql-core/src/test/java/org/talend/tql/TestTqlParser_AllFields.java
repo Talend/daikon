@@ -75,11 +75,4 @@ public class TestTqlParser_AllFields extends TestTqlParser_Abstract {
         String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldIsEmptyExpression{field='AllFields{}'}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
-
-    @Test
-    public void testParseFieldCompliesPattern() throws Exception {
-        TqlElement tqlElement = doTest("* complies 'Aaaaaaa'");
-        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldCompliesPattern{field='AllFields{}', pattern='Aaaaaaa'}]}]}";
-        Assert.assertEquals(expected, tqlElement.toString());
-    }
 }
