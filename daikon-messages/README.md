@@ -159,8 +159,8 @@ Message keys are involved in the process of messages partitioning in Kafka, the 
 
 The latest use case is important if messages ordering is required. In this case tenant identifier should be taken into account in the partitioning strategy.
 
-The [messages-model](messages-model) module provides a common [Avro schema to represent message keys](messages-model/src/main/avro/MessageKey.avsc) for message keys and a 
-[framework](messages-model/src/main/java/org/talend/daikon/messages/keys/MessageKeyFactory.java) to manipulate these keys.
+The [messages-model](messages-model) module provides a common [Avro schema to represent message keys](messages-model/src/main/avro/MessageKey.avsc) and a 
+[minimal framework](messages-model/src/main/java/org/talend/daikon/messages/keys/MessageKeyFactory.java) to manipulate these keys.
 
 To generate a message key that will fit random partitioning (either multi-tenant or not)
  
@@ -183,7 +183,7 @@ MessageKey key = factory.buildMessageKey()
 .buid();
 ```
 
-Again, the MessageKeyFactory implementation will integrate current tenant id and will add the provided partitioning keys in the message key and do not add additional
+Again, the MessageKeyFactory implementation will integrate current tenant id and will add the provided partitioning keys in the message key but won't add additional
 information.
 
 

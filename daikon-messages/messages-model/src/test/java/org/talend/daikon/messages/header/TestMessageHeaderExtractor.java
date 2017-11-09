@@ -24,7 +24,7 @@ import org.junit.rules.ExpectedException;
 import org.talend.daikon.messages.MessageHeader;
 import org.talend.daikon.messages.MessageIssuer;
 import org.talend.daikon.messages.MessageTypes;
-import org.talend.daikon.messages.header.MessageHeaderExtractor;
+import org.talend.daikon.messages.header.consumer.MessageHeaderExtractor;
 
 import java.io.IOException;
 

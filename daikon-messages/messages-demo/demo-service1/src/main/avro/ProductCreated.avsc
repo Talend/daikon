@@ -1,0 +1,24 @@
+{
+  "namespace" : "org.talend.daikon.messages.demo1",
+  "name" : "ProductCreated",
+  "type" : "record",
+  "fields" : [
+    {
+      "name" : "header",
+      "type" : "org.talend.daikon.messages.MessageHeader"
+    },
+    {
+      "name" : "id",
+      "type" : "string"
+    },
+    {
+      "name" : "label",
+      "type" : "string"
+    },
+    {
+      "name" : "color",
+      "type" : "string"
+    }
+  ]
+
+}

@@ -20,7 +20,7 @@ import org.talend.daikon.messages.MessageEnvelope;
 import org.talend.daikon.messages.MessageHeader;
 import org.talend.daikon.messages.MessagePayload;
 import org.talend.daikon.messages.MessageTypes;
-import org.talend.daikon.messages.header.MessageHeaderFactory;
+import org.talend.daikon.messages.header.producer.MessageHeaderFactory;
 
 public class TestMessageEnvelopeHandlerImpl {
 

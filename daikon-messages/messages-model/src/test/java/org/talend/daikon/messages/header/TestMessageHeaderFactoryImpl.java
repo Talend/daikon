@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.talend.daikon.messages.MessageHeader;
 import org.talend.daikon.messages.MessageTypes;
+import org.talend.daikon.messages.header.producer.*;
 
 public class TestMessageHeaderFactoryImpl {
 

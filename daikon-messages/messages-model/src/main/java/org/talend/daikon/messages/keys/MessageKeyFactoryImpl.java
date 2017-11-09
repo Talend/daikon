@@ -13,7 +13,7 @@
 package org.talend.daikon.messages.keys;
 
 import org.talend.daikon.messages.MessageKey;
-import org.talend.daikon.messages.header.TenantIdProvider;
+import org.talend.daikon.messages.header.producer.TenantIdProvider;
 
 import java.util.HashMap;
 import java.util.Map;

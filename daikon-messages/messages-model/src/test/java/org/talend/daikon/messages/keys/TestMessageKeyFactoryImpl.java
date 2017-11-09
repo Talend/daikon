@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.talend.daikon.messages.MessageKey;
-import org.talend.daikon.messages.header.TenantIdProvider;
+import org.talend.daikon.messages.header.producer.TenantIdProvider;
 
 public class TestMessageKeyFactoryImpl {
 
