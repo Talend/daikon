@@ -7,19 +7,19 @@ import org.talend.tql.visitor.IASTVisitor;
  */
 public class FieldIsInvalidExpression implements Atom {
 
-    private String fieldName;
+    private final TqlElement field;
 
-    public FieldIsInvalidExpression(String fieldName) {
-        this.fieldName = fieldName;
+    public FieldIsInvalidExpression(TqlElement field) {
+        this.field = field;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public TqlElement getField() {
+        return field;
     }
 
     @Override
     public String toString() {
-        return "FieldIsInvalidExpression{" + "fieldName='" + fieldName + '\'' + '}';
+        return "FieldIsInvalidExpression{" + "field='" + field + '\'' + '}';
     }
 
     @Override

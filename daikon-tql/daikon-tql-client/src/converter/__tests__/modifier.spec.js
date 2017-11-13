@@ -8,4 +8,11 @@ describe('Modifier', () => {
 		expect(c instanceof Modifier).toBe(true);
 		expect(c.serialize()).toBe('not((f1 = 42))');
 	});
+
+	it('should throw if the given compositor does not exist', () => {
+		expect(() => {
+			const test = new Modifier('héhé');
+			test.serialize();
+		}).toThrow('Unknown modifier');
+	});
 });

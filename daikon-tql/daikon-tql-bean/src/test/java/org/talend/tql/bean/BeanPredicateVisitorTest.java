@@ -28,13 +28,49 @@ public class BeanPredicateVisitorTest {
     @Test
     public void betweenShouldMatchBean() throws Exception {
         // given
-        final Expression query = Tql.parse("int between [0,11]");
+        final Expression query = Tql.parse("int between [0,10]");
 
         // when
         final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
 
         // then
         assertTrue(predicate.test(bean));
+    }
+
+    @Test
+    public void betweenShouldMatchBeanLowerOpen() throws Exception {
+        // given
+        final Expression query = Tql.parse("int between ]0,10]");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
+    @Test
+    public void betweenShouldNotMatchBeanUpperOpen() throws Exception {
+        // given
+        final Expression query = Tql.parse("int between [0,10[");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertFalse(predicate.test(bean));
+    }
+
+    @Test
+    public void betweenShouldNotMatchBeanBothOpen() throws Exception {
+        // given
+        final Expression query = Tql.parse("int between ]0,10[");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertFalse(predicate.test(bean));
     }
 
     @Test

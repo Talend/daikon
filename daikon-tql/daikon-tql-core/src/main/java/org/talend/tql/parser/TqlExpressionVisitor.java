@@ -130,8 +130,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldIsEmpty(TqlParser.FieldIsEmptyContext ctx) {
         LOG.debug("Visit is field empty expression: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
+        TqlElement fieldName = ctx.getChild(0).accept(this);
         FieldIsEmptyExpression isEmptyExpression = new FieldIsEmptyExpression(fieldName);
         LOG.debug("End visit is field empty expression: " + ctx.getText());
         return isEmptyExpression;
@@ -140,8 +139,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldIsValid(TqlParser.FieldIsValidContext ctx) {
         LOG.debug("Visit is field valid expression: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
+        TqlElement fieldName = ctx.getChild(0).accept(this);
         FieldIsValidExpression isValidExpression = new FieldIsValidExpression(fieldName);
         LOG.debug("End visit is field valid expression: " + ctx.getText());
         return isValidExpression;
@@ -150,8 +148,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldIsInvalid(TqlParser.FieldIsInvalidContext ctx) {
         LOG.debug("Visit is field invalid expression: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
+        TqlElement fieldName = ctx.getChild(0).accept(this);
         FieldIsInvalidExpression isInvalidExpression = new FieldIsInvalidExpression(fieldName);
         LOG.debug("End visit is field invalid expression: " + ctx.getText());
         return isInvalidExpression;
@@ -161,7 +158,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     public TqlElement visitFieldContains(TqlParser.FieldContainsContext ctx) {
         LOG.debug("Visit field contains: " + ctx.getText());
         TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
+        TqlElement fieldName = field.accept(this);
         TerminalNode valueNode = ctx.getChild(TerminalNode.class, 2);
 
         if (valueNode instanceof ErrorNode)
@@ -178,7 +175,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     public TqlElement visitFieldMatchesRegexp(TqlParser.FieldMatchesRegexpContext ctx) {
         LOG.debug("Visit field matches: " + ctx.getText());
         TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
+        TqlElement fieldName = field.accept(this);
         TerminalNode regexNode = ctx.getChild(TerminalNode.class, 2);
 
         if (regexNode instanceof ErrorNode)
@@ -194,14 +191,13 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldCompliesPattern(TqlParser.FieldCompliesPatternContext ctx) {
         LOG.debug("Visit field complies: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
-        TerminalNode patternNode = ctx.getChild(TerminalNode.class, 2);
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        ParseTree patternNode = ctx.getChild(2);
 
         if (patternNode instanceof ErrorNode)
             throw new TqlException(patternNode.getText());
 
-        String quotedPattern = patternNode.getSymbol().getText();
+        String quotedPattern = patternNode.getText();
         String pattern = quotedPattern.substring(1, quotedPattern.length() - 1);
         FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldName, pattern);
         LOG.debug("End visit field complies: " + ctx.getText());
@@ -211,13 +207,16 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldBetween(TqlParser.FieldBetweenContext ctx) {
         LOG.debug("Visit field between: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
+        TqlElement fieldName = ctx.getChild(0).accept(this);
         TqlParser.LiteralValueContext value1Node = ctx.getChild(TqlParser.LiteralValueContext.class, 0);
         TqlParser.LiteralValueContext value2Node = ctx.getChild(TqlParser.LiteralValueContext.class, 1);
         LiteralValue v1 = (LiteralValue) value1Node.accept(this);
         LiteralValue v2 = (LiteralValue) value2Node.accept(this);
-        FieldBetweenExpression fieldBetween = new FieldBetweenExpression(fieldName, v1, v2);
+        String lowerBound = ctx.getChild(value1Node.getRuleIndex() - 2).getText();
+        String upperBound = ctx.getChild(value2Node.getRuleIndex() + 2).getText();
+
+        FieldBetweenExpression fieldBetween = new FieldBetweenExpression(fieldName, v1, v2, "]".equals(lowerBound),
+                "[".equals(upperBound));
         LOG.debug("End visit field between: " + ctx.getText());
         return fieldBetween;
     }
@@ -226,7 +225,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     public TqlElement visitFieldIn(TqlParser.FieldInContext ctx) {
         LOG.debug("Visit field in: " + ctx.getText());
         TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        String fieldName = field.getSymbol().getText();
+        TqlElement fieldName = field.accept(this);
         // All children which are not terminal values are the needed literal values (see syntax)
         LiteralValue[] literalValues = ctx.children.stream().filter(c -> c instanceof TqlParser.LiteralValueContext
                 || c instanceof TqlParser.BooleanValueContext || c instanceof ErrorNode).map(c -> (LiteralValue) c.accept(this))

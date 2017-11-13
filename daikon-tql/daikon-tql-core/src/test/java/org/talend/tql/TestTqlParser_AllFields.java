@@ -40,4 +40,39 @@ public class TestTqlParser_AllFields extends TestTqlParser_Abstract {
         String expected = "OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=GET}, field=AllFields{}, valueOrField=LiteralValue{literal=INT, value='0'}}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
+
+    @Test
+    public void testParseLiteralComparisonInvalid() throws Exception {
+        TqlElement tqlElement = doTest("* is invalid");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldIsInvalidExpression{field='AllFields{}'}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
+    public void testParseLiteralComparisonValid() throws Exception {
+        TqlElement tqlElement = doTest("* is valid");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldIsValidExpression{field='AllFields{}'}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
+    public void testParseLiteralComparisonComplies() throws Exception {
+        TqlElement tqlElement = doTest("* complies ''");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldCompliesPattern{field='AllFields{}', pattern=''}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
+    public void testParseLiteralComparisonIsEmpty() throws Exception {
+        TqlElement tqlElement = doTest("* is empty");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldIsEmptyExpression{field='AllFields{}'}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
+    public void testParseLiteralComparisonBetween() throws Exception {
+        TqlElement tqlElement = doTest("* between [0, 5]");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldBetweenExpression{field='AllFields{}', left=LiteralValue{literal=INT, value='0'}, right=LiteralValue{literal=INT, value='5'}, isLowerOpen=false, isUpperOpen=false}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
 }

@@ -36,7 +36,7 @@ fieldMatchesRegexp : (FIELD | allFields | ~INT | ~DECIMAL) MATCHES QUOTED_VALUE;
 
 fieldCompliesPattern : (FIELD | allFields | ~INT | ~DECIMAL) COMPLIES QUOTED_VALUE;
 
-fieldBetween : (FIELD | allFields | ~INT | ~DECIMAL) BETWEEN LBRACK literalValue COMMA literalValue RBRACK;
+fieldBetween : (FIELD | allFields | ~INT | ~DECIMAL) BETWEEN (LBRACK | RBRACK) literalValue COMMA literalValue (LBRACK | RBRACK);
 
 fieldIn : (FIELD | allFields | ~INT | ~DECIMAL) IN LBRACK (literalValue | booleanValue) (COMMA (literalValue | booleanValue))* RBRACK;
 

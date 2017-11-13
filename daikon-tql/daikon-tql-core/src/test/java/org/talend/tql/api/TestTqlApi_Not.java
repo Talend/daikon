@@ -52,7 +52,7 @@ public class TestTqlApi_Not extends TestTqlParser_Abstract {
      * +
      * "[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}]}, "
      * +
-     * "AndExpression{expressions=[FieldCompliesPattern{fieldName='field1', pattern='aaa9'}, NotExpression{expression=OrExpression{expressions="
+     * "AndExpression{expressions=[FieldCompliesPattern{field='FieldReference{path='field1'}', pattern='aaa9'}, NotExpression{expression=OrExpression{expressions="
      * +
      * "[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=GT}, field=FieldReference{path='field1'}, "
      * + "valueOrField=LiteralValue{literal=INT, value='999'}}]}]}}]}]}}]}]}";
@@ -67,7 +67,7 @@ public class TestTqlApi_Not extends TestTqlParser_Abstract {
      * +
      * "valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}, OrExpression{expressions=[AndExpression{expressions="
      * +
-     * "[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions=[FieldCompliesPattern{fieldName='field1', pattern='aaa9'}]}]}}]}, "
+     * "[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions=[FieldCompliesPattern{field='FieldReference{path='field1'}', pattern='aaa9'}]}]}}]}, "
      * +
      * "AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=GT}, field=FieldReference{path='field1'}, "
      * + "valueOrField=LiteralValue{literal=INT, value='999'}}]}]}]}]}";
@@ -83,7 +83,7 @@ public class TestTqlApi_Not extends TestTqlParser_Abstract {
      * +
      * "[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}]}, "
      * + "AndExpression{expressions=[NotExpression{expression=OrExpression{expressions="
-     * + "[AndExpression{expressions=[FieldCompliesPattern{fieldName='field1', pattern='aaa9'}, "
+     * + "[AndExpression{expressions=[FieldCompliesPattern{field='FieldReference{path='field1'}', pattern='aaa9'}, "
      * +
      * "ComparisonExpression{operator=ComparisonOperator{operator=GT}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=INT, value='999'}}]}]}}]}]}}]}]}"
      * ;

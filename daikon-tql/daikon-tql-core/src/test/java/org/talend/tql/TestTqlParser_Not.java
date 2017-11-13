@@ -33,7 +33,7 @@ public class TestTqlParser_Not extends TestTqlParser_Abstract {
         String expected = "OrExpression{expressions=[AndExpression{expressions="
                 + "[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions="
                 + "[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}, "
-                + "FieldCompliesPattern{fieldName='field1', pattern='aaa9'}]}, AndExpression{expressions="
+                + "FieldCompliesPattern{field='FieldReference{path='field1'}', pattern='aaa9'}]}, AndExpression{expressions="
                 + "[ComparisonExpression{operator=ComparisonOperator{operator=GT}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=INT, value='999'}}]}]}}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
@@ -44,7 +44,7 @@ public class TestTqlParser_Not extends TestTqlParser_Abstract {
         String expected = "OrExpression{expressions=[AndExpression{expressions="
                 + "[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions="
                 + "[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}]}, "
-                + "AndExpression{expressions=[FieldCompliesPattern{fieldName='field1', pattern='aaa9'}, "
+                + "AndExpression{expressions=[FieldCompliesPattern{field='FieldReference{path='field1'}', pattern='aaa9'}, "
                 + "ComparisonExpression{operator=ComparisonOperator{operator=GT}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=INT, value='999'}}]}]}}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
@@ -56,7 +56,7 @@ public class TestTqlParser_Not extends TestTqlParser_Abstract {
         String expected = "OrExpression{expressions=[AndExpression{expressions="
                 + "[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions="
                 + "[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}]}, "
-                + "AndExpression{expressions=[FieldCompliesPattern{fieldName='field1', pattern='aaa9'}, NotExpression{expression=OrExpression{expressions="
+                + "AndExpression{expressions=[FieldCompliesPattern{field='FieldReference{path='field1'}', pattern='aaa9'}, NotExpression{expression=OrExpression{expressions="
                 + "[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=GT}, field=FieldReference{path='field1'}, "
                 + "valueOrField=LiteralValue{literal=INT, value='999'}}]}]}}]}]}}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
@@ -67,7 +67,7 @@ public class TestTqlParser_Not extends TestTqlParser_Abstract {
         TqlElement tqlElement = doTest("field1='value1' and (not (field1 complies 'aaa9') or field1> 999)");
         String expected = "OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, "
                 + "valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}, OrExpression{expressions=[AndExpression{expressions="
-                + "[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions=[FieldCompliesPattern{fieldName='field1', pattern='aaa9'}]}]}}]}, "
+                + "[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions=[FieldCompliesPattern{field='FieldReference{path='field1'}', pattern='aaa9'}]}]}}]}, "
                 + "AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=GT}, field=FieldReference{path='field1'}, "
                 + "valueOrField=LiteralValue{literal=INT, value='999'}}]}]}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
@@ -81,7 +81,7 @@ public class TestTqlParser_Not extends TestTqlParser_Abstract {
                 + "[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions="
                 + "[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}]}, "
                 + "AndExpression{expressions=[NotExpression{expression=OrExpression{expressions="
-                + "[AndExpression{expressions=[FieldCompliesPattern{fieldName='field1', pattern='aaa9'}, "
+                + "[AndExpression{expressions=[FieldCompliesPattern{field='FieldReference{path='field1'}', pattern='aaa9'}, "
                 + "ComparisonExpression{operator=ComparisonOperator{operator=GT}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=INT, value='999'}}]}]}}]}]}}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }

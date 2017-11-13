@@ -13,17 +13,17 @@ import org.talend.tql.visitor.IASTVisitor;
  */
 public class FieldInExpression implements Atom {
 
-    private final String fieldName;
+    private final TqlElement field;
 
     private final LiteralValue[] values;
 
-    public FieldInExpression(String fieldName, LiteralValue[] values) {
-        this.fieldName = fieldName;
+    public FieldInExpression(TqlElement field, LiteralValue[] values) {
+        this.field = field;
         this.values = values;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public TqlElement getField() {
+        return field;
     }
 
     public LiteralValue[] getValues() {
@@ -32,7 +32,7 @@ public class FieldInExpression implements Atom {
 
     @Override
     public String toString() {
-        return "FieldInExpression{" + "fieldName='" + fieldName + '\'' + ", values=" + Arrays.toString(values) + '}';
+        return "FieldInExpression{" + "field='" + field + '\'' + ", values=" + Arrays.toString(values) + '}';
     }
 
     @Override

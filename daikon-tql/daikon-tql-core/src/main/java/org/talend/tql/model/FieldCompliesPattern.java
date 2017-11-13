@@ -11,17 +11,17 @@ import org.talend.tql.visitor.IASTVisitor;
  */
 public class FieldCompliesPattern implements Atom {
 
-    private final String fieldName;
+    private final TqlElement field;
 
     private final String pattern;
 
-    public FieldCompliesPattern(String fieldName, String pattern) {
-        this.fieldName = fieldName;
+    public FieldCompliesPattern(TqlElement field, String pattern) {
+        this.field = field;
         this.pattern = pattern;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public TqlElement getField() {
+        return field;
     }
 
     public String getPattern() {
@@ -30,7 +30,7 @@ public class FieldCompliesPattern implements Atom {
 
     @Override
     public String toString() {
-        return "FieldCompliesPattern{" + "fieldName='" + fieldName + '\'' + ", pattern='" + pattern + '\'' + '}';
+        return "FieldCompliesPattern{" + "field='" + field + '\'' + ", pattern='" + pattern + '\'' + '}';
     }
 
     @Override

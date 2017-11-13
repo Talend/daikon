@@ -39,7 +39,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     public void testParseFieldIsEmpty() throws Exception {
         TqlElement tqlElement = doTest("field1 is empty");
         String expected = "OrExpression{expressions=[AndExpression{expressions=["
-                + "FieldIsEmptyExpression{fieldName='field1'}]}]}";
+                + "FieldIsEmptyExpression{field='FieldReference{path='field1'}'}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 
@@ -47,7 +47,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     public void testParseFieldIsValid() throws Exception {
         TqlElement tqlElement = doTest("field1 is valid");
         String expected = "OrExpression{expressions=[AndExpression{expressions=["
-                + "FieldIsValidExpression{fieldName='field1'}]}]}";
+                + "FieldIsValidExpression{field='FieldReference{path='field1'}'}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 
@@ -55,7 +55,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     public void testParseFieldIsInvalid() throws Exception {
         TqlElement tqlElement = doTest("field1 is invalid");
         String expected = "OrExpression{expressions=[AndExpression{expressions=["
-                + "FieldIsInvalidExpression{fieldName='field1'}]}]}";
+                + "FieldIsInvalidExpression{field='FieldReference{path='field1'}'}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 
@@ -63,7 +63,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     public void testParseFieldCompliesPattern() throws Exception {
         TqlElement tqlElement = doTest("field1 complies 'value1'");
         String expected = "OrExpression{expressions=[AndExpression{expressions=["
-                + "FieldCompliesPattern{fieldName='field1', pattern='value1'}]}]}";
+                + "FieldCompliesPattern{field='FieldReference{path='field1'}', pattern='value1'}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 
@@ -78,7 +78,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     public void testParseFieldMatchesRegex() throws Exception {
         TqlElement tqlElement = doTest("field1 ~ 'value1'");
         String expected = "OrExpression{expressions=[AndExpression{expressions=["
-                + "FieldMatchesRegex{fieldName='field1', regex='value1'}]}]}";
+                + "FieldMatchesRegex{field='FieldReference{path='field1'}', regex='value1'}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 
@@ -93,7 +93,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     public void testParseFieldContainsValue() throws Exception {
         TqlElement tqlElement = doTest("field1 contains 'value1'");
         String expected = "OrExpression{expressions=[AndExpression{expressions=["
-                + "FieldContainsExpression{fieldName='field1', value='value1'}]}]}";
+                + "FieldContainsExpression{field='FieldReference{path='field1'}', value='value1'}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 
@@ -126,13 +126,7 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     @Test
     public void testParseComplexExpressions() throws Exception {
         TqlElement tqlElement = doTest("field1='value1' and field2 is empty or (not (field3='value3'))");
-        String expected = "OrExpression{expressions=[AndExpression{expressions=["
-                + "ComparisonExpression{operator=ComparisonOperator{operator=EQ}, "
-                + "field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}, "
-                + "FieldIsEmptyExpression{fieldName='field2'}]}, "
-                + "AndExpression{expressions=[OrExpression{expressions=[AndExpression{expressions=[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions=["
-                + "ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field3'}, "
-                + "valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value3'}}]}]}}]}]}]}]}";
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field1'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value1'}}, FieldIsEmptyExpression{field='FieldReference{path='field2'}'}]}, AndExpression{expressions=[OrExpression{expressions=[AndExpression{expressions=[NotExpression{expression=OrExpression{expressions=[AndExpression{expressions=[ComparisonExpression{operator=ComparisonOperator{operator=EQ}, field=FieldReference{path='field3'}, valueOrField=LiteralValue{literal=QUOTED_VALUE, value='value3'}}]}]}}]}]}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 

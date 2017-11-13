@@ -9,13 +9,13 @@ import org.talend.tql.visitor.IASTVisitor;
  * For example:
  * </p>
  * <code>
- *     (field0<1) or (field1<1) or ... (fieldN<1)
+ *     (field0&lt;1) or (field1&lt;1) or ... (fieldN&lt;1)
  * </code>
  * <p>
  * is equivalent to:
  * </p>
  * <code>
- *     (*<1)
+ *     (*&lt;1)
  * </code>
  */
 public class AllFields implements TqlElement {

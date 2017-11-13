@@ -306,7 +306,7 @@ public class TqlBuilder {
     public static Expression contains(String fieldname, String value) {
 
         // Creating simple contains expression
-        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(fieldname, value);
+        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(new FieldReference(fieldname), value);
         Expression[] fieldContainsExpressions = new Expression[] { fieldContainsExpression };
 
         // Adding it to a new AST
@@ -325,7 +325,7 @@ public class TqlBuilder {
     public static Expression complies(String fieldname, String pattern) {
 
         // Creating simple complies expression
-        FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldname, pattern);
+        FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(new FieldReference(fieldname), pattern);
         Expression[] fieldCompliesPatternExpressions = new Expression[] { fieldCompliesPattern };
 
         // Adding it to a new AST
@@ -344,7 +344,7 @@ public class TqlBuilder {
     public static Expression match(String fieldname, String regexp) {
 
         // Creating simple match expression
-        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldname, regexp);
+        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(new FieldReference(fieldname), regexp);
         Expression[] fieldCompliesPatternExpressions = new Expression[] { fieldMatchesRegex };
 
         // Adding it to a new AST
@@ -362,7 +362,7 @@ public class TqlBuilder {
     public static Expression isEmpty(String fieldname) {
 
         // Creating simple isEmpty expression
-        FieldIsEmptyExpression fieldIsEmptyExpression = new FieldIsEmptyExpression(fieldname);
+        FieldIsEmptyExpression fieldIsEmptyExpression = new FieldIsEmptyExpression(new FieldReference(fieldname));
         Expression[] fieldIsEmptyExpressions = new Expression[] { fieldIsEmptyExpression };
 
         // Adding it to a new AST
@@ -380,7 +380,7 @@ public class TqlBuilder {
     public static Expression isInvalid(String fieldname) {
 
         // Creating simple isInvalid expression
-        FieldIsInvalidExpression fieldIsInvalidExpression = new FieldIsInvalidExpression(fieldname);
+        FieldIsInvalidExpression fieldIsInvalidExpression = new FieldIsInvalidExpression(new FieldReference(fieldname));
         Expression[] fieldIsInvalidExpressions = new Expression[] { fieldIsInvalidExpression };
 
         // Adding it to a new AST
@@ -398,7 +398,7 @@ public class TqlBuilder {
     public static Expression isValid(String fieldname) {
 
         // Creating simple isValid expression
-        FieldIsValidExpression fieldIsValidExpression = new FieldIsValidExpression(fieldname);
+        FieldIsValidExpression fieldIsValidExpression = new FieldIsValidExpression(new FieldReference(fieldname));
         Expression[] fieldIsValidExpressions = new Expression[] { fieldIsValidExpression };
 
         // Adding it to a new AST
@@ -500,7 +500,7 @@ public class TqlBuilder {
     private static Expression inLiteralValues(String fieldname, LiteralValue[] literalValues) {
 
         // Creating simple in expression
-        FieldInExpression fieldInExpression = new FieldInExpression(fieldname, literalValues);
+        FieldInExpression fieldInExpression = new FieldInExpression(new FieldReference(fieldname), literalValues);
         Expression[] fieldInExpressions = new Expression[] { fieldInExpression };
 
         // Adding it to a new AST
@@ -803,7 +803,8 @@ public class TqlBuilder {
         // Creating simple between expression
         LiteralValue left = new LiteralValue(litteralType, value1);
         LiteralValue right = new LiteralValue(litteralType, value2);
-        FieldBetweenExpression fieldBetweenExpression = new FieldBetweenExpression(fieldname, left, right);
+        FieldBetweenExpression fieldBetweenExpression = new FieldBetweenExpression(new FieldReference(fieldname), left, right,
+                false, false);
         Expression[] fieldBetweenExpressions = new Expression[] { fieldBetweenExpression };
 
         // Adding it to a new AST

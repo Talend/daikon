@@ -11,18 +11,18 @@ import org.talend.tql.visitor.IASTVisitor;
  */
 public class FieldContainsExpression implements Atom {
 
-    private final String fieldName;
+    private final TqlElement field;
 
     private final String value;
 
-    public FieldContainsExpression(String fieldName, String value) {
-        this.fieldName = fieldName;
+    public FieldContainsExpression(TqlElement field, String value) {
+        this.field = field;
         this.value = value;
 
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public TqlElement getField() {
+        return field;
     }
 
     public String getValue() {
@@ -31,7 +31,7 @@ public class FieldContainsExpression implements Atom {
 
     @Override
     public String toString() {
-        return "FieldContainsExpression{" + "fieldName='" + fieldName + '\'' + ", value='" + value + '\'' + '}';
+        return "FieldContainsExpression{" + "field='" + field + '\'' + ", value='" + value + '\'' + '}';
     }
 
     @Override

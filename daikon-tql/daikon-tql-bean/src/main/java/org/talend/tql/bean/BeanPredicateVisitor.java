@@ -301,7 +301,9 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
 
     @Override
     public Predicate<T> visit(FieldInExpression fieldInExpression) {
-        final Method[] methods = getMethods(fieldInExpression.getFieldName());
+        fieldInExpression.getField().accept(this);
+        final Method[] methods = currentMethods.pop();
+
         final LiteralValue[] values = fieldInExpression.getValues();
         if (values.length > 0) {
             Predicate<T> predicate = eq(values[0].accept(this), methods);
@@ -317,8 +319,9 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
 
     @Override
     public Predicate<T> visit(FieldIsEmptyExpression fieldIsEmptyExpression) {
-        final Method[] getters = getMethods(fieldIsEmptyExpression.getFieldName());
-        return unchecked(o -> StringUtils.isEmpty(valueOf(invoke(o, getters))));
+        fieldIsEmptyExpression.getField().accept(this);
+        final Method[] methods = currentMethods.pop();
+        return unchecked(o -> StringUtils.isEmpty(valueOf(invoke(o, methods))));
     }
 
     @Override
@@ -333,26 +336,44 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
 
     @Override
     public Predicate<T> visit(FieldMatchesRegex fieldMatchesRegex) {
-        final Method[] methods = getMethods(fieldMatchesRegex.getFieldName());
+        fieldMatchesRegex.getField().accept(this);
+        final Method[] methods = currentMethods.pop();
+
         final Pattern pattern = Pattern.compile(fieldMatchesRegex.getRegex());
         return unchecked(o -> pattern.matcher(valueOf(invoke(o, methods))).matches());
     }
 
     @Override
     public Predicate<T> visit(FieldCompliesPattern fieldCompliesPattern) {
-        final Method[] methods = getMethods(fieldCompliesPattern.getFieldName());
+        fieldCompliesPattern.getField().accept(this);
+        final Method[] methods = currentMethods.pop();
+
         final String pattern = fieldCompliesPattern.getPattern();
         return unchecked(o -> complies(valueOf(invoke(o, methods)), pattern));
     }
 
     @Override
     public Predicate<T> visit(FieldBetweenExpression fieldBetweenExpression) {
-        final Method[] method = getMethods(fieldBetweenExpression.getFieldName());
+        fieldBetweenExpression.getField().accept(this);
+        final Method[] methods = currentMethods.pop();
+
         fieldBetweenExpression.getLeft().accept(this);
         fieldBetweenExpression.getRight().accept(this);
         final String right = literals.pop();
         final String left = literals.pop();
-        return gt(left, method).and(lt(right, method));
+
+        Predicate<T> predicate;
+        if (fieldBetweenExpression.isLowerOpen()) {
+            predicate = gt(left, methods);
+        } else {
+            predicate = gte(left, methods);
+        }
+        if (fieldBetweenExpression.isUpperOpen()) {
+            predicate = predicate.and(lt(right, methods));
+        } else {
+            predicate = predicate.and(lte(right, methods));
+        }
+        return predicate;
     }
 
     @Override
@@ -363,7 +384,9 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
 
     @Override
     public Predicate<T> visit(FieldContainsExpression fieldContainsExpression) {
-        final Method[] methods = getMethods(fieldContainsExpression.getFieldName());
+        fieldContainsExpression.getField().accept(this);
+        final Method[] methods = currentMethods.pop();
+
         return unchecked(o -> StringUtils.containsIgnoreCase(valueOf(invoke(o, methods)), fieldContainsExpression.getValue()));
     }
 

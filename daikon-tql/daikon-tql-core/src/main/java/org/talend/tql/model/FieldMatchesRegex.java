@@ -11,22 +11,22 @@ import org.talend.tql.visitor.IASTVisitor;
  */
 public class FieldMatchesRegex implements Atom {
 
-    private final String fieldName;
+    private final TqlElement field;
 
     private final String regex;
 
-    public FieldMatchesRegex(String fieldName, String regex) {
-        this.fieldName = fieldName;
+    public FieldMatchesRegex(TqlElement field, String regex) {
+        this.field = field;
         this.regex = regex;
     }
 
     @Override
     public String toString() {
-        return "FieldMatchesRegex{" + "fieldName='" + fieldName + '\'' + ", regex='" + regex + '\'' + '}';
+        return "FieldMatchesRegex{" + "field='" + field + '\'' + ", regex='" + regex + '\'' + '}';
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public TqlElement getField() {
+        return field;
     }
 
     public String getRegex() {

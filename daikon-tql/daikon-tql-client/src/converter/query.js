@@ -30,10 +30,6 @@ export default class Query extends ISerializable {
 			throw new Error('Only AND or OR operators are allowed after a query.');
 		}
 
-		if (op instanceof Modifier && !(this.last instanceof Compositor)) {
-			throw new Error('Only Compositors are allowed after a Modifier.');
-		}
-
 		this.stack.push(op);
 		return this;
 	}

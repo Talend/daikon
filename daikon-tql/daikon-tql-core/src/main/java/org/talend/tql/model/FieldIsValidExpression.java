@@ -7,19 +7,19 @@ import org.talend.tql.visitor.IASTVisitor;
  */
 public class FieldIsValidExpression implements Atom {
 
-    private String fieldName;
+    private final TqlElement field;
 
-    public FieldIsValidExpression(String fieldName) {
-        this.fieldName = fieldName;
+    public FieldIsValidExpression(TqlElement field) {
+        this.field = field;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public TqlElement getField() {
+        return field;
     }
 
     @Override
     public String toString() {
-        return "FieldIsValidExpression{" + "fieldName='" + fieldName + '\'' + '}';
+        return "FieldIsValidExpression{" + "field='" + field + '\'' + '}';
     }
 
     @Override

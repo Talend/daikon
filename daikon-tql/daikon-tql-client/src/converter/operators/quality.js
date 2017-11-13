@@ -24,6 +24,7 @@ export default class Quality extends Operator {
 			throw new Error('Invalid options given to quality operator.');
 		}
 
-		return `(${operations.map(o => o.serialize()).join(` ${Compositor.or} `)})`;
+		const query = operations.map(o => o.serialize()).join(` ${Compositor.or} `);
+		return operations.length > 1 ? `(${query})` : query;
 	}
 }

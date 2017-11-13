@@ -11,19 +11,19 @@ import org.talend.tql.visitor.IASTVisitor;
  */
 public class FieldIsEmptyExpression implements Atom {
 
-    private String fieldName;
+    private TqlElement field;
 
-    public FieldIsEmptyExpression(String fieldName) {
-        this.fieldName = fieldName;
+    public FieldIsEmptyExpression(TqlElement field) {
+        this.field = field;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public TqlElement getField() {
+        return field;
     }
 
     @Override
     public String toString() {
-        return "FieldIsEmptyExpression{" + "fieldName='" + fieldName + '\'' + '}';
+        return "FieldIsEmptyExpression{" + "field='" + field + '\'' + '}';
     }
 
     @Override
