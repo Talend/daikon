@@ -26,6 +26,7 @@
         <module>daikon-spring</module>
         <module>daikon-service</module>
         <module>reporting</module>
+        <module>daikon-multitenant</module>
         <module>daikon-content-service</module>
         <module>daikon-logging</module>
         <module>daikon-tql</module>
