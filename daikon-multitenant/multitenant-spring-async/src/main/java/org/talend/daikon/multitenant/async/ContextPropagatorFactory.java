@@ -14,6 +14,9 @@ package org.talend.daikon.multitenant.async;
 
 import java.util.function.Supplier;
 
+/**
+ * Factory of {@link ContextPropagator}
+ */
 public interface ContextPropagatorFactory extends Supplier<ContextPropagator> {
 
 }

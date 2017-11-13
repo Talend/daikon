@@ -111,7 +111,6 @@ public class MultiTenantApplication {
 
         @Async
         public void publish(String content) {
-            System.out.println("Hello");
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
             String priority = null;
             if (requestAttributes != null) {
