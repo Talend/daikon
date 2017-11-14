@@ -12,17 +12,17 @@
 // ============================================================================
 package org.talend.daikon.multitenant.async;
 
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
-
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 
 /**
  * Configures a custom async executor which propagates the request context to the child threads
@@ -34,7 +34,7 @@ import java.util.concurrent.Future;
 @Import({ RequestContextPropagationConfiguration.class, TenancyContextPropagationConfiguration.class,
         SecurityContextPropagationConfiguration.class })
 @EnableAsync
-public class AsyncSupportConfiguration {
+public class AsyncSupportAutoConfiguration {
 
     @Bean(name = "contextAwarePoolExecutor")
     public Executor contextAwarePoolExecutor(List<ContextPropagatorFactory> contextPropagatorFactories) {

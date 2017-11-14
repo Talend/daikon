@@ -23,7 +23,7 @@ import org.talend.daikon.multitenant.provider.TenantProvider;
 import java.util.List;
 
 @Configuration
-public class TenancyFiltersConfiguration {
+public class TenancyFiltersAutoConfiguration {
 
     private static final int SPRING_SECURITY_FILTERS_ORDER = 5;
 
@@ -32,7 +32,7 @@ public class TenancyFiltersConfiguration {
     private static final int ASYNC_TENANCY_CONTEXT_INTEGRATION_FILTER_ORDER = TENANCY_CONTEXT_INTEGRATION_FILTER_ORDER - 1;
 
     @Bean
-    @Conditional(TenancyFiltersConfiguration.TenantCondition.class)
+    @Conditional(TenancyFiltersAutoConfiguration.TenantCondition.class)
     public FilterRegistrationBean tenancyContextIntegrationFilter(TenantProvider tenantProvider,
             List<TenantIdentificationStrategy> strategyList) {
         FilterRegistrationBean registration = new FilterRegistrationBean();
@@ -46,7 +46,7 @@ public class TenancyFiltersConfiguration {
     }
 
     @Bean
-    @Conditional(TenancyFiltersConfiguration.TenantCondition.class)
+    @Conditional(TenancyFiltersAutoConfiguration.TenantCondition.class)
     public FilterRegistrationBean tenancyWebAsyncFilter() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         TenancyWebAsyncFilter filter = new TenancyWebAsyncFilter();

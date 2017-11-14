@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.talend.daikon.multitenant.web.TenancyFiltersConfiguration
+org.talend.daikon.multitenant.web.TenancyFiltersAutoConfiguration

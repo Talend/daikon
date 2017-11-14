@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.talend.daikon.multitenant.async.AsyncSupportConfiguration
+org.talend.daikon.multitenant.async.AsyncSupportAutoConfiguration
