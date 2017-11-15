@@ -27,9 +27,9 @@ public class TenancyFiltersAutoConfiguration {
 
     private static final int SPRING_SECURITY_FILTERS_ORDER = 5;
 
-    private static final int TENANCY_CONTEXT_INTEGRATION_FILTER_ORDER = SPRING_SECURITY_FILTERS_ORDER + 2;
+    public static final int TENANCY_CONTEXT_INTEGRATION_FILTER_ORDER = SPRING_SECURITY_FILTERS_ORDER + 2;
 
-    private static final int ASYNC_TENANCY_CONTEXT_INTEGRATION_FILTER_ORDER = TENANCY_CONTEXT_INTEGRATION_FILTER_ORDER - 1;
+    public static final int ASYNC_TENANCY_CONTEXT_INTEGRATION_FILTER_ORDER = TENANCY_CONTEXT_INTEGRATION_FILTER_ORDER - 1;
 
     @Bean
     @Conditional(TenancyFiltersAutoConfiguration.TenantCondition.class)

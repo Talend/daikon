@@ -15,6 +15,11 @@
     </properties>
     <dependencies>
 		<dependency>
+			<groupId>org.talend.daikon</groupId>
+			<artifactId>multitenant-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 	    	<groupId>net.minidev</groupId>
 	      	<artifactId>json-smart</artifactId>
 	      	<version>2.2.1</version>

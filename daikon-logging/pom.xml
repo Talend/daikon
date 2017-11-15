@@ -19,5 +19,6 @@
     </properties>
     <modules>
         <module>logging-event-layout</module>
+        <module>logging-spring</module>
     </modules>
 </project>
