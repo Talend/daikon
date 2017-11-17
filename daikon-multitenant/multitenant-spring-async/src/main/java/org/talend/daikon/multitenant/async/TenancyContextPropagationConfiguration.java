@@ -12,9 +12,11 @@
 // ============================================================================
 package org.talend.daikon.multitenant.async;
 
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.talend.daikon.logging.event.field.MdcKeys;
 import org.talend.daikon.multitenant.context.TenancyContext;
 import org.talend.daikon.multitenant.context.TenancyContextHolder;
 
@@ -39,11 +41,25 @@ public class TenancyContextPropagationConfiguration {
         @Override
         public void setupContext() {
             TenancyContextHolder.setContext(tenancyContext);
+            setMdc(tenancyContext);
+
         }
 
         @Override
         public void restoreContext() {
             TenancyContextHolder.clearContext();
+            removeMdc();
+        }
+
+        private static void setMdc(TenancyContext tenancyContext) {
+            if (tenancyContext != null && tenancyContext.getTenant() != null) {
+                MDC.put(MdcKeys.ACCOUNT_ID, String.valueOf(tenancyContext.getTenant().getIdentity()));
+            }
+        }
+
+        private static void removeMdc() {
+            MDC.remove(MdcKeys.ACCOUNT_ID);
         }
     }
+
 }

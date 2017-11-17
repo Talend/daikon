@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.daikon.multitenant.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,8 +21,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.talend.daikon.multitenant.context.TenancyContextHolder;
-import org.talend.daikon.multitenant.core.Tenant;
 import org.talend.daikon.multitenant.provider.DefaultTenantProvider;
 import org.talend.daikon.multitenant.provider.TenantProvider;
 
@@ -32,6 +31,8 @@ import java.util.concurrent.Callable;
 public class MultiTenantApplication {
 
     public static final String TENANT_HTTP_HEADER = "X-Test-TenantId";
+
+    public static final String MESSAGE = "Hello, World!";
 
     public static void main(String[] args) { //NOSONAR
         SpringApplication.run(MultiTenantApplication.class, args); //NOSONAR
@@ -56,7 +57,12 @@ public class MultiTenantApplication {
     @RestController
     public static class TestRestController {
 
-        public static final String UNKNOWN_TENANT = "UNKNOWN";
+        @Autowired
+        private final SampleRequestHandler sampleRequestHandler;
+
+        public TestRestController(SampleRequestHandler handler) {
+            this.sampleRequestHandler = handler;
+        }
 
         @RequestMapping(path = "/sync", method = RequestMethod.GET)
         public String sayHelloSync() throws Exception {
@@ -65,18 +71,19 @@ public class MultiTenantApplication {
 
         @RequestMapping(path = "/async", method = RequestMethod.GET)
         public Callable<String> sayHelloAsync() throws Exception {
-            return TestRestController.this::sayHello;
+            return this::sayHello;
         }
 
         private String sayHello() {
-            final Tenant tenant = TenancyContextHolder.getContext().getTenant();
-            final String tenantId = tenant == null ? UNKNOWN_TENANT : String.valueOf(tenant.getIdentity());
-            return formatMessage(tenantId);
+            this.sampleRequestHandler.onSampleRequestCalled();
+            return MESSAGE;
         }
+    }
 
-        public static String formatMessage(String tenantId) {
-            return String.format("Hello, tenant with id %s", tenantId);
-        }
+    public interface SampleRequestHandler {
+
+        void onSampleRequestCalled();
+
     }
 
 }

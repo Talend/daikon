@@ -19,6 +19,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.talend.daikon</groupId>
+            <artifactId>logging-event-layout</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>

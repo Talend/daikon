@@ -109,6 +109,9 @@ public class MultiTenantApplication {
 
         private final LinkedBlockingQueue<Message> messages = new LinkedBlockingQueue<>(1);
 
+        @Autowired
+        private MessagePublicationHandler handler;
+
         @Async
         public void publish(String content) {
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
@@ -127,11 +130,18 @@ public class MultiTenantApplication {
 
             Message message = new Message(userId, tenantId, content, priority);
             this.messages.add(message);
+            this.handler.onMessagePublished();
         }
 
         public Message receive() throws InterruptedException {
             return messages.poll(5000, TimeUnit.MILLISECONDS);
         }
+    }
+
+    public interface MessagePublicationHandler {
+
+        void onMessagePublished();
+
     }
 
     public static class Message {
