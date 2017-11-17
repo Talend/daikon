@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.talend.daikon.logging.spring.LoggingFiltersAutoConfiguration
+org.talend.daikon.logging.spring.UserIdLoggingAutoConfiguration

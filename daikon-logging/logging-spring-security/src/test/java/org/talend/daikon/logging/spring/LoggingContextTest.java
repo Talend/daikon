@@ -48,24 +48,10 @@ public class LoggingContextTest {
     }
 
     @Test
-    public void testAuthenticationAndMultitenant() {
-        final String tenantId = "myTenantId";
+    public void testSyncAuthenticated() {
         final String userId = LoggingApplication.USER_ID;
 
         sampleRequestHandler.verifier = () -> {
-            assertEquals(tenantId, MDC.get(MdcKeys.ACCOUNT_ID));
-            assertEquals(userId, MDC.get(MdcKeys.USER_ID));
-        };
-        String result = given().auth().basic(userId, LoggingApplication.PASSWORD)
-                .header(LoggingApplication.TENANT_HTTP_HEADER, tenantId).get("/").then().statusCode(200).extract().asString();
-        assertEquals(LoggingApplication.MESSAGE, result);
-    }
-
-    @Test
-    public void testAuthenticationNoTenant() {
-        final String userId = LoggingApplication.USER_ID;
-        sampleRequestHandler.verifier = () -> {
-            assertEquals(null, MDC.get(MdcKeys.ACCOUNT_ID));
             assertEquals(userId, MDC.get(MdcKeys.USER_ID));
         };
         String result = given().auth().basic(userId, LoggingApplication.PASSWORD).get("/").then().statusCode(200).extract()
@@ -74,12 +60,35 @@ public class LoggingContextTest {
     }
 
     @Test
-    public void testNoAuthenticationNoTenant() {
+    public void testSyncPublic() {
         sampleRequestHandler.verifier = () -> {
-            assertEquals(null, MDC.get(MdcKeys.ACCOUNT_ID));
             assertEquals(null, MDC.get(MdcKeys.USER_ID));
         };
         String result = given().get("/public").then().statusCode(200).extract().asString();
+        assertEquals(LoggingApplication.MESSAGE, result);
+    }
+
+    @Test
+    public void testAsyncAuthenticated() {
+        final String userId = LoggingApplication.USER_ID;
+
+        sampleRequestHandler.verifier = () -> {
+            assertEquals(userId, MDC.get(MdcKeys.USER_ID));
+        };
+        String result = given().auth().basic(userId, LoggingApplication.PASSWORD).get("/async").then().statusCode(200).extract()
+                .asString();
+        assertEquals(LoggingApplication.MESSAGE, result);
+    }
+
+    @Test
+    public void testAsyncPublic() {
+        final String userId = LoggingApplication.USER_ID;
+
+        sampleRequestHandler.verifier = () -> {
+            assertEquals(null, MDC.get(MdcKeys.USER_ID));
+        };
+        String result = given().auth().basic(userId, LoggingApplication.PASSWORD).get("/public/async").then().statusCode(200)
+                .extract().asString();
         assertEquals(LoggingApplication.MESSAGE, result);
     }
 

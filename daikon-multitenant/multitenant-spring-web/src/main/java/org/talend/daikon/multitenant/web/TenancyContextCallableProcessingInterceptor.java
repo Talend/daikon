@@ -14,9 +14,11 @@ package org.talend.daikon.multitenant.web;
 
 import java.util.concurrent.Callable;
 
+import org.slf4j.MDC;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.async.CallableProcessingInterceptorAdapter;
+import org.talend.daikon.logging.event.field.MdcKeys;
 import org.talend.daikon.multitenant.context.TenancyContext;
 import org.talend.daikon.multitenant.context.TenancyContextHolder;
 
@@ -56,11 +58,15 @@ public class TenancyContextCallableProcessingInterceptor extends CallableProcess
     @Override
     public <T> void preProcess(NativeWebRequest request, Callable<T> task) throws Exception {
         TenancyContextHolder.setContext(tenancyContext);
+        if (tenancyContext != null && tenancyContext.getTenant() != null) {
+            MDC.put(MdcKeys.ACCOUNT_ID, String.valueOf(tenancyContext.getTenant().getIdentity()));
+        }
     }
 
     @Override
     public <T> void postProcess(NativeWebRequest request, Callable<T> task, Object concurrentResult) throws Exception {
         TenancyContextHolder.clearContext();
+        MDC.remove(MdcKeys.ACCOUNT_ID);
     }
 
     private void setTenancyContext(TenancyContext tenancyContext) {

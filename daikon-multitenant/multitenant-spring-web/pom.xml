@@ -14,6 +14,11 @@
     <dependencies>
         <dependency>
             <groupId>org.talend.daikon</groupId>
+            <artifactId>logging-event-layout</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.talend.daikon</groupId>
             <artifactId>multitenant-core</artifactId>
             <version>${project.version}</version>
         </dependency>

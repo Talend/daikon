@@ -15,7 +15,6 @@ package org.talend.daikon.logging.spring;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,15 +23,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.talend.daikon.multitenant.provider.DefaultTenantProvider;
-import org.talend.daikon.multitenant.provider.TenantProvider;
-import org.talend.daikon.multitenant.web.HeaderTenantIdentificationStrategy;
-import org.talend.daikon.multitenant.web.TenantIdentificationStrategy;
+
+import java.util.concurrent.Callable;
 
 @SpringBootApplication
 public class LoggingApplication {
-
-    public static final String TENANT_HTTP_HEADER = "X-Test-TenantId";
 
     public static final String MESSAGE = "Hello, World!";
 
@@ -64,22 +59,6 @@ public class LoggingApplication {
         }
     }
 
-    @Configuration
-    public static class TenancyConfiguration {
-
-        @Bean
-        public TenantProvider tenantProvider() {
-            return new DefaultTenantProvider();
-        }
-
-        @Bean
-        public TenantIdentificationStrategy tenantIdentificationStrategy() {
-            HeaderTenantIdentificationStrategy strategy = new HeaderTenantIdentificationStrategy();
-            strategy.setHeaderName(TENANT_HTTP_HEADER);
-            return strategy;
-        }
-    }
-
     @RestController
     public static class SampleEndpoint {
 
@@ -99,6 +78,22 @@ public class LoggingApplication {
         public String publicSampleGet() {
             this.sampleRequestHandler.onSampleRequestCalled();
             return MESSAGE;
+        }
+
+        @RequestMapping(path = "/async")
+        public Callable<String> asyncGet() {
+            return () -> {
+                this.sampleRequestHandler.onSampleRequestCalled();
+                return MESSAGE;
+            };
+        }
+
+        @RequestMapping(path = "/public/async")
+        public Callable<String> publicAsyncGet() {
+            return () -> {
+                this.sampleRequestHandler.onSampleRequestCalled();
+                return MESSAGE;
+            };
         }
     }
 

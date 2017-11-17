@@ -20,7 +20,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.MDC;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.talend.daikon.logging.event.field.MdcKeys;
 import org.talend.daikon.multitenant.context.TenancyContext;
 import org.talend.daikon.multitenant.context.TenancyContextHolder;
 import org.talend.daikon.multitenant.core.Tenant;
@@ -52,6 +54,9 @@ public class TenancyContextIntegrationFilter extends OncePerRequestFilter {
 
         try {
             TenancyContextHolder.setContext(contextBeforeChainExecution);
+            if (contextBeforeChainExecution != null && contextBeforeChainExecution.getTenant() != null) {
+                MDC.put(MdcKeys.ACCOUNT_ID, String.valueOf(contextBeforeChainExecution.getTenant().getIdentity()));
+            }
 
             chain.doFilter(req, res);
 
@@ -59,6 +64,7 @@ public class TenancyContextIntegrationFilter extends OncePerRequestFilter {
             // Crucial removal of ContextHolder contents - do this
             // before anything else.
             TenancyContextHolder.clearContext();
+            MDC.remove(MdcKeys.ACCOUNT_ID);
         }
 
     }
