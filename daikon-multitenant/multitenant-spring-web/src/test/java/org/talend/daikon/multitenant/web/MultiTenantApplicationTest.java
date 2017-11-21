@@ -90,6 +90,32 @@ public class MultiTenantApplicationTest {
                 .body(Matchers.equalTo(MESSAGE));
     }
 
+    @Test
+    public void testSyncWithTenantAndError() {
+        String errorMessage = "Expected error message";
+        String tenantId = "MyTestTenantId";
+        handlerConfiguration.verifier = () -> {
+            Assert.assertEquals(tenantId, TenancyContextHolder.getContext().getTenant().getIdentity());
+            Assert.assertEquals(tenantId, MDC.get(MdcKeys.ACCOUNT_ID));
+            throw new RuntimeException(errorMessage);
+        };
+        given().header(MultiTenantApplication.TENANT_HTTP_HEADER, tenantId).get("/sync").then().statusCode(500).body("message",
+                Matchers.is(errorMessage));
+    }
+
+    @Test
+    public void testAsyncWithTenantAndError() {
+        String errorMessage = "Expected error message";
+        String tenantId = "MyTestTenantId";
+        handlerConfiguration.verifier = () -> {
+            Assert.assertEquals(tenantId, TenancyContextHolder.getContext().getTenant().getIdentity());
+            Assert.assertEquals(tenantId, MDC.get(MdcKeys.ACCOUNT_ID));
+            throw new RuntimeException(errorMessage);
+        };
+        given().header(MultiTenantApplication.TENANT_HTTP_HEADER, tenantId).get("/async").then().statusCode(500).body("message",
+                Matchers.is(errorMessage));
+    }
+
     @Configuration
     public static class SampleRequestHandlerConfiguration {
 
