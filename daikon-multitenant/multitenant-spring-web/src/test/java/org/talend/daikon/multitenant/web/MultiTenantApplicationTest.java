@@ -81,7 +81,7 @@ public class MultiTenantApplicationTest {
 
     @Test
     public void testAsyncWithTenantHeader() {
-        String tenantId = "MyTestTenantId";
+        String tenantId = "MyAsyncTestTenantId";
         handlerConfiguration.verifier = () -> {
             Assert.assertEquals(tenantId, TenancyContextHolder.getContext().getTenant().getIdentity());
             Assert.assertEquals(tenantId, MDC.get(MdcKeys.ACCOUNT_ID));

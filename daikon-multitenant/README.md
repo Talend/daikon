@@ -44,12 +44,9 @@ It requires 2 beans to be present in the current Spring context:
 - a [TenantProvider](multitenant-core/src/main/java/org/talend/daikon/multitenant/provider/TenantProvider.java) implementation
 - a [TenantIdentificationStrategy](multitenant-spring-web/src/main/java/org/talend/daikon/multitenant/web/TenantIdentificationStrategy.java) implementation.
 
-At application startup, the module will setup 2 Web filters on the application in case it is a Spring Web application:
- 
-- [TenancyContextIntegrationFilter](multitenant-spring-web/src/main/java/org/talend/daikon/multitenant/web/TenancyContextIntegrationFilter.java) will manage HTTP synchronous calls
-- [TenancyWebAsyncFilter](multitenant-spring-web/src/main/java/org/talend/daikon/multitenant/web/TenancyWebAsyncFilter.java) will manage HTTP asynchronous calls.
-
-Both filters will extract the current tenant from the request through the configured TenantIdentificationStrategy and will initialize the TenantContextHolder accordingly
+At application startup, the module will setup the 
+ [TenancyContextIntegrationFilter](multitenant-spring-web/src/main/java/org/talend/daikon/multitenant/web/TenancyContextIntegrationFilter.java) HTTP filter. 
+ It will extract the current tenant from the request through the configured TenantIdentificationStrategy and will initialize the TenantContextHolder accordingly
  so that the current tenant can be accessed later when processing the request.
  
  
