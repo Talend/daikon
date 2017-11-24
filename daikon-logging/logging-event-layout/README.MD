@@ -192,7 +192,11 @@ will appear as a field in the LoggingEvent.
 
 Each entry in the Mapped Diagnostic Context (MDC) will appear as a field in the log file in the form of comma-separated "key":"value"
 
-We provide a java class constants that contains common MDC keys: `MdcKeys` (please add there all MDC keys you think will be common)
+We provide a java class constants that contains common MDC keys: `MdcKeys` (please add there all MDC keys you think will be common).
+
+For Spring Boot applications you may just add the following projects in your classpath to benefit of the automatic MDC setup for:
+ * for the [userId](src/main/java/org/talend/daikon/logging/event/field/MdcKeys.java) please add [org.talend.daikon:logging-spring-security](../logging-spring-security)maven artifact
+ * for the [accountId](src/main/java/org/talend/daikon/logging/event/field/MdcKeys.java) please add [org.talend.daikon:multitenant-spring-web](../../daikon-multitenant/multitenant-spring-web)maven artifact
 
 <a name="loggingevent_custom"/></a>
 ### Custom Fields

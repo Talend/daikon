@@ -47,7 +47,7 @@ It requires 2 beans to be present in the current Spring context:
 At application startup, the module will setup the 
  [TenancyContextIntegrationFilter](multitenant-spring-web/src/main/java/org/talend/daikon/multitenant/web/TenancyContextIntegrationFilter.java) HTTP filter. 
  It will extract the current tenant from the request through the configured TenantIdentificationStrategy and will initialize the TenantContextHolder accordingly
- so that the current tenant can be accessed later when processing the request.
+ so that the current tenant can be accessed later when processing the request. This will also set the [accountId slf4j MDC](https://github.com/Talend/daikon/blob/e4b9d2190bd71aa0ab52b8b5ef8ab9458021c437/daikon-logging/logging-event-layout/src/main/java/org/talend/daikon/logging/event/field/MdcKeys.java#L11) automatically.
  
  
 ### Spring Async helpers
