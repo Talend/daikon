@@ -16,7 +16,8 @@ public class LocalTimeConverter extends Converter<LocalTime> {
             try {
                 return LocalTime.parse(value.toString(), getDateTimeFormatter());
             } catch (DateTimeParseException dtpe) {
-                throw TalendRuntimeException.createUnexpectedException("Unable to parse " + value.toString());
+                throw LocalDateConverter.LocalDateConverterErrorCode.createCannotParse(dtpe, value.toString(),
+                        getDateTimeFormatter().toString());
             }
         }
         return LocalTime.parse(value.toString());
