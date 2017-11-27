@@ -20,5 +20,6 @@
     <modules>
         <module>logging-event-layout</module>
         <module>logging-spring-security</module>
+        <module>logging-audit</module>
     </modules>
 </project>
