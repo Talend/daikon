@@ -42,7 +42,7 @@ public class LocalDateConverter extends Converter<LocalDate> {
      */
     public enum LocalDateConverterErrorCode implements ErrorCode {
 
-        /** The user is attempting to create an output on a path that already exists, but is not set to overwrite. */
+        /** The value cannot be parsed with the given DateTimeFormatter. */
         CANNOT_PARSE("CANNOT_PARSE", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "value", "format");
 
         private final String code;
