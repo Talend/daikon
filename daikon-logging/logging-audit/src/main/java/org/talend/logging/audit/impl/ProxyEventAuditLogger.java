@@ -79,15 +79,6 @@ public class ProxyEventAuditLogger implements InvocationHandler {
         return answer;
     }
 
-    private static EventDefinition getEvent(String eventName, EventSet events) {
-        for (EventDefinition e : events) {
-            if (e.getName().equals(eventName)) {
-                return e;
-            }
-        }
-        return null;
-    }
-
     private static List<Object> getAllArgs(Object[] args) {
         if (args.length == 0) {
             return new ArrayList<>();

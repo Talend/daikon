@@ -50,8 +50,6 @@ public class LogEnricherTest {
         AuditConfiguration.APPLICATION_NAME.setValue(application, String.class);
         AuditConfiguration.INSTANCE_NAME.setValue(instance, String.class);
 
-        LogEnricher enricher = new LogEnricher();
-
         Map<String, String> initialData = new LinkedHashMap<>();
 
         initialData.put("key", "value");

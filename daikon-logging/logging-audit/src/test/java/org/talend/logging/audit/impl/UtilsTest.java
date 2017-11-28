@@ -51,7 +51,7 @@ public class UtilsTest {
         AuditConfiguration.ROOT_LOGGER.setValue("testlogger", String.class);
 
         try {
-            Assert.assertEquals("testcat", Utils.getCategoryFromLoggerName("testlogger.testcat"));
+            assertEquals("testcat", Utils.getCategoryFromLoggerName("testlogger.testcat"));
         } finally {
             AuditConfiguration.ROOT_LOGGER.setAlreadySet(false);
             AuditConfiguration.ROOT_LOGGER.setValue(oldLoggerValue, String.class);
