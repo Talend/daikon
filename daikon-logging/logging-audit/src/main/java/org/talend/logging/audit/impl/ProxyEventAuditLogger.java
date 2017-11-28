@@ -1,6 +1,5 @@
 package org.talend.logging.audit.impl;
 
-import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,24 +16,13 @@ public class ProxyEventAuditLogger implements InvocationHandler {
 
     private final AuditLoggerBase auditLoggerBase;
 
-    private final EventSet events;
-
     public ProxyEventAuditLogger(AuditLoggerBase auditLoggerBase) {
-        this(auditLoggerBase, null);
-    }
-
-    public ProxyEventAuditLogger(AuditLoggerBase auditLoggerBase, InputStream eventsProperties) {
         this.auditLoggerBase = auditLoggerBase;
-        this.events = eventsProperties != null ? EventsConfiguration.loadEvents(eventsProperties) : null;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         EventDefinition event = getEvent(method);
-
-        if (event == null && events != null) {
-            event = getEvent(method.getName(), events);
-        }
 
         if (event == null) {
             throw new IllegalArgumentException("Unknown event " + method.getName());

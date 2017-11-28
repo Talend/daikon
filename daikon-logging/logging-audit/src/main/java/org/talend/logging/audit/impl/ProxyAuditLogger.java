@@ -36,8 +36,8 @@ public class ProxyAuditLogger implements InvocationHandler {
             throw new UnsupportedOperationException("Unknown method " + method);
         }
 
-        Context context = Utils.getSpecificClassParam(method, args, Context.class);
-        Throwable throwable = Utils.getSpecificClassParam(method, args, Throwable.class);
+        Context context = Utils.getSpecificClassParam(args, Context.class);
+        Throwable throwable = Utils.getSpecificClassParam(args, Throwable.class);
         String message = getMessage(method, args);
 
         auditLoggerBase.log(logLevel, category, context, throwable, message);

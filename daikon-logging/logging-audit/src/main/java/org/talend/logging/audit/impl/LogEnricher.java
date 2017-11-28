@@ -8,7 +8,8 @@ import java.util.Map;
  */
 public class LogEnricher {
 
-    public Map<? extends Object, ? extends Object> enrich(String category, Map<?, ?> logData) {
+    @SuppressWarnings({ "unchecked" })
+    public <K, V> Map<K, V> enrich(String category, Map<?, ?> logData) {
         Map<Object, Object> answer = new LinkedHashMap<>(logData);
 
         answer.put(EventFields.AUDIT, "true");
@@ -16,6 +17,6 @@ public class LogEnricher {
         answer.put(EventFields.INSTANCE, AuditConfiguration.INSTANCE_NAME.getString());
         answer.put(EventFields.CATEGORY, category);
 
-        return answer;
+        return (Map<K, V>) answer;
     }
 }

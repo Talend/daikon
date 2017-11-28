@@ -44,7 +44,6 @@ public final class AuditLoggerFactory {
      */
     @SuppressWarnings({ "unchecked" })
     public static <T extends EventAuditLogger> T getEventAuditLogger(Class<T> clz) {
-        // final InputStream eventsProperties = clz.getResourceAsStream("/events.properties");
         return (T) Proxy.newProxyInstance(AuditLoggerFactory.class.getClassLoader(), new Class<?>[] { clz },
                 new ProxyEventAuditLogger(AuditLoggerBaseHolder.BASE_LOGGER));
     }

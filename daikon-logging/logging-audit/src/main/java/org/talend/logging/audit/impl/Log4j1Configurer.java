@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.apache.log4j.*;
 import org.apache.log4j.net.SocketAppender;
 import org.apache.log4j.rewrite.RewriteAppender;
+import org.talend.daikon.logging.event.layout.Log4jJSONLayout;
+import org.talend.logging.audit.AuditLoggingException;
 
 /**
  *
@@ -15,7 +17,7 @@ final class Log4j1Configurer {
     }
 
     static void configure() {
-        final LogAppenders appender = AuditConfiguration.APPENDER.getValue(LogAppenders.class);
+        final LogAppenders appender = AuditConfiguration.LOG_APPENDER.getValue(LogAppenders.class);
 
         final RewriteAppender auditAppender = new RewriteAppender();
         switch (appender) {
@@ -47,14 +49,14 @@ final class Log4j1Configurer {
         final RollingFileAppender appender;
 
         try {
-            appender = new RollingFileAppender(logstashLayout(), AuditConfiguration.FILE_PATH.getString(), true);
+            appender = new RollingFileAppender(logstashLayout(), AuditConfiguration.APPENDER_FILE_PATH.getString(), true);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new AuditLoggingException(e);
         }
 
         appender.setName("auditFileAppender");
-        appender.setMaxBackupIndex(AuditConfiguration.FILE_MAX_BACKUP.getInteger());
-        appender.setMaximumFileSize(AuditConfiguration.FILE_MAX_SIZE.getLong());
+        appender.setMaxBackupIndex(AuditConfiguration.APPENDER_FILE_MAXBACKUP.getInteger());
+        appender.setMaximumFileSize(AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong());
         appender.setEncoding("UTF-8");
         appender.setImmediateFlush(true);
         appender.setLayout(logstashLayout());
@@ -63,20 +65,20 @@ final class Log4j1Configurer {
     }
 
     private static Appender socketAppender() {
-        final SocketAppender appender = new SocketAppender(AuditConfiguration.SOCKET_HOST.getString(),
-                AuditConfiguration.SOCKET_PORT.getInteger());
+        final SocketAppender appender = new SocketAppender(AuditConfiguration.APPENDER_SOCKET_HOST.getString(),
+                AuditConfiguration.APPENDER_SOCKET_PORT.getInteger());
 
         appender.setName("auditSocketAppender");
-        appender.setLocationInfo(AuditConfiguration.LOG_LOCATION.getBoolean());
+        appender.setLocationInfo(AuditConfiguration.LOCATION.getBoolean());
 
         return appender;
     }
 
     private static Appender consoleAppender() {
-        final LogTarget target = AuditConfiguration.CONSOLE_TARGET.getValue(LogTarget.class);
+        final LogTarget target = AuditConfiguration.APPENDER_CONSOLE_TARGET.getValue(LogTarget.class);
 
-        final ConsoleAppender appender = new ConsoleAppender(new PatternLayout(AuditConfiguration.CONSOLE_PATTERN.getString()),
-                target.getTarget());
+        final ConsoleAppender appender = new ConsoleAppender(
+                new PatternLayout(AuditConfiguration.APPENDER_CONSOLE_PATTERN.getString()), target.getTarget());
 
         appender.setName("consoleAppender");
 
@@ -84,7 +86,6 @@ final class Log4j1Configurer {
     }
 
     private static Layout logstashLayout() {
-        final Log4j1AuditJSONLayout layout = new Log4j1AuditJSONLayout(AuditConfiguration.LOG_LOCATION.getBoolean());
-        return layout;
+        return new Log4jJSONLayout(AuditConfiguration.LOCATION.getBoolean());
     }
 }

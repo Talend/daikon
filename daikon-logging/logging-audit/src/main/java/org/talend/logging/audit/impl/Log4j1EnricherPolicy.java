@@ -11,7 +11,11 @@ import org.apache.log4j.spi.LoggingEvent;
  */
 public class Log4j1EnricherPolicy implements RewritePolicy {
 
-    private final LogEnricher logEnricher = new LogEnricher();
+    private LogEnricher logEnricher = new LogEnricher();
+
+    public void setLogEnricher(LogEnricher logEnricher) {
+        this.logEnricher = logEnricher;
+    }
 
     @Override
     @SuppressWarnings({ "unchecked" })

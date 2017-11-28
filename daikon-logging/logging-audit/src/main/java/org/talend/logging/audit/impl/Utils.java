@@ -20,10 +20,9 @@ final class Utils {
         return null;
     }
 
-    static <T> T getSpecificClassParam(Method method, Object[] args, Class<T> clz) {
-        Class<?>[] paramTypes = method.getParameterTypes();
-        for (int i = 0; i < paramTypes.length; i++) {
-            if (clz.equals(paramTypes[i])) {
+    static <T> T getSpecificClassParam(Object[] args, Class<T> clz) {
+        for (int i = 0; i < args.length; i++) {
+            if (clz.isInstance(args[i])) {
                 return clz.cast(args[i]);
             }
         }

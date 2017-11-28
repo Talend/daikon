@@ -20,19 +20,20 @@ public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
             throw new IllegalArgumentException("category cannot be null");
         }
 
-        category = category.trim().toLowerCase();
-        if (category.isEmpty()) {
+        String categoryNormalized = category.trim().toLowerCase();
+        if (categoryNormalized.isEmpty()) {
             throw new IllegalArgumentException("category cannot be empty or blank");
         }
 
-        if (message == null && throwable != null) {
-            message = throwable.getMessage();
-        }
-
-        if (message == null) {
+        String actualMessage = message == null && throwable != null ? throwable.getMessage() : message;
+        if (actualMessage == null) {
             throw new IllegalArgumentException("message cannot be null");
         }
 
+        logInternal(level, categoryNormalized, context, throwable, actualMessage);
+    }
+
+    private void logInternal(LogLevel level, String category, Context context, Throwable throwable, String message) {
         // creating copy of passed context to be able to modify it
         context = context == null ? ContextBuilder.emptyContext() : ContextBuilder.create(context).build();
 
@@ -68,8 +69,13 @@ public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
     }
 
     private static String formatMessage(String message) {
+        Map<String, String> mdcContext = MDC.getCopyOfContextMap();
+        if (mdcContext == null) {
+            return message;
+        }
+
         String formattedMessage = message;
-        for (Map.Entry<String, String> entry : MDC.getCopyOfContextMap().entrySet()) {
+        for (Map.Entry<String, String> entry : mdcContext.entrySet()) {
             formattedMessage = formattedMessage.replace('{' + entry.getKey() + '}', entry.getValue());
         }
         return formattedMessage;

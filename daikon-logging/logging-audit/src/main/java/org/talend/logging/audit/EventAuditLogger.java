@@ -15,12 +15,13 @@ package org.talend.logging.audit;
  *
  * <p>To log this audit event:
  * <pre>
- *     StandardEventAuditLogger logger = AuditLoggerFactory.getEventAuditLogger(StandardEventAuditLogger.class);
+ *     TestAuditLogger logger = AuditLoggerFactory.getEventAuditLogger(TestAuditLogger.class);
  *     ...
- *     logger.loginSuccess();
+ *     logger.test();
  * </pre>
  *
  * @see AuditLoggerFactory
+ * @see StandardEventAuditLogger
  */
 public interface EventAuditLogger {
 }
