@@ -14,7 +14,8 @@ import java.util.*;
 enum AuditConfiguration {
     ROOT_LOGGER("root.logger", String.class, "audit"),
     APPLICATION_NAME("application.name", String.class),
-    INSTANCE_NAME("instance.name", String.class),
+    SERVICE_NAME("service.name", String.class, ""),
+    INSTANCE_NAME("instance.name", String.class, ""),
     APPENDER_FILE_PATH("appender.file.path", String.class),
     APPENDER_FILE_MAXSIZE("appender.file.maxsize", Long.class, 52428800L),
     APPENDER_FILE_MAXBACKUP("appender.file.maxbackup", Integer.class, 20),
@@ -138,7 +139,7 @@ enum AuditConfiguration {
     @SuppressWarnings({ "unchecked" })
     public static void loadFromProperties(Properties props) {
         for (String key : props.stringPropertyNames()) {
-            String value = props.getProperty(key);
+            String value = props.getProperty(key).trim();
 
             AuditConfiguration prop = AuditConfiguration.valueOf(getEnumName(key));
 

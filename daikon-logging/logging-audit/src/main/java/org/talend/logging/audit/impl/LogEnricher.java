@@ -14,6 +14,7 @@ public class LogEnricher {
 
         answer.put(EventFields.AUDIT, "true");
         answer.put(EventFields.APPLICATION, AuditConfiguration.APPLICATION_NAME.getString());
+        answer.put(EventFields.SERVICE, AuditConfiguration.SERVICE_NAME.getString());
         answer.put(EventFields.INSTANCE, AuditConfiguration.INSTANCE_NAME.getString());
         answer.put(EventFields.CATEGORY, category);
 

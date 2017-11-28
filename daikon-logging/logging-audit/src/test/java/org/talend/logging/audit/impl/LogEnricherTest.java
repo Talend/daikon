@@ -45,9 +45,11 @@ public class LogEnricherTest {
     public void testEnrich() {
         String category = "cat";
         String application = "app";
+        String service = "srv";
         String instance = "inst";
 
         AuditConfiguration.APPLICATION_NAME.setValue(application, String.class);
+        AuditConfiguration.SERVICE_NAME.setValue(service, String.class);
         AuditConfiguration.INSTANCE_NAME.setValue(instance, String.class);
 
         Map<String, String> initialData = new LinkedHashMap<>();
@@ -59,6 +61,7 @@ public class LogEnricherTest {
         expectedData.put("audit", "true");
         expectedData.put("application", application);
         expectedData.put("instance", instance);
+        expectedData.put("service", service);
         expectedData.put("category", category);
 
         Map<String, String> enrichedData = new LogEnricher().enrich(category, initialData);

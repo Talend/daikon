@@ -11,6 +11,8 @@ public class EventFields {
 
     public static final String APPLICATION = "application";
 
+    public static final String SERVICE = "service";
+
     public static final String INSTANCE = "instance";
 
     public static final String CATEGORY = "category";

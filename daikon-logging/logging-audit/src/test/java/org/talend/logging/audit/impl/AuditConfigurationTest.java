@@ -48,6 +48,7 @@ public class AuditConfigurationTest {
 
         assertEquals("testLogger", AuditConfiguration.ROOT_LOGGER.getString());
         assertEquals("TestApplicationName", AuditConfiguration.APPLICATION_NAME.getString());
+        assertEquals("TestServiceName", AuditConfiguration.SERVICE_NAME.getString());
         assertEquals("TestInstanceName", AuditConfiguration.INSTANCE_NAME.getString());
         assertEquals("test.json", AuditConfiguration.APPENDER_FILE_PATH.getString());
         assertEquals((Long) 30L, AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong());

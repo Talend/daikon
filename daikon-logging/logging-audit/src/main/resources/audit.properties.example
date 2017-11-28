@@ -14,7 +14,10 @@ root.logger=audit
 # Name of the application which logs audit event (this value will be put into MDC for each logged event).
 application.name=Test
 
-# Name of the instance of the application (this value will be put into MDC for each logged event).
+# Name of the service within the application which logs audit event (this value will be put into MDC for each logged event).
+service.name=ServiceA
+
+# Name of the instance of the service (this value will be put into MDC for each logged event).
 instance.name=TestInstance1
 
 # Type of log appender to use.

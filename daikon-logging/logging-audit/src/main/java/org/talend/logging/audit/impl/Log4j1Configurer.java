@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.log4j.*;
 import org.apache.log4j.net.SocketAppender;
 import org.apache.log4j.rewrite.RewriteAppender;
+import org.apache.log4j.varia.DenyAllFilter;
 import org.talend.daikon.logging.event.layout.Log4jJSONLayout;
 import org.talend.logging.audit.AuditLoggingException;
 
@@ -31,6 +32,10 @@ final class Log4j1Configurer {
 
         case CONSOLE:
             auditAppender.addAppender(consoleAppender());
+            break;
+
+        case NONE:
+            auditAppender.addFilter(new DenyAllFilter());
             break;
 
         default:
