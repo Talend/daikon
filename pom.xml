@@ -30,6 +30,7 @@
         <module>daikon-logging</module>
         <module>daikon-multitenant</module>
         <module>daikon-tql</module>
+        <module>daikon-audit</module>
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>

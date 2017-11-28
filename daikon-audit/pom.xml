@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.talend.daikon</groupId>
-        <artifactId>daikon-logging</artifactId>
+        <artifactId>daikon-parent</artifactId>
         <version>0.19.0-SNAPSHOT</version>
     </parent>
-    <artifactId>logging-audit</artifactId>
+    <artifactId>daikon-audit</artifactId>
     <properties>
         <java.version>1.7</java.version>
         <maven.compiler.source>1.7</maven.compiler.source>

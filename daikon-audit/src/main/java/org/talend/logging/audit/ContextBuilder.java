@@ -34,6 +34,8 @@ public final class ContextBuilder {
     }
 
     /**
+     * @param key to be added
+     * @param value to be added
      * @return an instance of context builder with given key-value pair in it.
      */
     public static ContextBuilder create(String key, String value) {
@@ -41,6 +43,7 @@ public final class ContextBuilder {
     }
 
     /**
+     * @param context to be used as base for the new one
      * @return an instance of context builder with copy of given context map in it.
      */
     public static ContextBuilder create(Map<String, String> context) {

@@ -16,7 +16,7 @@ public final class AuditLoggerFactory {
     }
 
     /**
-     * Creates default simple API instance.
+     * @return default simple API instance.
      */
     public static AuditLogger getAuditLogger() {
         return getAuditLogger(AuditLogger.class);
@@ -26,6 +26,7 @@ public final class AuditLoggerFactory {
      * Creates customized simple API instance.
      *
      * @param clz interface which extends {@link AuditLogger} with additional methods.
+     * @param <T> audit logger type.
      * @return instance of customized interface.
      * @see AuditLogger
      */
@@ -39,6 +40,7 @@ public final class AuditLoggerFactory {
      * Creates event-based API instance from given interface.
      *
      * @param clz interface which extends {@link EventAuditLogger} with event declarinig methods.
+     * @param <T> event audit logger type.
      * @return instance of event-based API interface
      * @see EventAuditLogger
      */

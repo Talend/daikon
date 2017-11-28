@@ -12,11 +12,13 @@ import java.lang.annotation.*;
 public @interface AuditEvent {
 
     /**
+     * @return
      * Category of the event. For example: activity, security, etc. The value will be converted to lower case.
      */
     String category();
 
     /**
+     * @return
      * Text message for the event. It can include placeholders to be replaced with values from MDC context.
      * For example: "User {user.name} has logged out". The part "{user.name}" will be replaced with the value
      * from MDC if it exists.
@@ -25,6 +27,7 @@ public @interface AuditEvent {
 
     //CHECKSTYLE:OFF
     /**
+     * @return
      * Level to log this message with. Possible values: INFO, WARNING, ERROR.
      */
     //CHECKSTYLE:ON

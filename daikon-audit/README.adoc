@@ -18,7 +18,7 @@ How to use:
 .For gradle:
 [source,groovy]
 ----
-  compile 'org.talend.daikon:logging-audit:<daikonVersion>'
+  compile 'org.talend.daikon:daikon-audit:<daikonVersion>'
   compile 'org.slf4j:slf4j-log4j12:1.7.25'
   compile 'log4j:log4j:1.2.17'
 ----
@@ -28,7 +28,7 @@ How to use:
 ----
 <dependency>
     <groupId>org.talend.daikon</groupId>
-    <artifactId>audit-logging</artifactId>
+    <artifactId>daikon-audit</artifactId>
     <version>${daikon.version}</version>
 </dependency>
 
