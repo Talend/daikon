@@ -80,7 +80,7 @@ public class ProxyEventAuditLogger implements InvocationHandler {
     }
 
     private static List<Object> getAllArgs(Object[] args) {
-        if (args.length == 0) {
+        if (args == null || args.length == 0) {
             return new ArrayList<>();
         }
 
