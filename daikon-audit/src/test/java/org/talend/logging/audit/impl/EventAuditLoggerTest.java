@@ -27,6 +27,40 @@ public class EventAuditLoggerTest {
         verify(base);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testTooManyArguments() {
+        Context ctx = ContextBuilder.emptyContext();
+        Throwable thr = new IllegalStateException();
+        TestEvent testEvent = getEventAuditLogger(null);
+        testEvent.testWithParams(ctx, thr, "");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRepeatedContext() {
+        Context ctx = ContextBuilder.emptyContext();
+        TestEvent testEvent = getEventAuditLogger(null);
+        testEvent.testWithParams(ctx, ctx);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRepeatedThrowable() {
+        Throwable thr = new IllegalStateException();
+        TestEvent testEvent = getEventAuditLogger(null);
+        testEvent.testWithParams(thr, thr);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMissingAnnotation() {
+        TestEvent testEvent = getEventAuditLogger(null);
+        testEvent.notEvent();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongArgumentType() {
+        TestEvent testEvent = getEventAuditLogger(null);
+        testEvent.testWithParams("");
+    }
+
     private static TestEvent getEventAuditLogger(AuditLoggerBase loggerBase) {
         return (TestEvent) Proxy.newProxyInstance(AuditLoggerFactory.class.getClassLoader(), new Class<?>[] { TestEvent.class },
                 new ProxyEventAuditLogger(loggerBase));
@@ -39,5 +73,7 @@ public class EventAuditLoggerTest {
 
         @AuditEvent(category = "testcat2", message = "testmsg2", level = LogLevel.INFO)
         void testWithoutParams();
+
+        void notEvent();
     }
 }
