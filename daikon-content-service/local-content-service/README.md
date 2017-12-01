@@ -13,7 +13,7 @@ This module contains the source files for a local file system support.
 <dependency>
    <groupId>org.talend.daikon</groupId>
    <artifactId>local-content-service</artifactId>
-   <version>0.16.0-SNAPSHOT</version>
+   <version>0.19.0-SNAPSHOT</version>
 </dependency>
 ```
 Doing so will bring all needed dependencies.
@@ -21,6 +21,7 @@ Doing so will bring all needed dependencies.
 2. In your configuration, add the following line:
 ```properties
 content-service.store=local
+content-service.store.local.path=<path to the local file system>
 ```
 
 3. Add an `@Autowired` with `org.talend.daikon.content.ResourceResolver` type anywhere you want to use content service:
