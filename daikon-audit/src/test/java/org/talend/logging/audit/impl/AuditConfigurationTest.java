@@ -3,6 +3,7 @@ package org.talend.logging.audit.impl;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.*;
@@ -49,6 +50,8 @@ public class AuditConfigurationTest {
             }
         }
 
+        final LogAppendersSet expectedAppenders = new LogAppendersSet(Arrays.asList(LogAppenders.FILE, LogAppenders.SOCKET));
+
         assertEquals("testLogger", AuditConfiguration.ROOT_LOGGER.getString());
         assertEquals("TestApplicationName", AuditConfiguration.APPLICATION_NAME.getString());
         assertEquals("DefaultServiceName", AuditConfiguration.SERVICE_NAME.getString());
@@ -61,6 +64,6 @@ public class AuditConfigurationTest {
         assertEquals((Integer) 8056, AuditConfiguration.APPENDER_SOCKET_PORT.getInteger());
         assertEquals("ConsolePattern", AuditConfiguration.APPENDER_CONSOLE_PATTERN.getString());
         assertEquals(LogTarget.ERROR, AuditConfiguration.APPENDER_CONSOLE_TARGET.getValue(LogTarget.class));
-        assertEquals(LogAppenders.SOCKET, AuditConfiguration.LOG_APPENDER.getValue(LogAppenders.class));
+        assertEquals(expectedAppenders, AuditConfiguration.LOG_APPENDER.getValue(LogAppendersSet.class));
     }
 }

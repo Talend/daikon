@@ -2,14 +2,13 @@ package org.talend.logging.audit.impl;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.talend.logging.audit.Context;
-import org.talend.logging.audit.ContextBuilder;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.junit.Test;
+import org.talend.logging.audit.Context;
+import org.talend.logging.audit.ContextBuilder;
 
 public class UtilsTest {
 

@@ -18,28 +18,39 @@ final class Log4j1Configurer {
     }
 
     static void configure() {
-        final LogAppenders appender = AuditConfiguration.LOG_APPENDER.getValue(LogAppenders.class);
+        final LogAppendersSet appendersSet = AuditConfiguration.LOG_APPENDER.getValue(LogAppendersSet.class);
+
+        if (appendersSet == null || appendersSet.isEmpty()) {
+            throw new AuditLoggingException("No audit appenders configured.");
+        }
+
+        if (appendersSet.size() > 1 && appendersSet.contains(LogAppenders.NONE)) {
+            throw new AuditLoggingException("Invalid configuration: none appender is used with other simultaneously.");
+        }
 
         final RewriteAppender auditAppender = new RewriteAppender();
-        switch (appender) {
-        case FILE:
-            auditAppender.addAppender(rollingFileAppender());
-            break;
 
-        case SOCKET:
-            auditAppender.addAppender(socketAppender());
-            break;
+        for (LogAppenders appender : appendersSet) {
+            switch (appender) {
+            case FILE:
+                auditAppender.addAppender(rollingFileAppender());
+                break;
 
-        case CONSOLE:
-            auditAppender.addAppender(consoleAppender());
-            break;
+            case SOCKET:
+                auditAppender.addAppender(socketAppender());
+                break;
 
-        case NONE:
-            auditAppender.addFilter(new DenyAllFilter());
-            break;
+            case CONSOLE:
+                auditAppender.addAppender(consoleAppender());
+                break;
 
-        default:
-            throw new IllegalArgumentException("Unknown appender " + appender);
+            case NONE:
+                auditAppender.addFilter(new DenyAllFilter());
+                break;
+
+            default:
+                throw new AuditLoggingException("Unknown appender " + appender);
+            }
         }
 
         auditAppender.setRewritePolicy(new Log4j1EnricherPolicy());

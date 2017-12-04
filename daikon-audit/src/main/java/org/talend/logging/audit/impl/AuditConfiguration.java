@@ -24,13 +24,7 @@ enum AuditConfiguration {
     APPENDER_SOCKET_PORT("appender.socket.port", Integer.class, 4560),
     APPENDER_CONSOLE_PATTERN("appender.console.pattern", String.class, "%d{yyyy-MM-dd HH:mm:ss} %-5p %c - %m%n"),
     APPENDER_CONSOLE_TARGET("appender.console.target", LogTarget.class, LogTarget.OUTPUT),
-    LOG_APPENDER("log.appender", LogAppenders.class) {
-
-        @Override
-        public <T> void setValue(T value, Class<? extends T> clz) {
-            super.setValue(value, clz);
-        }
-    };
+    LOG_APPENDER("log.appender", LogAppendersSet.class);
 
     private static final String PLACEHOLDER_START = "${";
 
@@ -160,6 +154,13 @@ enum AuditConfiguration {
             } else if (Enum.class.isAssignableFrom(prop.getClz())) {
                 Class<? extends Enum> enumClz = (Class<? extends Enum>) prop.getClz();
                 prop.setValue(Enum.valueOf(enumClz, value.toUpperCase()), enumClz);
+            } else if (LogAppendersSet.class.isAssignableFrom(prop.getClz())) {
+                String[] parts = value.split(",");
+                LogAppendersSet appenders = new LogAppendersSet();
+                for (String app : parts) {
+                    appenders.add(Enum.valueOf(LogAppenders.class, app.toUpperCase()));
+                }
+                prop.setValue(appenders, LogAppendersSet.class);
             } else {
                 throw new IllegalArgumentException("Unsupported property type " + prop.getClz().getName());
             }
