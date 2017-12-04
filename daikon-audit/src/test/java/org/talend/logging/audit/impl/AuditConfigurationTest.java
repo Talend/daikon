@@ -38,6 +38,9 @@ public class AuditConfigurationTest {
 
     @Test
     public void testLoadConfiguration() {
+        System.setProperty("test.file.path.property", "/tmp/testSysPropValue");
+        final String javaHome = System.getenv("JAVA_HOME");
+
         AuditConfiguration.loadFromClasspath("/test.audit.properties");
 
         for (AuditConfiguration c : AuditConfiguration.values()) {
@@ -48,9 +51,9 @@ public class AuditConfigurationTest {
 
         assertEquals("testLogger", AuditConfiguration.ROOT_LOGGER.getString());
         assertEquals("TestApplicationName", AuditConfiguration.APPLICATION_NAME.getString());
-        assertEquals("TestServiceName", AuditConfiguration.SERVICE_NAME.getString());
-        assertEquals("TestInstanceName", AuditConfiguration.INSTANCE_NAME.getString());
-        assertEquals("test.json", AuditConfiguration.APPENDER_FILE_PATH.getString());
+        assertEquals("DefaultServiceName", AuditConfiguration.SERVICE_NAME.getString());
+        assertEquals(javaHome, AuditConfiguration.INSTANCE_NAME.getString());
+        assertEquals("/tmp/testSysPropValue/test.json", AuditConfiguration.APPENDER_FILE_PATH.getString());
         assertEquals((Long) 30L, AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong());
         assertEquals((Integer) 100, AuditConfiguration.APPENDER_FILE_MAXBACKUP.getInteger());
         assertEquals(Boolean.TRUE, AuditConfiguration.LOCATION.getBoolean());

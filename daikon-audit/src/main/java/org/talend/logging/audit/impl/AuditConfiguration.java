@@ -1,12 +1,12 @@
 package org.talend.logging.audit.impl;
 
-import org.talend.logging.audit.AuditLoggingException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+
+import org.talend.logging.audit.AuditLoggingException;
 
 /**
  *
@@ -29,9 +29,14 @@ enum AuditConfiguration {
         @Override
         public <T> void setValue(T value, Class<? extends T> clz) {
             super.setValue(value, clz);
-
         }
     };
+
+    private static final String PLACEHOLDER_START = "${";
+
+    private static final String PLACEHOLDER_END = "}";
+
+    private static final String PLACEHOLDER_DELIM = ":";
 
     private final String property;
 
@@ -139,7 +144,8 @@ enum AuditConfiguration {
     @SuppressWarnings({ "unchecked" })
     public static void loadFromProperties(Properties props) {
         for (String key : props.stringPropertyNames()) {
-            String value = props.getProperty(key).trim();
+            String rawValue = props.getProperty(key).trim();
+            String value = replaceTokens(rawValue);
 
             AuditConfiguration prop = AuditConfiguration.valueOf(getEnumName(key));
 
@@ -181,6 +187,94 @@ enum AuditConfiguration {
 
         if (missingFields != null && !missingFields.isEmpty()) {
             throw new IllegalArgumentException("These mandatory audit logging properties were not configured: " + missingFields);
+        }
+    }
+
+    private static String replaceTokens(String value) {
+        String answer = value;
+        Set<PropertyToken> tokens = getTokens(value);
+
+        for (PropertyToken tok : tokens) {
+            String tokenValue = System.getProperty(tok.tokenName);
+            if (tokenValue == null) {
+                tokenValue = System.getenv(getEnvVariableName(tok.tokenName));
+            }
+            if (tokenValue == null) {
+                tokenValue = tok.defaultValue;
+            }
+            if (tokenValue == null) {
+                throw new AuditLoggingException("Cannot resolve placeholder " + tok.placeholder);
+            }
+
+            answer = answer.replace(tok.placeholder, tokenValue);
+        }
+
+        return answer;
+    }
+
+    private static Set<PropertyToken> getTokens(String value) {
+        final Set<PropertyToken> answer = new LinkedHashSet<>();
+
+        int i = value.indexOf(PLACEHOLDER_START);
+        while (i != -1) {
+            int e = value.indexOf(PLACEHOLDER_END, i);
+            if (e == -1) {
+                break;
+            }
+
+            final String placeholder = value.substring(i, e + 1);
+
+            String tok = placeholder.substring(PLACEHOLDER_START.length(), placeholder.length() - PLACEHOLDER_END.length());
+            int d = tok.indexOf(PLACEHOLDER_DELIM, i);
+
+            PropertyToken propertyToken = new PropertyToken();
+            propertyToken.placeholder = placeholder;
+
+            if (d == -1 || d >= e) {
+                propertyToken.tokenName = tok;
+            } else {
+                propertyToken.tokenName = tok.substring(0, d);
+                propertyToken.defaultValue = tok.substring(d + 1);
+            }
+
+            answer.add(propertyToken);
+
+            i = value.indexOf(PLACEHOLDER_START, e);
+        }
+
+        return answer;
+    }
+
+    private static String getEnvVariableName(String token) {
+        return token.toUpperCase().replace('.', '_');
+    }
+
+    private static class PropertyToken {
+
+        private String placeholder;
+
+        private String tokenName;
+
+        private String defaultValue;
+
+        @Override
+        public String toString() {
+            return "PropertyToken: " + placeholder;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            PropertyToken that = (PropertyToken) o;
+            return Objects.equals(placeholder, that.placeholder);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(placeholder);
         }
     }
 }
