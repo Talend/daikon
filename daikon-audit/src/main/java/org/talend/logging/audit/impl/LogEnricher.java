@@ -2,6 +2,7 @@ package org.talend.logging.audit.impl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  *
@@ -13,6 +14,7 @@ public class LogEnricher {
         Map<Object, Object> answer = new LinkedHashMap<>(logData);
 
         answer.put(EventFields.AUDIT, "true");
+        answer.put(EventFields.ID, UUID.randomUUID().toString());
         answer.put(EventFields.APPLICATION, AuditConfiguration.APPLICATION_NAME.getString());
         answer.put(EventFields.SERVICE, AuditConfiguration.SERVICE_NAME.getString());
         answer.put(EventFields.INSTANCE, AuditConfiguration.INSTANCE_NAME.getString());

@@ -5,15 +5,20 @@ package org.talend.logging.audit.impl;
  */
 public class EventFields {
 
-    public static final String PREFIX = "talend.meta.";
+    private static final String PREFIX = "talend.meta.";
 
-    public static final String AUDIT = "audit";
+    public static final String ID = PREFIX + "id";
 
-    public static final String APPLICATION = "application";
+    public static final String AUDIT = PREFIX + "audit";
 
-    public static final String SERVICE = "service";
+    public static final String APPLICATION = PREFIX + "application";
 
-    public static final String INSTANCE = "instance";
+    public static final String SERVICE = PREFIX + "service";
 
-    public static final String CATEGORY = "category";
+    public static final String INSTANCE = PREFIX + "instance";
+
+    public static final String CATEGORY = PREFIX + "category";
+
+    private EventFields() {
+    }
 }
