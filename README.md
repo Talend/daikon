@@ -21,6 +21,7 @@ _Modules_                                               |_Description_
 [daikon-service](daikon-service)                        |*Provides spring services utilities such as abstracting the access to local or remote service and Enuciate documentation generation*
 [daikon-spring](daikon-spring)                          |*Spring specific classes that can be shared by projects, like multitenant for mongoDB or @RequiresAuthority for simple permission check*
 [daikon-tql](daikon-tql)                                |*Talend Query Language, simple query language for java and javascript with a MongoDB implementation*
+[daikon-audit](daikon-audit)                            |*Library which provides a facade for recording audit events*
 [poc](poc)                                              |*module use to store experiments and POCs like the CQRS one*
 [reporting](reporting)                                  |*Internal module used to aggregate jacoco converage reports and send them to codacy during the deploy phase*
 

@@ -1,0 +1,49 @@
+= Audit Logging Client
+
+This library can be used to log audit events with Talend LogServer.
+
+Currently supported logging frameworks: log4j 1.2
+
+It provides two APIs:
+
+- simple (where user logs events calling methods like activityInfo providing message and additional data)
+- event-based (where user declares events in a java interface first and then logs them by calling methods from the interface)
+
+The preferred way is to use event-based API.
+
+How to use:
+
+. Add dependencies
++
+.For gradle:
+[source,groovy]
+----
+  compile 'org.talend.daikon:daikon-audit:<daikonVersion>'
+  compile 'org.slf4j:slf4j-log4j12:1.7.25'
+  compile 'log4j:log4j:1.2.17'
+----
++
+.For maven:
+[source,xml]
+----
+<dependency>
+    <groupId>org.talend.daikon</groupId>
+    <artifactId>daikon-audit</artifactId>
+    <version>${daikon.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.7.25</version>
+</dependency>
+
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
+----
+. Extend `EventAuditLogger` interface and declare your events (see javadoc for details)
+. Add audit.properties to the resources in your project (see link:src/main/resources/audit.properties.example[])
+. To log audit events, use `AuditLoggerFactory` to retrieve an instance for your interface, then call corresponding methods

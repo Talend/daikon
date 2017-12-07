@@ -1,0 +1,33 @@
+@startuml
+
+title Audit Logging Architecture v1.0
+
+rectangle "JVM" {
+    component "App" as app
+
+    rectangle "Audit Logging" {
+        component "AuditLogger" as audit_logger
+        component "slf4j" as slf4j
+        component "log4j 1.2" as log4j12
+        component "Socket Appender" as socket_appender
+
+        audit_logger -> slf4j
+        slf4j -> log4j12
+        log4j12 -> socket_appender
+    }
+
+    app -> audit_logger
+}
+
+rectangle "LogServer" {
+    component "LogStash" as logstash
+    component "ElasticSearch" as elasticsearch
+    component "Kibana" as kibana
+
+    logstash -> elasticsearch
+    elasticsearch <- kibana
+}
+
+socket_appender --> logstash
+
+@enduml
