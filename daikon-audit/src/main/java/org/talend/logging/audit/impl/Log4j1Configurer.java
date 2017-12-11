@@ -125,6 +125,7 @@ final class Log4j1Configurer {
 
         appender.setConnectTimeout(AuditConfiguration.APPENDER_HTTP_CONNECT_TIMEOUT.getInteger());
         appender.setReadTimeout(AuditConfiguration.APPENDER_HTTP_READ_TIMEOUT.getInteger());
+        appender.setPropagateExceptions(AuditConfiguration.PROPAGATE_APPENDER_EXCEPTIONS.getValue(PropagateExceptions.class));
 
         return appender;
     }

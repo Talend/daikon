@@ -31,7 +31,8 @@ enum AuditConfiguration {
     APPENDER_HTTP_PASSWORD(String.class, ""),
     APPENDER_HTTP_ASYNC(Boolean.class, Boolean.FALSE),
     APPENDER_HTTP_CONNECT_TIMEOUT(Integer.class, 30000),
-    APPENDER_HTTP_READ_TIMEOUT(Integer.class, 60000);
+    APPENDER_HTTP_READ_TIMEOUT(Integer.class, 60000),
+    PROPAGATE_APPENDER_EXCEPTIONS(PropagateExceptions.class, PropagateExceptions.NONE);
 
     private static final String PLACEHOLDER_START = "${";
 

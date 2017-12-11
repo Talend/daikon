@@ -56,6 +56,8 @@ public class AuditConfigurationTest {
         assertEquals("testLogger", AuditConfiguration.ROOT_LOGGER.getString());
 
         assertEquals(Boolean.TRUE, AuditConfiguration.LOCATION.getBoolean());
+        assertEquals(PropagateExceptions.ALL,
+                AuditConfiguration.PROPAGATE_APPENDER_EXCEPTIONS.getValue(PropagateExceptions.class));
 
         assertEquals("TestApplicationName", AuditConfiguration.APPLICATION_NAME.getString());
         assertEquals("DefaultServiceName", AuditConfiguration.SERVICE_NAME.getString());

@@ -32,6 +32,8 @@ public class Log4j1HttpAppender extends AppenderSkeleton {
 
     private boolean async;
 
+    private PropagateExceptions propagateExceptions;
+
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public void setUrl(String url) {
@@ -61,6 +63,10 @@ public class Log4j1HttpAppender extends AppenderSkeleton {
         this.async = async;
     }
 
+    public void setPropagateExceptions(PropagateExceptions propagateExceptions) {
+        this.propagateExceptions = propagateExceptions;
+    }
+
     @Override
     protected void append(LoggingEvent event) {
         if (event == null) {
@@ -70,10 +76,25 @@ public class Log4j1HttpAppender extends AppenderSkeleton {
             return;
         }
 
-        if (async) {
-            sendEventAsync(event);
-        } else {
-            sendEvent(event);
+        try {
+            if (async) {
+                sendEventAsync(event);
+            } else {
+                sendEvent(event);
+            }
+        } catch (AuditAppenderException e) {
+            switch (propagateExceptions) {
+            case ALL:
+                throw e;
+
+            case NONE:
+                errorHandler.error("Http appender error", e, -1, event);
+                break;
+
+            default:
+                errorHandler.error("Unknown exception propagation mode: " + propagateExceptions);
+                break;
+            }
         }
     }
 
