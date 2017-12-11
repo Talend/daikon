@@ -39,6 +39,6 @@ appender.socket.host=localhost
 appender.socket.port=8056
 
 # Http appender sends logs via http requests
-appender.http.url=http://localhost:8080/
-appender.http.username=talendlogs
-appender.http.password=tpsvclogs
+appender.http.url=http://localhost:8057/
+#appender.http.username=talendlogs
+#appender.http.password=tpsvclogs

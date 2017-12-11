@@ -141,7 +141,7 @@ public class Log4j1HttpAppender extends AppenderSkeleton {
             httpConn.setConnectTimeout(connectTimeout);
             httpConn.setReadTimeout(readTimeout);
 
-            if (username != null && password != null) {
+            if (username != null && !username.trim().isEmpty() && password != null) {
                 httpConn.setRequestProperty("Authorization", getAuthorizationHeader());
             }
 
