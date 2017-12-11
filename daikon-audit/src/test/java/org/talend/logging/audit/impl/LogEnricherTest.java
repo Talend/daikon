@@ -66,7 +66,7 @@ public class LogEnricherTest {
 
         Map<String, String> enrichedData = new LogEnricher().enrich(category, initialData);
 
-        String id = enrichedData.remove("talend.meta.id");
+        String id = enrichedData.remove("talend.meta.eventid");
         assertNotNull(id);
 
         assertEquals(expectedData, enrichedData);
