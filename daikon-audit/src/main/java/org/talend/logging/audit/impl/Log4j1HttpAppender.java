@@ -92,7 +92,8 @@ public class Log4j1HttpAppender extends AppenderSkeleton {
                 break;
 
             default:
-                errorHandler.error("Unknown exception propagation mode: " + propagateExceptions);
+                errorHandler.error("Http appender error with unknown exception propagation mode: " + propagateExceptions, e, -1,
+                        event);
                 break;
             }
         }
@@ -125,9 +126,10 @@ public class Log4j1HttpAppender extends AppenderSkeleton {
     }
 
     private void sendEvent(LoggingEvent event) {
-        byte[] payload = getPayload(event);
-
         HttpURLConnection conn = openConnection();
+
+        String payloadStr = getPayload(event);
+        byte[] payload = payloadStr.getBytes(StandardCharsets.UTF_8);
 
         conn.setFixedLengthStreamingMode(payload.length);
 
@@ -177,8 +179,8 @@ public class Log4j1HttpAppender extends AppenderSkeleton {
         return "Basic " + DatatypeConverter.printBase64Binary(authData);
     }
 
-    private byte[] getPayload(LoggingEvent event) {
-        return layout.format(event).getBytes(StandardCharsets.UTF_8);
+    private String getPayload(LoggingEvent event) {
+        return layout.format(event);
     }
 
     private class LogSender implements Runnable {

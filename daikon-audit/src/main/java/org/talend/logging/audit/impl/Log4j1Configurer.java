@@ -1,6 +1,8 @@
 package org.talend.logging.audit.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.*;
 import org.apache.log4j.net.SocketAppender;
@@ -82,7 +84,6 @@ final class Log4j1Configurer {
         appender.setMaximumFileSize(AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong());
         appender.setEncoding(UTF8);
         appender.setImmediateFlush(true);
-        appender.setLayout(logstashLayout());
 
         return appender;
     }
@@ -131,6 +132,19 @@ final class Log4j1Configurer {
     }
 
     private static Layout logstashLayout() {
-        return new Log4jJSONLayout(AuditConfiguration.LOCATION.getBoolean());
+        Map<String, String> metaFields = new HashMap<>();
+        metaFields.put(EventFields.MDC_ID, EventFields.ID);
+        metaFields.put(EventFields.MDC_CATEGORY, EventFields.CATEGORY);
+        metaFields.put(EventFields.MDC_AUDIT, EventFields.AUDIT);
+        metaFields.put(EventFields.MDC_APPLICATION, EventFields.APPLICATION);
+        metaFields.put(EventFields.MDC_SERVICE, EventFields.SERVICE);
+        metaFields.put(EventFields.MDC_INSTANCE, EventFields.INSTANCE);
+
+        Log4jJSONLayout layout = new Log4jJSONLayout();
+
+        layout.setLocationInfo(AuditConfiguration.LOCATION.getBoolean());
+        layout.setMetaFields(metaFields);
+
+        return layout;
     }
 }
