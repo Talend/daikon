@@ -14,9 +14,11 @@ package org.talend.daikon.multitenant.context;
 
 import org.talend.daikon.multitenant.core.Tenant;
 
+import java.util.Optional;
+
 /**
  * Default implementation of {@link TenancyContext}.
- * 
+ *
  * @author Clint Morgan (Tasktop Technologies Inc.)
  */
 public class DefaultTenancyContext implements TenancyContext {
@@ -27,12 +29,20 @@ public class DefaultTenancyContext implements TenancyContext {
 
     @Override
     public Tenant getTenant() {
+        if (tenant == null) {
+            throw new NoCurrentTenantException("No tenant in running context");
+        }
         return tenant;
     }
 
     @Override
     public void setTenant(Tenant tenant) {
         this.tenant = tenant;
+    }
+
+    @Override
+    public Optional<Tenant> getOptionalTenant() {
+        return Optional.ofNullable(tenant);
     }
 
     @Override
