@@ -129,7 +129,7 @@ Here's an example of the configuration file:
 
 [source,properties]
 ----
-include::./src/main/resources/audit.properties.example[]
+include::src/main/resources/audit.properties.example[]
 ----
 
 If audit events are to be sent to LogStash as in this example, it has to have an additional input in its configuration:
