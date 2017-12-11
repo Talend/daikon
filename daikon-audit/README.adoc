@@ -1,5 +1,5 @@
 :javadoc_url: https://ci-common.datapwn.com/view/Daikon/job/daikon_master/ws/daikon-audit/target/apidocs
-:audit_source_url: https://github.com/Talend/daikon/tree/master/daikon-audit
+:audit_source_url: .
 :audit_sample_url: https://github.com/Talend/platform-services-logging/blob/audit-logging-tpsvc-3638/samples/audit
 
 = Audit Logging API
@@ -124,7 +124,7 @@ It looks for the configuration file in the next places (in given order):
 . Location specified in `talend.logging.audit.config` system property
 . In classpath root, file named `audit.properties`
 
-{audit_source_url}/src/main/resources/audit.properties.example[Here] is an example of the configuration file.
+link:{audit_source_url}/src/main/resources/audit.properties.example[Here] is an example of the configuration file.
 
 If audit events are to be sent to LogStash as in this example, it has to have an additional input in its configuration:
 
