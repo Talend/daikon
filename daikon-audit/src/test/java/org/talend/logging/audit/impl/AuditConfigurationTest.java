@@ -41,7 +41,7 @@ public class AuditConfigurationTest {
     @Test
     public void testLoadConfiguration() {
         System.setProperty("test.file.path.property", "/tmp/testSysPropValue");
-        final String javaHome = System.getenv("JAVA_HOME");
+        final String pathEnv = System.getenv("PATH");
 
         AuditConfiguration.loadFromClasspath("/test.audit.properties");
 
@@ -61,7 +61,7 @@ public class AuditConfigurationTest {
 
         assertEquals("TestApplicationName", AuditConfiguration.APPLICATION_NAME.getString());
         assertEquals("DefaultServiceName", AuditConfiguration.SERVICE_NAME.getString());
-        assertEquals(javaHome, AuditConfiguration.INSTANCE_NAME.getString());
+        assertEquals(pathEnv, AuditConfiguration.INSTANCE_NAME.getString());
 
         assertEquals(expectedAppenders, AuditConfiguration.LOG_APPENDER.getValue(LogAppendersSet.class));
 
