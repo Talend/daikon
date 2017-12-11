@@ -124,6 +124,16 @@ public class Widget implements ToStringIndent {
     public static final String SELECT_WIDGET_TYPE = "widget.type.select";
 
     /**
+     * This widget is designed to select a dataprep preparation with data Dataprep Picker.
+     */
+    public static final String SELECT_WIZARD_WIDGET_TYPE = "widget.type.select.wizard";
+
+    /**
+     * This widget will allow the UI to access an external link.
+     */
+    public static final String EXTERNAL_LINK_WIDGET_TYPE = "widget.type.external.link";
+
+    /**
      * now it works for dataprep only
      */
     public static final String DATALIST_WIDGET_TYPE = "widget.type.datalist";
