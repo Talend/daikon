@@ -130,9 +130,16 @@ If audit events are to be sent to LogStash as in this example, it has to have an
 
 ----
 input {
-  log4j {
-    port => 8056
+  http {
+    response_headers => {
+      "Access-Control-Allow-Origin" => "*"
+      "Access-Control-Allow-Headers" => "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
+      "Access-Control-Allow-Methods" => "*"
+      "Access-Control-Allow-Credentials" => "*"
+    }
+    port => 8057
     type => "Audit"
+    codec => "json"
   }
 }
 ----
