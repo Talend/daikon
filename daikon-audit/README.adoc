@@ -117,20 +117,14 @@ compile "log4j:log4j:1.2.17"
 
 ==== Configuration
 
-Audit Logging client uses simple
-{audit_source_url}/src/main/resources/audit.properties.example[properties file]
+Audit Logging client uses simple properties file
 for all its configuration (in future, if needed, yaml-based configuration may be implemented).
 It looks for the configuration file in the next places (in given order):
 
 . Location specified in `talend.logging.audit.config` system property
 . In classpath root, file named `audit.properties`
 
-Here's an example of the configuration file:
-
-[source,properties]
-----
-include::src/main/resources/audit.properties.example[]
-----
+{audit_source_url}/src/main/resources/audit.properties.example[Here] is an example of the configuration file.
 
 If audit events are to be sent to LogStash as in this example, it has to have an additional input in its configuration:
 
