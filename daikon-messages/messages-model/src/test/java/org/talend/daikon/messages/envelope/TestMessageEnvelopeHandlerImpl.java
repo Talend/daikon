@@ -70,7 +70,7 @@ public class TestMessageEnvelopeHandlerImpl {
 
         MessageEnvelopeHandler handler = new MessageEnvelopeHandlerImpl(messageConverterRegistry, messageHeaderFactory);
 
-        Object result = handler.unwrap(envelope);
+        AnyMessage result = handler.unwrap(envelope, AnyMessage.class);
 
         Assert.assertEquals(anyMessage, result);
 
@@ -79,12 +79,12 @@ public class TestMessageEnvelopeHandlerImpl {
     private static class TestMessageConverter implements MessageConverter {
 
         @Override
-        public <T> T deserialize(String content) {
+        public <T> T deserialize(String content, Class<T> clazz) {
             String[] props = content.split(";");
             AnyMessage message = new AnyMessage();
             message.setProperty1(props[0]);
             message.setProperty2(props[1]);
-            return (T) message;
+            return clazz.cast(message);
         }
 
         @Override

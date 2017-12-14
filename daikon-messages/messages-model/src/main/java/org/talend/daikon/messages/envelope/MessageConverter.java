@@ -24,7 +24,7 @@ public interface MessageConverter {
      * @param <T> the expected type
      * @return the deserialized message payload
      */
-    <T> T deserialize(String content);
+    <T> T deserialize(String content, Class<T> clazz);
 
     /**
      * Serializes the provided message payload to string

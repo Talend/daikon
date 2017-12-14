@@ -76,7 +76,7 @@ public class DefaultProducerProvidersConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TenantIdProvider.class)
-    public TenantIdProvider defaultAccountIdProvider() {
+    public TenantIdProvider defaultTenantIdProvider() {
         return new TenantIdProvider() {
 
             @Override

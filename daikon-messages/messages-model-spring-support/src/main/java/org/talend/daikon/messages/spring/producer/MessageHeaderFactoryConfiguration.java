@@ -12,10 +12,14 @@
 // ============================================================================
 package org.talend.daikon.messages.spring.producer;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.talend.daikon.messages.envelope.*;
 import org.talend.daikon.messages.header.producer.*;
+
+import java.io.IOException;
 
 @Configuration
 public class MessageHeaderFactoryConfiguration {
@@ -45,6 +49,40 @@ public class MessageHeaderFactoryConfiguration {
     public MessageHeaderFactory messageHeaderFactory() {
         return new MessageHeaderFactoryImpl(idGenerator, serviceInfoProvider, timestampProvider, userProvider, tenantIdProvider,
                 correlationIdProvider, securityTokenProvider);
+    }
+
+    @Bean
+    public MessageConverterRegistry messageConverterRegistry() {
+        MessageConverterRegistryImpl messageConverterRegistry = new MessageConverterRegistryImpl();
+        messageConverterRegistry.registerConverter("json", new MessageConverter() {
+
+            private final ObjectMapper objectMapper = new ObjectMapper();
+
+            @Override
+            public <T> T deserialize(String content, Class<T> clazz) {
+                try {
+                    return objectMapper.readValue(content, clazz);
+                } catch (IOException e) {
+                    throw new RuntimeException("", e);
+                }
+            }
+
+            @Override
+            public <T> String serialize(T content) {
+                try {
+                    return objectMapper.writeValueAsString(content);
+                } catch (IOException e) {
+                    throw new RuntimeException("", e);
+                }
+            }
+        });
+        return messageConverterRegistry;
+    }
+
+    @Bean
+    public MessageEnvelopeHandler messageEnvelopeHandler(MessageConverterRegistry messageConverterRegistry,
+                                                         MessageHeaderFactory messageHeaderFactory) {
+        return new MessageEnvelopeHandlerImpl(messageConverterRegistry, messageHeaderFactory);
     }
 
 }

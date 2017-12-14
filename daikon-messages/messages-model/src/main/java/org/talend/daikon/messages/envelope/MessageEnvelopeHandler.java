@@ -43,6 +43,6 @@ public interface MessageEnvelopeHandler {
      * @param <T> the message type
      * @return the message
      */
-    <T> T unwrap(MessageEnvelope envelop);
+    <T> T unwrap(MessageEnvelope envelop, Class<T> clazz);
 
 }

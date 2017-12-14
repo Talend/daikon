@@ -37,10 +37,10 @@ public class MessageEnvelopeHandlerImpl implements MessageEnvelopeHandler {
     }
 
     @Override
-    public <T> T unwrap(MessageEnvelope envelop) {
+    public <T> T unwrap(MessageEnvelope envelop, Class<T> clazz) {
         MessageConverter messageConverter = this.getMessageConverter(envelop.getPayload().getFormat());
         String content = envelop.getPayload().getContent();
-        return messageConverter.deserialize(content);
+        return messageConverter.deserialize(content, clazz);
     }
 
     private <T> MessagePayload createMessagePayload(T payload, String format) {
