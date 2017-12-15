@@ -64,7 +64,7 @@ public class ProductController {
         LOG.info("Message with UUID " + event.getHeader().getId() + " sent");
     }
 
-    @RequestMapping(path="{id}", method = RequestMethod.PUT)
+    @RequestMapping(path = "{id}", method = RequestMethod.PUT)
     public void editProduct(@PathVariable("id") String id, @RequestBody Product product) {
         ProductUpdatedEvent event = new ProductUpdatedEvent();
         event.setProductId(id);
@@ -81,7 +81,6 @@ public class ProductController {
         productEventsSink.productEvents().send(message);
 
     }
-
 
     private static class ProductUpdatedEvent {
 
@@ -115,6 +114,5 @@ public class ProductController {
             this.color = color;
         }
     }
-
 
 }

@@ -81,7 +81,7 @@ public class MessageHeaderFactoryConfiguration {
 
     @Bean
     public MessageEnvelopeHandler messageEnvelopeHandler(MessageConverterRegistry messageConverterRegistry,
-                                                         MessageHeaderFactory messageHeaderFactory) {
+            MessageHeaderFactory messageHeaderFactory) {
         return new MessageEnvelopeHandlerImpl(messageConverterRegistry, messageHeaderFactory);
     }
 

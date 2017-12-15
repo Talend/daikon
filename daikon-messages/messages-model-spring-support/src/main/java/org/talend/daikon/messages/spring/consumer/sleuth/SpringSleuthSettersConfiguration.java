@@ -32,7 +32,7 @@ public class SpringSleuthSettersConfiguration {
             public void setCurrentCorrelationId(String correlationId) {
                 long spanId = 0;
                 Span currentSpan = tracer.getCurrentSpan();
-                if(currentSpan != null) {
+                if (currentSpan != null) {
                     spanId = currentSpan.getSpanId();
                 }
                 long traceId = Span.hexToId(correlationId, 0);
