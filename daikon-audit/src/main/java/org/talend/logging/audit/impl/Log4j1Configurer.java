@@ -71,19 +71,20 @@ final class Log4j1Configurer {
     }
 
     private static Appender rollingFileAppender() {
-        final RollingFileAppender appender;
-
-        try {
-            appender = new RollingFileAppender(logstashLayout(), AuditConfiguration.APPENDER_FILE_PATH.getString(), true);
-        } catch (IOException e) {
-            throw new AuditLoggingException(e);
-        }
+        final RollingFileAppender appender = new RollingFileAppender();
 
         appender.setName("auditFileAppender");
         appender.setMaxBackupIndex(AuditConfiguration.APPENDER_FILE_MAXBACKUP.getInteger());
         appender.setMaximumFileSize(AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong());
         appender.setEncoding(UTF8);
         appender.setImmediateFlush(true);
+        appender.setLayout(logstashLayout());
+
+        try {
+            appender.setFile(AuditConfiguration.APPENDER_FILE_PATH.getString(), true, false, 8 * 1024);
+        } catch (IOException e) {
+            throw new AuditLoggingException(e);
+        }
 
         return appender;
     }
