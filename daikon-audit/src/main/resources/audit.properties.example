@@ -24,9 +24,13 @@ service.name=ServiceA
 # Name of the instance of the service (this value will be put into MDC for each logged event).
 instance.name=TestInstance1
 
+# Defines behaviour of API calls if one or more appenders could not process the event.
+# Possible values: none, all
+propagate.appender.exceptions=none
+
 # Type of log appender to use (multiple appenders can be used simultaneously if provided as a comma-separated list).
 # Possible values: socket, file, console
-log.appender=socket,file
+log.appender=http,file
 
 # File appender puts log entries into a json file. In most cases there should be a FileBeat instance picking up
 # new messages and sending them to logstash.
@@ -37,3 +41,8 @@ appender.file.maxbackup=20
 # Socket appender sends logs to a remote host, where usually logstash receives and processes them.
 appender.socket.host=localhost
 appender.socket.port=8056
+
+# Http appender sends logs via http requests
+appender.http.url=http://localhost:8057/
+#appender.http.username=talendlogs
+#appender.http.password=tpsvclogs

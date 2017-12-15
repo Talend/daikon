@@ -7,32 +7,38 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import org.talend.logging.audit.AuditLoggingException;
+import org.talend.logging.audit.LogAppenders;
 
 /**
  *
  */
 enum AuditConfiguration {
-    ROOT_LOGGER("root.logger", String.class, "audit"),
-    APPLICATION_NAME("application.name", String.class),
-    SERVICE_NAME("service.name", String.class, ""),
-    INSTANCE_NAME("instance.name", String.class, ""),
-    APPENDER_FILE_PATH("appender.file.path", String.class),
-    APPENDER_FILE_MAXSIZE("appender.file.maxsize", Long.class, 52428800L),
-    APPENDER_FILE_MAXBACKUP("appender.file.maxbackup", Integer.class, 20),
-    LOCATION("location", Boolean.class, Boolean.FALSE),
-    APPENDER_SOCKET_HOST("appender.socket.host", String.class, "localhost"),
-    APPENDER_SOCKET_PORT("appender.socket.port", Integer.class, 4560),
-    APPENDER_CONSOLE_PATTERN("appender.console.pattern", String.class, "%d{yyyy-MM-dd HH:mm:ss} %-5p %c - %m%n"),
-    APPENDER_CONSOLE_TARGET("appender.console.target", LogTarget.class, LogTarget.OUTPUT),
-    LOG_APPENDER("log.appender", LogAppendersSet.class);
+    ROOT_LOGGER(String.class, "audit"),
+    APPLICATION_NAME(String.class),
+    SERVICE_NAME(String.class, ""),
+    INSTANCE_NAME(String.class, ""),
+    LOCATION(Boolean.class, Boolean.FALSE),
+    LOG_APPENDER(LogAppendersSet.class),
+    APPENDER_FILE_PATH(String.class),
+    APPENDER_FILE_MAXSIZE(Long.class, 52428800L),
+    APPENDER_FILE_MAXBACKUP(Integer.class, 20),
+    APPENDER_SOCKET_HOST(String.class, "localhost"),
+    APPENDER_SOCKET_PORT(Integer.class, 4560),
+    APPENDER_CONSOLE_PATTERN(String.class, "%d{yyyy-MM-dd HH:mm:ss} %-5p %c - %m%n"),
+    APPENDER_CONSOLE_TARGET(LogTarget.class, LogTarget.OUTPUT),
+    APPENDER_HTTP_URL(String.class),
+    APPENDER_HTTP_USERNAME(String.class, ""),
+    APPENDER_HTTP_PASSWORD(String.class, ""),
+    APPENDER_HTTP_ASYNC(Boolean.class, Boolean.FALSE),
+    APPENDER_HTTP_CONNECT_TIMEOUT(Integer.class, 30000),
+    APPENDER_HTTP_READ_TIMEOUT(Integer.class, 60000),
+    PROPAGATE_APPENDER_EXCEPTIONS(PropagateExceptions.class, PropagateExceptions.NONE);
 
     private static final String PLACEHOLDER_START = "${";
 
     private static final String PLACEHOLDER_END = "}";
 
     private static final String PLACEHOLDER_DELIM = ":";
-
-    private final String property;
 
     private final Class<?> clz;
 
@@ -42,18 +48,13 @@ enum AuditConfiguration {
 
     private boolean alreadySet;
 
-    <T> AuditConfiguration(String property, Class<T> clz) {
-        this(property, clz, null);
+    <T> AuditConfiguration(Class<T> clz) {
+        this(clz, null);
     }
 
-    <T> AuditConfiguration(String property, Class<T> clz, Object defaultValue) {
-        this.property = property;
+    <T> AuditConfiguration(Class<T> clz, Object defaultValue) {
         this.clz = clz;
         this.defaultValue = defaultValue;
-    }
-
-    public String getProperty() {
-        return property;
     }
 
     public Class<?> getClz() {
@@ -93,7 +94,7 @@ enum AuditConfiguration {
             throw new IllegalArgumentException("Wrong class type " + clz.getName() + ", expected " + this.clz.getName());
         }
         if (!alreadySet && defaultValue == null) {
-            throw new IllegalStateException("Value for property " + property + " is not set and it has no default value");
+            throw new IllegalStateException("Value for property " + toString() + " is not set and it has no default value");
         }
         return alreadySet ? clz.cast(value) : clz.cast(defaultValue);
     }
@@ -104,11 +105,16 @@ enum AuditConfiguration {
         }
 
         if (alreadySet) {
-            throw new IllegalStateException("Parameter " + property + " cannot be set twice");
+            throw new IllegalStateException("Parameter " + toString() + " cannot be set twice");
         }
 
         this.alreadySet = true;
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return name().toLowerCase().replace('_', '.');
     }
 
     public static void loadFromFile(String fileName) {
@@ -182,7 +188,7 @@ enum AuditConfiguration {
                 if (missingFields == null) {
                     missingFields = new ArrayList<>();
                 }
-                missingFields.add(conf.property);
+                missingFields.add(conf.toString());
             }
         }
 

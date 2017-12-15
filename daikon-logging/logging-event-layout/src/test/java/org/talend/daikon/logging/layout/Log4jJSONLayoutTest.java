@@ -1,9 +1,14 @@
 package org.talend.daikon.logging.layout;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import net.minidev.json.JSONObject;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LocationInfo;
@@ -22,8 +27,52 @@ public class Log4jJSONLayoutTest extends AbstractLayoutTest {
         assertFalse(layout.getLocationInfo());
     }
 
+    @Test
+    public void testMDCMetaFields() {
+        final String customFieldKey = "custom.info.field";
+        final String customFieldValue = "customFieldValue";
+        final String metaFieldKey = "meta.data.field";
+        final String metaFieldKeyValue = "metaFieldValue";
+        final String processedMetaFieldKey = "some.meta";
+
+        Map<String, String> mdc = new LinkedHashMap<>();
+        mdc.put(customFieldKey, customFieldValue);
+        mdc.put(metaFieldKey, metaFieldKeyValue);
+
+        LogDetails logDetails = new LogDetails(this.getClass());
+        logDetails.setMdc(mdc);
+        LoggingEvent event = newEvent(logDetails);
+
+        Map<String, String> metaFields = new LinkedHashMap<>();
+        metaFields.put(metaFieldKey, processedMetaFieldKey);
+
+        Log4jJSONLayout layout = new Log4jJSONLayout() {
+
+            @Override
+            protected Map<String, String> processMDCMetaFields(LoggingEvent loggingEvent, JSONObject logstashEvent,
+                    Map<String, String> metaFields) {
+                Map<String, String> newMdc = super.processMDCMetaFields(loggingEvent, logstashEvent, metaFields);
+
+                assertFalse(newMdc.containsKey(metaFieldKey));
+                assertFalse(newMdc.containsKey(processedMetaFieldKey));
+                assertEquals(customFieldValue, newMdc.get(customFieldKey));
+
+                assertFalse(logstashEvent.containsKey(metaFieldKey));
+                assertFalse(logstashEvent.containsKey(customFieldKey));
+                assertEquals(metaFieldKeyValue, logstashEvent.getAsString(processedMetaFieldKey));
+
+                return newMdc;
+            }
+        };
+        layout.setMetaFields(metaFields);
+
+        String result = layout.format(event);
+
+        assertTrue(result.contains(processedMetaFieldKey));
+    }
+
     @Override
-    protected Object newEvent(LogDetails logDetails) {
+    protected LoggingEvent newEvent(LogDetails logDetails) {
         LocationInfo locationInfo = new LocationInfo(logDetails.getFileName(), logDetails.getClassName(),
                 logDetails.getMethodName(), String.valueOf(logDetails.getLineNumber()));
         Logger logger = Logger.getLogger(logDetails.getClassName());

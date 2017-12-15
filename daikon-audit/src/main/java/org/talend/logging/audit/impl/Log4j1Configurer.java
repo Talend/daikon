@@ -1,6 +1,8 @@
 package org.talend.logging.audit.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.*;
 import org.apache.log4j.net.SocketAppender;
@@ -8,11 +10,14 @@ import org.apache.log4j.rewrite.RewriteAppender;
 import org.apache.log4j.varia.DenyAllFilter;
 import org.talend.daikon.logging.event.layout.Log4jJSONLayout;
 import org.talend.logging.audit.AuditLoggingException;
+import org.talend.logging.audit.LogAppenders;
 
 /**
  *
  */
 final class Log4j1Configurer {
+
+    private static final String UTF8 = "UTF-8";
 
     private Log4j1Configurer() {
     }
@@ -44,6 +49,10 @@ final class Log4j1Configurer {
                 auditAppender.addAppender(consoleAppender());
                 break;
 
+            case HTTP:
+                auditAppender.addAppender(httpAppender());
+                break;
+
             case NONE:
                 auditAppender.addFilter(new DenyAllFilter());
                 break;
@@ -73,9 +82,8 @@ final class Log4j1Configurer {
         appender.setName("auditFileAppender");
         appender.setMaxBackupIndex(AuditConfiguration.APPENDER_FILE_MAXBACKUP.getInteger());
         appender.setMaximumFileSize(AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong());
-        appender.setEncoding("UTF-8");
+        appender.setEncoding(UTF8);
         appender.setImmediateFlush(true);
-        appender.setLayout(logstashLayout());
 
         return appender;
     }
@@ -96,12 +104,47 @@ final class Log4j1Configurer {
         final ConsoleAppender appender = new ConsoleAppender(
                 new PatternLayout(AuditConfiguration.APPENDER_CONSOLE_PATTERN.getString()), target.getTarget());
 
-        appender.setName("consoleAppender");
+        appender.setName("auditConsoleAppender");
+        appender.setEncoding(UTF8);
+
+        return appender;
+    }
+
+    private static Appender httpAppender() {
+        final Log4j1HttpAppender appender = new Log4j1HttpAppender();
+
+        appender.setName("auditHttpAppender");
+        appender.setLayout(logstashLayout());
+        appender.setUrl(AuditConfiguration.APPENDER_HTTP_URL.getString());
+        if (!AuditConfiguration.APPENDER_HTTP_USERNAME.getString().trim().isEmpty()) {
+            appender.setUsername(AuditConfiguration.APPENDER_HTTP_USERNAME.getString());
+        }
+        if (!AuditConfiguration.APPENDER_HTTP_PASSWORD.getString().trim().isEmpty()) {
+            appender.setPassword(AuditConfiguration.APPENDER_HTTP_PASSWORD.getString());
+        }
+        appender.setAsync(AuditConfiguration.APPENDER_HTTP_ASYNC.getBoolean());
+
+        appender.setConnectTimeout(AuditConfiguration.APPENDER_HTTP_CONNECT_TIMEOUT.getInteger());
+        appender.setReadTimeout(AuditConfiguration.APPENDER_HTTP_READ_TIMEOUT.getInteger());
+        appender.setPropagateExceptions(AuditConfiguration.PROPAGATE_APPENDER_EXCEPTIONS.getValue(PropagateExceptions.class));
 
         return appender;
     }
 
     private static Layout logstashLayout() {
-        return new Log4jJSONLayout(AuditConfiguration.LOCATION.getBoolean());
+        Map<String, String> metaFields = new HashMap<>();
+        metaFields.put(EventFields.MDC_ID, EventFields.ID);
+        metaFields.put(EventFields.MDC_CATEGORY, EventFields.CATEGORY);
+        metaFields.put(EventFields.MDC_AUDIT, EventFields.AUDIT);
+        metaFields.put(EventFields.MDC_APPLICATION, EventFields.APPLICATION);
+        metaFields.put(EventFields.MDC_SERVICE, EventFields.SERVICE);
+        metaFields.put(EventFields.MDC_INSTANCE, EventFields.INSTANCE);
+
+        Log4jJSONLayout layout = new Log4jJSONLayout();
+
+        layout.setLocationInfo(AuditConfiguration.LOCATION.getBoolean());
+        layout.setMetaFields(metaFields);
+
+        return layout;
     }
 }

@@ -1,18 +1,20 @@
 package org.talend.logging.audit.impl;
 
+import org.talend.logging.audit.LogAppenders;
+
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
 /**
  *
  */
-public class LogAppendersSet extends LinkedHashSet<LogAppenders> {
+class LogAppendersSet extends LinkedHashSet<LogAppenders> {
 
-    public LogAppendersSet() {
+    LogAppendersSet() {
         super();
     }
 
-    public LogAppendersSet(Collection<LogAppenders> appenders) {
+    LogAppendersSet(Collection<LogAppenders> appenders) {
         super(appenders);
     }
 }

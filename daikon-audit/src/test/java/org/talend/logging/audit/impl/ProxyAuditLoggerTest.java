@@ -7,7 +7,7 @@ import java.lang.reflect.Proxy;
 import org.junit.Test;
 import org.talend.logging.audit.*;
 
-public class AuditLoggerTest {
+public class ProxyAuditLoggerTest {
 
     @Test
     public void testAuditLogger() {
