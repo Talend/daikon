@@ -28,7 +28,7 @@ public class TenantAwareDataSource extends AbstractDatabaseSwitchingDataSource {
     protected String getDatabaseName() {
         String dbName = null;
         TenancyContext tenancyContext = TenancyContextHolder.getContext();
-        if (tenancyContext.getTenant() != null) {
+        if (tenancyContext.getOptionalTenant().isPresent()) {
             dbName = computeDatabaseName(tenancyContext.getTenant());
         }
         return dbName;
