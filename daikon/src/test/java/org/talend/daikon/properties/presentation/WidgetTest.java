@@ -33,13 +33,20 @@ public class WidgetTest {
                 props.getForm(Form.MAIN).getWidget("confProperty").getConfigurationValue(Widget.READ_ONLY_WIDGET_CONF));
         assertEquals(true,
                 props.getForm(Form.MAIN).getWidget("confProperty").getConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF));
+        assertEquals(true,
+                props.getForm(Form.MAIN).getWidget("confProperty").getConfigurationValue(Widget.SELECT_WIZARD_WIDGET_TYPE));
+        assertEquals(true,
+                props.getForm(Form.MAIN).getWidget("confProperty").getConfigurationValue(Widget.EXTERNAL_LINK_WIDGET_TYPE));
 
         TestProperties desProps = Properties.Helper.fromSerializedPersistent(props.toSerialized(), TestProperties.class).object;
         assertEquals(true,
                 desProps.getForm(Form.MAIN).getWidget("confProperty").getConfigurationValue(Widget.READ_ONLY_WIDGET_CONF));
         assertEquals(true,
                 desProps.getForm(Form.MAIN).getWidget("confProperty").getConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF));
-
+        assertEquals(true,
+                desProps.getForm(Form.MAIN).getWidget("confProperty").getConfigurationValue(Widget.SELECT_WIZARD_WIDGET_TYPE));
+        assertEquals(true,
+                desProps.getForm(Form.MAIN).getWidget("confProperty").getConfigurationValue(Widget.EXTERNAL_LINK_WIDGET_TYPE));
     }
 
     @Test
@@ -50,6 +57,10 @@ public class WidgetTest {
         assertTrue(widget.isReadonly());
         widget.setConfigurationValue(Widget.READ_ONLY_WIDGET_CONF, false);
         assertFalse(widget.isReadonly());
+        widget.setConfigurationValue(Widget.SELECT_WIZARD_WIDGET_TYPE, false);
+        assertFalse(widget.isReadonly());
+        widget.setConfigurationValue(Widget.EXTERNAL_LINK_WIDGET_TYPE, false);
+        assertFalse(widget.isReadonly());
     }
 
     @Test
@@ -59,6 +70,10 @@ public class WidgetTest {
         widget.setConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF, true);
         assertTrue(widget.isAutoFocus());
         widget.setConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF, false);
+        assertFalse(widget.isAutoFocus());
+        widget.setConfigurationValue(Widget.SELECT_WIZARD_WIDGET_TYPE, false);
+        assertFalse(widget.isAutoFocus());
+        widget.setConfigurationValue(Widget.EXTERNAL_LINK_WIDGET_TYPE, false);
         assertFalse(widget.isAutoFocus());
     }
 
@@ -74,7 +89,9 @@ public class WidgetTest {
         public void setupLayout() {
             super.setupLayout();
             getForm(Form.MAIN).addRow(widget(confProperty).setConfigurationValue(Widget.READ_ONLY_WIDGET_CONF, true)
-                    .setConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF, true));
+                    .setConfigurationValue(Widget.AUTO_FOCUS_WIDGET_CONF, true)
+                    .setConfigurationValue(Widget.SELECT_WIZARD_WIDGET_TYPE, true)
+                    .setConfigurationValue(Widget.EXTERNAL_LINK_WIDGET_TYPE, true));
         }
     }
 
