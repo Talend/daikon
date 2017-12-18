@@ -18,7 +18,7 @@ import org.talend.daikon.multitenant.core.Tenant;
 
 /**
  * A data source that is tenant aware, that switches the database name based on the current tenant.
- * 
+ *
  * @author Clint Morgan (Tasktop Technologies Inc.)
  * @author David Green (Tasktop Technologies Inc.)
  */
@@ -38,7 +38,7 @@ public class TenantAwareDataSource extends AbstractDatabaseSwitchingDataSource {
      * Compute the database name based on a tenant. The default implementation uses the {@link Tenant#getIdentity() tenant
      * identity}
      * as the database name.
-     * 
+     *
      * @param tenant the tenant, must not be null
      * @return the database name
      */
