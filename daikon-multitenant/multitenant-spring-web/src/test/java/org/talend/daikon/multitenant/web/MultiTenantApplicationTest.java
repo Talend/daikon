@@ -53,7 +53,7 @@ public class MultiTenantApplicationTest {
     @Test
     public void testSyncWithoutTenant() {
         handlerConfiguration.verifier = () -> {
-            Assert.assertNull(TenancyContextHolder.getContext().getTenant());
+            Assert.assertFalse(TenancyContextHolder.getContext().getOptionalTenant().isPresent());
             Assert.assertNull(MDC.get(MdcKeys.ACCOUNT_ID));
         };
         given().get("/sync").then().statusCode(200).body(Matchers.equalTo(MESSAGE));
@@ -73,7 +73,7 @@ public class MultiTenantApplicationTest {
     @Test
     public void testAsyncWithoutTenant() {
         handlerConfiguration.verifier = () -> {
-            Assert.assertNull(TenancyContextHolder.getContext().getTenant());
+            Assert.assertFalse(TenancyContextHolder.getContext().getOptionalTenant().isPresent());
             Assert.assertNull(MDC.get(MdcKeys.ACCOUNT_ID));
         };
         given().get("/async").then().statusCode(200).body(Matchers.equalTo(MESSAGE));

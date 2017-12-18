@@ -150,7 +150,7 @@ public class MultiTenantApplication {
 
         private void checkContextIsClean() {
             Assert.assertNull(MDC.get(MdcKeys.ACCOUNT_ID));
-            Assert.assertNull(TenancyContextHolder.getContext().getTenant());
+            Assert.assertFalse(TenancyContextHolder.getContext().getOptionalTenant().isPresent());
         }
     }
 
