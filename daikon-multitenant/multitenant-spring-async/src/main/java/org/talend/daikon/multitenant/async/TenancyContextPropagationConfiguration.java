@@ -52,7 +52,7 @@ public class TenancyContextPropagationConfiguration {
         }
 
         private static void setMdc(TenancyContext tenancyContext) {
-            if (tenancyContext != null && tenancyContext.getTenant() != null) {
+            if (tenancyContext != null && tenancyContext.getOptionalTenant().isPresent()) {
                 MDC.put(MdcKeys.ACCOUNT_ID, String.valueOf(tenancyContext.getTenant().getIdentity()));
             }
         }

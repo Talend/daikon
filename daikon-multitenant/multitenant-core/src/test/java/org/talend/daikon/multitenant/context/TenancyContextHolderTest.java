@@ -15,9 +15,16 @@ package org.talend.daikon.multitenant.context;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.daikon.multitenant.core.Tenant;
 import org.talend.daikon.multitenant.provider.DefaultTenant;
 
-import static org.junit.Assert.*;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
 
 public class TenancyContextHolderTest {
 
@@ -56,6 +63,19 @@ public class TenancyContextHolderTest {
         } catch (IllegalArgumentException expected) {
 
         }
+    }
+
+    @Test
+    public void testOptionalContext() {
+        TenancyContextHolder.setContext(TenancyContextHolder.createEmptyContext());
+        Optional<Tenant> optionalTenant = TenancyContextHolder.getContext().getOptionalTenant();
+        assertFalse(optionalTenant.isPresent());
+    }
+
+    @Test(expected = NoCurrentTenantException.class)
+    public void testNullContext() {
+        TenancyContextHolder.setContext(TenancyContextHolder.createEmptyContext());
+        TenancyContextHolder.getContext().getTenant();
     }
 
     static class StatusHolder {
