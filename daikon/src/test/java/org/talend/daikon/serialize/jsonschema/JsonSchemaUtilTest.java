@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.talend.daikon.definition.Definition;
 import org.talend.daikon.definition.service.DefinitionRegistryService;
 import org.talend.daikon.exception.TalendRuntimeException;
@@ -170,5 +171,29 @@ public class JsonSchemaUtilTest {
                 TestEmptyProperties.createASetupOptionalProperties());
         assertEquals(properties, propertiesNoData);
     }
+
+	@Test
+	public void testCreatePropertyWithEmptyName()
+			throws ParseException, JsonProcessingException, IOException, NoSuchMethodException, InstantiationException,
+			IllegalAccessException, InvocationTargetException, ClassNotFoundException {
+		FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
+		String json = new JsonDataGenerator().processTPropertiesData(fep).toString();
+
+		// check instance is deserialized properly
+		// re-create the Properties from the json data of the json string
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode jsonData = (ObjectNode) mapper.readTree(json);
+		jsonData.put(JsonSchemaConstants.DEFINITION_NAME_JSON_METADATA, "def1");
+		DefinitionRegistryService defRegServ = getRegistryWithDef1();
+		when(defRegServ.createProperties(Mockito.any(Definition.class), Mockito.eq("root")))
+				.thenReturn(new FullExampleProperties(""));
+		try {
+			JsonSchemaUtil.fromJsonNode(defRegServ, jsonData);
+			fail("should have thrown an exception");
+		} catch(IllegalArgumentException iae) {
+			// Message was retrieved from PropertiesDynamicMethodHelper.class line - 56.
+			assertTrue(iae.getMessage().startsWith("The ComponentService was used to access a property with a null(or empty) property name. Type: "));
+		}
+	}
 
 }
