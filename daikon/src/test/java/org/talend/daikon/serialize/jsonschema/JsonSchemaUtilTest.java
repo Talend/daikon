@@ -114,7 +114,7 @@ public class JsonSchemaUtilTest {
         Definition exampleDef = mock(Definition.class);
         when(exampleDef.getPropertiesClass()).thenReturn(FullExampleProperties.class);
         when(defRegServ.getDefinitionsMapByType(Definition.class)).thenReturn(Collections.singletonMap("def1", exampleDef));
-        when(defRegServ.createProperties(exampleDef, "")).thenReturn(new FullExampleProperties(""));
+        when(defRegServ.createProperties(exampleDef, "root")).thenReturn(new FullExampleProperties("root"));
         return defRegServ;
     }
 
