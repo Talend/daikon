@@ -177,14 +177,14 @@ public class FullExampleProperties extends PropertiesImpl {
         Form advancedForm = new Form(this, Form.ADVANCED);
         advancedForm.addRow(widget(textareaProp).setWidgetType(TEXT_AREA_WIDGET_TYPE));
 
-		/*
-		 * Scenario example: when connection properties are using reference connection.
-		 * In this case MAIN form is added on REFERENCE form. We can't add just
-		 * connection properties as a row, since in most cases it also has WIZARD form,
-		 * that we don't need to add in other properties(Input, Output, etc). Actual
-		 * MAIN form is used in t*Connection component properties.
-		 *
-		 */
+        /*
+         * Scenario example: when connection properties are using reference connection.
+         * In this case MAIN form is added on REFERENCE form. We can't add just
+         * connection properties as a row, since in most cases it also has WIZARD form,
+         * that we don't need to add in other properties(Input, Output, etc). Actual
+         * MAIN form is used in t*Connection component properties.
+         *
+         */
         Form referenceForm = new Form(this, Form.REFERENCE);
         Widget compListWidget = widget(referencedComponent).setWidgetType(Widget.COMPONENT_REFERENCE_WIDGET_TYPE);
         referenceForm.addRow(compListWidget);
