@@ -1,5 +1,3 @@
-:spring_doc_url: https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html
-
 = Talend Request Interceptor
 
 Outbound rest call logging for spring app
@@ -61,7 +59,7 @@ MyInterface api = new MyInterfaceBuilder()
         .requestInterceptor(new TalendRequestInterceptor())
 ----
 
-application.yml link:{audit_sample_url}[Spring Cloud Doc]
+application.yml link:{https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html}[Spring Cloud Doc]
 ----
 feign:
   client:
