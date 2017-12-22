@@ -2,14 +2,11 @@
 
 = Talend Request Interceptor
 
-#### Contents:
+Outbound rest call logging for spring app
 
-* [Including it in your project](#including)
-* [Usage](#usage)
+==== Adding dependencies
 
-<a name="including"/></a>
-## Including it in your project
-
+To start using Talend Request Interceptor it's necessary to add the next dependencies.
 
 Gradle style:
 
@@ -28,10 +25,7 @@ Maven style:
 ```
 
 
-<a name="usage"/></a>
-## Usage
-
-To outbound rest call logging for spring app  using RestTemplate or Feign you can to add this interceptor
+==== Configuration
 
 == RestTemplate
 
@@ -67,7 +61,7 @@ MyInterface api = new MyInterfaceBuilder()
         .requestInterceptor(new TalendRequestInterceptor())
 ----
 
-application.yml {audit_sample_url}[Spring Cloud Doc]
+application.yml link:{audit_sample_url}[Spring Cloud Doc]
 ----
 feign:
   client:
