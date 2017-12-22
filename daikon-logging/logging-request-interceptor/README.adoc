@@ -1,3 +1,5 @@
+:spring_doc_url: https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html
+
 = Talend Request Interceptor
 
 #### Contents:
@@ -29,10 +31,9 @@ Maven style:
 <a name="usage"/></a>
 ## Usage
 
-To log outboud request when you are using RestTeplate or Feign you have to add this interceptor
+To outbound rest call logging for spring app  using RestTemplate or Feign you can to add this interceptor
 
-
-==== RestTemplate
+== RestTemplate
 
 [source,java]
 ----
@@ -54,22 +55,19 @@ public class MyConfigService {
 
         return rest;
     }
- 
+    ...
 }   
-.......................................
-
 ----
 
-==== Feign
+== Feign
 
 [source,java]
 ----
 MyInterface api = new MyInterfaceBuilder()
         .requestInterceptor(new TalendRequestInterceptor())
-        
 ----
 
-application.yml https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html[Spring Cloud Doc]
+application.yml {audit_sample_url}[Spring Cloud Doc]
 ----
 feign:
   client:
