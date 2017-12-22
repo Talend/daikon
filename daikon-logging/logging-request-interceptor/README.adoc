@@ -59,7 +59,7 @@ MyInterface api = new MyInterfaceBuilder()
         .requestInterceptor(new TalendRequestInterceptor())
 ----
 
-application.yml link:{https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html}[Spring Cloud Doc]
+application.yml https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html[Spring Cloud Doc]
 ----
 feign:
   client:
