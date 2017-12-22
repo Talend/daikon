@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.*;
+import org.talend.logging.audit.LogAppenders;
 
 public class AuditConfigurationTest {
 
@@ -40,30 +41,45 @@ public class AuditConfigurationTest {
     @Test
     public void testLoadConfiguration() {
         System.setProperty("test.file.path.property", "/tmp/testSysPropValue");
-        final String javaHome = System.getenv("JAVA_HOME");
+        final String pathEnv = System.getenv("PATH");
 
         AuditConfiguration.loadFromClasspath("/test.audit.properties");
 
         for (AuditConfiguration c : AuditConfiguration.values()) {
             if (!c.getAlreadySet()) {
-                throw new IllegalStateException("Value for configuration option '" + c.getProperty() + "' is not set.");
+                throw new IllegalStateException("Value for configuration option '" + c.toString() + "' is not set.");
             }
         }
 
         final LogAppendersSet expectedAppenders = new LogAppendersSet(Arrays.asList(LogAppenders.FILE, LogAppenders.SOCKET));
 
         assertEquals("testLogger", AuditConfiguration.ROOT_LOGGER.getString());
+
+        assertEquals(Boolean.TRUE, AuditConfiguration.LOCATION.getBoolean());
+        assertEquals(PropagateExceptions.ALL,
+                AuditConfiguration.PROPAGATE_APPENDER_EXCEPTIONS.getValue(PropagateExceptions.class));
+
         assertEquals("TestApplicationName", AuditConfiguration.APPLICATION_NAME.getString());
         assertEquals("DefaultServiceName", AuditConfiguration.SERVICE_NAME.getString());
-        assertEquals(javaHome, AuditConfiguration.INSTANCE_NAME.getString());
+        assertEquals(pathEnv, AuditConfiguration.INSTANCE_NAME.getString());
+
+        assertEquals(expectedAppenders, AuditConfiguration.LOG_APPENDER.getValue(LogAppendersSet.class));
+
         assertEquals("/tmp/testSysPropValue/test.json", AuditConfiguration.APPENDER_FILE_PATH.getString());
         assertEquals((Long) 30L, AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong());
         assertEquals((Integer) 100, AuditConfiguration.APPENDER_FILE_MAXBACKUP.getInteger());
-        assertEquals(Boolean.TRUE, AuditConfiguration.LOCATION.getBoolean());
+
         assertEquals("serverHost", AuditConfiguration.APPENDER_SOCKET_HOST.getString());
         assertEquals((Integer) 8056, AuditConfiguration.APPENDER_SOCKET_PORT.getInteger());
+
         assertEquals("ConsolePattern", AuditConfiguration.APPENDER_CONSOLE_PATTERN.getString());
         assertEquals(LogTarget.ERROR, AuditConfiguration.APPENDER_CONSOLE_TARGET.getValue(LogTarget.class));
-        assertEquals(expectedAppenders, AuditConfiguration.LOG_APPENDER.getValue(LogAppendersSet.class));
+
+        assertEquals("http://localhost:8080/", AuditConfiguration.APPENDER_HTTP_URL.getString());
+        assertEquals("httpuser", AuditConfiguration.APPENDER_HTTP_USERNAME.getString());
+        assertEquals("httppass", AuditConfiguration.APPENDER_HTTP_PASSWORD.getString());
+        assertEquals(Boolean.FALSE, AuditConfiguration.APPENDER_HTTP_ASYNC.getBoolean());
+        assertEquals((Integer) 1000, AuditConfiguration.APPENDER_HTTP_CONNECT_TIMEOUT.getInteger());
+        assertEquals((Integer) 50, AuditConfiguration.APPENDER_HTTP_READ_TIMEOUT.getInteger());
     }
 }

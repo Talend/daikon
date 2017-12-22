@@ -58,13 +58,16 @@ public class LogEnricherTest {
 
         Map<String, String> expectedData = new LinkedHashMap<>(initialData);
 
-        expectedData.put("audit", "true");
-        expectedData.put("application", application);
-        expectedData.put("instance", instance);
-        expectedData.put("service", service);
-        expectedData.put("category", category);
+        expectedData.put("talend.meta.audit", "true");
+        expectedData.put("talend.meta.application", application);
+        expectedData.put("talend.meta.instance", instance);
+        expectedData.put("talend.meta.service", service);
+        expectedData.put("talend.meta.category", category);
 
         Map<String, String> enrichedData = new LogEnricher().enrich(category, initialData);
+
+        String id = enrichedData.remove("talend.meta.eventid");
+        assertNotNull(id);
 
         assertEquals(expectedData, enrichedData);
     }
