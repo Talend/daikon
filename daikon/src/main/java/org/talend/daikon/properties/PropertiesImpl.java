@@ -32,6 +32,7 @@ import org.talend.daikon.properties.property.Property.Flags;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.properties.property.PropertyVisitor;
 import org.talend.daikon.serialize.PostDeserializeSetup;
+import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.daikon.serialize.migration.PostDeserializeHandler;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
@@ -259,7 +260,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
     public String toSerialized() {
         handleAllPropertyEncryption(ENCRYPT);
         try {
-            return JsonWriter.objectToJson(this);
+            return SerializerDeserializer.toSerialized(this, false);
         } finally {
             handleAllPropertyEncryption(!ENCRYPT);
         }
