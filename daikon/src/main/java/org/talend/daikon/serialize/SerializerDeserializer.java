@@ -209,7 +209,10 @@ public class SerializerDeserializer {
                 JsonWriter writer = JsonWriter.JsonClassWriterEx.Support.getWriter(args);
                 int version = ((SerializeSetVersion) o).getVersionNumber();
                 if (version > 0) {
-                    output.write("\"" + VERSION_FIELD + "\":" + version + ",");
+                    // We don't have to add a ',' to the json object when our object is referenced (have an @id)
+                    // The json-io lib do add one in this case just before writing the object o below
+                    boolean isReferenced = writer.getObjectsReferenced().containsKey(o);
+                    output.write("\"" + VERSION_FIELD + "\":" + version + (isReferenced ? "" : ","));
                 }
                 writer.writeObject(o, false, true);
             }
