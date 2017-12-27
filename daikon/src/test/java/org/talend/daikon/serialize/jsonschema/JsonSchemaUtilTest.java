@@ -192,9 +192,8 @@ public class JsonSchemaUtilTest {
         try {
             JsonSchemaUtil.fromJsonNode(defRegServ, jsonData);
             fail("should have thrown an exception");
-        } catch (Exception e) {
-            // Error happens in PropertiesDynamicMethodHelper.class line - 56.
-            assertTrue(e instanceof IllegalArgumentException);
+        } catch (IllegalArgumentException iae) {
+            // IllegalArgumentException happens in PropertiesDynamicMethodHelper.class in findMethod.
         }
 
         // If we set name, we won't have an exception here.
