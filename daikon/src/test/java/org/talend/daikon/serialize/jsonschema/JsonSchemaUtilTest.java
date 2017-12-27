@@ -185,15 +185,26 @@ public class JsonSchemaUtilTest {
         ObjectNode jsonData = (ObjectNode) mapper.readTree(json);
         jsonData.put(JsonSchemaConstants.DEFINITION_NAME_JSON_METADATA, "def1");
         DefinitionRegistryService defRegServ = getRegistryWithDef1();
+
+        // Previous implementation with an empty name.
         when(defRegServ.createProperties(Mockito.any(Definition.class), Mockito.eq("root")))
                 .thenReturn(new FullExampleProperties(""));
         try {
             JsonSchemaUtil.fromJsonNode(defRegServ, jsonData);
             fail("should have thrown an exception");
+        } catch (Exception e) {
+            // Error happens in PropertiesDynamicMethodHelper.class line - 56.
+            assertTrue(e instanceof IllegalArgumentException);
+        }
+
+        // If we set name, we won't have an exception here.
+        when(defRegServ.createProperties(Mockito.any(Definition.class), Mockito.eq("root")))
+                .thenReturn(new FullExampleProperties("root"));
+        try {
+            FullExampleProperties deserFep = (FullExampleProperties) JsonSchemaUtil.fromJsonNode(defRegServ, jsonData);
+            assertEquals("root", deserFep.getName());
         } catch (IllegalArgumentException iae) {
-            // Message was retrieved from PropertiesDynamicMethodHelper.class line - 56.
-            assertTrue(iae.getMessage().startsWith(
-                    "The ComponentService was used to access a property with a null(or empty) property name. Type: "));
+            fail("should not have thrown an exception here");
         }
     }
 
