@@ -39,7 +39,7 @@ public class MyConfigService {
 		
         // add the interceptor that will handle logging
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-        interceptors.add(new TalendRequestInterceptor());
+        interceptors.add(new TalendRestRequestInterceptor());
         rest.setInterceptors(interceptors);
 
         return rest;
@@ -54,7 +54,7 @@ Via java
 [source,java]
 ----
 MyInterface api = new MyInterfaceBuilder()
-        .requestInterceptor(new TalendRequestInterceptor())
+        .requestInterceptor(new TalendFeignRequestInterceptor())
 ----
 
 
@@ -65,5 +65,5 @@ feign:
     config:
       feignName:
         requestInterceptors:
-          - org.talend.daikon.logging.TalendRequestInterceptor
+          - org.talend.daikon.logging.TalendFeignRequestInterceptor
 ----
