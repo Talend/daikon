@@ -32,9 +32,6 @@ Maven style:
 @Configuration
 public class MyConfigService {
 
-    @Autowired
-    private RestLogRepository restLogRepository;
-
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate rest = new RestTemplate();
@@ -42,7 +39,7 @@ public class MyConfigService {
 		
         // add the interceptor that will handle logging
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-        interceptors.add(new TalendRequestInterceptor(restLogRepository));
+        interceptors.add(new TalendRequestInterceptor());
         rest.setInterceptors(interceptors);
 
         return rest;
@@ -53,13 +50,15 @@ public class MyConfigService {
 
 == Feign
 
+Via java
 [source,java]
 ----
 MyInterface api = new MyInterfaceBuilder()
         .requestInterceptor(new TalendRequestInterceptor())
 ----
 
-application.yml https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html[Spring Cloud Doc]
+
+Via application.yml https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html[Spring Cloud Doc]
 ----
 feign:
   client:
