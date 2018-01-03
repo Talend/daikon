@@ -12,18 +12,14 @@ import org.springframework.http.client.ClientHttpResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import feign.Request;
-import feign.RequestInterceptor;
-import feign.RequestTemplate;
-
 /**
  * TalendRequestInterceptor
  * @author sdiallo
  *
  */
-public class TalendRequestInterceptor implements ClientHttpRequestInterceptor, RequestInterceptor {
+public class TalendRestRequestInterceptor implements ClientHttpRequestInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TalendRequestInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TalendRestRequestInterceptor.class);
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
@@ -39,16 +35,11 @@ public class TalendRequestInterceptor implements ClientHttpRequestInterceptor, R
         return response;
     }
 
-    @Override
-    public void apply(RequestTemplate template) {
-        traceRequest(template.request(), template.body());
-    }
-
     private void traceRequest(HttpRequest request, byte[] body) throws IOException {
-        LOGGER.trace("requestURI : " + request.getURI());
-        LOGGER.trace("requestMethod : " + request.getMethod());
-        LOGGER.trace("requestHeader : " + request.getHeaders());
-        LOGGER.trace("requestBody : " + getRequestBody(body));
+        LOGGER.info("requestURI : " + request.getURI());
+        LOGGER.info("requestMethod : " + request.getMethod());
+        LOGGER.info("requestHeader : " + request.getHeaders());
+        LOGGER.info("requestBody : " + getRequestBody(body));
     }
 
     private String getRequestBody(byte[] body) throws UnsupportedEncodingException {
@@ -85,14 +76,4 @@ public class TalendRequestInterceptor implements ClientHttpRequestInterceptor, R
         return valid;
     }
 
-    private void traceRequest(Request request, byte[] body) {
-        LOGGER.trace("requestURI : " + request.url());
-        LOGGER.trace("requestMethod : " + request.method());
-        LOGGER.trace("requestHeader : " + request.headers());
-        try {
-            LOGGER.trace("requestBody : " + getRequestBody(body));
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
 }

@@ -29,7 +29,7 @@ public class FeignRequestInterceptorTest {
     public void testSingleInterceptor() throws Exception {
         server.enqueue(new MockResponse().setBody("foo"));
 
-        TestInterface api = new TestInterfaceBuilder().requestInterceptor(new TalendRequestInterceptor())
+        TestInterface api = new TestInterfaceBuilder().requestInterceptor(new TalendFeignRequestInterceptor())
                 .target("http://localhost:" + server.getPort());
 
         api.post();
@@ -41,7 +41,7 @@ public class FeignRequestInterceptorTest {
     public void testMultipleInterceptor() throws Exception {
         server.enqueue(new MockResponse().setBody("foo"));
 
-        TestInterface api = new TestInterfaceBuilder().requestInterceptor(new TalendRequestInterceptor())
+        TestInterface api = new TestInterfaceBuilder().requestInterceptor(new TalendFeignRequestInterceptor())
                 .requestInterceptor(new UserAgentInterceptor()).target("http://localhost:" + server.getPort());
 
         api.post();

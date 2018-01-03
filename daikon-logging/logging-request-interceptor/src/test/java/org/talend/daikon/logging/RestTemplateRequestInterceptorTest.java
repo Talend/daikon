@@ -53,7 +53,7 @@ public class RestTemplateRequestInterceptorTest {
         restTemplate = new RestTemplate(Collections.singletonList(converter));
         restTemplate.setRequestFactory(requestFactory);
         restTemplate.setErrorHandler(errorHandler);
-        restTemplate.setInterceptors(singletonList(new TalendRequestInterceptor()));
+        restTemplate.setInterceptors(singletonList(new TalendRestRequestInterceptor()));
     }
 
     @Test
