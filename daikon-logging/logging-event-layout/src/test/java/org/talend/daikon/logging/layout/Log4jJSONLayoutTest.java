@@ -42,7 +42,7 @@ public class Log4jJSONLayoutTest extends AbstractLayoutTest {
         final String operationFieldKeyValue = "create user";
         final String resultFieldKey = "result";
         final String resultFieldKeyValue = "success";
-        
+
         Map<String, String> mdc = new LinkedHashMap<>();
         mdc.put(customFieldKey, customFieldValue);
         mdc.put(metaFieldKey, metaFieldKeyValue);
