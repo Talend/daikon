@@ -139,6 +139,11 @@ final class Log4j1Configurer {
         metaFields.put(EventFields.MDC_APPLICATION, EventFields.APPLICATION);
         metaFields.put(EventFields.MDC_SERVICE, EventFields.SERVICE);
         metaFields.put(EventFields.MDC_INSTANCE, EventFields.INSTANCE);
+        //Optional common MDC apps attributes
+        metaFields.put(EventFields.MDC_USER, EventFields.USER);
+        metaFields.put(EventFields.MDC_OPERATION, EventFields.OPERATION);
+        metaFields.put(EventFields.MDC_RESOURCE, EventFields.RESOURCE);
+        metaFields.put(EventFields.MDC_RESULT, EventFields.RESULT);
 
         Log4jJSONLayout layout = new Log4jJSONLayout();
 

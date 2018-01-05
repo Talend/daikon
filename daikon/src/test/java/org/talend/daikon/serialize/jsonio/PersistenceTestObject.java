@@ -29,6 +29,9 @@ public class PersistenceTestObject implements DeserializeDeletedFieldHandler, Po
 
     public PersistenceTestObjectInner inner;
 
+    // the inner have a refernce to inner2
+    public PersistenceTestObjectInner2 inner2;
+
     public PersistenceTestObject() {
         inner = new PersistenceTestObjectInner();
     }
@@ -39,6 +42,7 @@ public class PersistenceTestObject implements DeserializeDeletedFieldHandler, Po
         // string2 = "string2";
         string3 = "string3";
         inner.setup();
+        inner2 = inner.innerObject2;
     }
 
     public boolean checkEqual(PersistenceTestObject other) {

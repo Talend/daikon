@@ -133,6 +133,17 @@ public class UiSchemaConstants {
      */
     public static final String TYPE_LIST_VIEW = "listview";
 
+    /**
+     * This widget will open a Wizard and let the user select an object inside it. For example, it will be used
+     * to select a Dataprep Preparation from the Dataprep Picker.
+     */
+    public static final String TYPE_SELECT_WIZARD = "selectWizard";
+
+    /**
+     * This widget will create a link button that will move the user to another webpage.
+     */
+    public static final String TYPE_EXTERNAL_LINK = "externalLink";
+
     /*
      * ui:field values. ui:field is a more high-level element than a ui:widget. Widgets are used to represent singular
      * form element, for example a checkbox or a list of such elements. In order to present more complex elements, like
@@ -185,6 +196,9 @@ public class UiSchemaConstants {
         UI_MAPPERS.put(Widget.DATALIST_WIDGET_TYPE, new WidgetMapper(UiSchemaConstants.TYPE_DATALIST));
         UI_MAPPERS.put(Widget.MULTIPLE_VALUE_SELECTOR_WIDGET_TYPE, new WidgetMapper(UiSchemaConstants.TYPE_LIST_VIEW));
         UI_MAPPERS.put(Widget.CODE_WIDGET_TYPE, new WidgetMapper(UiSchemaConstants.TYPE_CODE));
+
+        UI_MAPPERS.put(Widget.SELECT_WIZARD_WIDGET_TYPE, new WidgetMapper(UiSchemaConstants.TYPE_SELECT_WIZARD));
+        UI_MAPPERS.put(Widget.EXTERNAL_LINK_WIDGET_TYPE, new WidgetMapper(UiSchemaConstants.TYPE_EXTERNAL_LINK));
 
         UI_MAPPERS.put(Widget.NESTED_PROPERTIES, new NestedPropertiesFieldMapper(UiSchemaConstants.COLLAPSIBLE_FIELDSET));
 
