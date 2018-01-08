@@ -17,8 +17,6 @@ import org.talend.logging.audit.LogAppenders;
  */
 final class Log4j1Configurer {
 
-    private static final String UTF8 = "UTF-8";
-
     private Log4j1Configurer() {
     }
 
@@ -76,7 +74,7 @@ final class Log4j1Configurer {
         appender.setName("auditFileAppender");
         appender.setMaxBackupIndex(AuditConfiguration.APPENDER_FILE_MAXBACKUP.getInteger());
         appender.setMaximumFileSize(AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong());
-        appender.setEncoding(UTF8);
+        appender.setEncoding(AuditConfiguration.ENCODING.getString());
         appender.setImmediateFlush(true);
         appender.setLayout(logstashLayout());
 
@@ -106,7 +104,7 @@ final class Log4j1Configurer {
                 new PatternLayout(AuditConfiguration.APPENDER_CONSOLE_PATTERN.getString()), target.getTarget());
 
         appender.setName("auditConsoleAppender");
-        appender.setEncoding(UTF8);
+        appender.setEncoding(AuditConfiguration.ENCODING.getString());
 
         return appender;
     }
