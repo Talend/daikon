@@ -32,7 +32,9 @@ enum AuditConfiguration {
     APPENDER_HTTP_ASYNC(Boolean.class, Boolean.FALSE),
     APPENDER_HTTP_CONNECT_TIMEOUT(Integer.class, 30000),
     APPENDER_HTTP_READ_TIMEOUT(Integer.class, 60000),
-    PROPAGATE_APPENDER_EXCEPTIONS(PropagateExceptions.class, PropagateExceptions.NONE);
+    PROPAGATE_APPENDER_EXCEPTIONS(PropagateExceptions.class, PropagateExceptions.NONE),
+    ENCODING(String.class, "UTF-8"),
+    BACKEND(Backends.class, Backends.AUTO);
 
     private static final String PLACEHOLDER_START = "${";
 
@@ -44,72 +46,32 @@ enum AuditConfiguration {
 
     private final Object defaultValue;
 
-    private Object value;
-
-    private boolean alreadySet;
+    private final boolean canBeNull;
 
     <T> AuditConfiguration(Class<T> clz) {
         this(clz, null);
     }
 
     <T> AuditConfiguration(Class<T> clz, Object defaultValue) {
+        this(clz, defaultValue, defaultValue != null);
+    }
+
+    <T> AuditConfiguration(Class<T> clz, Object defaultValue, boolean canBeNull) {
         this.clz = clz;
         this.defaultValue = defaultValue;
+        this.canBeNull = canBeNull;
     }
 
     public Class<?> getClz() {
         return clz;
     }
 
-    boolean getAlreadySet() {
-        return this.alreadySet;
+    Object getDefaultValue() {
+        return defaultValue;
     }
 
-    void setAlreadySet(boolean alreadySet) {
-        this.alreadySet = alreadySet;
-    }
-
-    public String getString() {
-        return getValue(String.class);
-    }
-
-    public Integer getInteger() {
-        return getValue(Integer.class);
-    }
-
-    public Long getLong() {
-        return getValue(Long.class);
-    }
-
-    public Boolean getBoolean() {
-        return getValue(Boolean.class);
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public <T> T getValue(Class<T> clz) {
-        if (!this.clz.equals(clz)) {
-            throw new IllegalArgumentException("Wrong class type " + clz.getName() + ", expected " + this.clz.getName());
-        }
-        if (!alreadySet && defaultValue == null) {
-            throw new IllegalStateException("Value for property " + toString() + " is not set and it has no default value");
-        }
-        return alreadySet ? clz.cast(value) : clz.cast(defaultValue);
-    }
-
-    public <T> void setValue(T value, Class<? extends T> clz) {
-        if (!this.clz.equals(clz)) {
-            throw new IllegalArgumentException("Wrong class type " + clz.getName() + ", expected " + this.clz.getName());
-        }
-
-        if (alreadySet) {
-            throw new IllegalStateException("Parameter " + toString() + " cannot be set twice");
-        }
-
-        this.alreadySet = true;
-        this.value = value;
+    boolean canBeNull() {
+        return canBeNull;
     }
 
     @Override
@@ -117,7 +79,31 @@ enum AuditConfiguration {
         return name().toLowerCase().replace('_', '.');
     }
 
-    public static void loadFromFile(String fileName) {
+    public <T> T getValue(AuditConfigurationMap map, Class<T> clz) {
+        return map.getValue(this, clz);
+    }
+
+    public String getString(AuditConfigurationMap map) {
+        return map.getValue(this, String.class);
+    }
+
+    public Integer getInteger(AuditConfigurationMap map) {
+        return map.getValue(this, Integer.class);
+    }
+
+    public Long getLong(AuditConfigurationMap map) {
+        return map.getValue(this, Long.class);
+    }
+
+    public Boolean getBoolean(AuditConfigurationMap map) {
+        return map.getValue(this, Boolean.class);
+    }
+
+    public <T> void setValue(AuditConfigurationMap map, T value, Class<? extends T> clz) {
+        map.setValue(this, value, clz);
+    }
+
+    public static AuditConfigurationMap loadFromFile(String fileName) {
         final Properties props = new Properties();
 
         try (InputStream in = Files.newInputStream(Paths.get(fileName))) {
@@ -126,10 +112,10 @@ enum AuditConfiguration {
             throw new AuditLoggingException(e);
         }
 
-        loadFromProperties(props);
+        return loadFromProperties(props);
     }
 
-    public static void loadFromClasspath(String fileName) {
+    public static AuditConfigurationMap loadFromClasspath(String fileName) {
         final Properties props = new Properties();
 
         try (InputStream in = AuditConfiguration.class.getResourceAsStream(fileName)) {
@@ -138,11 +124,13 @@ enum AuditConfiguration {
             throw new AuditLoggingException(e);
         }
 
-        loadFromProperties(props);
+        return loadFromProperties(props);
     }
 
     @SuppressWarnings({ "unchecked" })
-    public static void loadFromProperties(Properties props) {
+    public static AuditConfigurationMap loadFromProperties(Properties props) {
+        AuditConfigurationMap answer = new AuditConfigurationMapImpl();
+
         for (String key : props.stringPropertyNames()) {
             String rawValue = props.getProperty(key).trim();
             String value = replaceTokens(rawValue);
@@ -150,51 +138,35 @@ enum AuditConfiguration {
             AuditConfiguration prop = AuditConfiguration.valueOf(getEnumName(key));
 
             if (String.class.equals(prop.getClz())) {
-                prop.setValue(value, String.class);
+                prop.setValue(answer, value, String.class);
             } else if (Integer.class.equals(prop.getClz())) {
-                prop.setValue(Integer.valueOf(value), Integer.class);
+                prop.setValue(answer, Integer.valueOf(value), Integer.class);
             } else if (Long.class.equals(prop.getClz())) {
-                prop.setValue(Long.valueOf(value), Long.class);
+                prop.setValue(answer, Long.valueOf(value), Long.class);
             } else if (Boolean.class.equals(prop.getClz())) {
-                prop.setValue(Boolean.valueOf(value), Boolean.class);
+                prop.setValue(answer, Boolean.valueOf(value), Boolean.class);
             } else if (Enum.class.isAssignableFrom(prop.getClz())) {
                 Class<? extends Enum> enumClz = (Class<? extends Enum>) prop.getClz();
-                prop.setValue(Enum.valueOf(enumClz, value.toUpperCase()), enumClz);
+                prop.setValue(answer, Enum.valueOf(enumClz, value.toUpperCase()), enumClz);
             } else if (LogAppendersSet.class.isAssignableFrom(prop.getClz())) {
                 String[] parts = value.split(",");
                 LogAppendersSet appenders = new LogAppendersSet();
                 for (String app : parts) {
                     appenders.add(Enum.valueOf(LogAppenders.class, app.toUpperCase()));
                 }
-                prop.setValue(appenders, LogAppendersSet.class);
+                prop.setValue(answer, appenders, LogAppendersSet.class);
             } else {
                 throw new IllegalArgumentException("Unsupported property type " + prop.getClz().getName());
             }
         }
 
-        // some fields are mandatory or optional based on other config options
-        //        validateConfiguration();
+        answer.validateConfiguration();
+
+        return answer;
     }
 
     private static String getEnumName(String propertyName) {
         return propertyName.toUpperCase().replace('.', '_');
-    }
-
-    private static void validateConfiguration() {
-        List<String> missingFields = null;
-
-        for (AuditConfiguration conf : AuditConfiguration.values()) {
-            if (!conf.alreadySet && conf.defaultValue == null) {
-                if (missingFields == null) {
-                    missingFields = new ArrayList<>();
-                }
-                missingFields.add(conf.toString());
-            }
-        }
-
-        if (missingFields != null && !missingFields.isEmpty()) {
-            throw new IllegalArgumentException("These mandatory audit logging properties were not configured: " + missingFields);
-        }
     }
 
     private static String replaceTokens(String value) {

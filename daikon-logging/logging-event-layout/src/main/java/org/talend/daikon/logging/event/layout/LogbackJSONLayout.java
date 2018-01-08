@@ -2,10 +2,7 @@ package org.talend.daikon.logging.event.layout;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import org.talend.daikon.logging.event.field.HostData;
 import org.talend.daikon.logging.event.field.LayoutFields;
@@ -26,7 +23,9 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
 
     private String customUserFields;
 
-    private JSONObject logstashEvent;
+    private Map<String, String> metaFields = new HashMap<>();
+
+    private boolean addEventUuid = true;
 
     /**
      * Print no location info by default.
@@ -46,36 +45,37 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
 
     @Override
     public String doLayout(ILoggingEvent loggingEvent) {
-        logstashEvent = new JSONObject();
+        JSONObject logstashEvent = new JSONObject();
         JSONObject userFieldsEvent = new JSONObject();
         HostData host = new HostData();
-        Map<String, String> mdc = loggingEvent.getMDCPropertyMap();
 
-        /**
-         * Extract and add fields from log4j config, if defined
-         */
+        //Extract and add fields from log4j config, if defined
         if (getUserFields() != null) {
             String userFlds = getUserFields();
             LayoutUtils.addUserFields(userFlds, userFieldsEvent);
         }
 
-        /**
-         * Now we start injecting our own stuff.
-         */
-        addEventData(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
-        addEventData(LayoutFields.EVENT_UUID, UUID.randomUUID().toString());
-        addEventData(LayoutFields.TIME_STAMP, dateFormat(loggingEvent.getTimeStamp()));
-        addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
-        addEventData(LayoutFields.THREAD_NAME, loggingEvent.getThreadName());
-        addEventData(LayoutFields.AGENT_TIME_STAMP, dateFormat(new Date().getTime()));
-        addEventData(LayoutFields.LOG_MESSAGE, loggingEvent.getFormattedMessage());
-        handleThrown(loggingEvent);
+        Map<String, String> mdc = LayoutUtils.processMDCMetaFields(loggingEvent.getMDCPropertyMap(), logstashEvent, metaFields);
+
+        //Now we start injecting our own stuff.
+        if (addEventUuid) {
+            logstashEvent.put(LayoutFields.EVENT_UUID, UUID.randomUUID().toString());
+        }
+        logstashEvent.put(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
+        logstashEvent.put(LayoutFields.TIME_STAMP, dateFormat(loggingEvent.getTimeStamp()));
+        logstashEvent.put(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
+        logstashEvent.put(LayoutFields.THREAD_NAME, loggingEvent.getThreadName());
+        logstashEvent.put(LayoutFields.AGENT_TIME_STAMP, dateFormat(new Date().getTime()));
+        if (loggingEvent.getFormattedMessage() != null) {
+            logstashEvent.put(LayoutFields.LOG_MESSAGE, loggingEvent.getFormattedMessage());
+        }
+        handleThrown(logstashEvent, loggingEvent);
         JSONObject logSourceEvent = createLogSourceEvent(loggingEvent, host);
-        addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
+        logstashEvent.put(LayoutFields.LOG_SOURCE, logSourceEvent);
         LayoutUtils.addMDC(mdc, userFieldsEvent, logstashEvent);
 
         if (!userFieldsEvent.isEmpty()) {
-            addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
+            logstashEvent.put(LayoutFields.CUSTOM_INFO, userFieldsEvent);
         }
 
         return logstashEvent.toString() + "\n";
@@ -108,22 +108,30 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         this.customUserFields = userFields;
     }
 
-    private void handleThrown(ILoggingEvent loggingEvent) {
+    public void setMetaFields(Map<String, String> metaFields) {
+        this.metaFields = new HashMap<>(metaFields);
+    }
+
+    public void setAddEventUuid(boolean addEventUuid) {
+        this.addEventUuid = addEventUuid;
+    }
+
+    private void handleThrown(JSONObject logstashEvent, ILoggingEvent loggingEvent) {
         if (loggingEvent.getThrowableProxy() != null) {
 
             if (loggingEvent.getThrowableProxy().getClassName() != null) {
-                addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrowableProxy().getClassName());
+                logstashEvent.put(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrowableProxy().getClassName());
             }
 
             if (loggingEvent.getThrowableProxy().getMessage() != null) {
-                addEventData(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrowableProxy().getMessage());
+                logstashEvent.put(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrowableProxy().getMessage());
             }
 
             ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
             converter.setOptionList(Arrays.asList("full"));
             converter.start();
             String stackTrace = converter.convert(loggingEvent);
-            addEventData(LayoutFields.STACK_TRACE, stackTrace);
+            logstashEvent.put(LayoutFields.STACK_TRACE, stackTrace);
         }
     }
 
@@ -145,12 +153,6 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
         logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
         return logSourceEvent;
-    }
-
-    private void addEventData(String keyname, Object keyval) {
-        if (null != keyval) {
-            logstashEvent.put(keyname, keyval);
-        }
     }
 
     private StackTraceElement extractCallerData(final ILoggingEvent event) {

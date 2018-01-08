@@ -36,6 +36,10 @@ public final class AuditLoggerFactory {
                 new ProxyAuditLogger(AuditLoggerBaseHolder.BASE_LOGGER));
     }
 
+    public static StandardEventAuditLogger getEventAuditLogger() {
+        return getEventAuditLogger(StandardEventAuditLogger.class);
+    }
+
     /**
      * Creates event-based API instance from given interface.
      *
@@ -51,7 +55,6 @@ public final class AuditLoggerFactory {
     }
 
     private static class AuditLoggerBaseHolder {
-
         static final AuditLoggerBase BASE_LOGGER = new DefaultAuditLoggerBase();
     }
 }

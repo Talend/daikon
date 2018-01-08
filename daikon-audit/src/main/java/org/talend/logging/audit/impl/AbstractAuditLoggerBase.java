@@ -3,9 +3,6 @@ package org.talend.logging.audit.impl;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.talend.logging.audit.Context;
 import org.talend.logging.audit.ContextBuilder;
 import org.talend.logging.audit.LogLevel;
@@ -36,40 +33,41 @@ public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
     private void logInternal(LogLevel level, String category, Context context, Throwable throwable, String message) {
         // creating copy of passed context to be able to modify it
         Context actualContext = context == null ? ContextBuilder.emptyContext() : ContextBuilder.create(context).build();
+        Map<String, String> enrichedContext = getEnricher().enrich(category, actualContext);
 
-        final Map<String, String> oldContext = setNewContext(actualContext);
+        final AbstractBackend logger = getLogger();
+        final Map<String, String> oldContext = logger.getCopyOfContextMap();
+        final Map<String, String> completeContext = setNewContext(logger, oldContext, enrichedContext);
         try {
-            final String formattedMessage = formatMessage(message);
-            final Logger logger = getLogger(category);
+            final String formattedMessage = formatMessage(message, completeContext);
 
-            level.log(logger, formattedMessage, throwable);
+            logger.log(category, level, formattedMessage, throwable);
         } finally {
-            resetContext(oldContext);
+            resetContext(logger, oldContext);
         }
     }
 
-    protected Logger getLogger(String category) {
-        return LoggerFactory.getLogger(AuditConfiguration.ROOT_LOGGER.getString() + '.' + category);
-    }
+    protected abstract AbstractBackend getLogger();
 
-    private static Map<String, String> setNewContext(Context newContext) {
-        Map<String, String> oldContext = MDC.getCopyOfContextMap();
+    protected abstract ContextEnricher getEnricher();
+
+    private static Map<String, String> setNewContext(AbstractBackend logger, Map<String, String> oldContext,
+            Map<String, String> newContext) {
         ContextBuilder builder = ContextBuilder.create();
         if (oldContext != null) {
             builder.with(oldContext);
         }
         Context completeContext = builder.with(newContext).build();
 
-        MDC.setContextMap(completeContext);
-        return oldContext;
+        logger.setContextMap(completeContext);
+        return completeContext;
     }
 
-    private static void resetContext(Map<String, String> oldContext) {
-        MDC.setContextMap(oldContext == null ? new LinkedHashMap<String, String>() : oldContext);
+    private static void resetContext(AbstractBackend logger, Map<String, String> oldContext) {
+        logger.setContextMap(oldContext == null ? new LinkedHashMap<String, String>() : oldContext);
     }
 
-    private static String formatMessage(String message) {
-        Map<String, String> mdcContext = MDC.getCopyOfContextMap();
+    private static String formatMessage(String message, Map<String, String> mdcContext) {
         if (mdcContext == null) {
             return message;
         }

@@ -41,20 +41,4 @@ public class UtilsTest {
         assertEquals(str, Utils.getSpecificClassParam(params, String.class));
         assertEquals(bol, Utils.getSpecificClassParam(params, Boolean.class));
     }
-
-    @Test
-    public void testGetCategoryFromLoggerName() {
-        String oldLoggerValue = AuditConfiguration.ROOT_LOGGER.getString();
-        boolean oldAlreadySetValue = AuditConfiguration.ROOT_LOGGER.getAlreadySet();
-        AuditConfiguration.ROOT_LOGGER.setAlreadySet(false);
-        AuditConfiguration.ROOT_LOGGER.setValue("testlogger", String.class);
-
-        try {
-            assertEquals("testcat", Utils.getCategoryFromLoggerName("testlogger.testcat"));
-        } finally {
-            AuditConfiguration.ROOT_LOGGER.setAlreadySet(false);
-            AuditConfiguration.ROOT_LOGGER.setValue(oldLoggerValue, String.class);
-            AuditConfiguration.ROOT_LOGGER.setAlreadySet(oldAlreadySetValue);
-        }
-    }
 }

@@ -14,6 +14,8 @@
 
         <slf4j.version>1.7.25</slf4j.version>
         <log4j1.version>1.2.17</log4j1.version>
+        <log4j2.version>2.10.0</log4j2.version>
+        <logback.version>1.1.9</logback.version>
         <junit.version>4.12</junit.version>
     </properties>
     <dependencies>
@@ -21,6 +23,23 @@
             <groupId>org.talend.daikon</groupId>
             <artifactId>logging-event-layout</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.logging.log4j</groupId>-->
+            <!--<artifactId>log4j-slf4j-impl</artifactId>-->
+            <!--<version>${log4j2.version}</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -31,6 +50,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j1.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Tests -->

@@ -1,28 +1,43 @@
 package org.talend.logging.audit.impl;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
 import org.talend.logging.audit.AuditLoggingException;
 import org.talend.logging.audit.Context;
 import org.talend.logging.audit.ContextBuilder;
 import org.talend.logging.audit.LogLevel;
 
-public class AbstractAuditLoggerBaseTest {
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class AbstractAuditLoggerBaseTest extends AuditTestBase {
+
+    private static final AuditConfigurationMap CONFIG = new AuditConfigurationMapImpl();
+
+    @BeforeClass
+    public static void setupSuite() {
+        AuditConfiguration.APPLICATION_NAME.setValue(CONFIG, "app", String.class);
+        AuditConfiguration.SERVICE_NAME.setValue(CONFIG, "svc", String.class);
+        AuditConfiguration.INSTANCE_NAME.setValue(CONFIG, "inst", String.class);
+    }
 
     @Test
+    @SuppressWarnings({ "unchecked" })
     public void testLog() {
         String category = "testCat";
         Context ctx = ContextBuilder.emptyContext();
         Throwable thr = new AuditLoggingException("TestMsg");
 
-        Logger logger = mock(Logger.class);
-        logger.info(thr.getMessage(), thr);
+        AbstractBackend logger = mock(AbstractBackend.class);
+        logger.log(category.toLowerCase(), LogLevel.INFO, thr.getMessage(), thr);
+        expect(logger.getCopyOfContextMap()).andReturn(new LinkedHashMap<String, String>());
+        logger.setContextMap(anyObject(Map.class));
+        expectLastCall().times(2);
         replay(logger);
 
-        TestAuditLoggerBaseTest base = new TestAuditLoggerBaseTest(logger, category.toLowerCase());
+        TestAuditLoggerBaseTest base = new TestAuditLoggerBaseTest(logger);
 
         base.log(LogLevel.INFO, category, ctx, thr, null);
 
@@ -31,19 +46,22 @@ public class AbstractAuditLoggerBaseTest {
 
     private static class TestAuditLoggerBaseTest extends AbstractAuditLoggerBase {
 
-        private final Logger logger;
+        private final AbstractBackend logger;
 
-        private final String expectedCategory;
+        private final ContextEnricher enricher = new ContextEnricher(CONFIG);
 
-        private TestAuditLoggerBaseTest(Logger logger, String expectedCategory) {
+        private TestAuditLoggerBaseTest(AbstractBackend logger) {
             this.logger = logger;
-            this.expectedCategory = expectedCategory;
         }
 
         @Override
-        protected Logger getLogger(String category) {
-            assertEquals(expectedCategory, category);
+        protected AbstractBackend getLogger() {
             return logger;
+        }
+
+        @Override
+        protected ContextEnricher getEnricher() {
+            return enricher;
         }
     }
 }

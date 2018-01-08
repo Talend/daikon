@@ -6,24 +6,21 @@ import java.util.Map;
 
 import org.apache.log4j.*;
 import org.apache.log4j.net.SocketAppender;
-import org.apache.log4j.rewrite.RewriteAppender;
-import org.apache.log4j.varia.DenyAllFilter;
 import org.talend.daikon.logging.event.layout.Log4jJSONLayout;
 import org.talend.logging.audit.AuditLoggingException;
 import org.talend.logging.audit.LogAppenders;
+import org.talend.logging.audit.impl.http.Log4j1HttpAppender;
 
 /**
  *
  */
 final class Log4j1Configurer {
 
-    private static final String UTF8 = "UTF-8";
-
     private Log4j1Configurer() {
     }
 
-    static void configure() {
-        final LogAppendersSet appendersSet = AuditConfiguration.LOG_APPENDER.getValue(LogAppendersSet.class);
+    public static void configure(AuditConfigurationMap config) {
+        final LogAppendersSet appendersSet = AuditConfiguration.LOG_APPENDER.getValue(config, LogAppendersSet.class);
 
         if (appendersSet == null || appendersSet.isEmpty()) {
             throw new AuditLoggingException("No audit appenders configured.");
@@ -33,105 +30,118 @@ final class Log4j1Configurer {
             throw new AuditLoggingException("Invalid configuration: none appender is used with other simultaneously.");
         }
 
-        final RewriteAppender auditAppender = new RewriteAppender();
+        final Logger logger = Logger.getLogger(AuditConfiguration.ROOT_LOGGER.getString(config));
+
+        logger.setAdditivity(false);
 
         for (LogAppenders appender : appendersSet) {
             switch (appender) {
             case FILE:
-                auditAppender.addAppender(rollingFileAppender());
+                logger.addAppender(rollingFileAppender(config));
                 break;
 
             case SOCKET:
-                auditAppender.addAppender(socketAppender());
+                logger.addAppender(socketAppender(config));
                 break;
 
             case CONSOLE:
-                auditAppender.addAppender(consoleAppender());
+                logger.addAppender(consoleAppender(config));
                 break;
 
             case HTTP:
-                auditAppender.addAppender(httpAppender());
+                logger.addAppender(httpAppender(config));
                 break;
 
             case NONE:
-                auditAppender.addFilter(new DenyAllFilter());
+                logger.setLevel(Level.OFF);
                 break;
 
             default:
                 throw new AuditLoggingException("Unknown appender " + appender);
             }
         }
-
-        auditAppender.setRewritePolicy(new Log4j1EnricherPolicy());
-
-        final Logger logger = Logger.getLogger(AuditConfiguration.ROOT_LOGGER.getString());
-
-        logger.addAppender(auditAppender);
-        logger.setAdditivity(false);
     }
 
-    private static Appender rollingFileAppender() {
-        final RollingFileAppender appender;
+    private static Appender rollingFileAppender(AuditConfigurationMap config) {
+        final RollingFileAppender appender = new RollingFileAppender();
+
+        appender.setName("auditFileAppender");
+        appender.setMaxBackupIndex(AuditConfiguration.APPENDER_FILE_MAXBACKUP.getInteger(config));
+        appender.setMaximumFileSize(AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong(config));
+        appender.setEncoding(AuditConfiguration.ENCODING.getString(config));
+        appender.setImmediateFlush(true);
+        appender.setLayout(logstashLayout(config));
 
         try {
-            appender = new RollingFileAppender(logstashLayout(), AuditConfiguration.APPENDER_FILE_PATH.getString(), true);
+            appender.setFile(AuditConfiguration.APPENDER_FILE_PATH.getString(config), true, false, 8 * 1024);
         } catch (IOException e) {
             throw new AuditLoggingException(e);
         }
 
-        appender.setName("auditFileAppender");
-        appender.setMaxBackupIndex(AuditConfiguration.APPENDER_FILE_MAXBACKUP.getInteger());
-        appender.setMaximumFileSize(AuditConfiguration.APPENDER_FILE_MAXSIZE.getLong());
-        appender.setEncoding(UTF8);
-        appender.setImmediateFlush(true);
-
         return appender;
     }
 
-    private static Appender socketAppender() {
-        final SocketAppender appender = new SocketAppender(AuditConfiguration.APPENDER_SOCKET_HOST.getString(),
-                AuditConfiguration.APPENDER_SOCKET_PORT.getInteger());
+    private static Appender socketAppender(AuditConfigurationMap config) {
+        final SocketAppender appender = new SocketAppender(AuditConfiguration.APPENDER_SOCKET_HOST.getString(config),
+                AuditConfiguration.APPENDER_SOCKET_PORT.getInteger(config));
 
         appender.setName("auditSocketAppender");
-        appender.setLocationInfo(AuditConfiguration.LOCATION.getBoolean());
+        appender.setLocationInfo(AuditConfiguration.LOCATION.getBoolean(config));
 
         return appender;
     }
 
-    private static Appender consoleAppender() {
-        final LogTarget target = AuditConfiguration.APPENDER_CONSOLE_TARGET.getValue(LogTarget.class);
+    private static Appender consoleAppender(AuditConfigurationMap config) {
+        final LogTarget target = AuditConfiguration.APPENDER_CONSOLE_TARGET.getValue(config, LogTarget.class);
 
-        final ConsoleAppender appender = new ConsoleAppender(
-                new PatternLayout(AuditConfiguration.APPENDER_CONSOLE_PATTERN.getString()), target.getTarget());
+        final ConsoleAppender appender = new ConsoleAppender();
 
         appender.setName("auditConsoleAppender");
-        appender.setEncoding(UTF8);
+        appender.setEncoding(AuditConfiguration.ENCODING.getString(config));
+        appender.setTarget(target.getTarget());
+        appender.setLayout(new PatternLayout(AuditConfiguration.APPENDER_CONSOLE_PATTERN.getString(config)));
+
+        appender.activateOptions();
 
         return appender;
     }
 
-    private static Appender httpAppender() {
+    private static Appender httpAppender(AuditConfigurationMap config) {
         final Log4j1HttpAppender appender = new Log4j1HttpAppender();
 
         appender.setName("auditHttpAppender");
-        appender.setLayout(logstashLayout());
-        appender.setUrl(AuditConfiguration.APPENDER_HTTP_URL.getString());
-        if (!AuditConfiguration.APPENDER_HTTP_USERNAME.getString().trim().isEmpty()) {
-            appender.setUsername(AuditConfiguration.APPENDER_HTTP_USERNAME.getString());
+        appender.setLayout(logstashLayout(config));
+        appender.setUrl(AuditConfiguration.APPENDER_HTTP_URL.getString(config));
+        if (!AuditConfiguration.APPENDER_HTTP_USERNAME.getString(config).trim().isEmpty()) {
+            appender.setUsername(AuditConfiguration.APPENDER_HTTP_USERNAME.getString(config));
         }
-        if (!AuditConfiguration.APPENDER_HTTP_PASSWORD.getString().trim().isEmpty()) {
-            appender.setPassword(AuditConfiguration.APPENDER_HTTP_PASSWORD.getString());
+        if (!AuditConfiguration.APPENDER_HTTP_PASSWORD.getString(config).trim().isEmpty()) {
+            appender.setPassword(AuditConfiguration.APPENDER_HTTP_PASSWORD.getString(config));
         }
-        appender.setAsync(AuditConfiguration.APPENDER_HTTP_ASYNC.getBoolean());
+        appender.setAsync(AuditConfiguration.APPENDER_HTTP_ASYNC.getBoolean(config));
 
-        appender.setConnectTimeout(AuditConfiguration.APPENDER_HTTP_CONNECT_TIMEOUT.getInteger());
-        appender.setReadTimeout(AuditConfiguration.APPENDER_HTTP_READ_TIMEOUT.getInteger());
-        appender.setPropagateExceptions(AuditConfiguration.PROPAGATE_APPENDER_EXCEPTIONS.getValue(PropagateExceptions.class));
+        appender.setConnectTimeout(AuditConfiguration.APPENDER_HTTP_CONNECT_TIMEOUT.getInteger(config));
+        appender.setReadTimeout(AuditConfiguration.APPENDER_HTTP_READ_TIMEOUT.getInteger(config));
+        appender.setEncoding(AuditConfiguration.ENCODING.getString(config));
+
+        switch (AuditConfiguration.PROPAGATE_APPENDER_EXCEPTIONS.getValue(config, PropagateExceptions.class)) {
+        case ALL:
+            appender.setPropagateExceptions(true);
+            break;
+
+        case NONE:
+            appender.setPropagateExceptions(false);
+            break;
+
+        default:
+            throw new AuditLoggingException("Unknown propagate exception value: "
+                    + AuditConfiguration.PROPAGATE_APPENDER_EXCEPTIONS.getValue(config, PropagateExceptions.class));
+        }
 
         return appender;
     }
 
-    private static Layout logstashLayout() {
+    private static Layout logstashLayout(AuditConfigurationMap config) {
         Map<String, String> metaFields = new HashMap<>();
         metaFields.put(EventFields.MDC_ID, EventFields.ID);
         metaFields.put(EventFields.MDC_CATEGORY, EventFields.CATEGORY);
@@ -142,7 +152,7 @@ final class Log4j1Configurer {
 
         Log4jJSONLayout layout = new Log4jJSONLayout();
 
-        layout.setLocationInfo(AuditConfiguration.LOCATION.getBoolean());
+        layout.setLocationInfo(AuditConfiguration.LOCATION.getBoolean(config));
         layout.setMetaFields(metaFields);
 
         return layout;

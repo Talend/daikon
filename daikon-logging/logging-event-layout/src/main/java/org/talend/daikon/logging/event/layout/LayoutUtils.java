@@ -1,5 +1,6 @@
 package org.talend.daikon.logging.event.layout;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.talend.daikon.logging.event.field.LayoutFields;
@@ -76,6 +77,24 @@ public final class LayoutUtils {
     public static boolean isSleuthField(String fieldName) {
         return "service".equals(fieldName) || "X-B3-SpanId".equals(fieldName) || "X-B3-TraceId".equals(fieldName)
                 || "X-Span-Export".equals(fieldName);
+    }
+
+    public static Map<String, String> processMDCMetaFields(Map<String, String> existingMdc, JSONObject logstashEvent,
+            Map<String, String> metaFields) {
+        final Map<String, String> mdc = new LinkedHashMap<>(existingMdc);
+
+        if (metaFields == null) {
+            return mdc;
+        }
+
+        for (Map.Entry<String, String> field : metaFields.entrySet()) {
+            if (mdc.containsKey(field.getKey())) {
+                String val = mdc.remove(field.getKey());
+                logstashEvent.put(field.getValue(), val);
+            }
+        }
+
+        return mdc;
     }
 
     private LayoutUtils() {

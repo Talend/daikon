@@ -9,6 +9,7 @@ package org.talend.logging.audit;
  * <p>Any method can accept an instance of {@link Throwable} and/or an instance of {@link Context} as parameters.
  *
  * @see EventAuditLogger
+ * @see StandardEventAttributes
  */
 public interface StandardEventAuditLogger extends EventAuditLogger {
 
