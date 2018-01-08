@@ -91,7 +91,7 @@ public class TenancyContextIntegrationFilter extends OncePerRequestFilter {
     }
 
     private static void setMdc(TenancyContext tenancyContext) {
-        if (tenancyContext != null && tenancyContext.getTenant() != null) {
+        if (tenancyContext.getOptionalTenant().isPresent()) {
             MDC.put(MdcKeys.ACCOUNT_ID, String.valueOf(tenancyContext.getTenant().getIdentity()));
         }
     }

@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.talend.daikon.definition.Definition;
 import org.talend.daikon.definition.service.DefinitionRegistryService;
 import org.talend.daikon.exception.TalendRuntimeException;
@@ -114,7 +115,7 @@ public class JsonSchemaUtilTest {
         Definition exampleDef = mock(Definition.class);
         when(exampleDef.getPropertiesClass()).thenReturn(FullExampleProperties.class);
         when(defRegServ.getDefinitionsMapByType(Definition.class)).thenReturn(Collections.singletonMap("def1", exampleDef));
-        when(defRegServ.createProperties(exampleDef, "")).thenReturn(new FullExampleProperties(""));
+        when(defRegServ.createProperties(exampleDef, "root")).thenReturn(new FullExampleProperties("root"));
         return defRegServ;
     }
 
@@ -169,6 +170,41 @@ public class JsonSchemaUtilTest {
         TestEmptyProperties propertiesNoData = JsonSchemaUtil.fromJson(noData,
                 TestEmptyProperties.createASetupOptionalProperties());
         assertEquals(properties, propertiesNoData);
+    }
+
+    @Test
+    public void testCreatePropertyWithEmptyName()
+            throws ParseException, JsonProcessingException, IOException, NoSuchMethodException, InstantiationException,
+            IllegalAccessException, InvocationTargetException, ClassNotFoundException {
+        FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
+        String json = new JsonDataGenerator().processTPropertiesData(fep).toString();
+
+        // check instance is deserialized properly
+        // re-create the Properties from the json data of the json string
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonData = (ObjectNode) mapper.readTree(json);
+        jsonData.put(JsonSchemaConstants.DEFINITION_NAME_JSON_METADATA, "def1");
+        DefinitionRegistryService defRegServ = getRegistryWithDef1();
+
+        // Previous implementation with an empty name.
+        when(defRegServ.createProperties(Mockito.any(Definition.class), Mockito.eq("root")))
+                .thenReturn(new FullExampleProperties(""));
+        try {
+            JsonSchemaUtil.fromJsonNode(defRegServ, jsonData);
+            fail("should have thrown an exception");
+        } catch (IllegalArgumentException iae) {
+            // IllegalArgumentException happens in PropertiesDynamicMethodHelper.class in findMethod.
+        }
+
+        // If we set name, we won't have an exception here.
+        when(defRegServ.createProperties(Mockito.any(Definition.class), Mockito.eq("root")))
+                .thenReturn(new FullExampleProperties("root"));
+        try {
+            FullExampleProperties deserFep = (FullExampleProperties) JsonSchemaUtil.fromJsonNode(defRegServ, jsonData);
+            assertEquals("root", deserFep.getName());
+        } catch (IllegalArgumentException iae) {
+            fail("should not have thrown an exception here");
+        }
     }
 
 }

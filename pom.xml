@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.talend.daikon</groupId>
     <artifactId>daikon-parent</artifactId>
-    <version>0.20.0-SNAPSHOT</version>
+    <version>0.21.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Daikon - parent pom</name>
     <url>https://github.com/Talend/daikon</url>
@@ -31,6 +31,7 @@
         <module>daikon-multitenant</module>
         <module>daikon-tql</module>
         <module>daikon-audit</module>
+      <module>daikon-i18n</module>
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
@@ -223,6 +224,7 @@
 					<pushChanges>false</pushChanges>
 					<scmCommentPrefix xml:space="preserve">release: </scmCommentPrefix>
 					<tagNameFormat>daikon-@{project.version}</tagNameFormat>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
         </plugins>

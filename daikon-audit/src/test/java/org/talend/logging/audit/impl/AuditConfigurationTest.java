@@ -45,8 +45,10 @@ public class AuditConfigurationTest {
 
         AuditConfiguration.loadFromClasspath("/test.audit.properties");
 
+        List<String> commonsMdcFields = Arrays.asList("USER", "OPERATION", "RESOURCE", "RESULT");
+
         for (AuditConfiguration c : AuditConfiguration.values()) {
-            if (!c.getAlreadySet()) {
+            if (!c.getAlreadySet() && !commonsMdcFields.contains(c.name())) {
                 throw new IllegalStateException("Value for configuration option '" + c.toString() + "' is not set.");
             }
         }
