@@ -36,10 +36,12 @@ public class TalendRestRequestInterceptor implements ClientHttpRequestIntercepto
     }
 
     private void traceRequest(HttpRequest request, byte[] body) throws IOException {
-        LOGGER.trace("requestURI : " + request.getURI());
-        LOGGER.trace("requestMethod : " + request.getMethod());
-        LOGGER.trace("requestHeader : " + request.getHeaders());
-        LOGGER.trace("requestBody : " + getRequestBody(body));
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("requestURI=" + request.getURI());
+            LOGGER.trace("requestMethod=" + request.getMethod());
+            LOGGER.trace("requestHeader=" + request.getHeaders());
+            LOGGER.trace("requestBody=" + getRequestBody(body));
+        }
     }
 
     private String getRequestBody(byte[] body) throws UnsupportedEncodingException {

@@ -26,13 +26,15 @@ public class TalendFeignRequestInterceptor implements RequestInterceptor {
     }
 
     private void traceRequest(Request request, byte[] body) {
-        LOGGER.trace("requestURI : " + request.url());
-        LOGGER.trace("requestMethod : " + request.method());
-        LOGGER.trace("requestHeader : " + request.headers());
-        try {
-            LOGGER.trace("requestBody : " + getRequestBody(body));
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error(e.getMessage(), e);
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("requestURI=" + request.url());
+            LOGGER.trace("requestMethod=" + request.method());
+            LOGGER.trace("requestHeader=" + request.headers());
+            try {
+                LOGGER.trace("requestBody=" + getRequestBody(body));
+            } catch (UnsupportedEncodingException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
