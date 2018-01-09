@@ -1,6 +1,6 @@
 = Talend Request Interceptor
 
-Outbound rest call and kafka  logging for spring app
+Outbound rest call logging for spring app and incoming/outgoing kafka event logging.
 
 ==== Adding dependencies
 
