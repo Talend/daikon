@@ -34,7 +34,9 @@
       <module>daikon-i18n</module>
     </modules>
     <scm>
-        <connection>scm:git:https://github.com/Talend/daikon.git</connection>
+      <connection>scm:git:https://github.com/Talend/daikon.git</connection>
+      <developerConnection>scm:git:https://github.com/Talend/daikon.git</developerConnection>
+      <url>https://github.com/Talend/daikon</url>
       <tag>HEAD</tag>
   </scm>
     <repositories>

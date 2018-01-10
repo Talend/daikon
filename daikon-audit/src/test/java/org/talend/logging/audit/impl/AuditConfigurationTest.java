@@ -83,5 +83,6 @@ public class AuditConfigurationTest {
         assertEquals(Boolean.FALSE, AuditConfiguration.APPENDER_HTTP_ASYNC.getBoolean());
         assertEquals((Integer) 1000, AuditConfiguration.APPENDER_HTTP_CONNECT_TIMEOUT.getInteger());
         assertEquals((Integer) 50, AuditConfiguration.APPENDER_HTTP_READ_TIMEOUT.getInteger());
+        assertEquals("TEST", AuditConfiguration.ENCODING.getString());
     }
 }
