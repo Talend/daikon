@@ -19,7 +19,6 @@ public class KafkaBroker {
     // these are being set inside this class
     private BrokerConfig config;
 
-    private KafkaConfig kafkaConfig;
 
     public KafkaBroker(BrokerConfig config) {
 
@@ -36,7 +35,7 @@ public class KafkaBroker {
         //props.setProperty("num.partitions", String.valueOf(1));
         props.setProperty("delete.topic.enable", "true");
 
-        kafkaConfig = new KafkaConfig(props);
+        KafkaConfig kafkaConfig = new KafkaConfig(props);
         LOG.info("Instantiating Embedded broker with id {} at port {} ", config.getBrokerId(), config.getKafkaPort());
         this.kafka = new KafkaServerStartable(kafkaConfig);
         LOG.info("Starting Embedded kafka with id {} at port {} ", config.getBrokerId(), config.getKafkaPort());

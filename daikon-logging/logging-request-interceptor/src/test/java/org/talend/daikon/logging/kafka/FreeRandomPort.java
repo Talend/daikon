@@ -5,14 +5,14 @@ import java.net.ServerSocket;
 
 public final class FreeRandomPort {
 
-    public static int generateRandomPort() {
+    public static int generateRandomPort() throws Exception {
         ServerSocket s = null;
         try {
             // ServerSocket(0) results in availability of a free random port
             s = new ServerSocket(0);
             return s.getLocalPort();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new Exception();
         } finally {
             assert s != null;
             try {

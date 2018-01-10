@@ -40,8 +40,6 @@ public class RestTemplateRequestInterceptorTest {
 
     private ResponseErrorHandler errorHandler;
 
-    @SuppressWarnings("rawtypes")
-    private HttpMessageConverter converter;
 
     @Before
     public void setup() {
@@ -49,8 +47,9 @@ public class RestTemplateRequestInterceptorTest {
         request = mock(ClientHttpRequest.class);
         response = mock(ClientHttpResponse.class);
         errorHandler = mock(ResponseErrorHandler.class);
-        converter = mock(HttpMessageConverter.class);
-        restTemplate = new RestTemplate(Collections.singletonList(converter));
+        @SuppressWarnings("rawtypes")
+        HttpMessageConverter converter = mock(HttpMessageConverter.class);
+        restTemplate = new RestTemplate(singletonList(converter));
         restTemplate.setRequestFactory(requestFactory);
         restTemplate.setErrorHandler(errorHandler);
         restTemplate.setInterceptors(singletonList(new TalendRestRequestInterceptor()));

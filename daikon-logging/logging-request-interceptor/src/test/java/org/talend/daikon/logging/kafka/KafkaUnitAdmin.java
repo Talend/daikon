@@ -22,8 +22,6 @@ public class KafkaUnitAdmin {
 
     public static final int waitTime = 5000;
 
-    private ZkClient zkClient;
-
     private ZkUtils zkUtils;
 
     private static final ZkSerializer zkSerializer = new ZkSerializer() {
@@ -38,7 +36,7 @@ public class KafkaUnitAdmin {
     };
 
     public KafkaUnitAdmin(KafkaUnit unit) throws Exception {
-        zkClient = new ZkClient(unit.getConfig().getZkString(), sessionTimeout, waitTime, zkSerializer);
+        ZkClient zkClient = new ZkClient(unit.getConfig().getZkString(), sessionTimeout, waitTime, zkSerializer);
         zkUtils = new ZkUtils(zkClient, new ZkConnection(unit.getConfig().getZkString()), false);
     }
 
