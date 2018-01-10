@@ -31,7 +31,6 @@ public class KafkaUnit extends ExternalResource {
             try {
                 kafkaPorts[i] = FreeRandomPort.generateRandomPort();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -39,7 +38,6 @@ public class KafkaUnit extends ExternalResource {
         try {
             path = Files.createTempDirectory("kafka-").toAbsolutePath().toString();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
