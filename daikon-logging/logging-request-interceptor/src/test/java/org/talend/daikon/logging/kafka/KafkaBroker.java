@@ -19,7 +19,6 @@ public class KafkaBroker {
     // these are being set inside this class
     private BrokerConfig config;
 
-
     public KafkaBroker(BrokerConfig config) {
 
         this.config = config;

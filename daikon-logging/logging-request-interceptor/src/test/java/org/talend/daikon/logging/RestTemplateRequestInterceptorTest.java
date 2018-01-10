@@ -40,7 +40,6 @@ public class RestTemplateRequestInterceptorTest {
 
     private ResponseErrorHandler errorHandler;
 
-
     @Before
     public void setup() {
         requestFactory = mock(ClientHttpRequestFactory.class);
