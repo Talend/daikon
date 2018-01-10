@@ -49,7 +49,12 @@ public class EmbeddedZookeeper extends ExternalResource {
         private String zkstring;
 
         public EmbeddedZookeeperConfig() {
-            zookeperPort = FreeRandomPort.generateRandomPort();
+            try {
+                zookeperPort = FreeRandomPort.generateRandomPort();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             zkstring = InetAddress.getLoopbackAddress().getHostAddress() + ":" + zookeperPort;
         }
 

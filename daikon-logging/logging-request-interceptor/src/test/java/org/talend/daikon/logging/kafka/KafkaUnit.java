@@ -28,7 +28,12 @@ public class KafkaUnit extends ExternalResource {
         kafkaPorts = new Integer[clusterSize];
 
         for (int i = 0; i < clusterSize; i++) {
-            kafkaPorts[i] = FreeRandomPort.generateRandomPort();
+            try {
+                kafkaPorts[i] = FreeRandomPort.generateRandomPort();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
         try {
