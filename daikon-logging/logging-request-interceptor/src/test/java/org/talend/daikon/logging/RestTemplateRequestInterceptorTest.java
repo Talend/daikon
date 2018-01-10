@@ -23,7 +23,6 @@ import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
 
 import java.net.URI;
-import java.util.Collections;
 
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
