@@ -30,6 +30,10 @@ public class HttpHeadersMDCValve extends ValveBase {
             Utils.fillMDC(request, replaceRemoteAddrWithForwardedFor);
         }
 
-        getNext().invoke(request, response);
+        try {
+            getNext().invoke(request, response);
+        } finally {
+            Utils.cleanMDC();
+        }
     }
 }

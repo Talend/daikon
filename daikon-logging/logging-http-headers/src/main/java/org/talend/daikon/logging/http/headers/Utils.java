@@ -32,6 +32,14 @@ class Utils {
         putInMDCIfNotNull(HttpHeadersMDC.HTTP_FORWARDED_FOR, toString(request.getHeaders(X_FORWARDED_FOR)));
     }
 
+    static void cleanMDC() {
+        MDC.remove(HttpHeadersMDC.HTTP_REMOTE_ADDR);
+        MDC.remove(HttpHeadersMDC.HTTP_REMOTE_PORT);
+        MDC.remove(HttpHeadersMDC.HTTP_REMOTE_USER);
+        MDC.remove(HttpHeadersMDC.HTTP_USER_AGENT);
+        MDC.remove(HttpHeadersMDC.HTTP_FORWARDED_FOR);
+    }
+
     static void putInMDCIfNotNull(String key, Object value) {
         if (value != null) {
             MDC.put(key, value.toString());

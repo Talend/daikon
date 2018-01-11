@@ -48,7 +48,11 @@ public class HttpHeadersMDCFilter implements Filter {
             LOG.debug("Unsupported request type {}", request.getClass().getName());
         }
 
-        chain.doFilter(request, response);
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            Utils.cleanMDC();
+        }
     }
 
     @Override
