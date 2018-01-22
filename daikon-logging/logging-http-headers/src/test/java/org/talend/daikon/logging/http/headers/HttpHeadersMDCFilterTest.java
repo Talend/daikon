@@ -1,28 +1,16 @@
 package org.talend.daikon.logging.http.headers;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
-
-import javax.servlet.FilterConfig;
-import java.net.InetSocketAddress;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  *
@@ -31,7 +19,7 @@ import java.util.UUID;
 @SpringBootTest(classes = { HttpHeadersMDCFilterTest.TestApp.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class HttpHeadersMDCFilterTest extends AbstractHttpHeadersMDCTest {
 
-    private static HttpHeadersMDCFilter THE_FILTER = new HttpHeadersMDCFilter();
+    private static HttpHeadersMDCFilter THE_FILTER;
 
     @Test
     @Override
@@ -65,14 +53,25 @@ public class HttpHeadersMDCFilterTest extends AbstractHttpHeadersMDCTest {
     static class TestApp {
 
         @Bean
-        public FilterRegistrationBean filterRegistrationBean() {
-            FilterRegistrationBean answer = new FilterRegistrationBean();
+        BeanPostProcessor filterPostProcessor() {
+            return new BeanPostProcessor() {
 
-            answer.setFilter(THE_FILTER);
-            answer.setOrder(SecurityProperties.DEFAULT_FILTER_ORDER + 1);
+                @Override
+                public Object postProcessBeforeInitialization(Object o, String s) throws BeansException {
+                    if (o instanceof FilterRegistrationBean) {
+                        FilterRegistrationBean frb = (FilterRegistrationBean) o;
+                        if (frb.getFilter() instanceof HttpHeadersMDCFilter) {
+                            THE_FILTER = (HttpHeadersMDCFilter) frb.getFilter();
+                        }
+                    }
+                    return o;
+                }
 
-            return answer;
+                @Override
+                public Object postProcessAfterInitialization(Object o, String s) throws BeansException {
+                    return o;
+                }
+            };
         }
-
     }
 }

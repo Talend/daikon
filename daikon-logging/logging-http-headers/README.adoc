@@ -2,7 +2,7 @@
 
 This library provides a servlet filter and a tomcat valve which populate slf4j MDC with data from HTTP request.
 Both filter and valve have the same functionality, and provided together for better flexibility (some apps will prefer
-the filter, while the other will prefer the valve).
+the filter, while the other will prefer the valve). Generally speaking, filter should be preferred over valve.
 
 The next fields are populated:
 
@@ -56,14 +56,10 @@ NOTE: This approach is not recommended, as there may be class-loading issues wit
            replaceRemoteAddrWithForwardedFor="false" />
 ----
 
-=== Spring Boot
+=== Filter with Spring Boot
 
-With spring boot it's possible to register filter or valve programmatically. For this it's necessary
-to define corresponding bean (see below) in a spring configuration class.
-
-==== Filter
-
-To define the filter dynamically:
+With spring boot it's possible to register filter programmatically. For this it's necessary
+to define corresponding bean (see below) in a spring configuration class:
 
 [source,java]
 ----
@@ -78,27 +74,6 @@ To define the filter dynamically:
         regBean.setOrder(SecurityProperties.DEFAULT_FILTER_ORDER + 1);
 
         return regBean;
-    }
-----
-
-==== Valve
-
-To define the valve dynamically:
-
-[source,java]
-----
-    @Bean
-    public EmbeddedServletContainerCustomizer tomcatContextCustomizer() {
-        HttpHeadersMDCValve valv = new HttpHeadersMDCValve();
-        valv.setReplaceRemoteAddrWithForwardedFor(false);
-
-        return (x -> {
-            if (x instanceof TomcatEmbeddedServletContainerFactory) {
-                ((TomcatEmbeddedServletContainerFactory) x).addContextCustomizers(y -> {
-                    y.getPipeline().addValve(valv);
-                });
-            }
-        });
     }
 ----
 

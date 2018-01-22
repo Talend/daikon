@@ -1,11 +1,12 @@
 package org.talend.daikon.logging.http.headers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,7 +44,13 @@ public class HttpHeadersMDCFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         if (request instanceof HttpServletRequest) {
-            Utils.fillMDC((HttpServletRequest) request, replaceRemoteAddrWithForwardedFor);
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+            MDCUtils.fillMDC(httpRequest, replaceRemoteAddrWithForwardedFor);
+
+            if (ClassUtils.isSpringAvailable()) {
+                SpringUtils.setAsyncMDCInterceptor(httpRequest, replaceRemoteAddrWithForwardedFor);
+            }
         } else {
             LOG.debug("Unsupported request type {}", request.getClass().getName());
         }
@@ -51,7 +58,7 @@ public class HttpHeadersMDCFilter implements Filter {
         try {
             chain.doFilter(request, response);
         } finally {
-            Utils.cleanMDC();
+            MDCUtils.cleanMDC();
         }
     }
 

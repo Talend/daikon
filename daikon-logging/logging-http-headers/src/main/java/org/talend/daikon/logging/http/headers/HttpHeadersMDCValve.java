@@ -19,6 +19,10 @@ public class HttpHeadersMDCValve extends ValveBase {
     /** If <code>true</code> the remote address MDC value will be filled with X-Forwarded-For value (if available) */
     private boolean replaceRemoteAddrWithForwardedFor;
 
+    public HttpHeadersMDCValve() {
+        super(true);
+    }
+
     public void setReplaceRemoteAddrWithForwardedFor(boolean replaceRemoteAddrWithForwardedFor) {
         this.replaceRemoteAddrWithForwardedFor = replaceRemoteAddrWithForwardedFor;
         LOG.debug("Setting replaceRemoteAddrWithForwardedFor to {}", replaceRemoteAddrWithForwardedFor);
@@ -27,13 +31,17 @@ public class HttpHeadersMDCValve extends ValveBase {
     @Override
     public void invoke(Request request, Response response) throws IOException, ServletException {
         if (request != null) {
-            Utils.fillMDC(request, replaceRemoteAddrWithForwardedFor);
+            MDCUtils.fillMDC(request, replaceRemoteAddrWithForwardedFor);
+
+            if (ClassUtils.isSpringAvailable()) {
+                SpringUtils.setAsyncMDCInterceptor(request, replaceRemoteAddrWithForwardedFor);
+            }
         }
 
         try {
             getNext().invoke(request, response);
         } finally {
-            Utils.cleanMDC();
+            MDCUtils.cleanMDC();
         }
     }
 }

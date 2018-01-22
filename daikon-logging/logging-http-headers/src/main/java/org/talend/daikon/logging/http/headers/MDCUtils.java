@@ -1,22 +1,23 @@
 package org.talend.daikon.logging.http.headers;
 
-import org.slf4j.MDC;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.MDC;
+
 /**
  *
  */
-class Utils {
+class MDCUtils {
 
     private static final String USER_AGENT = "User-Agent";
 
     private static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
-    private Utils() {
+    private MDCUtils() {
     }
 
     static void fillMDC(HttpServletRequest request, boolean replaceRemoteAddrWithForwardedFor) {
@@ -40,13 +41,13 @@ class Utils {
         MDC.remove(HttpHeadersMDC.HTTP_FORWARDED_FOR);
     }
 
-    static void putInMDCIfNotNull(String key, Object value) {
+    private static void putInMDCIfNotNull(String key, Object value) {
         if (value != null) {
             MDC.put(key, value.toString());
         }
     }
 
-    static String toString(Enumeration<String> enumr) {
+    private static String toString(Enumeration<String> enumr) {
         List<String> list = Collections.list(enumr);
         if (list.isEmpty()) {
             return null;

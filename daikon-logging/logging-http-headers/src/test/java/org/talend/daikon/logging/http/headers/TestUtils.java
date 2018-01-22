@@ -16,6 +16,10 @@ public class TestUtils {
     }
 
     public static String makeRequest(int port, String id, String forwardedFor) {
+        return makeRequest(HttpMethod.GET, port, id, forwardedFor);
+    }
+
+    public static String makeRequest(HttpMethod method, int port, String id, String forwardedFor) {
         final RestOperations client = new RestTemplate();
         final HttpHeaders headers = new HttpHeaders();
 
@@ -23,8 +27,7 @@ public class TestUtils {
 
         final HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> response = client.exchange("http://127.0.0.1:" + port + "/" + id, HttpMethod.GET, entity,
-                String.class);
+        ResponseEntity<String> response = client.exchange("http://127.0.0.1:" + port + "/" + id, method, entity, String.class);
 
         return response.getBody();
     }
