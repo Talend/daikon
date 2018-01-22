@@ -18,20 +18,6 @@ public class HttpHeadersMDCValveTest extends AbstractHttpHeadersMDCTest {
 
     private static final HttpHeadersMDCValve THE_VALVE = new HttpHeadersMDCValve();
 
-    @Test
-    @Override
-    public void testFilter() throws Exception {
-        THE_VALVE.setReplaceRemoteAddrWithForwardedFor(false);
-        super.testFilter();
-    }
-
-    @Test
-    @Override
-    public void testFilterReplace() throws Exception {
-        THE_VALVE.setReplaceRemoteAddrWithForwardedFor(true);
-        super.testFilterReplace();
-    }
-
     @Override
     protected void setReplaceRemoteAddrWithForwardedFor(boolean replaceRemoteAddrWithForwardedFor) {
         THE_VALVE.setReplaceRemoteAddrWithForwardedFor(replaceRemoteAddrWithForwardedFor);
