@@ -64,5 +64,6 @@ public class HttpHeadersMDCFilter implements Filter {
 
     @Override
     public void destroy() {
+        // nothing to do here
     }
 }

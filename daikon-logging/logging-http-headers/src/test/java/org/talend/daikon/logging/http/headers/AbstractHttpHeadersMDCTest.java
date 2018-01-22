@@ -17,6 +17,8 @@ public abstract class AbstractHttpHeadersMDCTest {
     int httpPort;
 
     public void testFilter() throws Exception {
+        setReplaceRemoteAddrWithForwardedFor(false);
+
         final String testId = UUID.randomUUID().toString();
         final String forwardedFor = "137.137.137.137";
 
@@ -45,6 +47,8 @@ public abstract class AbstractHttpHeadersMDCTest {
     }
 
     public void testFilterReplace() throws Exception {
+        setReplaceRemoteAddrWithForwardedFor(true);
+
         final String testId = UUID.randomUUID().toString();
         final String forwardedFor = "137.137.137.137";
 
@@ -100,4 +104,6 @@ public abstract class AbstractHttpHeadersMDCTest {
 
         Assert.assertNotNull(mdc.get(HttpHeadersMDC.HTTP_USER_AGENT));
     }
+
+    protected abstract void setReplaceRemoteAddrWithForwardedFor(boolean replaceRemoteAddrWithForwardedFor);
 }

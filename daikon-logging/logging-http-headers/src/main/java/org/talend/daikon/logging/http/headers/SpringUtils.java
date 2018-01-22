@@ -3,7 +3,6 @@ package org.talend.daikon.logging.http.headers;
 import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.async.CallableProcessingInterceptorAdapter;

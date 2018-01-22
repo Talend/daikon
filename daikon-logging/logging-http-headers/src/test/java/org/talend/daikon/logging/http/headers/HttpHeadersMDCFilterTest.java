@@ -21,18 +21,9 @@ public class HttpHeadersMDCFilterTest extends AbstractHttpHeadersMDCTest {
 
     private static HttpHeadersMDCFilter THE_FILTER;
 
-    @Test
     @Override
-    public void testFilter() throws Exception {
-        THE_FILTER.setReplaceRemoteAddrWithForwardedFor(false);
-        super.testFilter();
-    }
-
-    @Test
-    @Override
-    public void testFilterReplace() throws Exception {
-        THE_FILTER.setReplaceRemoteAddrWithForwardedFor(true);
-        super.testFilterReplace();
+    protected void setReplaceRemoteAddrWithForwardedFor(boolean replaceRemoteAddrWithForwardedFor) {
+        THE_FILTER.setReplaceRemoteAddrWithForwardedFor(replaceRemoteAddrWithForwardedFor);
     }
 
     @Test

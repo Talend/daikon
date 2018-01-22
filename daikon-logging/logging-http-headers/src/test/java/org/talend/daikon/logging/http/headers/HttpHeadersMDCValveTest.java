@@ -32,6 +32,11 @@ public class HttpHeadersMDCValveTest extends AbstractHttpHeadersMDCTest {
         super.testFilterReplace();
     }
 
+    @Override
+    protected void setReplaceRemoteAddrWithForwardedFor(boolean replaceRemoteAddrWithForwardedFor) {
+        THE_VALVE.setReplaceRemoteAddrWithForwardedFor(replaceRemoteAddrWithForwardedFor);
+    }
+
     @SpringBootApplication(exclude = HttpHeadersMDCSpringConfig.class)
     static class TestApp {
 
