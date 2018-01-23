@@ -159,6 +159,13 @@ public class PropertiesListTest {
         Assert.assertEquals(propertiesList.getMaxItems(), "20");
     }
 
+    @Test
+    public void testi18N() {
+        TestPropertiesList.TestComponentProperties tpl = (TestPropertiesList.TestComponentProperties) new TestPropertiesList.TestComponentProperties(
+                "foo").init();
+        Assert.assertEquals(tpl.filters.getDisplayName(), "Filters");
+    }
+
     private PropertiesList<TestProperties> createPropertiesList() {
         PropertiesList<TestProperties> propertiesList = new PropertiesList<>("propertiesList",
                 new PropertiesList.NestedPropertiesFactory<TestProperties>() {
