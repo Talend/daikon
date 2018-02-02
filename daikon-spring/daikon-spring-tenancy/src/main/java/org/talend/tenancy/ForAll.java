@@ -12,7 +12,7 @@ public interface ForAll {
      *
      * @param runnable The {@link Runnable} to execute.
      */
-    void execute(final Supplier<Boolean> condition, Runnable runnable);
+    After execute(final Supplier<Boolean> condition, Runnable runnable);
 
     /**
      * @return A {@link ForAllConditionBuilder builder} for building conditions to {@link #execute(Supplier, Runnable)}.
@@ -24,8 +24,8 @@ public interface ForAll {
      *
      * @param runnable The {@link Runnable} to execute.
      */
-    default void execute(Runnable runnable) {
-        execute(() -> true, runnable);
+    default After execute(Runnable runnable) {
+        return execute(() -> true, runnable);
     }
 
     /**
@@ -44,6 +44,17 @@ public interface ForAll {
          */
         Supplier<Boolean> operational(Object bean);
 
+    }
+
+    interface After {
+
+        /**
+         *
+         * @param runnable
+         */
+        After after(Runnable runnable);
+
+        void run();
     }
 
 }
