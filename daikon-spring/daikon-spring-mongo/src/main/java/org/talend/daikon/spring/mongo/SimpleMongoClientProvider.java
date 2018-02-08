@@ -39,7 +39,7 @@ public class SimpleMongoClientProvider implements MongoClientProvider {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close(TenantInformationProvider provider) {
         for (Map.Entry<MongoClientURI, MongoClient> entry : clients.entrySet()) {
             entry.getValue().close();
         }
