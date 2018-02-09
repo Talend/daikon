@@ -19,5 +19,11 @@ public class RuntimeUtilTest {
         URL badurl = new URL(url, "foo");
         assertEquals("org/art/1.2", badurl.getPath());
     }
+    
+    @Test
+    public void testRegisterMavenUrlFactory() throws Exception {
+        RuntimeUtil.registerMavenUrlFactory();
+        RuntimeUtil.registerMavenUrlFactory();
+    }
 
 }
