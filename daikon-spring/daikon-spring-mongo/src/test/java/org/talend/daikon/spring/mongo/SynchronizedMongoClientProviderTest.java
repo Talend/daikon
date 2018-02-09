@@ -64,4 +64,19 @@ public class SynchronizedMongoClientProviderTest {
         verify(mongoClientProvider, times(2)).close(any());
     }
 
+    @Test
+    public void shouldCloseInCaseOfMissingConfiguration() {
+        // given
+        final MongoClientProvider mongoClientProvider = mock(MongoClientProvider.class);
+        SynchronizedMongoClientProvider provider = new SynchronizedMongoClientProvider(mongoClientProvider);
+        final TenantInformationProvider tenantInformationProvider1 = mock(TenantInformationProvider.class);
+        when(tenantInformationProvider1.getDatabaseURI()).thenThrow(new RuntimeException("On purpose thrown exception"));
+
+        // when
+        provider.close(tenantInformationProvider1);
+
+        // then
+        verify(mongoClientProvider, times(1)).close(any());
+    }
+
 }
