@@ -46,7 +46,7 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
             LOGGER.debug("Unable to obtain database URI (configuration might be missing for tenant).", e);
         }
         if (openCount <= 0) {
-            delegate.close(tenantInformationProvider);
+            delegate.get(tenantInformationProvider).close();
         } else {
             LOGGER.trace("Not closing mongo clients ({} remain in use for database '{}')", openCount, databaseURI == null ? "N/A" : databaseURI);
         }
