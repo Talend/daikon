@@ -78,6 +78,44 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
     }
 
     @Test
+    public void checkColumnProperties() throws Exception {
+        ColumnProperties properties = new ColumnProperties("columnProperties");
+        properties.init();
+        UiSchemaGenerator generator = new UiSchemaGenerator();
+        ObjectNode uiSchemaJsonObj = generator.genWidget(properties, Form.MAIN);
+
+        ObjectNode filtersNode = (ObjectNode) uiSchemaJsonObj.get("filters");
+
+        ObjectNode itemsNode = (ObjectNode) filtersNode.get("items");
+        assertEquals("\"columns\"", itemsNode.get("ui:widget").toString());
+        assertEquals("[\"columnName\",\"function\",\"operator\",\"value\"]", itemsNode.get("ui:order").toString());
+        assertEquals("{\"type\":\"filter\"}", itemsNode.get("ui:options").toString());
+
+        ObjectNode columnNameNode = (ObjectNode) itemsNode.get("columnName");
+        assertEquals("\"datalist\"", columnNameNode.get("ui:widget").toString());
+
+    }
+
+    @Test
+    public void checkUncollapsageNestedProperties() throws Exception {
+        UncollapsageNestedProperties properties = new UncollapsageNestedProperties("uncollapsageNestedProperties");
+        properties.init();
+        UiSchemaGenerator generator = new UiSchemaGenerator();
+        ObjectNode uiSchemaJsonObj = generator.genWidget(properties, Form.MAIN);
+
+        ObjectNode filtersNode = (ObjectNode) uiSchemaJsonObj.get("filters");
+
+        ObjectNode itemsNode = (ObjectNode) filtersNode.get("items");
+        assertEquals("\"\"", itemsNode.get("ui:field").toString());
+        assertEquals("[\"columnName\",\"function\",\"operator\",\"value\"]", itemsNode.get("ui:order").toString());
+        assertEquals("{\"type\":\"filter\"}", itemsNode.get("ui:options").toString());
+
+        ObjectNode columnNameNode = (ObjectNode) itemsNode.get("columnName");
+        assertEquals("\"datalist\"", columnNameNode.get("ui:widget").toString());
+
+    }
+
+    @Test
     public void testDoubleUiOrderElementIssue() throws Exception {
         AProperties aProperties = new AProperties("foo");
         aProperties.init();
@@ -93,7 +131,6 @@ public class UiSchemaGeneratorTest extends AbstractSchemaGenerator {
         aProperties.init();
         UiSchemaGenerator generator = new UiSchemaGenerator();
         ObjectNode uiSchemaJsonObj = generator.genWidget(aProperties, "MyForm");
-        System.out.println(uiSchemaJsonObj.toString());
         String expectedPartial = "{\"np\":{\"myNestedStr\":{\"ui:widget\":\"textarea\"}},\"np4\":{\"ui:widget\":\"hidden\"},"
                 + "\"np5\":{\"ui:widget\":\"hidden\"},\"np2\":{\"ui:widget\":\"hidden\"},\"np3\":{\"ui:widget\":\"hidden\"}}";
         assertEquals(expectedPartial, uiSchemaJsonObj.toString(), false);
