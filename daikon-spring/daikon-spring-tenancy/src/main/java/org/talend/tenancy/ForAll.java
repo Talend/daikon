@@ -11,6 +11,7 @@ public interface ForAll {
      * Execute the provided <code>runnable</code> for all tenants.
      *
      * @param runnable The {@link Runnable} to execute.
+     * @param condition A {@link Supplier} to execute to decide whether to execute <code>runnable</code> or not.
      */
     void execute(final Supplier<Boolean> condition, Runnable runnable);
 

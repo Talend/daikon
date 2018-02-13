@@ -13,6 +13,7 @@
 package org.talend.daikon.runtime;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -82,18 +83,41 @@ public class RuntimeUtil {
                 System.setProperty("org.ops4j.pax.url.mvn.localRepository", mvnLocalRepo);
             }
 
-            // If the URL above failed, the mvn protocol needs to be installed.
-            URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
+            registerMavenUrlFactory();
+        }
+    }
 
-                @Override
-                public URLStreamHandler createURLStreamHandler(String protocol) {
-                    if (ServiceConstants.PROTOCOL.equals(protocol)) {
-                        return new MavenUrlStreamHandler();
-                    } else {
-                        return null;
-                    }
+    protected static void registerMavenUrlFactory() {
+        // If the URL above failed, the mvn protocol needs to be installed.
+        // not advice create a wrap URLStreamHandlerFactory class now
+        try {
+            final Field factoryField = URL.class.getDeclaredField("factory");
+            factoryField.setAccessible(true);
+            final Field lockField = URL.class.getDeclaredField("streamHandlerLock");
+            lockField.setAccessible(true);
+
+            synchronized (lockField.get(null)) {
+                final URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);
+                // avoid the factory already defined error
+                if (factory != null) {
+                    return;
                 }
-            });
+
+                URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
+
+                    @Override
+                    public URLStreamHandler createURLStreamHandler(String protocol) {
+                        if (ServiceConstants.PROTOCOL.equals(protocol)) {
+                            return new MavenUrlStreamHandler();
+                        } else {
+                            return null;
+                        }
+                    }
+
+                });
+            }
+        } catch (Exception exception) {
+            LOG.warn(exception.getMessage());
         }
     }
 
