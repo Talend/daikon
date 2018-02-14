@@ -64,8 +64,8 @@ class MultiTenancyMongoDbFactory implements MongoDbFactory, DisposableBean {
     }
 
     @Override
-    public void destroy() throws Exception {
-        mongoClientProvider.close();
+    public void destroy() {
+        mongoClientProvider.close(tenantProvider);
     }
 
 }

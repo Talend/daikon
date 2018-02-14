@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class RuntimeUtilTest {
@@ -18,6 +19,16 @@ public class RuntimeUtilTest {
         // check that foo is not parsed at all
         URL badurl = new URL(url, "foo");
         assertEquals("org/art/1.2", badurl.getPath());
+    }
+
+    @Test
+    public void testRegisterMavenUrlFactory() {
+        try {
+            RuntimeUtil.registerMavenUrlFactory();
+            RuntimeUtil.registerMavenUrlFactory();
+        } catch (Error err) {
+            Assert.fail(err.getMessage());
+        }
     }
 
 }

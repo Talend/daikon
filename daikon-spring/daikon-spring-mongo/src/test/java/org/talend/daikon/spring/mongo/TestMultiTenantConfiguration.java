@@ -87,7 +87,7 @@ public class TestMultiTenantConfiguration {
             }
 
             @Override
-            public void close() throws IOException {
+            public void close(TenantInformationProvider provider) {
                 for (Map.Entry<String, Fongo> entry : fongoInstances.entrySet()) {
                     entry.getValue().getMongo().close();
                 }

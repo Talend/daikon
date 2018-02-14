@@ -37,8 +37,6 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     private String customUserFields;
 
-    private JSONObject logstashEvent;
-
     protected Log4j2JSONLayout(final Boolean locationInfo, final Charset charset,
             final Map<String, String> additionalLogAttributes) {
         super(charset);
@@ -93,7 +91,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
      */
     @Override
     public String toSerializable(final LogEvent loggingEvent) {
-        logstashEvent = new JSONObject();
+        JSONObject logstashEvent = new JSONObject();
         JSONObject userFieldsEvent = new JSONObject();
         HostData host = new HostData();
         Map<String, String> mdc = loggingEvent.getContextData().toMap();
@@ -106,19 +104,22 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         /**
          * Now we start injecting our own stuff.
          */
-        addEventData(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
-        addEventData(LayoutFields.TIME_STAMP, LayoutUtils.dateFormat(loggingEvent.getTimeMillis()));
-        addEventData(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
-        addEventData(LayoutFields.THREAD_NAME, loggingEvent.getThreadName());
-        addEventData(LayoutFields.AGENT_TIME_STAMP, LayoutUtils.dateFormat(new Date().getTime()));
-        addEventData(LayoutFields.LOG_MESSAGE, loggingEvent.getMessage().getFormattedMessage());
-        handleThrown(loggingEvent);
+        logstashEvent.put(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
+        logstashEvent.put(LayoutFields.TIME_STAMP, LayoutUtils.dateFormat(loggingEvent.getTimeMillis()));
+        logstashEvent.put(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
+        logstashEvent.put(LayoutFields.THREAD_NAME, loggingEvent.getThreadName());
+        logstashEvent.put(LayoutFields.AGENT_TIME_STAMP, LayoutUtils.dateFormat(new Date().getTime()));
+        final String formattedMessage = loggingEvent.getMessage().getFormattedMessage();
+        if (formattedMessage != null) {
+            logstashEvent.put(LayoutFields.LOG_MESSAGE, formattedMessage);
+        }
+        handleThrown(logstashEvent, loggingEvent);
         JSONObject logSourceEvent = createLogSourceEvent(loggingEvent, host);
-        addEventData(LayoutFields.LOG_SOURCE, logSourceEvent);
+        logstashEvent.put(LayoutFields.LOG_SOURCE, logSourceEvent);
         LayoutUtils.addMDC(mdc, userFieldsEvent, logstashEvent);
 
         if (!userFieldsEvent.isEmpty()) {
-            addEventData(LayoutFields.CUSTOM_INFO, userFieldsEvent);
+            logstashEvent.put(LayoutFields.CUSTOM_INFO, userFieldsEvent);
         }
 
         return logstashEvent.toString() + "\n";
@@ -148,12 +149,6 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     public void setUserFields(String userFields) {
         this.customUserFields = userFields;
-    }
-
-    private void addEventData(String keyname, Object keyval) {
-        if (null != keyval) {
-            logstashEvent.put(keyname, keyval);
-        }
     }
 
     private static Map<String, String> unpackPairs(final KeyValuePair[] pairs) {
@@ -194,27 +189,27 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         return logSourceEvent;
     }
 
-    private void handleThrown(final LogEvent loggingEvent) {
+    private void handleThrown(final JSONObject logstashEvent, final LogEvent loggingEvent) {
         if (loggingEvent.getThrown() != null) {
             if (loggingEvent.getThrown().getClass() != null && loggingEvent.getThrown().getClass().getCanonicalName() != null) {
-                addEventData(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrown().getClass().getCanonicalName());
+                logstashEvent.put(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrown().getClass().getCanonicalName());
             }
 
             if (loggingEvent.getThrown().getMessage() != null) {
-                addEventData(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrown().getMessage());
+                logstashEvent.put(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrown().getMessage());
             }
-            createStackTraceEvent(loggingEvent);
+            createStackTraceEvent(logstashEvent, loggingEvent);
         }
     }
 
-    private void createStackTraceEvent(final LogEvent loggingEvent) {
+    private void createStackTraceEvent(final JSONObject logstashEvent, final LogEvent loggingEvent) {
         if (loggingEvent.getThrown().getStackTrace() != null) {
             final String[] options = { "full" };
             final ThrowablePatternConverter converter = ThrowablePatternConverter.newInstance(options);
             final StringBuilder sb = new StringBuilder();
             converter.format(loggingEvent, sb);
             final String stackTrace = sb.toString();
-            addEventData(LayoutFields.STACK_TRACE, stackTrace);
+            logstashEvent.put(LayoutFields.STACK_TRACE, stackTrace);
         }
     }
 

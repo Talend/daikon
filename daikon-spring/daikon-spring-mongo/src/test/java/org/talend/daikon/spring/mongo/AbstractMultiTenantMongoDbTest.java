@@ -25,8 +25,11 @@ public abstract class AbstractMultiTenantMongoDbTest {
     @Autowired
     private MongoClientProvider mongoClientProvider;
 
+    @Autowired
+    private TenantInformationProvider tenantInformationProvider;
+
     @Before
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // Drop all created databases during test
         final List<String> databases = fongo.getDatabaseNames();
         for (String database : databases) {
@@ -35,6 +38,6 @@ public abstract class AbstractMultiTenantMongoDbTest {
         // Switch back to default tenant
         changeTenant("default");
         // Clean up mongo clients
-        mongoClientProvider.close();
+        mongoClientProvider.close(tenantInformationProvider);
     }
 }
