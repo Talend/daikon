@@ -1,7 +1,6 @@
 package org.talend.daikon.logging.kafka;
 
 import kafka.admin.AdminUtils;
-// import kafka.admin.RackAwareMode;
 import kafka.utils.ZKStringSerializer;
 import kafka.utils.ZkUtils;
 import org.I0Itec.zkclient.ZkClient;
@@ -10,6 +9,8 @@ import org.I0Itec.zkclient.exception.ZkMarshallingError;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
 
 import java.util.Properties;
+
+// import kafka.admin.RackAwareMode;
 
 /**
  * Created by kunalgautam on 17.02.17.

@@ -70,7 +70,6 @@ public class RestTemplateRequestInterceptorTest {
         HttpEntity<Void> entity = new HttpEntity<>(null, entityHeaders);
         restTemplate.exchange("http://localhost:8080", HttpMethod.POST, entity, Void.class);
         assertThat(requestHeaders.get("MyHeader"), contains("MyEntityValue"));
-
         verify(response).close();
     }
 

@@ -20,6 +20,7 @@
     <modules>
         <module>logging-event-layout</module>
 		<module>logging-request-interceptor</module>
+		<module>logging-kafka-interceptor</module>
         <module>logging-spring-security</module>
     </modules>
 </project>
