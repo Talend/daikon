@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Helper class that provides utility methods for validation of identifiers according to Java naming conventions.
  */
-public class JavaNamesValidationHelper {
+public class AvroNamesValidationHelper {
 
     private static final Set<String> JAVA_KEYWORDS = new HashSet<String>(Arrays.asList("abstract", "continue", "for", "new",
             "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break",
@@ -16,7 +16,22 @@ public class JavaNamesValidationHelper {
             "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface",
             "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"));
 
-    private static final String CONTEXT_AND_VARIABLE_PATTERN = "^[a-zA-Z_][a-zA-Z_0-9]*$";
+    private static final Pattern CONTEXT_AND_VARIABLE_PATTERN = Pattern.compile("^[a-zA-Z_][a-zA-Z_0-9]*$");
+
+    /**
+     * Checks whether specified name is a valid identifier according to Java conventions,
+     * if specified name is invalid - generates a new name value that can be used in Avro schema.
+     *
+     * @param name identifier to validate
+     * @return valid name that can be used in Avro schema
+     */
+    public static String getAvroCompatibleName(String name) {
+        if (isValidParameterName(name)) {
+            return name;
+        } else {
+            return "_" + name;
+        }
+    }
 
     /**
      * Checks whether specified name is a valid identifier according to Java conventions.
@@ -25,17 +40,14 @@ public class JavaNamesValidationHelper {
      * @return true, if name is a valid Java identifier
      */
     public static boolean isValidParameterName(String name) {
-        if (name != null) {
-            if (isJavaKeyWord(name)) {
-                return false;
-            }
-            return Pattern.matches(CONTEXT_AND_VARIABLE_PATTERN, name);
+        if (name == null || isJavaKeyWord(name)) {
+            return false;
         }
-        return false;
+        return CONTEXT_AND_VARIABLE_PATTERN.matcher(name).matches();
     }
 
     /**
-     * Checks whether specified name is a Java keyword
+     * Checks whether specified name is a Java keyword.
      *
      * @param name identifier to validate
      * @return true, if name is a Java keyword
