@@ -37,17 +37,17 @@ public class TalendKafkaConsumerInterceptor implements ConsumerInterceptor<Objec
     }
 
     @Override
-    public void close() {
-
+    public void onCommit(Map<TopicPartition, OffsetAndMetadata> offsets) {
+        //TODO
     }
 
     @Override
-    public void onCommit(Map<TopicPartition, OffsetAndMetadata> arg0) {
-
+    public void close() {
+        //TODO
     }
 
     @Override
     public void configure(Map<String, ?> arg0) {
-
+        //TODO
     }
 }

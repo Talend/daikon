@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.kafka.clients.producer.ProducerInterceptor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.internals.ProducerInterceptors;
-import org.apache.kafka.common.TopicPartition;
 import org.junit.Test;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
@@ -15,20 +14,14 @@ import static org.junit.Assert.assertEquals;
 
 public class ProducerInterceptorsTest {
 
-    private final TopicPartition tp = new TopicPartition("test", 0);
-
-    String ip = "192.168.50.130";
-
-    String msg = "kafka_message," + ip;
-
-    Message<String> message = MessageBuilder.withPayload(msg).setHeader(KafkaHeaders.MESSAGE_KEY, "key").build();
-
-    private final ProducerRecord<Object, Object> producerRecord = new ProducerRecord<>("test", 0, 1, message);
-
-    private int onSendCount = 0;
-
     @Test
     public void testOnSend() {
+
+        String ip = "192.168.50.130";
+        String msg = "kafka_message," + ip;
+        Message<String> message = MessageBuilder.withPayload(msg).setHeader(KafkaHeaders.MESSAGE_KEY, "key").build();
+        ProducerRecord<Object, Object> producerRecord = new ProducerRecord<>("test", 0, 1, message);
+
         List<ProducerInterceptor<Object, Object>> interceptorList = new ArrayList<>();
         TalendKafkaProducerInterceptor interceptor = new TalendKafkaProducerInterceptor();
         interceptorList.add(interceptor);
