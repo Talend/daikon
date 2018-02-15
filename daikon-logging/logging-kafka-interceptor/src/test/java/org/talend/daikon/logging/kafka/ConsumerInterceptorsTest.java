@@ -11,7 +11,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.talend.daikon.logging.TalendKafkaConsumerInterceptor;
-import org.talend.schema.model.KafkaMessageKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +37,11 @@ public class ConsumerInterceptorsTest {
 
     private final TopicPartition filterTopicPart2 = new TopicPartition("test6", filterPartition2);
 
-    String ip = "192.168.2.130";
+    String ip = "192.168.50.130";
 
-    String msg = "www.example.com," + ip;
+    String msg = "kafka_message" + ip;
 
-    KafkaMessageKey key = new KafkaMessageKey(new KafkaMessageIdentifierImpl("abc", ip));
-
-    Message<String> message = MessageBuilder.withPayload(msg).setHeader(KafkaHeaders.MESSAGE_KEY, key).build();
+    Message<String> message = MessageBuilder.withPayload(msg).setHeader(KafkaHeaders.MESSAGE_KEY, "key").build();
 
     private final ConsumerRecord<Object, Object> consumerRecord = new ConsumerRecord<>(topic, partition, 0, 0L,
             TimestampType.CREATE_TIME, 0L, 0, 0, 1, message);

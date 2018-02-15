@@ -25,8 +25,8 @@ public class TalendKafkaConsumerInterceptor implements ConsumerInterceptor<Objec
                 if (consumerRecords != null) {
                     consumerRecords.forEachRemaining(c -> {
                         GenericMessage<Object> message = (GenericMessage<Object>) c.value();
-                        LOGGER.trace(String.format("onConsume topic=%s partition=%d message=%s %d \n", c.topic(), c.partition(),
-                                message.getPayload(), c.partition()));
+                        LOGGER.trace(String.format("onConsume topic=%s partition=%d message=%s \n", c.topic(), c.partition(),
+                                message.getPayload()));
                     });
                 }
             } catch (Exception e) {

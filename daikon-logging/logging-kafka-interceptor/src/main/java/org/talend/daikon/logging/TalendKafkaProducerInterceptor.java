@@ -9,10 +9,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.support.GenericMessage;
-import org.talend.schema.model.KafkaMessageKey;
-import org.talend.schema.serialization.KafkaMessageKeyDeserializer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TalendKafkaProducerInterceptor implements ProducerInterceptor<Object, Object> {
@@ -25,14 +22,10 @@ public class TalendKafkaProducerInterceptor implements ProducerInterceptor<Objec
         if (LOGGER.isTraceEnabled()) {
             try {
                 String s = new ObjectMapper().writeValueAsString(record.key());
-                KafkaMessageKeyDeserializer deserializer = new KafkaMessageKeyDeserializer();
-                KafkaMessageKey deserializedKey = deserializer.deserialize(null, s.getBytes(Charset.forName("UTF-8")));
                 GenericMessage<Object> message = (GenericMessage<Object>) record.value();
                 if (message != null) {
-                    LOGGER.trace(String.format("onSend topic=%s tenantId=%s message=%s \n", record.topic(),
-                            deserializedKey.getTenantId(), message.getPayload()));
+                    LOGGER.trace(String.format("onSend topic=%s message=%s \n", record.topic(), message.getPayload()));
                 }
-                deserializer.close();
             } catch (Exception e) {
                 LOGGER.error("Error executing interceptor onSend for topic: {}, partition: {}", record.topic(),
                         record.partition(), e);
