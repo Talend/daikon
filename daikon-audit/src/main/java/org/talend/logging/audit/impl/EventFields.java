@@ -19,6 +19,14 @@ public class EventFields {
 
     public static final String INSTANCE = "instance";
 
+    public static final String USER = "user";
+
+    public static final String OPERATION = "operation";
+
+    public static final String RESOURCE = "resource";
+
+    public static final String RESULT = "result";
+
     public static final String MDC_ID = MDC_PREFIX + ID;
 
     public static final String MDC_CATEGORY = MDC_PREFIX + CATEGORY;
@@ -30,6 +38,14 @@ public class EventFields {
     public static final String MDC_SERVICE = MDC_PREFIX + SERVICE;
 
     public static final String MDC_INSTANCE = MDC_PREFIX + INSTANCE;
+
+    public static final String MDC_USER = USER;
+
+    public static final String MDC_OPERATION = OPERATION;
+
+    public static final String MDC_RESOURCE = RESOURCE;
+
+    public static final String MDC_RESULT = RESULT;
 
     private EventFields() {
     }

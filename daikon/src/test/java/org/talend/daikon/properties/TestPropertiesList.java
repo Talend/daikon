@@ -61,7 +61,6 @@ public class TestPropertiesList {
 
         public TestComponentProperties(String name) {
             super(name);
-            this.filters.setI18nMessageFormatter(getI18nMessageFormatter());
         }
 
         @Override

@@ -82,7 +82,7 @@ public class JsonSchemaUtil {
         if (definition == null) {// we are trying to use a definition that is not registered
             throw TalendRuntimeException.build(CommonErrorCodes.UNREGISTERED_DEFINITION).set(defNameNode.asText());
         } // else we got a definition so let's use it to create the instance.
-        return fromJson(jsonNode, (defRegistryService.createProperties(definition, "")).init());
+        return fromJson(jsonNode, (defRegistryService.createProperties(definition, "root")).init());
     }
 
     /**

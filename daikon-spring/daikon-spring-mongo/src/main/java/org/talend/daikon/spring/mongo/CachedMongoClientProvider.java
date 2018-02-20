@@ -82,7 +82,7 @@ public class CachedMongoClientProvider implements MongoClientProvider {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close(TenantInformationProvider provider) {
         for (MongoClient client : cache.asMap().values()) {
             client.close();
         }

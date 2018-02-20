@@ -1,16 +1,26 @@
 package org.talend.daikon.spring.mongo;
 
-import java.io.IOException;
-
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A {@link MongoClientProvider} implementation that provides thread safety around the
- * {@link MongoClientProvider#close()} method.
+ * {@link MongoClientProvider#close(TenantInformationProvider)} method.
  */
 public class SynchronizedMongoClientProvider implements MongoClientProvider {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizedMongoClientProvider.class);
+
     private final MongoClientProvider delegate;
+
+    private final Map<MongoClientURI, AtomicInteger> concurrentOpens = Collections.synchronizedMap(new HashMap<>());
 
     public SynchronizedMongoClientProvider(MongoClientProvider delegate) {
         this.delegate = delegate;
@@ -18,11 +28,27 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
 
     @Override
     public MongoClient get(TenantInformationProvider tenantInformationProvider) {
+        final MongoClientURI databaseURI = tenantInformationProvider.getDatabaseURI();
+        concurrentOpens.putIfAbsent(databaseURI, new AtomicInteger(0));
+        concurrentOpens.get(databaseURI).incrementAndGet();
+
         return delegate.get(tenantInformationProvider);
     }
 
     @Override
-    public synchronized void close() throws IOException {
-        delegate.close();
+    public synchronized void close(TenantInformationProvider tenantInformationProvider) {
+        MongoClientURI databaseURI = null;
+        int openCount = 0;
+        try {
+            databaseURI = tenantInformationProvider.getDatabaseURI();
+            openCount = concurrentOpens.getOrDefault(databaseURI, new AtomicInteger(0)).decrementAndGet();
+        } catch (Exception e) {
+            LOGGER.debug("Unable to obtain database URI (configuration might be missing for tenant).", e);
+        }
+        if (openCount <= 0) {
+            delegate.get(tenantInformationProvider).close();
+        } else {
+            LOGGER.trace("Not closing mongo clients ({} remain in use for database '{}')", openCount, databaseURI == null ? "N/A" : databaseURI);
+        }
     }
 }

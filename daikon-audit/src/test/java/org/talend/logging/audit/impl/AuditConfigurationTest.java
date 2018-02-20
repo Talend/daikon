@@ -45,8 +45,10 @@ public class AuditConfigurationTest {
 
         AuditConfiguration.loadFromClasspath("/test.audit.properties");
 
+        List<String> commonsMdcFields = Arrays.asList("USER", "OPERATION", "RESOURCE", "RESULT");
+
         for (AuditConfiguration c : AuditConfiguration.values()) {
-            if (!c.getAlreadySet()) {
+            if (!c.getAlreadySet() && !commonsMdcFields.contains(c.name())) {
                 throw new IllegalStateException("Value for configuration option '" + c.toString() + "' is not set.");
             }
         }
@@ -81,5 +83,6 @@ public class AuditConfigurationTest {
         assertEquals(Boolean.FALSE, AuditConfiguration.APPENDER_HTTP_ASYNC.getBoolean());
         assertEquals((Integer) 1000, AuditConfiguration.APPENDER_HTTP_CONNECT_TIMEOUT.getInteger());
         assertEquals((Integer) 50, AuditConfiguration.APPENDER_HTTP_READ_TIMEOUT.getInteger());
+        assertEquals("TEST", AuditConfiguration.ENCODING.getString());
     }
 }

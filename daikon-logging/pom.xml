@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-parent</artifactId>
-        <version>0.20.0-SNAPSHOT</version>
+        <version>0.22.0-SNAPSHOT</version>
     </parent>
     <artifactId>daikon-logging</artifactId>
     <packaging>pom</packaging>
@@ -20,5 +20,6 @@
     <modules>
         <module>logging-event-layout</module>
         <module>logging-spring-security</module>
+        <module>logging-http-headers</module>
     </modules>
 </project>

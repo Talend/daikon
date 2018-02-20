@@ -14,6 +14,7 @@ import org.talend.logging.audit.LogAppenders;
  */
 enum AuditConfiguration {
     ROOT_LOGGER(String.class, "audit"),
+    ENCODING(String.class, "UTF-8"),
     APPLICATION_NAME(String.class),
     SERVICE_NAME(String.class, ""),
     INSTANCE_NAME(String.class, ""),

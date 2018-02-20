@@ -11,6 +11,7 @@ import java.util.Properties;
 import net.minidev.json.JSONObject;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
@@ -35,9 +36,19 @@ public class Log4jJSONLayoutTest extends AbstractLayoutTest {
         final String metaFieldKeyValue = "metaFieldValue";
         final String processedMetaFieldKey = "some.meta";
 
+        final String userFieldKey = "user";
+        final String userFieldKeyValue = "user0";
+        final String operationFieldKey = "operation";
+        final String operationFieldKeyValue = "create user";
+        final String resultFieldKey = "result";
+        final String resultFieldKeyValue = "success";
+
         Map<String, String> mdc = new LinkedHashMap<>();
         mdc.put(customFieldKey, customFieldValue);
         mdc.put(metaFieldKey, metaFieldKeyValue);
+        mdc.put(userFieldKey, userFieldKeyValue);
+        mdc.put(operationFieldKey, operationFieldKeyValue);
+        mdc.put(resultFieldKey, resultFieldKeyValue);
 
         LogDetails logDetails = new LogDetails(this.getClass());
         logDetails.setMdc(mdc);
@@ -45,14 +56,15 @@ public class Log4jJSONLayoutTest extends AbstractLayoutTest {
 
         Map<String, String> metaFields = new LinkedHashMap<>();
         metaFields.put(metaFieldKey, processedMetaFieldKey);
-
+        metaFields.put(userFieldKey, userFieldKeyValue);
+        metaFields.put(operationFieldKey, operationFieldKeyValue);
+        metaFields.put(resultFieldKey, resultFieldKeyValue);
         Log4jJSONLayout layout = new Log4jJSONLayout() {
 
             @Override
             protected Map<String, String> processMDCMetaFields(LoggingEvent loggingEvent, JSONObject logstashEvent,
                     Map<String, String> metaFields) {
                 Map<String, String> newMdc = super.processMDCMetaFields(loggingEvent, logstashEvent, metaFields);
-
                 assertFalse(newMdc.containsKey(metaFieldKey));
                 assertFalse(newMdc.containsKey(processedMetaFieldKey));
                 assertEquals(customFieldValue, newMdc.get(customFieldKey));
@@ -60,6 +72,9 @@ public class Log4jJSONLayoutTest extends AbstractLayoutTest {
                 assertFalse(logstashEvent.containsKey(metaFieldKey));
                 assertFalse(logstashEvent.containsKey(customFieldKey));
                 assertEquals(metaFieldKeyValue, logstashEvent.getAsString(processedMetaFieldKey));
+                assertFalse(logstashEvent.containsKey(userFieldKey));
+                assertFalse(logstashEvent.containsKey(operationFieldKey));
+                assertFalse(logstashEvent.containsKey(resultFieldKey));
 
                 return newMdc;
             }
