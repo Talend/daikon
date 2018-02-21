@@ -1,5 +1,6 @@
 package org.talend.daikon.logging;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -10,7 +11,6 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.support.GenericMessage;
 
 public class TalendKafkaConsumerInterceptor implements ConsumerInterceptor<Object, Object> {
 
@@ -24,9 +24,9 @@ public class TalendKafkaConsumerInterceptor implements ConsumerInterceptor<Objec
                 Iterator<ConsumerRecord<Object, Object>> consumerRecords = records.iterator();
                 if (consumerRecords != null) {
                     consumerRecords.forEachRemaining(c -> {
-                        GenericMessage<Object> message = (GenericMessage<Object>) c.value();
+                        String message = new String((byte[]) c.value(), StandardCharsets.UTF_8);
                         LOGGER.trace(String.format("onConsume topic=%s partition=%d message=%s \n", c.topic(), c.partition(),
-                                message.getPayload()));
+                                message));
                     });
                 }
             } catch (Exception e) {

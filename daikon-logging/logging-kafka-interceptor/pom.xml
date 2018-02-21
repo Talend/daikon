@@ -30,11 +30,6 @@
 		    <version>2.1.2.RELEASE</version>
 		    <optional>true</optional>
 		</dependency>
-		<dependency>
-            <groupId>org.talend.daikon</groupId>
-            <artifactId>multitenant-spring-async</artifactId>
-            <version>${version}</version>
-		</dependency>
 	    <dependency>
 	      <groupId>org.apache.kafka</groupId>
 	      <artifactId>kafka_2.11</artifactId>
