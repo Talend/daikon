@@ -1,7 +1,6 @@
 package org.talend.daikon.logging;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +8,6 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * TalendRequestInterceptor

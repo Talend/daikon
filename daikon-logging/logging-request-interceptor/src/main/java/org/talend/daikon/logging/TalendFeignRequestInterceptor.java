@@ -1,11 +1,9 @@
 package org.talend.daikon.logging;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import feign.Request;
 import feign.RequestInterceptor;
