@@ -31,45 +31,10 @@ public class TalendFeignRequestInterceptor implements RequestInterceptor {
             LOGGER.trace("requestMethod=" + request.method());
             LOGGER.trace("requestHeader=" + request.headers());
             try {
-                LOGGER.trace("requestBody=" + getRequestBody(body));
+                LOGGER.trace("requestBody=" + TraceRequestUtil.getRequestBody(body));
             } catch (UnsupportedEncodingException e) {
                 LOGGER.error(e.getMessage(), e);
             }
         }
     }
-
-    private String getRequestBody(byte[] body) throws UnsupportedEncodingException {
-        if (body != null && body.length > 0) {
-            return getBodyAsJson(new String(body, "UTF-8"));
-        } else {
-            return null;
-        }
-    }
-
-    private String getBodyAsJson(String bodyString) {
-        if (bodyString == null || bodyString.length() == 0) {
-            return null;
-        } else {
-            if (isValidJSON(bodyString)) {
-                return bodyString;
-            } else {
-                bodyString.replaceAll("\"", "\\\"");
-                return "\"" + bodyString + "\"";
-            }
-        }
-    }
-
-    public boolean isValidJSON(final String json) {
-        boolean valid = false;
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.readTree(json);
-        } catch (IOException e) {
-            valid = false;
-        }
-
-        return valid;
-    }
-
 }
