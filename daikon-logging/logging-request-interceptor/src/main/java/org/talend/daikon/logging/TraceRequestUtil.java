@@ -7,9 +7,10 @@ import java.io.UnsupportedEncodingException;
 
 public class TraceRequestUtil {
 
-    private TraceRequestUtil () {
-        //Not instanciate
+    private TraceRequestUtil() {
+        //Do not instantiate
     }
+
     public static String getRequestBody(byte[] body) throws UnsupportedEncodingException {
         if (body != null && body.length > 0) {
             return getBodyAsJson(new String(body, "UTF-8"));
