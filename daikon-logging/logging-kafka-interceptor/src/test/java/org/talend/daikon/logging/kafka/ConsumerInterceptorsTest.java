@@ -7,11 +7,9 @@ import org.apache.kafka.clients.consumer.internals.ConsumerInterceptors;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.record.TimestampType;
 import org.junit.Test;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.talend.daikon.logging.TalendKafkaConsumerInterceptor;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +24,7 @@ public class ConsumerInterceptorsTest {
     @Test
     public void testOnConsume() {
 
+        Charset UTF8 = Charset.forName("UTF-8");
         int filterPartition1 = 5;
         int filterPartition2 = 6;
         String topic = "test";
@@ -33,11 +32,10 @@ public class ConsumerInterceptorsTest {
         TopicPartition filterTopicPart1 = new TopicPartition("test5", filterPartition1);
         TopicPartition filterTopicPart2 = new TopicPartition("test6", filterPartition2);
         String ip = "192.168.50.130";
-        String msg = "kafka_message" + ip;
-        Message<String> message = MessageBuilder.withPayload(msg).setHeader(KafkaHeaders.MESSAGE_KEY, "key").build();
+        String message = "kafka_message" + ip;
 
         ConsumerRecord<Object, Object> consumerRecord = new ConsumerRecord<>(topic, partition, 0, 0L, TimestampType.CREATE_TIME,
-                0L, 0, 0, 1, message);
+                0L, 0, 0, 1, message.getBytes(UTF8));
 
         List<ConsumerInterceptor<Object, Object>> interceptorList = new ArrayList<>();
         TalendKafkaConsumerInterceptor interceptor = new TalendKafkaConsumerInterceptor();
