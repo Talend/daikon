@@ -1,0 +1,89 @@
+= Talend Kafka Interceptor
+
+Outbound rest call logging for spring app and incoming/outgoing kafka event logging.
+
+==== Adding dependencies
+
+To start using Talend Kafka Interceptor it's necessary to add the next dependencies.
+
+Gradle style:
+
+```
+compile ("org.talend.daikon:logging-kafka-interceptor:0.22.0-SNAPSHOT")
+```
+
+Maven style:
+
+```xml
+<dependency>
+  	<groupId>org.talend.daikon</groupId>
+  	<artifactId>logging-kafka-interceptor</artifactId>
+  	<version>0.22.0-SNAPSHOT</version>
+</dependency>
+```
+
+
+== TalendKafkaProducerInterceptor
+
+[source,java]
+----
+
+@Configuration
+@EnableKafka
+public class KafkaConfiguration  {
+
+ 	
+    @Bean
+    public Map<String, Object> producerConfigs() {
+       Map<String, Object> props = new HashMap<>();
+	    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+	    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+	    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+	    ......
+	    props.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, TalendKafkaProducerInterceptor.class.getName()); 
+	
+	    Producer<String, String> producer = new KafkaProducer<>(props);
+	    
+	    return props;
+	}
+   ...
+}   
+----
+
+== TalendKafkaConsumerInterceptor
+
+[source,java]
+----
+
+@Configuration
+@EnableKafka
+public class KafkaConfiguration  {
+
+    @Bean
+    public Map<String, Object> consumerConfigs() {
+       Map<String, Object> props = new HashMap<>();
+	    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+	    props.put(ConsumerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+	    props.put(ConsumerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+	    ......
+	    props.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, TalendKafkaConsumerInterceptor.class.getName()); 
+	
+	    KafkaConsumer<byte[], byte[]> consumer = new KafkaConsumer<>(props);
+	    
+	    return props;
+	}
+   ...
+}   
+----
+
+
+Via application.yml (not tested) https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#common-application-properties[Spring Cloud Doc]
+----
+kafka:
+  bootstrap-servers: localhost:9092
+  topic:
+    helloworld: helloworld.t
+  ...
+  properties.interceptor.classes=org.talend.daikon.logging.TalendKafkaProducerInterceptor
+  ....
+----
