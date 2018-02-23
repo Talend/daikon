@@ -65,28 +65,28 @@ public class TypeConverter {
         return new DateConverter();
     }
 
-    public static DoubleConverter asDouble() {
-        return new DoubleConverter();
+    public static NumberConverter<?, Double> asDouble() {
+        return NumberConverter.ofDouble();
     }
 
-    public static FloatConverter asFloat() {
-        return new FloatConverter();
+    public static NumberConverter<?, Float> asFloat() {
+        return NumberConverter.ofFloat();
     }
 
     public static BigDecimalConverter asBigDecimal() {
         return new BigDecimalConverter();
     }
 
-    public static IntegerConverter asInteger() {
-        return new IntegerConverter();
+    public static NumberConverter<?, Integer> asInteger() {
+        return NumberConverter.ofInteger();
     }
 
-    public static LongConverter asLong() {
-        return new LongConverter();
+    public static NumberConverter<?, Long> asLong() {
+        return NumberConverter.ofLong();
     }
 
-    public static ShortConverter asShort() {
-        return new ShortConverter();
+    public static NumberConverter<?, Short> asShort() {
+        return NumberConverter.ofShort();
     }
 
     public static StringConverter asString() {

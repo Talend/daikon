@@ -31,7 +31,7 @@ public class LocalTimeConverterTest {
     public void testError() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ss:mm:HH");
         thrown.expect(TalendRuntimeException.class);
-        thrown.expect(hasProperty("code", is(LocalDateConverter.LocalDateConverterErrorCode.CANNOT_PARSE)));
+        thrown.expect(hasProperty("code", is(TypeConverterErrorCode.CANNOT_PARSE)));
         thrown.expectMessage("Cannot parse 'ss:15:08' using the specified format.");
         TypeConverter.asLocalTime().withDateTimeFormatter(formatter).convert("ss:15:08");
     }
