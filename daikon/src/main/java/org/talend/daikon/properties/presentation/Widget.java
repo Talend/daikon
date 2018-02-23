@@ -201,6 +201,38 @@ public class Widget implements ToStringIndent {
     public static final String NESTED_PROPERTIES_TYPE_OPTION = "type";
 
     /**
+     * This widget represents a nested properties widget - a list of additional properties which can be added or
+     * removed - that cannot be collapsed.
+     *
+     * We can set the ui:options type of nested properties by setting a configuration value with the following key:
+     * {@link Widget#NESTED_PROPERTIES_TYPE_OPTION}
+     *
+     * Using the following method: {@link Widget#setConfigurationValue(String, Object)}
+     *
+     * Default value is "default"
+     *
+     * Example:
+     * setConfigurationValue(NESTED_PROPERTIES_TYPE_OPTION, "filter")
+     */
+    public static final String UNCOLLAPSIBLE_NESTED_PROPERTIES = "widget.type.uncollapsibleNestedProperties";
+
+    /**
+     * This widget represents a nested properties widget - a list of additional properties which can be added or
+     * removed - that will be displayed on the UI side by side.
+     *
+     * We can set the ui:options type of nested properties by setting a configuration value with the following key:
+     * {@link Widget#NESTED_PROPERTIES_TYPE_OPTION}
+     *
+     * Using the following method: {@link Widget#setConfigurationValue(String, Object)}
+     *
+     * Default value is "default"
+     *
+     * Example:
+     * setConfigurationValue(NESTED_PROPERTIES_TYPE_OPTION, "filter")
+     */
+    public static final String COLUMNS_PROPERTIES = "widget.type.columns";
+
+    /**
      * This widget is designed to simplify and speed up input of source code.
      *
      * We can set the language that will be used for this code widget by setting a configuration value with the following key:
