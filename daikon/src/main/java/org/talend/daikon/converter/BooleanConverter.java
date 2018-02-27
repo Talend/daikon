@@ -13,7 +13,7 @@ public class BooleanConverter extends Converter<Boolean> {
         } else if (value instanceof Boolean) {
             return (Boolean) value;
         } else if (value instanceof Number) {
-            return ((Number) value).doubleValue() == 0.0;
+            return ((Number) value).doubleValue() != 0.0;
         } else if (value instanceof String) {
             if (StringUtils.isBlank((String) value)) {
                 return returnDefaultValue();
