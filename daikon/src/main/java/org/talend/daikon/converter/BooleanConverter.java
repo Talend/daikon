@@ -14,11 +14,11 @@ public class BooleanConverter extends Converter<Boolean> {
             return (Boolean) value;
         } else if (value instanceof Number) {
             return ((Number) value).doubleValue() != 0.0;
-        } else if (value instanceof String) {
-            if (StringUtils.isBlank((String) value)) {
+        } else if (value instanceof CharSequence) {
+            if (StringUtils.isBlank((CharSequence) value)) {
                 return returnDefaultValue();
             } else {
-                return Boolean.parseBoolean((String) value);
+                return Boolean.parseBoolean(value.toString());
             }
         } else if (value instanceof ByteBuffer) {
             ByteBuffer bb = ((ByteBuffer) value).slice();

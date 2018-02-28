@@ -47,28 +47,28 @@ public abstract class NumberConverter<ThisT extends NumberConverter<ThisT, T>, T
             return ((Boolean) value) ? getFromNumber(1) : getFromNumber(0);
         } else if (value instanceof ByteBuffer) {
             return getFromByteBuffer(((ByteBuffer) value).slice());
-        } else if (value instanceof String) {
-            String in = (String) value;
+        } else if (value instanceof CharSequence) {
+            CharSequence in = (CharSequence) value;
             if (getNumberFormatter() != null) {
                 DecimalFormat format = getNumberFormatter();
                 try {
-                    return getFromNumber(format.parse(in));
+                    return getFromNumber(format.parse(in.toString()));
                 } catch (ParseException e) {
-                    throw TypeConverterErrorCode.createCannotParseWithFormat(e, in, getNumberFormatter().toString());
+                    throw TypeConverterErrorCode.createCannotParseWithFormat(e, in.toString(), getNumberFormatter().toString());
                 }
             } else if (getDateFormatter() != null) {
                 DateTimeFormatter format = getDateFormatter();
                 try {
                     return getFromNumber(LocalDate.parse(in, format).toEpochDay());
                 } catch (DateTimeParseException e) {
-                    throw TypeConverterErrorCode.createCannotParseWithFormat(e, (String) value, format.toString());
+                    throw TypeConverterErrorCode.createCannotParseWithFormat(e, in.toString(), format.toString());
                 }
             } else if (getTimeMillisFormatter() != null) {
                 DateTimeFormatter format = getTimeMillisFormatter();
                 try {
                     return getFromNumber(LocalTime.parse(in, format).toNanoOfDay() / 1000000L);
                 } catch (DateTimeParseException e) {
-                    throw TypeConverterErrorCode.createCannotParseWithFormat(e, in, format.toString());
+                    throw TypeConverterErrorCode.createCannotParseWithFormat(e, in.toString(), format.toString());
                 }
             } else if (getTimestampMillisFormatter() != null) {
                 DateTimeFormatter format = getTimestampMillisFormatter();
@@ -76,7 +76,7 @@ public abstract class NumberConverter<ThisT extends NumberConverter<ThisT, T>, T
                     return getFromNumber(
                             LocalDateTime.parse(in, format).atZone(ZoneOffset.ofTotalSeconds(0)).toInstant().toEpochMilli());
                 } catch (DateTimeParseException e) {
-                    throw TypeConverterErrorCode.createCannotParseWithFormat(e, in, format.toString());
+                    throw TypeConverterErrorCode.createCannotParseWithFormat(e, in.toString(), format.toString());
                 }
             }
         }
