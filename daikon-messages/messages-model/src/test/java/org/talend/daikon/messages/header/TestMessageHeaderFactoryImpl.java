@@ -25,6 +25,8 @@ public class TestMessageHeaderFactoryImpl {
 
     private String messageIdMock = "messageIdMock";
 
+    private String applicationMock = "applicationMock";
+
     private String serviceMock = "serviceMock";
 
     private String versionMock = "versionMock";
@@ -72,6 +74,7 @@ public class TestMessageHeaderFactoryImpl {
         Assert.assertEquals(type, header.getType());
         Assert.assertEquals(name, header.getName());
         Assert.assertEquals(messageIdMock, header.getId());
+        Assert.assertEquals(applicationMock, header.getIssuer().getApplication());
         Assert.assertEquals(serviceMock, header.getIssuer().getService());
         Assert.assertEquals(versionMock, header.getIssuer().getVersion());
         Assert.assertEquals(timestampMock, header.getTimestamp(), 0);
@@ -94,6 +97,7 @@ public class TestMessageHeaderFactoryImpl {
 
     private ServiceInfoProvider serviceInfoProvider() {
         ServiceInfoProvider serviceInfoProvider = Mockito.mock(ServiceInfoProvider.class);
+        Mockito.when(serviceInfoProvider.getApplicationName()).thenReturn(applicationMock);
         Mockito.when(serviceInfoProvider.getServiceName()).thenReturn(serviceMock);
         Mockito.when(serviceInfoProvider.getServiceVersion()).thenReturn(versionMock);
         return serviceInfoProvider;
