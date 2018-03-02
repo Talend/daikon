@@ -61,6 +61,7 @@ public class MessageHeaderFactoryImpl implements MessageHeaderFactory {
 
     private MessageIssuer createMessageIssuer() {
         return MessageIssuer.newBuilder().setService(serviceInfoProvider.getServiceName())
-                .setVersion(serviceInfoProvider.getServiceVersion()).build();
+                .setApplication(serviceInfoProvider.getApplicationName()).setVersion(serviceInfoProvider.getServiceVersion())
+                .build();
     }
 }

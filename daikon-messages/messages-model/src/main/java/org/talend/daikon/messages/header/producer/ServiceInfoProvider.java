@@ -27,4 +27,9 @@ public interface ServiceInfoProvider {
      */
     String getServiceVersion();
 
+    /**
+     * @return the name of the current application
+     */
+    String getApplicationName();
+
 }
