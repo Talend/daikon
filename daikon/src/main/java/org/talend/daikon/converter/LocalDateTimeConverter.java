@@ -10,7 +10,9 @@ public class LocalDateTimeConverter extends Converter<LocalDateTime> {
 
     @Override
     public LocalDateTime convert(Object value) {
-        if (properties.containsKey(LocalDateTimeConverter.FORMATTER)) {
+        if (value == null) {
+            return returnDefaultValue();
+        } else if (properties.containsKey(LocalDateTimeConverter.FORMATTER)) {
             try {
                 return LocalDateTime.parse(value.toString(), getDateTimeFormatter());
             } catch (DateTimeParseException dtpe) {

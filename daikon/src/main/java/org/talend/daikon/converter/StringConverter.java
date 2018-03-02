@@ -25,14 +25,14 @@ public class StringConverter extends WithFormatConverter<StringConverter, String
             }
         } else if (getTimeMillisFormatter() != null) {
             if (value instanceof Number) {
-                return Instant.ofEpochMilli(((Number) value).intValue()).atZone(ZoneOffset.ofTotalSeconds(0)).toLocalTime()
+                return Instant.ofEpochMilli(((Number) value).longValue()).atZone(ZoneOffset.ofTotalSeconds(0)).toLocalTime()
                         .format(getTimeMillisFormatter());
             } else if (value instanceof LocalTime) {
                 return ((LocalTime) value).format(getTimeMillisFormatter());
             }
         } else if (getTimestampMillisFormatter() != null) {
             if (value instanceof Number) {
-                return Instant.ofEpochMilli(((Number) value).intValue()).atZone(ZoneOffset.ofTotalSeconds(0)).toLocalDateTime()
+                return Instant.ofEpochMilli(((Number) value).longValue()).atZone(ZoneOffset.ofTotalSeconds(0)).toLocalDateTime()
                         .format(getTimestampMillisFormatter());
             } else if (value instanceof LocalDateTime) {
                 return ((LocalDateTime) value).format(getTimestampMillisFormatter());
