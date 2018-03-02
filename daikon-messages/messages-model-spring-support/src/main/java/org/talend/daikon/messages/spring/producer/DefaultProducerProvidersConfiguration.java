@@ -52,7 +52,9 @@ public class DefaultProducerProvidersConfiguration {
             }
 
             @Override
-            public String getApplicationName() { return appName; }
+            public String getApplicationName() {
+                return appName;
+            }
         };
     }
 
