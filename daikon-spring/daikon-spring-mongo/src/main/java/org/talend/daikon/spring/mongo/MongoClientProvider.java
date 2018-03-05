@@ -8,7 +8,7 @@ import java.io.Closeable;
  * Implement this interface to obtain a {@link MongoClient client} for a tenant (with information available through
  * {@link TenantInformationProvider}).
  */
-public interface MongoClientProvider {
+public interface MongoClientProvider extends Closeable {
 
     /**
      * <p>
@@ -27,11 +27,11 @@ public interface MongoClientProvider {
     MongoClient get(TenantInformationProvider provider);
 
     /**
-     * Close the connections managed by this implementation. Implementations may use {@link TenantInformationProvider} to
-     * decide whether connections should be closed or not.
+     * Close the connection managed by this implementation <b>only</b> for the tenant given by {@link TenantInformationProvider}.
      *
      * @param provider An implementation of {@link TenantInformationProvider} to be used to get tenant information (database uri,
      *                 database name).
+     * @see #close() To closing <b>all</b> connections managed by implementation.
      */
     void close(TenantInformationProvider provider);
 

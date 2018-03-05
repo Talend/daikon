@@ -1,5 +1,7 @@
 package org.talend.daikon.spring.mongo;
 
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
@@ -54,7 +56,7 @@ public class CachedMongoClientProviderTest {
         final MongoClient client2 = cachedMongoClientProvider.get(TENANT1);
 
         // Then
-        assertTrue(client1 == client2);
+        assertSame(client1, client2);
     }
 
     @Test
@@ -65,7 +67,7 @@ public class CachedMongoClientProviderTest {
         final MongoClient client2 = cachedMongoClientProvider.get(TENANT1);
 
         // Then
-        assertTrue(client1 != client2);
+        assertNotSame(client1, client2);
     }
 
     @Test
@@ -75,6 +77,20 @@ public class CachedMongoClientProviderTest {
         final MongoClient client2 = cachedMongoClientProvider.get(TENANT2);
 
         // Then
-        assertTrue(client1 != client2);
+        assertNotSame(client1, client2);
+    }
+
+    @Test
+    public void shouldCloseClient() {
+        // Given
+        final TenantInformationProvider tenantInformationProvider = getTenantInformationProvider("Tenant1");
+
+        // When
+        final MongoClient client1 = cachedMongoClientProvider.get(tenantInformationProvider);
+        cachedMongoClientProvider.close(tenantInformationProvider);
+        final MongoClient client2 = cachedMongoClientProvider.get(tenantInformationProvider);
+
+        // Then
+        assertNotSame(client1, client2);
     }
 }

@@ -5,6 +5,7 @@ import com.mongodb.MongoClientURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,9 +47,18 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
             LOGGER.debug("Unable to obtain database URI (configuration might be missing for tenant).", e);
         }
         if (openCount <= 0) {
-            delegate.get(tenantInformationProvider).close();
+            try {
+                delegate.close(tenantInformationProvider);
+            } finally {
+                concurrentOpens.remove(databaseURI);
+            }
         } else {
             LOGGER.trace("Not closing mongo clients ({} remain in use for database '{}')", openCount, databaseURI == null ? "N/A" : databaseURI);
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        delegate.close();
     }
 }

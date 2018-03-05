@@ -80,6 +80,14 @@ public class TestMultiTenantConfiguration {
         return new MongoClientProvider() {
 
             @Override
+            public void close() {
+                for (Map.Entry<String, Fongo> entry : fongoInstances.entrySet()) {
+                    entry.getValue().getMongo().close();
+                }
+                fongoInstances.clear();
+            }
+
+            @Override
             public MongoClient get(TenantInformationProvider provider) {
                 final String name = provider.getDatabaseURI().getURI();
                 fongoInstances.computeIfAbsent(name, Fongo::new);
@@ -88,10 +96,12 @@ public class TestMultiTenantConfiguration {
 
             @Override
             public void close(TenantInformationProvider provider) {
-                for (Map.Entry<String, Fongo> entry : fongoInstances.entrySet()) {
-                    entry.getValue().getMongo().close();
+                final String uri = provider.getDatabaseURI().getURI();
+                final Fongo fongo = fongoInstances.get(uri);
+                if (fongo != null) {
+                    fongo.getMongo().close();
                 }
-                fongoInstances.clear();
+                fongoInstances.remove(uri);
             }
         };
     }

@@ -3,6 +3,8 @@ package org.talend.daikon.spring.mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import static org.mockito.Mockito.*;
 
@@ -17,6 +19,14 @@ public class SynchronizedMongoClientProviderTest {
         when(tenantInformationProvider.getDatabaseURI()).thenReturn(new MongoClientURI("mongodb://no_host"));
         final MongoClient mongoClient = mock(MongoClient.class);
         when(mongoClientProvider.get(eq(tenantInformationProvider))).thenReturn(mongoClient);
+        doAnswer(invocation -> {
+            try {
+                mongoClient.close();
+            } catch (Exception e) {
+                // Ignored
+            }
+            return null;
+        }).when(mongoClientProvider).close(eq(tenantInformationProvider));
 
         // when
         provider.get(tenantInformationProvider);
@@ -37,6 +47,14 @@ public class SynchronizedMongoClientProviderTest {
         when(tenantInformationProvider.getDatabaseURI()).thenReturn(new MongoClientURI("mongodb://no_host"));
         final MongoClient mongoClient = mock(MongoClient.class);
         when(mongoClientProvider.get(eq(tenantInformationProvider))).thenReturn(mongoClient);
+        doAnswer(invocation -> {
+            try {
+                mongoClient.close();
+            } catch (Exception e) {
+                // Ignored
+            }
+            return null;
+        }).when(mongoClientProvider).close(eq(tenantInformationProvider));
 
         // when
         provider.get(tenantInformationProvider);
@@ -61,6 +79,22 @@ public class SynchronizedMongoClientProviderTest {
         final MongoClient mongoClient2 = mock(MongoClient.class);
         when(mongoClientProvider.get(eq(tenantInformationProvider1))).thenReturn(mongoClient1);
         when(mongoClientProvider.get(eq(tenantInformationProvider2))).thenReturn(mongoClient2);
+        doAnswer(invocation -> {
+            try {
+                mongoClient1.close();
+            } catch (Exception e) {
+                // Ignored
+            }
+            return null;
+        }).when(mongoClientProvider).close(eq(tenantInformationProvider1));
+        doAnswer(invocation -> {
+            try {
+                mongoClient2.close();
+            } catch (Exception e) {
+                // Ignored
+            }
+            return null;
+        }).when(mongoClientProvider).close(eq(tenantInformationProvider2));
 
         // when
         provider.get(tenantInformationProvider1);
@@ -82,6 +116,14 @@ public class SynchronizedMongoClientProviderTest {
         when(tenantInformationProvider.getDatabaseURI()).thenThrow(new RuntimeException("On purpose thrown exception"));
         final MongoClient mongoClient = mock(MongoClient.class);
         when(mongoClientProvider.get(eq(tenantInformationProvider))).thenReturn(mongoClient);
+        doAnswer(invocation -> {
+            try {
+                mongoClient.close();
+            } catch (Exception e) {
+                // Ignored
+            }
+            return null;
+        }).when(mongoClientProvider).close(eq(tenantInformationProvider));
 
         // when
         provider.close(tenantInformationProvider);

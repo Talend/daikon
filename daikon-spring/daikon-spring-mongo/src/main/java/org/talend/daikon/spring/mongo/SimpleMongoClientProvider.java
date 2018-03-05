@@ -40,6 +40,16 @@ public class SimpleMongoClientProvider implements MongoClientProvider {
 
     @Override
     public void close(TenantInformationProvider provider) {
+        final MongoClientURI uri = provider.getDatabaseURI();
+        final MongoClient mongoClient = clients.get(uri);
+        if (mongoClient != null) {
+            mongoClient.close();
+        }
+        clients.remove(uri);
+    }
+
+    @Override
+    public void close() {
         for (Map.Entry<MongoClientURI, MongoClient> entry : clients.entrySet()) {
             entry.getValue().close();
         }
