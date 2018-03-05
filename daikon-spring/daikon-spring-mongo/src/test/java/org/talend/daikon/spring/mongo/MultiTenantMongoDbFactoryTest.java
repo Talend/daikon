@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.fakemongo.Fongo;
-import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;

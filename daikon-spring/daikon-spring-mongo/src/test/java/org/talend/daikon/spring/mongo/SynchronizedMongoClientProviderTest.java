@@ -3,10 +3,13 @@ package org.talend.daikon.spring.mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SynchronizedMongoClientProviderTest {
 
