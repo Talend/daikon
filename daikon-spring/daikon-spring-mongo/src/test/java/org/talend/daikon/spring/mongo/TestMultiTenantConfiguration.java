@@ -10,7 +10,6 @@ import com.github.fakemongo.Fongo;
 import com.mongodb.MongoClient;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

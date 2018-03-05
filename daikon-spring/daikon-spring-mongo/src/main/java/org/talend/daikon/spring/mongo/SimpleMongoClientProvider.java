@@ -1,6 +1,5 @@
 package org.talend.daikon.spring.mongo;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
