@@ -14,6 +14,7 @@ package org.talend.daikon.messages.header.producer;
 
 import org.talend.daikon.messages.MessageHeader;
 import org.talend.daikon.messages.MessageTypes;
+import org.talend.daikon.messages.OperationTypes;
 
 /**
  * A factory for normalized {@link MessageHeader}
@@ -22,11 +23,21 @@ public interface MessageHeaderFactory {
 
     /**
      * Creates a new message header for the provided message type and name
-     * 
+     *
      * @param type the message type
      * @param messageName the message name
      * @return the newly created message header
      */
     MessageHeader createMessageHeader(MessageTypes type, String messageName);
+
+    /**
+     * Creates a new message header for the provided message type, name and operationTypes
+     *
+     * @param type           the message type
+     * @param messageName    the message name
+     * @param operationTypes the operation type
+     * @return the newly created message header
+     */
+    MessageHeader createMessageHeader(MessageTypes type, String messageName, OperationTypes operationTypes);
 
 }

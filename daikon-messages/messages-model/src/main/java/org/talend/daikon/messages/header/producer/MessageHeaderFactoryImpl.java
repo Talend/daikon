@@ -15,11 +15,12 @@ package org.talend.daikon.messages.header.producer;
 import org.talend.daikon.messages.MessageHeader;
 import org.talend.daikon.messages.MessageIssuer;
 import org.talend.daikon.messages.MessageTypes;
+import org.talend.daikon.messages.OperationTypes;
 
 /**
  * Default implementation of {@link MessageHeaderFactory} that will delegate
  * retrieval of most information from different providers.
- *
+ * <p>
  * All providers are passed as constructor parameters.
  */
 public class MessageHeaderFactoryImpl implements MessageHeaderFactory {
@@ -52,7 +53,12 @@ public class MessageHeaderFactoryImpl implements MessageHeaderFactory {
 
     @Override
     public MessageHeader createMessageHeader(MessageTypes type, String name) {
-        return MessageHeader.newBuilder().setId(idGenerator.generateEventId())
+        return createMessageHeader(type, name, null);
+    }
+
+    @Override
+    public MessageHeader createMessageHeader(MessageTypes type, String name, OperationTypes operationTypes) {
+        return MessageHeader.newBuilder().setId(idGenerator.generateEventId()).setOperationType(operationTypes)
                 .setTimestamp(timestampProvider.getCurrentTimestamp()).setIssuer(createMessageIssuer()).setType(type)
                 .setName(name).setTenantId(tenantIdProvider.getTenantId()).setUserId(userProvider.getUserId())
                 .setCorrelationId(correlationIdProvider.getCorrelationId())
