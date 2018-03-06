@@ -126,6 +126,7 @@
                  <!-- using a specific Talend artifact version until the next official release, the PR has been merge into master but not yet release. -->
                 <version>4.9.9-TALEND</version>
             </dependency>
+	        <!-- include fasterxml jackson's bom -->
 	        <dependency>
 		        <groupId>com.fasterxml.jackson</groupId>
 		        <artifactId>jackson-bom</artifactId>
