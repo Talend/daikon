@@ -21,6 +21,9 @@
         <talend_snapshots>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
         <talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
         <pushChanges>false</pushChanges>
+	    <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
+	    <jackson.version>2.9.4</jackson.version>
+	    <jackson.version.annotations>2.9.0</jackson.version.annotations>
     </properties>
     <modules>
         <module>daikon</module>
@@ -123,6 +126,13 @@
                  <!-- using a specific Talend artifact version until the next official release, the PR has been merge into master but not yet release. -->
                 <version>4.9.9-TALEND</version>
             </dependency>
+	        <dependency>
+		        <groupId>com.fasterxml.jackson</groupId>
+		        <artifactId>jackson-bom</artifactId>
+		        <version>${jackson.version}</version>
+		        <type>pom</type>
+		        <scope>import</scope>
+	        </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
