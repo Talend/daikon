@@ -12,18 +12,19 @@
 // ============================================================================
 package org.talend.daikon.messages.spring.producer;
 
-import org.springframework.context.annotation.Import;
-import org.talend.daikon.messages.spring.producer.security.SpringSecurityProvidersConfiguration;
-import org.talend.daikon.messages.spring.producer.sleuth.SpringSleuthProvidersConfiguration;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.context.annotation.Import;
+import org.talend.daikon.messages.spring.producer.security.SpringSecurityProvidersConfiguration;
+import org.talend.daikon.messages.spring.producer.sleuth.SpringSleuthProvidersConfiguration;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import({ SpringSecurityProvidersConfiguration.class, SpringSleuthProvidersConfiguration.class,
-        DefaultProducerProvidersConfiguration.class, MessageHeaderFactoryConfiguration.class, MessageKeysConfiguration.class })
+        DefaultProducerProvidersConfiguration.class, MessageHeaderFactoryConfiguration.class, MessageKeysConfiguration.class,
+        MultiTenantProducerProvidersConfiguration.class })
 public @interface EnableMessagesProducerAutoConfig {
 }
