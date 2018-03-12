@@ -1,5 +1,6 @@
 package org.talend.daikon.messages.serialization;
 
+import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.EncoderFactory;
@@ -37,10 +38,9 @@ public class DaikonMessageKeySerializer implements Serializer<MessageKey> {
             encoder.flush();
             return out.toByteArray();
         } catch (Exception e) {
-            LOGGER.error("Cannot serialize DaikonMessagekey", e);
+            LOGGER.error("Cannot serialize Daikon MessageKey", e);
+            throw new AvroRuntimeException(e);
         }
-
-        return null;
     }
 
     @Override

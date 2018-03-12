@@ -1,5 +1,6 @@
 package org.talend.daikon.messages.serialization;
 
+import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.specific.SpecificDatumReader;
@@ -33,9 +34,9 @@ public class DaikonMessageKeyDeserializer implements Deserializer<MessageKey> {
             Decoder decoder = DecoderFactory.get().binaryDecoder(data, null);
             return reader.read(null, decoder);
         } catch (IOException e) {
-            LOGGER.error("Cannot deserialize DaikonMessagekey", e);
+            LOGGER.error("Cannot deserialize Daikon MessageKey", e);
+            throw new AvroRuntimeException(e);
         }
-        return null;
     }
 
     @Override

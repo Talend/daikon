@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.talend.daikon.messages.header.consumer.TenantIdSetter;
+import org.talend.daikon.multitenant.context.TenancyContext;
 import org.talend.daikon.multitenant.context.TenancyContextHolder;
 import org.talend.daikon.multitenant.core.Tenant;
 import org.talend.daikon.multitenant.provider.DefaultTenant;
@@ -21,7 +22,9 @@ public class MultiTenantConsumerSettersConfiguration {
             @Override
             public void setCurrentTenantId(String tenantId) {
                 final Tenant tenant = new DefaultTenant(tenantId, null);
-                TenancyContextHolder.createEmptyContext().setTenant(tenant);
+                TenancyContext context = TenancyContextHolder.createEmptyContext();
+                context.setTenant(tenant);
+                TenancyContextHolder.setContext(context);
             }
         };
     }
