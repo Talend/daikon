@@ -15,7 +15,6 @@ package org.talend.daikon.messages.header.producer;
 import org.talend.daikon.messages.MessageHeader;
 import org.talend.daikon.messages.MessageIssuer;
 import org.talend.daikon.messages.MessageTypes;
-import org.talend.daikon.messages.OperationTypes;
 
 /**
  * Default implementation of {@link MessageHeaderFactory} that will delegate
@@ -53,12 +52,7 @@ public class MessageHeaderFactoryImpl implements MessageHeaderFactory {
 
     @Override
     public MessageHeader createMessageHeader(MessageTypes type, String name) {
-        return createMessageHeader(type, name, null);
-    }
-
-    @Override
-    public MessageHeader createMessageHeader(MessageTypes type, String name, OperationTypes operationTypes) {
-        return MessageHeader.newBuilder().setId(idGenerator.generateEventId()).setOperationType(operationTypes)
+        return MessageHeader.newBuilder().setId(idGenerator.generateEventId())
                 .setTimestamp(timestampProvider.getCurrentTimestamp()).setIssuer(createMessageIssuer()).setType(type)
                 .setName(name).setTenantId(tenantIdProvider.getTenantId()).setUserId(userProvider.getUserId())
                 .setCorrelationId(correlationIdProvider.getCorrelationId())

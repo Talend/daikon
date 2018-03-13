@@ -26,7 +26,6 @@ import org.junit.rules.ExpectedException;
 import org.talend.daikon.messages.MessageHeader;
 import org.talend.daikon.messages.MessageIssuer;
 import org.talend.daikon.messages.MessageTypes;
-import org.talend.daikon.messages.OperationTypes;
 import org.talend.daikon.messages.header.consumer.MessageHeaderExtractor;
 
 public class TestMessageHeaderExtractor {
@@ -66,8 +65,8 @@ public class TestMessageHeaderExtractor {
 
         IndexedRecord messageHeader = new GenericRecordBuilder(headerSchema).set("id", "My id")
                 .set("correlationId", "Correlation id").set("timestamp", 123L).set("issuer", issuer).set("type", "COMMAND")
-                .set("operationType", OperationTypes.CREATION).set("name", "name").set("tenantId", "tenantId")
-                .set("userId", "userId").set("securityToken", "securityToken").build();
+                .set("name", "name").set("tenantId", "tenantId").set("userId", "userId").set("securityToken", "securityToken")
+                .build();
 
         IndexedRecord message = new GenericRecordBuilder(messageSchema).set("header", messageHeader).set("customField", "ABC")
                 .build();
