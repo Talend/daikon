@@ -147,9 +147,43 @@ MessageEnvelope envelope = handler.wrap(message);
 MessageEnvelope envelope = ...;
 MyMessage message = (MyMessage) handler.unwrap(envelope);
 ```
-### Shared message
 
-Shared message definitions should be created in a separate project inside Daikon-EE
+### Recommended implementation
+
+New kafka event should not use [message envelope](messages-model/src/main/avro/MessageEnvelop.avsc) schema but defined specific schema with one mandatory attribute called [header](messages-model/src/main/avro/MessageHeader.avsc).
+
+Here is an example usage of a new implementatio:
+
+```
+{
+  "namespace": "org.talend.dataprep.messages",
+  "name": "CacheMessage",
+  "type": "record",
+  "fields": [
+    {
+      "name": "header",
+      "type": "org.talend.daikon.messages.MessageHeader"
+    },
+    {
+      "name": "operationType",
+      "type" : "org.talend.dataprep.messages.OperationTypes",
+      "default": null
+    },
+    {
+      "name": "cacheKey",
+      "type": "string"
+    },
+    {
+      "name": "partialKey",
+      "type": "boolean",
+      "default": "false"
+    }
+  ]
+}
+
+```
+
+Messages used for communication between application like TDP, TDS, TDC, Streams should be created in a separate project inside Daikon-EE
 
 
 ### Common message keys
