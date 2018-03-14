@@ -12,14 +12,27 @@
 // ============================================================================
 package org.talend.daikon.messages.spring.producer;
 
+import java.io.IOException;
+
+import org.apache.avro.AvroRuntimeException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.talend.daikon.messages.envelope.*;
-import org.talend.daikon.messages.header.producer.*;
-
-import java.io.IOException;
+import org.talend.daikon.messages.envelope.MessageConverter;
+import org.talend.daikon.messages.envelope.MessageConverterRegistry;
+import org.talend.daikon.messages.envelope.MessageConverterRegistryImpl;
+import org.talend.daikon.messages.envelope.MessageEnvelopeHandler;
+import org.talend.daikon.messages.envelope.MessageEnvelopeHandlerImpl;
+import org.talend.daikon.messages.header.producer.CorrelationIdProvider;
+import org.talend.daikon.messages.header.producer.IdGenerator;
+import org.talend.daikon.messages.header.producer.MessageHeaderFactory;
+import org.talend.daikon.messages.header.producer.MessageHeaderFactoryImpl;
+import org.talend.daikon.messages.header.producer.SecurityTokenProvider;
+import org.talend.daikon.messages.header.producer.ServiceInfoProvider;
+import org.talend.daikon.messages.header.producer.TenantIdProvider;
+import org.talend.daikon.messages.header.producer.TimestampProvider;
+import org.talend.daikon.messages.header.producer.UserProvider;
 
 @Configuration
 public class MessageHeaderFactoryConfiguration {
@@ -63,7 +76,7 @@ public class MessageHeaderFactoryConfiguration {
                 try {
                     return objectMapper.readValue(content, clazz);
                 } catch (IOException e) {
-                    throw new RuntimeException("", e);
+                    throw new AvroRuntimeException("", e);
                 }
             }
 
@@ -72,7 +85,7 @@ public class MessageHeaderFactoryConfiguration {
                 try {
                     return objectMapper.writeValueAsString(content);
                 } catch (IOException e) {
-                    throw new RuntimeException("", e);
+                    throw new AvroRuntimeException("", e);
                 }
             }
         });
