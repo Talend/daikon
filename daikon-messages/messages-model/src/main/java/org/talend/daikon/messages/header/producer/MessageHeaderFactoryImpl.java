@@ -19,7 +19,7 @@ import org.talend.daikon.messages.MessageTypes;
 /**
  * Default implementation of {@link MessageHeaderFactory} that will delegate
  * retrieval of most information from different providers.
- *
+ * <p>
  * All providers are passed as constructor parameters.
  */
 public class MessageHeaderFactoryImpl implements MessageHeaderFactory {

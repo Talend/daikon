@@ -1,13 +1,18 @@
 package org.talend.daikon.converter;
 
-import org.junit.Test;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class TypeConverterTest {
 
@@ -22,8 +27,6 @@ public class TypeConverterTest {
     private String inputStringDefaultChar = "a"; //$NON-NLS-1$
 
     private String inputStringDefaultBoolean = "true"; //$NON-NLS-1$
-
-    private String inputStringDefaultBooleanNumber = "1"; //$NON-NLS-1$
 
     private String inputStringNull = null;
 
@@ -117,6 +120,16 @@ public class TypeConverterTest {
     private Character inputCharNull = null;
 
     private Character inputCharDefault = ' ';
+
+    private DecimalFormat numberFormatIntegerWithHash = new DecimalFormat("'#'#");
+
+    private DecimalFormat numberFormatDoubleFinancial = new DecimalFormat("$#,##0.00;($#,##0.00)");
+
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     @Test
     public void testAsString() {
@@ -627,9 +640,12 @@ public class TypeConverterTest {
 
         assertEquals(inputBooleanDefault, TypeConverter.asBoolean().convert(inputString));
         assertEquals(inputBoolean, TypeConverter.asBoolean().convert(inputStringDefaultBoolean));
-        assertEquals(inputBoolean, TypeConverter.asBoolean().convert(inputStringDefaultBooleanNumber));
         assertEquals(inputBooleanNull, TypeConverter.asBoolean().convert(inputStringNull));
         assertEquals(inputBooleanNull, TypeConverter.asBoolean().convert(""));
+
+        assertEquals(inputBooleanDefault, TypeConverter.asBoolean().convert(ByteBuffer.wrap(new byte[0])));
+        assertEquals(inputBooleanDefault, TypeConverter.asBoolean().convert(ByteBuffer.wrap(new byte[] { 0 })));
+        assertEquals(inputBoolean, TypeConverter.asBoolean().convert(ByteBuffer.wrap(new byte[] { 1 })));
     }
 
     @Test
@@ -961,7 +977,6 @@ public class TypeConverterTest {
 
         assertEquals(inputBooleanDefault, TypeConverter.as(Boolean.class).convert(inputString));
         assertEquals(inputBoolean, TypeConverter.as(Boolean.class).convert(inputStringDefaultBoolean));
-        assertEquals(inputBoolean, TypeConverter.as(Boolean.class).convert(inputStringDefaultBooleanNumber));
         assertEquals(inputBooleanNull, TypeConverter.as(Boolean.class).convert(inputStringNull));
     }
 
@@ -979,5 +994,175 @@ public class TypeConverterTest {
     public void testAsLocalDateTime() {
         assertEquals(LocalDateTime.of(2007, 12, 03, 10, 15, 30),
                 TypeConverter.as(LocalDateTime.class).convert("2007-12-03T10:15:30"));
+    }
+
+    @Test
+    public void testToFromStringWithNumberFormats() {
+        Converter<String> conv = TypeConverter.asString().withNumberFormatter(numberFormatDoubleFinancial);
+
+        // Back and forth conversions from integers.
+        {
+            Object[][] examples = { //
+                    { 0, "$0.00" }, //
+                    { 123, "$123.00" }, //
+                    { -123, "($123.00)" }, //
+                    { 1234, "$1,234.00" }, //
+                    { -1234, "($1,234.00)" } //
+            };
+            Converter<Integer> convertBack = TypeConverter.asInteger().withNumberFormatter(numberFormatDoubleFinancial);
+            for (Object[] ex : examples) {
+                int src = (int) ex[0];
+                String dst = (String) ex[1];
+                assertThat("Converting " + src, conv.convert(src), is(dst));
+                assertThat("Converting back " + dst, convertBack.convert(dst), is(src));
+            }
+        }
+
+        // Back and forth conversions from longs
+        {
+            Object[][] examples = { //
+                    { 0L, "$0.00" }, //
+                    { 123L, "$123.00" }, //
+                    { -123L, "($123.00)" }, //
+                    { 1234L, "$1,234.00" }, //
+                    { -1234L, "($1,234.00)" }, //
+                    { 123456789L, "$123,456,789.00" }, //
+                    { -123456789L, "($123,456,789.00)" } //
+            };
+            Converter<Long> convertBack = TypeConverter.asLong().withNumberFormatter(numberFormatDoubleFinancial);
+            for (Object[] ex : examples) {
+                long src = (long) ex[0];
+                String dst = (String) ex[1];
+                assertThat("Converting " + src, conv.convert(src), is(dst));
+                assertThat("Converting back " + dst, convertBack.convert(dst), is(src));
+            }
+        }
+
+        // Back and forth conversions from floats
+        {
+            Object[][] examples = { //
+                    { 0f, "$0.00" }, //
+                    { 123f, "$123.00" }, //
+                    { -123f, "($123.00)" }, //
+                    { 1234f, "$1,234.00" }, //
+                    { -1234f, "($1,234.00)" }, //
+                    { 123456f, "$123,456.00" }, //
+                    { -123456f, "($123,456.00)" }, //
+                    { 1234.5f, "$1,234.50" }, //
+                    { -1234.5f, "($1,234.50)" }, //
+                    { 1234.56f, "$1,234.56" }, //
+                    { -1234.56f, "($1,234.56)" }, //
+                    { 1234.567f, "$1,234.57", 1234.57f }, //
+                    { -1234.567f, "($1,234.57)", -1234.57f } //
+            };
+            Converter<Float> convertBack = TypeConverter.asFloat().withNumberFormatter(numberFormatDoubleFinancial);
+            for (Object[] ex : examples) {
+                float src = (float) ex[0];
+                String dst = (String) ex[1];
+                float srcBack = ex.length <= 2 ? src : (float) ex[2];
+                assertThat("Converting " + src, conv.convert(src), is(dst));
+                assertThat("Converting back " + dst, convertBack.convert(dst), is(srcBack));
+            }
+        }
+
+        // Back and forth conversions from doubles
+        {
+            Object[][] examples = { //
+                    { 0d, "$0.00" }, //
+                    { 123d, "$123.00" }, //
+                    { -123d, "($123.00)" }, //
+                    { 1234d, "$1,234.00" }, //
+                    { -1234d, "($1,234.00)" }, //
+                    { 123456789d, "$123,456,789.00" }, //
+                    { -123456789d, "($123,456,789.00)" }, //
+                    { 1234.5d, "$1,234.50" }, //
+                    { -1234.5d, "($1,234.50)" }, //
+                    { 1234.56d, "$1,234.56" }, //
+                    { -1234.56d, "($1,234.56)" }, //
+                    { 1234.567d, "$1,234.57", 1234.57d }, //
+                    { -1234.567d, "($1,234.57)", -1234.57d } //
+            };
+            Converter<Double> convertBack = TypeConverter.asDouble().withNumberFormatter(numberFormatDoubleFinancial);
+            for (Object[] ex : examples) {
+                double src = (double) ex[0];
+                String dst = (String) ex[1];
+                double srcBack = ex.length <= 2 ? src : (double) ex[2];
+                assertThat("Converting " + src, conv.convert(src), is(dst));
+                assertThat("Converting back " + dst, convertBack.convert(dst), is(srcBack));
+            }
+        }
+
+        // Another format
+        Converter<String> conv2 = TypeConverter.asString().withNumberFormatter(numberFormatIntegerWithHash);
+        assertThat(conv2.convert(0), is("#0"));
+        assertThat(conv2.convert(-123), is("-#123"));
+        assertThat(conv2.convert(123.4f), is("#123"));
+        assertThat(conv2.convert(-1234.567d), is("-#1235"));
+    }
+
+    @Test
+    public void testToFromStringWithDateLikeFormats() {
+        Converter<String> convDate = TypeConverter.asString().withDateFormatter(dateFormatter);
+        Converter<String> convTime = TypeConverter.asString().withTimeMillisFormatter(timeFormatter);
+        Converter<String> convDateTime = TypeConverter.asString().withTimestampMillisFormatter(dateTimeFormatter);
+
+        Converter<Integer> convBackDate = TypeConverter.asInteger().withDateFormatter(dateFormatter);
+        Converter<Integer> convBackTime = TypeConverter.asInteger().withTimeMillisFormatter(timeFormatter);
+        Converter<Long> convBackDateTime = TypeConverter.asLong().withTimestampMillisFormatter(dateTimeFormatter);
+
+        // Back and forth conversions for date.
+        {
+            Object[][] examples = { //
+                    { 0, "1970-01-01" }, //
+                    { 1, "1970-01-02" }, //
+                    { 1000, "1972-09-27" }, //
+                    { 17605, "2018-03-15" }, //
+                    { -1, "1969-12-31" }, //
+                    { -1000, "1967-04-07" } //
+            };
+            for (Object[] ex : examples) {
+                int src = (int) ex[0];
+                String dst = (String) ex[1];
+                int srcBack = ex.length <= 2 ? src : (int) ex[2];
+                assertThat("Converting date " + src, convDate.convert(src), is(dst));
+                assertThat("Converting back date " + src, convBackDate.convert(dst), is(srcBack));
+            }
+        }
+
+        // Back and forth conversions for time_millis.
+        {
+            Object[][] examples = { //
+                    { 0, "00:00:00" }, //
+                    { 1, "00:00:00", 0 }, //
+                    { 1000, "00:00:01" }, //
+                    { 123456789, "10:17:36", 37056000 }, //
+                    { -1, "23:59:59", 86399000 } //
+            };
+            for (Object[] ex : examples) {
+                int src = (int) ex[0];
+                String dst = (String) ex[1];
+                int srcBack = ex.length <= 2 ? src : (int) ex[2];
+                assertThat("Converting time " + src, convTime.convert(src), is(dst));
+                assertThat("Converting back time " + src, convBackTime.convert(dst), is(srcBack));
+            }
+        }
+
+        // Back and forth conversions for timestamp_millis.
+        {
+            Object[][] examples = { //
+                    { 0L, "1970-01-01T00:00:00Z" }, //
+                    { 1L, "1970-01-01T00:00:00Z", 0L }, //
+                    { 1000L, "1970-01-01T00:00:01Z" }, //
+                    { 123456789L, "1970-01-02T10:17:36Z", 123456000L }, //
+                    { -1L, "1969-12-31T23:59:59Z", -1000L } //
+            };
+            for (Object[] ex : examples) {
+                long src = (long) ex[0];
+                String dst = (String) ex[1];
+                long srcBack = ex.length <= 2 ? src : (long) ex[2];
+                assertThat("Converting datetime " + src, convDateTime.convert(src), is(dst));
+                assertThat("Converting back datetime " + src, convBackDateTime.convert(dst), is(srcBack));
+            }
+        }
     }
 }

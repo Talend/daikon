@@ -1,7 +1,5 @@
 package org.talend.daikon.converter;
 
-import org.talend.daikon.exception.TalendRuntimeException;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -12,11 +10,13 @@ public class LocalDateTimeConverter extends Converter<LocalDateTime> {
 
     @Override
     public LocalDateTime convert(Object value) {
-        if (properties.containsKey(LocalDateTimeConverter.FORMATTER)) {
+        if (value == null) {
+            return returnDefaultValue();
+        } else if (properties.containsKey(LocalDateTimeConverter.FORMATTER)) {
             try {
                 return LocalDateTime.parse(value.toString(), getDateTimeFormatter());
             } catch (DateTimeParseException dtpe) {
-                throw LocalDateConverter.LocalDateConverterErrorCode.createCannotParse(dtpe, value.toString(),
+                throw TypeConverterErrorCode.createCannotParseWithFormat(dtpe, value.toString(),
                         getDateTimeFormatter().toString());
             }
         }

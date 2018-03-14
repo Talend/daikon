@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.talend.daikon.spring.mongo.TestMultiTenantConfiguration.changeTenant;
@@ -29,7 +30,7 @@ public abstract class AbstractMultiTenantMongoDbTest {
     private TenantInformationProvider tenantInformationProvider;
 
     @Before
-    public void tearDown() {
+    public void tearDown() throws IOException {
         // Drop all created databases during test
         final List<String> databases = fongo.getDatabaseNames();
         for (String database : databases) {
@@ -38,6 +39,6 @@ public abstract class AbstractMultiTenantMongoDbTest {
         // Switch back to default tenant
         changeTenant("default");
         // Clean up mongo clients
-        mongoClientProvider.close(tenantInformationProvider);
+        mongoClientProvider.close();
     }
 }

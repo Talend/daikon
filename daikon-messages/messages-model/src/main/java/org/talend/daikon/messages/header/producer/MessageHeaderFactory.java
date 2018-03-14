@@ -22,7 +22,7 @@ public interface MessageHeaderFactory {
 
     /**
      * Creates a new message header for the provided message type and name
-     * 
+     *
      * @param type the message type
      * @param messageName the message name
      * @return the newly created message header

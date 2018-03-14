@@ -10,8 +10,8 @@ public class ByteConverter extends Converter<Byte> {
             return ((Number) value).byteValue();
         } else if (value instanceof Boolean) {
             return (byte) (((Boolean) value) ? 1 : 0);
-        } else if (value instanceof String) {
-            return Byte.decode((String) value).byteValue();
+        } else if (value instanceof CharSequence) {
+            return Byte.decode(value.toString()).byteValue();
         } else {
             return Byte.valueOf(value.toString());
         }
