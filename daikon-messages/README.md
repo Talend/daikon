@@ -150,7 +150,7 @@ MyMessage message = (MyMessage) handler.unwrap(envelope);
 
 ### Recommended implementation
 
-New kafka event should not use [message envelope](messages-model/src/main/avro/MessageEnvelop.avsc) schema but defined specific schema with one mandatory attribute called [header](messages-model/src/main/avro/MessageHeader.avsc).
+New kafka event should not use [message envelope](messages-model/src/main/avro/MessageEnvelop.avsc) schema but define specific schema with one mandatory attribute called [header](messages-model/src/main/avro/MessageHeader.avsc).
 
 Here is an example usage of a new implementatio:
 
