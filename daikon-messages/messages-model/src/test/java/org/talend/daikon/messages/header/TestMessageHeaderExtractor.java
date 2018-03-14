@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.messages.header;
 
+import java.io.IOException;
+
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
@@ -26,8 +28,6 @@ import org.talend.daikon.messages.MessageIssuer;
 import org.talend.daikon.messages.MessageTypes;
 import org.talend.daikon.messages.header.consumer.MessageHeaderExtractor;
 
-import java.io.IOException;
-
 public class TestMessageHeaderExtractor {
 
     @Rule
@@ -40,7 +40,9 @@ public class TestMessageHeaderExtractor {
                 .name("customField").type().stringType().noDefault().endRecord();
 
         MessageHeader messageHeader = MessageHeader.newBuilder().setId("My id").setCorrelationId("Correlation id")
-                .setTimestamp(123L).setIssuer(MessageIssuer.newBuilder().setService("Service1").setVersion("ABC").build())
+                .setTimestamp(123L)
+                .setIssuer(MessageIssuer.newBuilder().setApplication("Application1").setService("Service1").setVersion("ABC")
+                        .build())
                 .setType(MessageTypes.COMMAND).setName("name").setTenantId("tenantId").setUserId("userId")
                 .setSecurityToken("securityToken").build();
 
@@ -58,8 +60,8 @@ public class TestMessageHeaderExtractor {
         Schema messageSchema = SchemaBuilder.record("message").fields().name("header").type(headerSchema).noDefault()
                 .name("customField").type().stringType().noDefault().endRecord();
 
-        IndexedRecord issuer = new GenericRecordBuilder(headerSchema.getField("issuer").schema()).set("service", "Service1")
-                .set("version", "ABC").build();
+        IndexedRecord issuer = new GenericRecordBuilder(headerSchema.getField("issuer").schema())
+                .set("application", "Application1").set("service", "Service1").set("version", "ABC").build();
 
         IndexedRecord messageHeader = new GenericRecordBuilder(headerSchema).set("id", "My id")
                 .set("correlationId", "Correlation id").set("timestamp", 123L).set("issuer", issuer).set("type", "COMMAND")

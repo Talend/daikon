@@ -23,6 +23,11 @@
         "type": "record",
         "fields": [
           {
+            "name": "application",
+            "doc" : "Application identifier (e.g TDP, TDC, Streams ...)",
+            "type": "string"
+          },
+          {
             "name": "service",
             "doc" : "Service identifier (e.g dataset, streams-inventory ...)",
             "type": "string"

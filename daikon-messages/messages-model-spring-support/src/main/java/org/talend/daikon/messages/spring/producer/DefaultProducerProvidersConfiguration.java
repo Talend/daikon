@@ -24,7 +24,10 @@ public class DefaultProducerProvidersConfiguration {
     @Value("${spring.application.name}")
     private String appName;
 
-    @Value("${application.version:}")
+    @Value("${spring.service.name}")
+    private String serviceName;
+
+    @Value("${spring.application.version:}")
     private String appVersion;
 
     @Value("${org.talend.daikon.messages.defaultTenantId:}")
@@ -40,12 +43,17 @@ public class DefaultProducerProvidersConfiguration {
 
             @Override
             public String getServiceName() {
-                return appName;
+                return serviceName;
             }
 
             @Override
             public String getServiceVersion() {
                 return appVersion;
+            }
+
+            @Override
+            public String getApplicationName() {
+                return appName;
             }
         };
     }
