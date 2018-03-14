@@ -26,48 +26,32 @@ public class DefaultConsumerSettersConfiguration {
     @Bean
     @ConditionalOnMissingBean(CorrelationIdSetter.class)
     public CorrelationIdSetter correlationIdSetter() {
-        return new CorrelationIdSetter() {
-
-            @Override
-            public void setCurrentCorrelationId(String correlationId) {
-
-            }
+        return correlationId -> {
+            // mocked bean: do nothing
         };
     }
 
     @Bean
     @ConditionalOnMissingBean(TenantIdSetter.class)
     public TenantIdSetter tenantIdSetter() {
-        return new TenantIdSetter() {
-
-            @Override
-            public void setCurrentTenantId(String tenantId) {
-
-            }
+        return tenantId -> {
+            // mocked bean: do nothing
         };
     }
 
     @Bean
     @ConditionalOnMissingBean(UserIdSetter.class)
     public UserIdSetter userIdSetter() {
-        return new UserIdSetter() {
-
-            @Override
-            public void setCurrentUserId(String userId) {
-
-            }
+        return userId -> {
+            // mocked bean: do nothing
         };
     }
 
     @Bean
     @ConditionalOnMissingBean(SecurityTokenSetter.class)
     public SecurityTokenSetter securityTokenSetter() {
-        return new SecurityTokenSetter() {
-
-            @Override
-            public void setCurrentSecurityToken(String securityToken) {
-
-            }
+        return securityToken -> {
+            // mocked bean: do nothing
         };
     }
 

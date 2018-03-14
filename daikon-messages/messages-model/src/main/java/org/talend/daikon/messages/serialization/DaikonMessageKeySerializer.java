@@ -26,7 +26,7 @@ public class DaikonMessageKeySerializer implements Serializer<MessageKey> {
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-
+        // do nothing
     }
 
     @Override
@@ -45,6 +45,6 @@ public class DaikonMessageKeySerializer implements Serializer<MessageKey> {
 
     @Override
     public void close() {
-
+        // do nothing
     }
 }

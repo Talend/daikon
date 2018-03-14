@@ -147,6 +147,10 @@ MessageEnvelope envelope = handler.wrap(message);
 MessageEnvelope envelope = ...;
 MyMessage message = (MyMessage) handler.unwrap(envelope);
 ```
+### Shared message
+
+Shared message definitions should be created in a separate project inside Daikon-EE
+
 
 ### Common message keys
 

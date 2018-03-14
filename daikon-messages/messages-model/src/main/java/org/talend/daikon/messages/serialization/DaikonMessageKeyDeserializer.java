@@ -1,5 +1,8 @@
 package org.talend.daikon.messages.serialization;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
@@ -8,9 +11,6 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.messages.MessageKey;
-
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * Daikon Avro Message Key deserializer.
@@ -25,7 +25,7 @@ public class DaikonMessageKeyDeserializer implements Deserializer<MessageKey> {
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-
+        // do nothing
     }
 
     @Override
@@ -41,6 +41,6 @@ public class DaikonMessageKeyDeserializer implements Deserializer<MessageKey> {
 
     @Override
     public void close() {
-
+        // do nothing
     }
 }

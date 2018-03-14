@@ -1,4 +1,5 @@
 FROM openjdk:8-alpine
+MAINTAINER bguillon@talend.com
 
 ARG ARTIFACT
 
@@ -10,5 +11,5 @@ ENV GROUP_ID "service2"
 
 ENTRYPOINT java $JAVA_OPTS -jar /service.jar
 
-ADD target/${ARTIFACT} /service.jar
+COPY target/${ARTIFACT} /service.jar
 
