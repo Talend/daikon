@@ -35,6 +35,10 @@ public class NestedPropertiesFieldMapper extends FieldMapper {
         super(uiType);
     }
 
+    public NestedPropertiesFieldMapper(String uiAttribute, String uiType) {
+        super(uiAttribute, uiType);
+    }
+
     protected void setItems(ObjectNode schema, Widget widget) {
         // Create item tag
         ObjectNode items = JsonNodeFactory.instance.objectNode();

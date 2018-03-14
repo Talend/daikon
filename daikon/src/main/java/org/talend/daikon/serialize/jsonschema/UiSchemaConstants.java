@@ -144,6 +144,8 @@ public class UiSchemaConstants {
      */
     public static final String TYPE_EXTERNAL_LINK = "externalLink";
 
+    public static final String TYPE_COLUMNS = "columns";
+
     /*
      * ui:field values. ui:field is a more high-level element than a ui:widget. Widgets are used to represent singular
      * form element, for example a checkbox or a list of such elements. In order to present more complex elements, like
@@ -172,6 +174,11 @@ public class UiSchemaConstants {
         options = new HashMap<>();
         options.put(Widget.NESTED_PROPERTIES_TYPE_OPTION, "default");
         WIDGET_OPTIONS_MAPPING.put(Widget.NESTED_PROPERTIES, options);
+        WIDGET_OPTIONS_MAPPING.put(Widget.UNCOLLAPSIBLE_NESTED_PROPERTIES, options);
+
+        options = new HashMap<>();
+        options.put(Widget.NESTED_PROPERTIES_TYPE_OPTION, "default");
+        WIDGET_OPTIONS_MAPPING.put(Widget.COLUMNS_PROPERTIES, options);
 
         // null means use the default
         // WIDGET_MAPPING.put(Widget.DEFAULT_WIDGET_TYPE, null);
@@ -202,6 +209,12 @@ public class UiSchemaConstants {
 
         UI_MAPPERS.put(Widget.NESTED_PROPERTIES, new NestedPropertiesFieldMapper(UiSchemaConstants.COLLAPSIBLE_FIELDSET));
 
+        // for the UI, a datalist with an empty "ui:field" will be considered as an uncollapsible nested fieldset.
+        UI_MAPPERS.put(Widget.UNCOLLAPSIBLE_NESTED_PROPERTIES, new NestedPropertiesFieldMapper(""));
+
+        // for the UI, the UI need the "columns" field to be a widget instead of a tag.
+        UI_MAPPERS.put(Widget.COLUMNS_PROPERTIES,
+                new NestedPropertiesFieldMapper(UiSchemaConstants.TAG_WIDGET, UiSchemaConstants.TYPE_COLUMNS));
         UI_MAPPERS = Collections.unmodifiableMap(UI_MAPPERS);
     }
 

@@ -1,0 +1,70 @@
+= Talend Request Interceptor
+
+Outbound rest call logging for spring app and incoming/outgoing request event logging.
+
+==== Adding dependencies
+
+To start using Talend Request Interceptor it's necessary to add the next dependencies.
+
+Gradle style:
+
+```
+compile ("org.talend.daikon:logging-request-interceptor:0.22.0-SNAPSHOT")
+```
+
+Maven style:
+
+```xml
+<dependency>
+  	<groupId>org.talend.daikon</groupId>
+  	<artifactId>logging-request-interceptor</artifactId>
+  	<version>0.22.0-SNAPSHOT</version>
+</dependency>
+```
+
+
+==== Configuration
+
+== RestTemplate
+
+[source,java]
+----
+@Configuration
+public class MyConfigService {
+
+    @Bean
+    public RestTemplate restTemplate() {
+        RestTemplate rest = new RestTemplate();
+		...............................
+		
+        // add the interceptor that will handle logging
+        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
+        interceptors.add(new TalendRestRequestInterceptor());
+        rest.setInterceptors(interceptors);
+
+        return rest;
+    }
+    ...
+}   
+----
+
+== Feign
+
+Via java
+[source,java]
+----
+MyInterface api = new MyInterfaceBuilder()
+        .requestInterceptor(new TalendFeignRequestInterceptor())
+----
+
+
+Via application.yml https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-feign.html[Spring Cloud Doc]
+----
+feign:
+  client:
+    config:
+      feignName:
+        requestInterceptors:
+          - org.talend.daikon.logging.TalendFeignRequestInterceptor
+----
+

@@ -32,7 +32,7 @@ public class LocalDateTimeConverterTest {
     public void testError() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         thrown.expect(TalendRuntimeException.class);
-        thrown.expect(hasProperty("code", is(LocalDateConverter.LocalDateConverterErrorCode.CANNOT_PARSE)));
+        thrown.expect(hasProperty("code", is(TypeConverterErrorCode.CANNOT_PARSE)));
         thrown.expectMessage("Cannot parse 'dd/12/2007 10:15:30' using the specified format.");
         TypeConverter.asLocalDateTime().withDateTimeFormatter(formatter).convert("dd/12/2007 10:15:30");
     }
