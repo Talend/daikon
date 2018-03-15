@@ -1,12 +1,10 @@
 package org.talend.daikon.serialize.jsonschema;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.talend.daikon.serialize.FullExampleProperties;
 import org.talend.daikon.serialize.FullExampleTestUtil;
