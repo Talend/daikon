@@ -1,7 +1,10 @@
 package org.talend.daikon.serialize.jsonschema;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 import org.talend.daikon.serialize.FullExampleProperties;
 import org.talend.daikon.serialize.FullExampleTestUtil;
@@ -14,7 +17,13 @@ public class JsonDataGeneratorTest {
         FullExampleProperties properties = FullExampleTestUtil.createASetupFullExampleProperties();
 
         JsonDataGenerator generator = new JsonDataGenerator();
-        assertEquals(jsonStr, generator.genData(properties, "def1").toString());
-    }
+        ObjectNode json = generator.genData(properties, null, "def1");
+        assertEquals(jsonStr, json.toString());
+        assertThat(json.get("stringWithPlaceholder"), nullValue());
 
+        // Modify the placeholder value
+        properties.stringWithPlaceholder.setValue("not empty");
+        json = generator.genData(properties, null, "def1");
+        assertThat(json.get("stringWithPlaceholder").asText(), is("not empty"));
+    }
 }
