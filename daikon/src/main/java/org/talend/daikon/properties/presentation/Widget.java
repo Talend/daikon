@@ -270,6 +270,11 @@ public class Widget implements ToStringIndent {
     public static final String HIDE_TOOLBAR_WIDGET_CONF = "widget.conf.hide.toolbar";
 
     /**
+     * The placeholder is a value to show to the user if they haven't yet specified a value.
+     */
+    public static final String PLACEHOLDER_WIDGET_CONF = "widget.conf.placeholder";
+
+    /**
      * The row in the form where this property is to be presented. Starting with 1.
      */
     private int row;

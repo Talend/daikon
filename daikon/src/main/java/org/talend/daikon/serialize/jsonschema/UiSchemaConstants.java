@@ -45,6 +45,11 @@ public class UiSchemaConstants {
      */
     public static final String TAG_OPTIONS = "ui:options";
 
+    /**
+     * Build-in tag. Represents the placeholder that should be used if a property isn't present.
+     */
+    public static final String TAG_PLACEHOLDER = "ui:placeholder";
+
     /** @deprecated please use PropertyTrigger#AFTER */
     @Deprecated
     public static final String TRIGGER_AFTER = PropertyTrigger.AFTER.name();

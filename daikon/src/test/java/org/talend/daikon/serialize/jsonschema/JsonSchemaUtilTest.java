@@ -40,7 +40,7 @@ public class JsonSchemaUtilTest {
     public void testUnserializeWithInstance() throws ParseException, JsonProcessingException, IOException {
         // create a json string of a setup properties
         FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
-        ObjectNode propertiesData = new JsonDataGenerator().processTPropertiesData(fep);
+        ObjectNode propertiesData = new JsonDataGenerator().processTPropertiesData(null, fep);
         FullExampleProperties deserFep = JsonSchemaUtil.fromJson(propertiesData.toString(),
                 (FullExampleProperties) new FullExampleProperties("fullexample").init());
         // compare them
@@ -54,7 +54,7 @@ public class JsonSchemaUtilTest {
 
         // create a json string of a setup properties
         FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
-        String json = new JsonDataGenerator().processTPropertiesData(fep).toString();
+        String json = new JsonDataGenerator().processTPropertiesData(null, fep).toString();
 
         // check instance is deserialized properly
         // re-create the Properties from the json data of the json string
@@ -93,7 +93,7 @@ public class JsonSchemaUtilTest {
     public void testUnserializeWithDefinitionName()
             throws ParseException, JsonProcessingException, IOException, URISyntaxException {
         FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
-        String json = new JsonDataGenerator().genData(fep, "def1").toString();
+        String json = new JsonDataGenerator().genData(fep, null, "def1").toString();
         FullExampleProperties deserFep = (FullExampleProperties) JsonSchemaUtil.fromJson(json, getRegistryWithDef1());
         // compare them
         assertEquals(fep, deserFep);
@@ -102,7 +102,7 @@ public class JsonSchemaUtilTest {
     @Test
     public void testUnserializeWithDefinitionNameAndStream() throws ParseException, JsonProcessingException, IOException {
         FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
-        ObjectNode jsonNode = new JsonDataGenerator().genData(fep, "def1");
+        ObjectNode jsonNode = new JsonDataGenerator().genData(fep, null, "def1");
         try (InputStream is = IOUtils.toInputStream(jsonNode.toString())) {
             FullExampleProperties deserFep = (FullExampleProperties) JsonSchemaUtil.fromJson(is, getRegistryWithDef1());
             // compare them
@@ -177,7 +177,7 @@ public class JsonSchemaUtilTest {
             throws ParseException, JsonProcessingException, IOException, NoSuchMethodException, InstantiationException,
             IllegalAccessException, InvocationTargetException, ClassNotFoundException {
         FullExampleProperties fep = FullExampleTestUtil.createASetupFullExampleProperties();
-        String json = new JsonDataGenerator().processTPropertiesData(fep).toString();
+        String json = new JsonDataGenerator().processTPropertiesData(null, fep).toString();
 
         // check instance is deserialized properly
         // re-create the Properties from the json data of the json string
