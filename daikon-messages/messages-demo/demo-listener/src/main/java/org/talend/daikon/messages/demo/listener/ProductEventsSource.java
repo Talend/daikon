@@ -10,13 +10,13 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.messages.demo.service1;
+package org.talend.daikon.messages.demo.listener;
 
-import org.springframework.cloud.stream.annotation.Output;
-import org.springframework.messaging.MessageChannel;
+import org.springframework.cloud.stream.annotation.Input;
+import org.springframework.messaging.SubscribableChannel;
 
-public interface ProductEventsSink {
+public interface ProductEventsSource {
 
-    @Output("productEvents")
-    MessageChannel productEvents();
+    @Input("productEvents")
+    SubscribableChannel productEvents();
 }

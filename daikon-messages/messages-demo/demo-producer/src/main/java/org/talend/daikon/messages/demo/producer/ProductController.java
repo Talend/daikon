@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.messages.demo.service1;
+package org.talend.daikon.messages.demo.producer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.daikon.messages.MessageEnvelope;
 import org.talend.daikon.messages.MessageKey;
 import org.talend.daikon.messages.MessageTypes;
@@ -44,14 +48,12 @@ public class ProductController {
     @Autowired
     private ProductEventsSink productEventsSink;
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public void createProduct(@RequestBody Product product) {
         // create event
-        ProductCreated event = new ProductCreated();
-        event.setHeader(messageHeaderFactory.createMessageHeader(MessageTypes.EVENT, "ProductCreated"));
-        event.setId(product.getId());
-        event.setLabel(product.getLabel());
-        event.setColor(product.getColor());
+        ProductCreated event = ProductCreated.newBuilder()
+                .setHeader(messageHeaderFactory.createMessageHeader(MessageTypes.EVENT, "ProductCreated")).setId(product.getId())
+                .setLabel(product.getLabel()).setColor(product.getColor()).build();
 
         MessageKey messageKey = messageKeyFactory.createMessageKey();
 
@@ -61,15 +63,14 @@ public class ProductController {
         // send event
         productEventsSink.productEvents().send(message);
 
-        LOG.info("Message with UUID " + event.getHeader().getId() + " sent");
+        LOG.info("Message with UUID {} sent", event.getHeader().getId());
     }
 
-    @RequestMapping(path = "{id}", method = RequestMethod.PUT)
+    @PutMapping(path = "{id}")
     public void editProduct(@PathVariable("id") String id, @RequestBody Product product) {
-        ProductUpdatedEvent event = new ProductUpdatedEvent();
-        event.setProductId(id);
-        event.setColor(product.getColor());
-        event.setLabel(product.getLabel());
+        ProductUpdated event = ProductUpdated.newBuilder().setProductId(id).setColor(product.getColor())
+                .setLabel(product.getLabel()).build();
+
         MessageEnvelope envelope = messageEnvelopeHandler.wrap(MessageTypes.EVENT, "ProductUpdated", event, "json");
 
         MessageKey messageKey = messageKeyFactory.createMessageKey();
@@ -80,9 +81,10 @@ public class ProductController {
         // send event
         productEventsSink.productEvents().send(message);
 
+        LOG.info("Message with UUID {} sent", event.getProductId());
     }
 
-    private static class ProductUpdatedEvent {
+    static class ProductUpdated {
 
         private String productId;
 
@@ -112,6 +114,43 @@ public class ProductController {
 
         public void setColor(String color) {
             this.color = color;
+        }
+
+        public static ProductUpdated.Builder newBuilder() {
+            return new ProductUpdated.Builder();
+        }
+
+        static class Builder {
+
+            private String productId;
+
+            private String label;
+
+            private String color;
+
+            public ProductUpdated.Builder setProductId(String productId) {
+                this.productId = productId;
+                return this;
+            }
+
+            public ProductUpdated.Builder setLabel(String label) {
+                this.label = label;
+                return this;
+            }
+
+            public ProductUpdated.Builder setColor(String color) {
+                this.color = color;
+                return this;
+            }
+
+            public ProductUpdated build() {
+                ProductUpdated record = new ProductUpdated();
+                record.setColor(this.color);
+                record.setLabel(this.label);
+                record.setProductId(productId);
+
+                return record;
+            }
         }
     }
 

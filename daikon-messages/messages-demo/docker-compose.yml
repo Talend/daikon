@@ -3,7 +3,7 @@ version: "2"
 services:
 
     service1:
-        image: "org.talend.daikon.messages-demo/demo-service1"
+        image: "org.talend.daikon.messages-demo/demo-producer"
         ports:
            - "8080:8080"
         depends_on:
@@ -20,7 +20,7 @@ services:
            - SCHEMA_REGISTRY_URL=http://schema_registry:8081
 
     service2:
-        image: "org.talend.daikon.messages-demo/demo-service2"
+        image: "org.talend.daikon.messages-demo/demo-listener"
         ports:
            - "8082:8080"
         depends_on:

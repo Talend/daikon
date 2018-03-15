@@ -148,44 +148,6 @@ MessageEnvelope envelope = ...;
 MyMessage message = (MyMessage) handler.unwrap(envelope);
 ```
 
-### Recommended implementation
-
-New kafka event should not use [message envelope](messages-model/src/main/avro/MessageEnvelop.avsc) schema but define specific schema with one mandatory attribute called [header](messages-model/src/main/avro/MessageHeader.avsc).
-
-Here is an example usage of a new implementatio:
-
-```
-{
-  "namespace": "org.talend.dataprep.messages",
-  "name": "CacheMessage",
-  "type": "record",
-  "fields": [
-    {
-      "name": "header",
-      "type": "org.talend.daikon.messages.MessageHeader"
-    },
-    {
-      "name": "operationType",
-      "type" : "org.talend.dataprep.messages.OperationTypes",
-      "default": null
-    },
-    {
-      "name": "cacheKey",
-      "type": "string"
-    },
-    {
-      "name": "partialKey",
-      "type": "boolean",
-      "default": "false"
-    }
-  ]
-}
-
-```
-
-Messages used for communication between application like TDP, TDS, TDC, Streams should be created in a separate project inside Daikon-EE
-
-
 ### Common message keys
 
 As messages are distributed by Apache Kafka, messages keys should also be normalized.
@@ -224,12 +186,96 @@ MessageKey key = factory.buildMessageKey()
 Again, the MessageKeyFactory implementation will integrate current tenant id and will add the provided partitioning keys in the message key but won't add additional
 information.
 
+### Recommended implementation
 
+New kafka event should not use [message envelope](messages-model/src/main/avro/MessageEnvelop.avsc) schema but define specific schema with one mandatory attribute called [header](messages-model/src/main/avro/MessageHeader.avsc).
 
- 
- 
+Here is an example usage of a new implementation:
 
+```
+{
+  "namespace": "org.talend.dataprep.messages",
+  "name": "CacheMessage",
+  "type": "record",
+  "fields": [
+    {
+      "name": "header",
+      "type": "org.talend.daikon.messages.MessageHeader"
+    },
+    {
+      "name": "operationType",
+      "type" : "org.talend.dataprep.messages.OperationTypes",
+      "default": null
+    },
+    {
+      "name": "cacheKey",
+      "type": "string"
+    },
+    {
+      "name": "partialKey",
+      "type": "boolean",
+      "default": "false"
+    }
+  ]
+}
 
+```
 
+Messages used for communication between application like TDP, TDS, TDC, Streams should be created in a separate project inside Daikon-EE
 
+### Spring implementation
+
+Spring implementation should defined common bean and set properties to customize serializer/deserializer.
+
+Properties should look like:
+
+```
+spring.cloud.stream.kafka.bindings.topic1.producer.configuration.key.serializer=org.talend.daikon.messages.serialization.DaikonMessageKeySerializer
+spring.cloud.stream.kafka.bindings.topic1.consumer.configuration.key.deserializer=org.talend.daikon.messages.serialization.DaikonMessageKeyDeserializer
+```
+
+Applications should declare AvroSchemaMessageConverter like this:
+
+```
+@Configuration
+@EnableBinding(...)
+@EnableMessagesProducerAutoConfig
+@EnableMessagesConsumerAutoConfig
+public class GlobalKafkaConfiguration {
+
+    @Bean
+    public MessageConverter avroMessageConverter() {
+        return new AvroSchemaMessageConverter(new MimeType("application", "avro"));
+    }
+}
+```
+
+When this configuration is set. Producer can send Avro message by using:
+
+```
+    public void sendMessage(CacheMessage event) {
+
+        MessageKey messageKey = messageKeyFactory.createMessageKey();
+
+        // creating kafka message
+        Message message = MessageBuilder
+                .withPayload(event)
+                .setHeader(KafkaHeaders.MESSAGE_KEY, messageKey)
+                .build();
+
+        outputChannel.send(message);
+    }
+```
+and listener can receive Avro message by using:
+
+```
+    @StreamListener(value = CHANNEL)
+    public void receive(Message<CacheMessage> message) {
+
+        CacheMessage payload = message.getPayload();
+
+        // setting context for kafka message
+        executionContextUpdater.updateExecutionContext(message);
+    }
+```
 

@@ -9,8 +9,8 @@
         <version>0.22.0-SNAPSHOT</version>
     </parent>
     <groupId>org.talend.daikon.messages-demo</groupId>
-    <artifactId>demo-service2</artifactId>
-    <name>demo-service2</name>
+    <artifactId>demo-producer</artifactId>
+    <name>demo-producer</name>
 
     <build>
         <plugins>
@@ -23,6 +23,50 @@
                         <goals>
                             <goal>repackage</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                    <id>unpack</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>unpack</goal>
+                    </goals>
+                    <configuration>
+                        <artifactItems>
+                            <artifactItem>
+                                <groupId>org.talend.daikon</groupId>
+                                <artifactId>messages-model</artifactId>
+                                <version>${project.version}</version>
+                                <overWrite>true</overWrite>
+                                <outputDirectory>${project.basedir}/target/messages-model</outputDirectory>
+                            </artifactItem>
+                        </artifactItems>
+                    </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro-maven-plugin</artifactId>
+                <version>1.8.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>schema</goal>
+                        </goals>
+                        <configuration>
+                            <stringType>String</stringType>
+                            <imports>
+                                <import>${project.basedir}/target/messages-model/MessageHeader.avsc</import>
+                            </imports>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -93,5 +137,6 @@
             <artifactId>kafka-avro-serializer</artifactId>
         </dependency>
     </dependencies>
+
 
 </project>

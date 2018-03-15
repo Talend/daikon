@@ -10,17 +10,15 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.messages.demo.service2;
+package org.talend.daikon.messages.demo.listener;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.context.annotation.ComponentScan;
 import org.talend.daikon.messages.spring.consumer.EnableMessagesConsumerAutoConfig;
 
 @SpringBootApplication
-@EnableAutoConfiguration
 @EnableMessagesConsumerAutoConfig
 @EnableBinding(ProductEventsSource.class)
 @ComponentScan(basePackages = { "org.talend.daikon.messages.demo.service2" })

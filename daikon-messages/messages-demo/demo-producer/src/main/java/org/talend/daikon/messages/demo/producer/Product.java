@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.messages.demo.service1;
+package org.talend.daikon.messages.demo.producer;
 
 public class Product {
 

@@ -13,8 +13,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>demo-service1</module>
-        <module>demo-service2</module>
+        <module>demo-producer</module>
+        <module>demo-listener</module>
     </modules>
 
     <repositories>
