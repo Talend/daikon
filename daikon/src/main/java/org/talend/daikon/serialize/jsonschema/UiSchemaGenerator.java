@@ -164,6 +164,9 @@ public class UiSchemaGenerator {
                     hasVisible[0] = true;
                 }
             }
+            String placeholder = (String) widget.getConfigurationValue(Widget.PLACEHOLDER_WIDGET_CONF);
+            if (placeholder != null)
+                schema.put(UiSchemaConstants.TAG_PLACEHOLDER, placeholder);
             return addTriggerTWidget(widget, schema);
         }
     }
