@@ -34,7 +34,7 @@ class WidgetSpecificJsonSchemaUtils {
             if (widget != null) {
                 String widgetType = widget.getWidgetType();
                 if (StringUtils.equals(Widget.MULTIPLE_VALUE_SELECTOR_WIDGET_TYPE, widgetType)) {
-                    schema.put(JsonSchemaConstants.TAG_UNIQUE_ITEMS, "true");
+                    schema.put(JsonSchemaConstants.TAG_UNIQUE_ITEMS, true);
                     schema.put(JsonSchemaConstants.TAG_MIN_ITEMS, 1);
                 }
 
