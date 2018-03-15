@@ -66,6 +66,11 @@ public class FullExampleProperties extends PropertiesImpl {
      */
     public final Property<String> multipleSelectionProp = newProperty("multipleSelectionProp");
 
+    /**
+     * property to check the {@link Widget#PLACEHOLDER_WIDGET_CONF}.
+     */
+    public final Property<String> stringWithPlaceholder = newProperty("stringWithPlaceholder");
+
     /** checking {@link WidgetType#BUTTON} */
     public final PresentationItem showNewForm = new PresentationItem("showNewForm");
 
@@ -160,6 +165,8 @@ public class FullExampleProperties extends PropertiesImpl {
         mainForm.addRow(widget(schema).setWidgetType(SCHEMA_REFERENCE_WIDGET_TYPE));
         mainForm.addRow(widget(multipleSelectionProp).setWidgetType(NAME_SELECTION_AREA_WIDGET_TYPE));
         mainForm.addRow(widget(multipleSelectionProp).setWidgetType(NAME_SELECTION_REFERENCE_WIDGET_TYPE));
+        mainForm.addRow(widget(stringWithPlaceholder).setWidgetType(TEXT_AREA_WIDGET_TYPE)
+                .setConfigurationValue(Widget.PLACEHOLDER_WIDGET_CONF, "Place Holder"));
         mainForm.addRow(widget(showNewForm).setWidgetType(BUTTON_WIDGET_TYPE));
         Form popUpForm = new Form(this, POPUP_FORM_NAME);
         showNewForm.setFormtoShow(popUpForm);
