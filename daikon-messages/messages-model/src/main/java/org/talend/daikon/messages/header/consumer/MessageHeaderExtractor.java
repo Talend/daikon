@@ -27,6 +27,14 @@ public final class MessageHeaderExtractor {
 
     private static final int EXPECTED_HEADER_POSITION = 0;
 
+    private static final String PROVIDED_FIRST_FIELD_RECORD_LABEL = "Provided message's first field is not a record but ";
+
+    private static final String PROVIDED_FIRST_FIELD_HEADER_LABEL = "Provided message's first field is not a header but ";
+
+    private static final String MESSAGE_SHOULD_NOT_BE_NULL_LABEL = "Message should not be null";
+
+    private static final String CANNOT_INITIALIZE_MESSAGE_HEADER_SCHEMA_LABEL = "Cannot initialize message header schema";
+
     private final Schema messageHeaderSchema;
 
     /**
@@ -40,7 +48,7 @@ public final class MessageHeaderExtractor {
         try (InputStream schemaInputStream = this.getClass().getResourceAsStream("/MessageHeader.avsc")) {
             messageHeaderSchema = new Schema.Parser().parse(schemaInputStream);
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot initialize message header schema", e);
+            throw new IllegalStateException(CANNOT_INITIALIZE_MESSAGE_HEADER_SCHEMA_LABEL, e);
         }
     }
 
@@ -52,16 +60,14 @@ public final class MessageHeaderExtractor {
      * @throws IllegalArgumentException if the message does not contain a header
      */
     public MessageHeader extractHeader(IndexedRecord message) {
-        assert message != null : "Message should not be null";
+        assert message != null : MESSAGE_SHOULD_NOT_BE_NULL_LABEL;
         final Schema messageSchema = message.getSchema();
         final Schema firstFieldSchema = messageSchema.getFields().get(EXPECTED_HEADER_POSITION).schema();
         if (firstFieldSchema.getType() != Schema.Type.RECORD) {
-            throw new IllegalArgumentException(
-                    "Provided message's first field is not a record but " + firstFieldSchema.getType());
+            throw new IllegalArgumentException(PROVIDED_FIRST_FIELD_RECORD_LABEL + firstFieldSchema.getType());
         }
         if (!firstFieldSchema.getFullName().equals(messageHeaderSchema.getFullName())) {
-            throw new IllegalArgumentException(
-                    "Provided message's first field is not a header but " + firstFieldSchema.getFullName());
+            throw new IllegalArgumentException(PROVIDED_FIRST_FIELD_HEADER_LABEL + firstFieldSchema.getFullName());
         }
         final Object firstFieldValue = message.get(EXPECTED_HEADER_POSITION);
         if (firstFieldValue instanceof MessageHeader) {
