@@ -76,7 +76,7 @@ public class JsonSchemaGeneratorTest extends AbstractSchemaGenerator {
         String expectedPartial = "{\"title\":\"form.Main.displayName\",\"type\":\"object\",\"properties\""
                 + ":{\"selectColumnIds\":{\"title\":\"property.selectColumnIds.displayName\","
                 + "\"type\":\"array\",\"items\":{\"type\":\"string\",\"enum\":[\"col1\",\"col2\",\"col3\"],"
-                + "\"enumNames\":[\"Surname\",\"Name\",\"Phone\"]},\"uniqueItems\":\"true\",\"minItems\":1}}}";
+                + "\"enumNames\":[\"Surname\",\"Name\",\"Phone\"]},\"uniqueItems\":true,\"minItems\":1}}}";
         assertEquals(expectedPartial, genSchema.toString(), false);
     }
 
