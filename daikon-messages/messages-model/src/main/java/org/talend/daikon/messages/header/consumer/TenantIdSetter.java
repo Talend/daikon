@@ -15,6 +15,7 @@ package org.talend.daikon.messages.header.consumer;
 /**
  * Created by bguillon on 07/11/2017.
  */
+@FunctionalInterface
 public interface TenantIdSetter {
 
     void setCurrentTenantId(String tenantId);

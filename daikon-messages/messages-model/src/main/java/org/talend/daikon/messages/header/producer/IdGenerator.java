@@ -15,6 +15,7 @@ package org.talend.daikon.messages.header.producer;
 /**
  * A class able to generate event identifiers.
  */
+@FunctionalInterface
 public interface IdGenerator {
 
     /**

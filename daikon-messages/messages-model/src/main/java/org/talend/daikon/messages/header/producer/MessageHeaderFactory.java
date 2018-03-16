@@ -18,6 +18,7 @@ import org.talend.daikon.messages.MessageTypes;
 /**
  * A factory for normalized {@link MessageHeader}
  */
+@FunctionalInterface
 public interface MessageHeaderFactory {
 
     /**

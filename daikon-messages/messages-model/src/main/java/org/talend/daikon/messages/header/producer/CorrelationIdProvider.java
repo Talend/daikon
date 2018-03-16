@@ -17,6 +17,7 @@ package org.talend.daikon.messages.header.producer;
  *
  * This implementation should generate a new correlation id if the current request has no correlation id.
  */
+@FunctionalInterface
 public interface CorrelationIdProvider {
 
     /**

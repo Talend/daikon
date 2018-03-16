@@ -15,6 +15,7 @@ package org.talend.daikon.messages.header.producer;
 /**
  * Accesses the current security context and provides the current security token
  */
+@FunctionalInterface
 public interface SecurityTokenProvider {
 
     /**
