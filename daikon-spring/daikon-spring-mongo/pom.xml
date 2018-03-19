@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>org.talend.daikon</groupId>
 	<artifactId>daikon-spring-mongo</artifactId>
-	<version>0.22.0-SNAPSHOT</version>
+	<version>0.23.0-SNAPSHOT</version>
 	<name>daikon-spring-mongo</name>
 	<properties>
 		<java.version>1.8</java.version>
@@ -18,7 +18,19 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring-core.version>4.3.4.RELEASE</spring-core.version>
 		<spring-data-mongodb.version>1.8.2.RELEASE</spring-data-mongodb.version>
+		<jackson.version>2.9.4</jackson.version>
 	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
         <dependency>
 			<groupId>org.springframework</groupId>
