@@ -24,13 +24,10 @@ public class TestDaikonMessageSerialization {
 
         MessageKey deserializeData = daikonMessageKeyDeserializer.deserialize("topic", serializeData);
 
-        asserMessageKey(data, deserializeData);
+        Assert.assertEquals(data.getTenantId(), deserializeData.getTenantId());
+        Assert.assertEquals(data.getRandom(), deserializeData.getRandom());
+        Assert.assertEquals(data.getKeys(), deserializeData.getKeys());
 
     }
 
-    private void asserMessageKey(MessageKey expectedMessageKey, MessageKey currentMessageKey) {
-        Assert.assertEquals(expectedMessageKey.getTenantId(), currentMessageKey.getTenantId());
-        Assert.assertEquals(expectedMessageKey.getRandom(), currentMessageKey.getRandom());
-        Assert.assertEquals(expectedMessageKey.getKeys(), currentMessageKey.getKeys());
-    }
 }
