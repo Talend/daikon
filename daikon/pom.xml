@@ -161,6 +161,11 @@
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<_nouses>true</_nouses>
+					</instructions>
+				</configuration>
 				<executions>
 					<execution>
 						<id>bundle-manifest</id>
