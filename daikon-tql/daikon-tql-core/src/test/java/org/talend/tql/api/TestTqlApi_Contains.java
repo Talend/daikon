@@ -53,4 +53,12 @@ public class TestTqlApi_Contains extends TestTqlParser_Abstract {
         Assert.assertEquals(expected.toString(), tqlElement.toString());
     }
 
+    @Test
+    public void testApiFieldContains6() throws Exception {
+        TqlElement expected = doTest("name contains 'aze\\'rty'");
+        // TQL api query
+        TqlElement tqlElement = contains("name", "aze'rty");
+        Assert.assertEquals(expected.toString(), tqlElement.toString());
+    }
+
 }

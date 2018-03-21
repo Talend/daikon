@@ -53,4 +53,5 @@ DECIMAL: ('-')?('0' .. '9')+('.')('0' .. '9')*;
 FIELD: ('a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '.' )+;
 
 // literal values
-QUOTED_VALUE : ( '\'' ( ~ '\'' )* '\'' );
+fragment ESC : '\\\'';
+QUOTED_VALUE : ( '\'' (ESC|.)*? '\'' );

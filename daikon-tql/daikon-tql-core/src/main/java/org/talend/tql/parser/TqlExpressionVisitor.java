@@ -13,7 +13,25 @@ import org.talend.tql.TqlLexer;
 import org.talend.tql.TqlParser;
 import org.talend.tql.TqlParserVisitor;
 import org.talend.tql.excp.TqlException;
-import org.talend.tql.model.*;
+import org.talend.tql.model.AllFields;
+import org.talend.tql.model.AndExpression;
+import org.talend.tql.model.BooleanValue;
+import org.talend.tql.model.ComparisonExpression;
+import org.talend.tql.model.ComparisonOperator;
+import org.talend.tql.model.Expression;
+import org.talend.tql.model.FieldBetweenExpression;
+import org.talend.tql.model.FieldCompliesPattern;
+import org.talend.tql.model.FieldContainsExpression;
+import org.talend.tql.model.FieldInExpression;
+import org.talend.tql.model.FieldIsEmptyExpression;
+import org.talend.tql.model.FieldIsInvalidExpression;
+import org.talend.tql.model.FieldIsValidExpression;
+import org.talend.tql.model.FieldMatchesRegex;
+import org.talend.tql.model.FieldReference;
+import org.talend.tql.model.LiteralValue;
+import org.talend.tql.model.NotExpression;
+import org.talend.tql.model.OrExpression;
+import org.talend.tql.model.TqlElement;
 
 /**
  * Visitor for building the AST Tql tree.
@@ -60,7 +78,8 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
         LiteralValue.Enum literalValue = LiteralValue.Enum.valueOf(symbolicName);
         LOG.debug("Found literal value " + literalValue);
         String v = symbol.getText();
-        String value = literalValue.equals(LiteralValue.Enum.QUOTED_VALUE) ? v.substring(1, v.length() - 1) : v;
+        String value = literalValue.equals(LiteralValue.Enum.QUOTED_VALUE) ? unescapeSingleQuote(v.substring(1, v.length() - 1))
+                : v;
         LiteralValue lv = new LiteralValue(literalValue, value);
         LOG.debug("End visit literal value: " + ctx.getText());
         return lv;
@@ -166,7 +185,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
 
         String quotedValue = valueNode.getSymbol().getText();
         String value = quotedValue.substring(1, quotedValue.length() - 1);
-        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(fieldName, value);
+        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(fieldName, unescapeSingleQuote(value));
         LOG.debug("End visit field contains: " + ctx.getText());
         return fieldContainsExpression;
     }
@@ -183,7 +202,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
 
         String quotedRegex = regexNode.getSymbol().getText();
         String regex = quotedRegex.substring(1, quotedRegex.length() - 1);
-        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldName, regex);
+        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldName, unescapeSingleQuote(regex));
         LOG.debug("End visit field matches: " + ctx.getText());
         return fieldMatchesRegex;
     }
@@ -199,7 +218,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
 
         String quotedPattern = patternNode.getText();
         String pattern = quotedPattern.substring(1, quotedPattern.length() - 1);
-        FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldName, pattern);
+        FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldName, unescapeSingleQuote(pattern));
         LOG.debug("End visit field complies: " + ctx.getText());
         return fieldCompliesPattern;
     }
@@ -309,5 +328,24 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitChildren(RuleNode node) {
         throw new TqlException("Unhandled children node: " + node.getText());
+    }
+
+    /**
+     * The single quote is used in the antlr grammar as a litteral delimeter, but can still be used inside a litteral.
+     * To avoid literals being truncated when parsed by antlr, single quotes are escaped by the tql clients, and then
+     * need to be unescaped after the parse operation.
+     *
+     * <pre>
+     * unescapeSingleQuote(null)       = null
+     * unescapeSingleQuote("O\'Reilly")= "O'Reilly"
+     * unescapeSingleQuote("\\")= "\\"
+     *
+     * </pre>
+     *
+     * @param token the parsed token
+     * @return the token unescaped for single quotes
+     */
+    private String unescapeSingleQuote(String token) {
+        return token != null ? token.replaceAll("\\\\'", "'") : null;
     }
 }
