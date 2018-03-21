@@ -78,7 +78,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
         LiteralValue.Enum literalValue = LiteralValue.Enum.valueOf(symbolicName);
         LOG.debug("Found literal value " + literalValue);
         String v = symbol.getText();
-        String value = literalValue.equals(LiteralValue.Enum.QUOTED_VALUE) ? unescapeSingleQuote(v.substring(1, v.length() - 1))
+        String value = literalValue.equals(LiteralValue.Enum.QUOTED_VALUE) ? unescapeSingleQuotes(v.substring(1, v.length() - 1))
                 : v;
         LiteralValue lv = new LiteralValue(literalValue, value);
         LOG.debug("End visit literal value: " + ctx.getText());
@@ -185,7 +185,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
 
         String quotedValue = valueNode.getSymbol().getText();
         String value = quotedValue.substring(1, quotedValue.length() - 1);
-        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(fieldName, unescapeSingleQuote(value));
+        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(fieldName, unescapeSingleQuotes(value));
         LOG.debug("End visit field contains: " + ctx.getText());
         return fieldContainsExpression;
     }
@@ -202,7 +202,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
 
         String quotedRegex = regexNode.getSymbol().getText();
         String regex = quotedRegex.substring(1, quotedRegex.length() - 1);
-        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldName, unescapeSingleQuote(regex));
+        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldName, unescapeSingleQuotes(regex));
         LOG.debug("End visit field matches: " + ctx.getText());
         return fieldMatchesRegex;
     }
@@ -218,7 +218,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
 
         String quotedPattern = patternNode.getText();
         String pattern = quotedPattern.substring(1, quotedPattern.length() - 1);
-        FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldName, unescapeSingleQuote(pattern));
+        FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldName, unescapeSingleQuotes(pattern));
         LOG.debug("End visit field complies: " + ctx.getText());
         return fieldCompliesPattern;
     }
@@ -331,21 +331,21 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     }
 
     /**
-     * The single quote is used in the antlr grammar as a litteral delimeter, but can still be used inside a litteral.
-     * To avoid literals being truncated when parsed by antlr, single quotes are escaped by the tql clients, and then
+     * The single quote is used in the ANTLR grammar as a literal delimiter, but can still be used inside a literal.
+     * To avoid literals being truncated when parsed by ANTLR, single quotes are escaped by the TQL clients, and then
      * need to be unescaped after the parse operation.
      *
      * <pre>
-     * unescapeSingleQuote(null)       = null
-     * unescapeSingleQuote("O\'Reilly")= "O'Reilly"
-     * unescapeSingleQuote("\\")= "\\"
+     * unescapeSingleQuotes(null)       = null
+     * unescapeSingleQuotes("O\'Reilly")= "O'Reilly"
+     * unescapeSingleQuotes("\\")= "\\"
      *
      * </pre>
      *
      * @param token the parsed token
      * @return the token unescaped for single quotes
      */
-    private String unescapeSingleQuote(String token) {
+    private String unescapeSingleQuotes(String token) {
         return token != null ? token.replaceAll("\\\\'", "'") : null;
     }
 }
