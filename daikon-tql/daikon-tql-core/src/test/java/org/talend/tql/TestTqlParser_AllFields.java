@@ -75,4 +75,25 @@ public class TestTqlParser_AllFields extends TestTqlParser_Abstract {
         String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldBetweenExpression{field='AllFields{}', left=LiteralValue{literal=INT, value='0'}, right=LiteralValue{literal=INT, value='5'}, isLowerOpen=false, isUpperOpen=false}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
+
+    @Test
+    public void testParseLiteralComparisonIn() throws Exception {
+        TqlElement tqlElement = doTest("* in ['value1', 'value2']");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldInExpression{field='AllFields{}', values=[LiteralValue{literal=QUOTED_VALUE, value='value1'}, LiteralValue{literal=QUOTED_VALUE, value='value2'}]}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
+    public void testParseLiteralComparisonMatches() throws Exception {
+        TqlElement tqlElement = doTest("* ~ '[a-z]+@daikon.[a-z]+'");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldMatchesRegex{field='AllFields{}', regex='[a-z]+@daikon.[a-z]+'}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
+    public void testParseLiteralComparisonContains() throws Exception {
+        TqlElement tqlElement = doTest("* contains 'value1'");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldContainsExpression{field='AllFields{}', value='value1'}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
 }

@@ -173,38 +173,39 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
         return isInvalidExpression;
     }
 
+    /**
+     * The single quote is used in the ANTLR grammar as a literal delimiter, but can still be used inside a literal.
+     * To avoid literals being truncated when parsed by ANTLR, single quotes are escaped by the TQL clients, and then
+     * need to be unescaped after the parse operation.
+     *
+     * <pre>
+     * unescapeSingleQuotes(null)       = null
+     * unescapeSingleQuotes("O\'Reilly")= "O'Reilly"
+     * unescapeSingleQuotes("\\")= "\\"
+     *
+     * </pre>
+     *
+     * @param token the parsed token
+     * @return the token unescaped for single quotes
+     */
+    private static String unescapeSingleQuotes(String token) {
+        return token != null ? token.replaceAll("\\\\'", "'") : null;
+    }
+
     @Override
     public TqlElement visitFieldContains(TqlParser.FieldContainsContext ctx) {
         LOG.debug("Visit field contains: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        TqlElement fieldName = field.accept(this);
-        TerminalNode valueNode = ctx.getChild(TerminalNode.class, 2);
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        ParseTree valueNode = ctx.getChild(2);
 
         if (valueNode instanceof ErrorNode)
             throw new TqlException(valueNode.getText());
 
-        String quotedValue = valueNode.getSymbol().getText();
+        String quotedValue = valueNode.getText();
         String value = quotedValue.substring(1, quotedValue.length() - 1);
         FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(fieldName, unescapeSingleQuotes(value));
         LOG.debug("End visit field contains: " + ctx.getText());
         return fieldContainsExpression;
-    }
-
-    @Override
-    public TqlElement visitFieldMatchesRegexp(TqlParser.FieldMatchesRegexpContext ctx) {
-        LOG.debug("Visit field matches: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        TqlElement fieldName = field.accept(this);
-        TerminalNode regexNode = ctx.getChild(TerminalNode.class, 2);
-
-        if (regexNode instanceof ErrorNode)
-            throw new TqlException(regexNode.getText());
-
-        String quotedRegex = regexNode.getSymbol().getText();
-        String regex = quotedRegex.substring(1, quotedRegex.length() - 1);
-        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldName, unescapeSingleQuotes(regex));
-        LOG.debug("End visit field matches: " + ctx.getText());
-        return fieldMatchesRegex;
     }
 
     @Override
@@ -243,8 +244,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldIn(TqlParser.FieldInContext ctx) {
         LOG.debug("Visit field in: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        TqlElement fieldName = field.accept(this);
+        TqlElement fieldName = ctx.getChild(0).accept(this);
         // All children which are not terminal values are the needed literal values (see syntax)
         LiteralValue[] literalValues = ctx.children.stream().filter(c -> c instanceof TqlParser.LiteralValueContext
                 || c instanceof TqlParser.BooleanValueContext || c instanceof ErrorNode).map(c -> (LiteralValue) c.accept(this))
@@ -330,22 +330,19 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
         throw new TqlException("Unhandled children node: " + node.getText());
     }
 
-    /**
-     * The single quote is used in the ANTLR grammar as a literal delimiter, but can still be used inside a literal.
-     * To avoid literals being truncated when parsed by ANTLR, single quotes are escaped by the TQL clients, and then
-     * need to be unescaped after the parse operation.
-     *
-     * <pre>
-     * unescapeSingleQuotes(null)       = null
-     * unescapeSingleQuotes("O\'Reilly")= "O'Reilly"
-     * unescapeSingleQuotes("\\")= "\\"
-     *
-     * </pre>
-     *
-     * @param token the parsed token
-     * @return the token unescaped for single quotes
-     */
-    private String unescapeSingleQuotes(String token) {
-        return token != null ? token.replaceAll("\\\\'", "'") : null;
+    @Override
+    public TqlElement visitFieldMatchesRegexp(TqlParser.FieldMatchesRegexpContext ctx) {
+        LOG.debug("Visit field matches: " + ctx.getText());
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        ParseTree regexNode = ctx.getChild(2);
+
+        if (regexNode instanceof ErrorNode)
+            throw new TqlException(regexNode.getText());
+
+        String quotedRegex = regexNode.getText();
+        String regex = quotedRegex.substring(1, quotedRegex.length() - 1);
+        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldName, unescapeSingleQuotes(regex));
+        LOG.debug("End visit field matches: " + ctx.getText());
+        return fieldMatchesRegex;
     }
 }
