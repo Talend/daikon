@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import avro.shaded.com.google.common.annotations.VisibleForTesting;
 import org.apache.avro.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,8 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
      * @param jsonNode
      * @return fields schema of json node
      */
-    public List<Schema.Field> getFields(final JsonNode jsonNode) {
+    @VisibleForTesting
+    List<Schema.Field> getFields(final JsonNode jsonNode) {
         List<Schema.Field> fields = new ArrayList<>();
         final Iterator<Map.Entry<String, JsonNode>> elements = jsonNode.fields();
         Map.Entry<String, JsonNode> mapEntry;
@@ -148,8 +149,7 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
                     break;
 
                 case OBJECT:
-                    field = new Schema.Field(mapEntry.getKey(),
-                            Schema.createRecord(getSubRecordRandomName(), null, null, false, getFields(nextNode)), null, null,
+                    field = new Schema.Field(mapEntry.getKey(), Schema.createRecord(getFields(nextNode)), null, null,
                             Schema.Field.Order.ASCENDING);
                     fields.add(field);
                     break;
@@ -173,7 +173,8 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
      * @param node Json node.
      * @return an Avro schema using {@link AvroUtils#wrapAsNullable(Schema)} by node type.
      */
-    public Schema getAvroSchema(JsonNode node) {
+    @VisibleForTesting
+    Schema getAvroSchema(JsonNode node) {
         if (node instanceof TextNode) {
             return AvroUtils.wrapAsNullable(AvroUtils._string());
         } else if (node instanceof IntNode) {
@@ -187,14 +188,7 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
         } else if (node instanceof NullNode) {
             return AvroUtils.wrapAsNullable(AvroUtils._string());
         } else {
-            return Schema.createRecord(getSubRecordRandomName(), null, null, false, getFields(node));
+            return Schema.createRecord(getFields(node));
         }
-    }
-
-    /**
-     * @return subrecord random name.
-     */
-    private String getSubRecordRandomName() {
-        return "subrecord" + UUID.randomUUID().toString().replace("-", "_");
     }
 }
