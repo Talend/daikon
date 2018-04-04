@@ -18,8 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import avro.shaded.com.google.common.annotations.VisibleForTesting;
 import org.apache.avro.Schema;
+import org.apache.avro.SchemaNormalization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.avro.AvroUtils;
@@ -34,6 +34,8 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+
+import avro.shaded.com.google.common.annotations.VisibleForTesting;
 
 /**
  * Converts json string to avro schema.
@@ -149,7 +151,7 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
                     break;
 
                 case OBJECT:
-                    field = new Schema.Field(mapEntry.getKey(), Schema.createRecord(getFields(nextNode)), null, null,
+                    field = new Schema.Field(mapEntry.getKey(), createSubRecord(nextNode), null, null,
                             Schema.Field.Order.ASCENDING);
                     fields.add(field);
                     break;
@@ -188,7 +190,20 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
         } else if (node instanceof NullNode) {
             return AvroUtils.wrapAsNullable(AvroUtils._string());
         } else {
-            return Schema.createRecord(getFields(node));
+            return createSubRecord(node);
         }
+    }
+
+    /**
+     * @return subrecord random name.
+     * @param node
+     */
+    private Schema createSubRecord(JsonNode node) {
+        // Create a nameless temporary record to get a fingerprint from.
+        Schema record = Schema.createRecord(getFields(node));
+        long fingerprint = SchemaNormalization.parsingFingerprint64(record);
+
+        // Use the fingerprint in the record name.  Note that we have to traverse the node twice.
+        return Schema.createRecord(("subrecord" + fingerprint).replace('-', '_'), null, null, false, getFields(node));
     }
 }
