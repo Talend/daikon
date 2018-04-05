@@ -2,6 +2,7 @@
   "name": "@talend/daikon-tql-client",
   "description": "Daikon TQL client",
   "main": "lib/index.js",
+  "license": "Apache-2.0",
   "scripts": {
     "prepublish": "rimraf ./lib &&  babel -d lib ./src/ --ignore spec.js",
     "test": "jest",
@@ -11,7 +12,6 @@
     "lint": "npm run lint:es"
   },
   "author": "Talend Frontend <frontend@talend.com>",
-  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Talend/daikon.git"
@@ -61,5 +61,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "version": "0.1.0"
 }

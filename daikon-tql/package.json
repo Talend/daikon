@@ -1,5 +1,11 @@
 {
-	"devDependencies": {
-		"lerna": "^2.9.1"
-	}
+  "name": "daikon-tql",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {
+    "publish": "lerna publish --force-publish=*",
+  },
+  "devDependencies": {
+    "lerna": "^2.9.1"
+  }
 }
