@@ -1,9 +1,11 @@
 {
   "name": "daikon-tql",
-  "private": true,
+  "description": "Private parent Daikon TQL",
   "license": "Apache-2.0",
   "scripts": {
-    "publish": "lerna publish --force-publish=*",
+    "postinstall": "lerna clean --yes && lerna exec -- yarn --pure-lockfile --no-progress --mutex network",
+    "test": "lerna exec --scope=@talend/daikon-tql-client -- yarn test",
+    "publish": "lerna publish --skip-git --force-publish=*"
   },
   "devDependencies": {
     "lerna": "^2.9.1"

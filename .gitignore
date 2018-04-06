@@ -19,6 +19,7 @@ target/
 # Node.js #
 etc
 lib
+lerna-debug.log
 node
 node_modules
 yarn-error.log

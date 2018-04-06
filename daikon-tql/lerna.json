@@ -5,6 +5,9 @@
     "daikon-tql-core/target/generated-modules/tql"
   ],
   "npmClient": "yarn",
-  "npmClientArgs": ["--production", "--no-optional"],
-  "version": "0.0.0"
+  "npmClientArgs": [
+    "--production",
+    "--no-optional"
+  ],
+  "version": "1.0.0"
 }
