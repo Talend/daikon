@@ -1,0 +1,13 @@
+{
+  "lerna": "2.9.1",
+  "packages": [
+    "daikon-tql-client",
+    "daikon-tql-core/target/generated-modules/tql"
+  ],
+  "npmClient": "yarn",
+  "npmClientArgs": [
+    "--production",
+    "--no-optional"
+  ],
+  "version": "1.0.0"
+}

@@ -1,14 +1,21 @@
 {
   "name": "@talend/tql",
-  "version": "${project.version}",
   "description": "A TQL Parser and Lexer in JavaScript",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
   "license": "Apache-2.0",
+  "author": "Talend Frontend <frontend@talend.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Talend/daikon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Talend/daikon/issues"
+  },
   "dependencies": {
     "antlr4": "^4.7.0"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "1.0.0"
 }
