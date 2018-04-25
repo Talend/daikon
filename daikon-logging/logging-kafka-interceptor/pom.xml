@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.talend.daikon</groupId>
             <artifactId>messages-model</artifactId>
-            <version>0.24.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 		<!-- Tests -->
