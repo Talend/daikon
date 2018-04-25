@@ -1,7 +1,6 @@
 package org.talend.daikon.logging.kafka;
 
 import org.apache.avro.Schema;
-import org.apache.avro.Schema.*;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -11,9 +10,7 @@ import org.apache.kafka.clients.consumer.internals.ConsumerInterceptors;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.record.TimestampType;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.talend.daikon.logging.TalendKafkaConsumerInterceptor;
-import org.talend.daikon.messages.header.producer.TenantIdProvider;
 
 import java.nio.charset.Charset;
 import java.util.*;
@@ -23,8 +20,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ConsumerInterceptorsTest {
-
-    private final TenantIdProvider tenantIdProvider = Mockito.mock(TenantIdProvider.class);
 
     @Test
     public void testOnConsume() {
