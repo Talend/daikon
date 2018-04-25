@@ -1,9 +1,9 @@
 package org.talend.daikon.logging;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.avro.generic.GenericData;
 import org.apache.kafka.clients.consumer.ConsumerInterceptor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -24,9 +24,9 @@ public class TalendKafkaConsumerInterceptor implements ConsumerInterceptor<Objec
                 Iterator<ConsumerRecord<Object, Object>> consumerRecords = records.iterator();
                 if (consumerRecords != null) {
                     consumerRecords.forEachRemaining(c -> {
-                        String message = new String((byte[]) c.value(), StandardCharsets.UTF_8);
-                        LOGGER.trace(String.format("onConsume topic=%s partition=%d message=%s \n", c.topic(), c.partition(),
-                                message));
+                        String tenantId = (String) ((GenericData.Record) c.key()).get("tenantId");
+                        LOGGER.trace(String.format("onConsume topic=%s partition=%d tenantId=%s \n", c.topic(), c.partition(),
+                                tenantId));
                     });
                 }
             } catch (Exception e) {
