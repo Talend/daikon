@@ -29,4 +29,9 @@ public class AndExpression implements Expression {
     public <T> T accept(IASTVisitor<T> visitor) {
         return visitor.visit(this);
     }
+
+    @Override
+    public boolean equals(Object expression) {
+        return expression instanceof Expression && expression.toString().equals(this.toString());
+    }
 }

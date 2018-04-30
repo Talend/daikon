@@ -2,6 +2,7 @@ package org.talend.tql.model;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.talend.tql.visitor.IASTVisitor;
 
 /*
@@ -31,5 +32,11 @@ public class OrExpression implements Expression {
     @Override
     public <T> T accept(IASTVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object expression) {
+        return expression instanceof OrExpression
+                && new EqualsBuilder().append(expressions, ((OrExpression) expression).getExpressions()).isEquals();
     }
 }
