@@ -35,6 +35,6 @@ public class NotExpression implements Atom {
     @Override
     public boolean equals(Object expression) {
         return expression instanceof NotExpression
-                && new EqualsBuilder().append(expression, ((NotExpression) expression).expression).isEquals();
+                && new EqualsBuilder().append(this.expression, ((NotExpression) expression).expression).isEquals();
     }
 }
