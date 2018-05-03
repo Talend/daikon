@@ -50,16 +50,6 @@
       }
     },
     {
-      "name" : "operationType",
-      "doc": "A operation can be either a creation, update, deletion, read",
-      "type" : ["null", {
-        "type": "enum",
-        "name": "OperationTypes",
-        "symbols" : ["CREATION", "DELETION", "UPDATE", "READ"]
-      }],
-      "default": null
-    },
-    {
       "name" : "name",
       "doc" : "The message name - identifies the purpose of the message (e.g. datasetCreated, createUser)",
       "type" : "string"
