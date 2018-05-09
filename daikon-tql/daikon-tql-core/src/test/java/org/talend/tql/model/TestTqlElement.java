@@ -1,6 +1,7 @@
 package org.talend.tql.model;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -11,7 +12,7 @@ public class TestTqlElement {
     public void testEqualsAndExpression() {
         AndExpression andExpression = new AndExpression(new OrExpression(), new OrExpression());
 
-        assertFalse(andExpression.equals(null));
+        assertNotNull(andExpression);
         assertFalse(andExpression.equals(new AndExpression()));
         assertFalse(andExpression.equals(new AndExpression(new OrExpression())));
         assertFalse(andExpression.equals(new AndExpression(new OrExpression(), new AndExpression())));
@@ -24,7 +25,7 @@ public class TestTqlElement {
                 new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test"),
                 new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test"));
 
-        assertFalse(comparisonExpression.equals(null));
+        assertNotNull(comparisonExpression);
         assertFalse(comparisonExpression.equals(new ComparisonExpression(null, null, null)));
         assertFalse(comparisonExpression.equals(new ComparisonExpression(new ComparisonOperator(ComparisonOperator.Enum.NEQ),
                 new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test"),
@@ -42,7 +43,7 @@ public class TestTqlElement {
     public void testEqualsLiteralValue() {
         LiteralValue literalValue = new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test");
 
-        assertFalse(literalValue.equals(null));
+        assertNotNull(literalValue);
         assertFalse(literalValue.equals(new LiteralValue(null, null)));
         assertFalse(literalValue.equals(new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "other")));
         assertFalse(literalValue.equals(new LiteralValue(LiteralValue.Enum.DECIMAL, "test")));
@@ -53,7 +54,7 @@ public class TestTqlElement {
     public void testEqualsComparisonOperator() {
         ComparisonOperator comparisonOperator = new ComparisonOperator(ComparisonOperator.Enum.EQ);
 
-        assertFalse(comparisonOperator.equals(null));
+        assertNotNull(comparisonOperator);
         assertFalse(comparisonOperator.equals(new ComparisonOperator(null)));
         assertFalse(comparisonOperator.equals(new ComparisonOperator(ComparisonOperator.Enum.NEQ)));
         assertTrue(comparisonOperator.equals(new ComparisonOperator(ComparisonOperator.Enum.EQ)));
@@ -65,7 +66,7 @@ public class TestTqlElement {
                 new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test"),
                 new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test"), true, true);
 
-        assertFalse(fieldBetweenExpression.equals(null));
+        assertNotNull(fieldBetweenExpression);
         assertFalse(fieldBetweenExpression.equals(new FieldBetweenExpression(null, null, null, false, false)));
         assertFalse(fieldBetweenExpression.equals(
                 new FieldBetweenExpression(new FieldReference("field"), new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test"),
@@ -91,7 +92,7 @@ public class TestTqlElement {
     public void testEqualsFieldReference() {
         FieldReference fieldReference = new FieldReference("field");
 
-        assertFalse(fieldReference.equals(null));
+        assertNotNull(fieldReference);
         assertFalse(fieldReference.equals(new FieldReference(null)));
         assertFalse(fieldReference.equals(new FieldReference("other")));
         assertTrue(fieldReference.equals(new FieldReference("field")));
@@ -101,7 +102,7 @@ public class TestTqlElement {
     public void testEqualsFieldCompliesPattern() {
         FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(new FieldReference("field"), "pattern");
 
-        assertFalse(fieldCompliesPattern.equals(null));
+        assertNotNull(fieldCompliesPattern);
         assertFalse(fieldCompliesPattern.equals(new FieldCompliesPattern(null, null)));
         assertFalse(fieldCompliesPattern.equals(new FieldCompliesPattern(new FieldReference("field"), "other")));
         assertFalse(fieldCompliesPattern.equals(new FieldCompliesPattern(new FieldReference("other"), "pattern")));
@@ -112,7 +113,7 @@ public class TestTqlElement {
     public void testEqualsContainsExpression() {
         FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(new FieldReference("field"), "value");
 
-        assertFalse(fieldContainsExpression.equals(null));
+        assertNotNull(fieldContainsExpression);
         assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(null, null)));
         assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("field"), "other")));
         assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("other"), "value")));
@@ -125,7 +126,7 @@ public class TestTqlElement {
                 new LiteralValue[] { new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test"),
                         new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test") });
 
-        assertFalse(fieldInExpression.equals(null));
+        assertNotNull(fieldInExpression);
         assertFalse(fieldInExpression.equals(new FieldInExpression(null, null)));
         assertFalse(fieldInExpression.equals(new FieldInExpression(new FieldReference("test"),
                 new LiteralValue[] { new LiteralValue(LiteralValue.Enum.QUOTED_VALUE, "test") })));
@@ -144,7 +145,7 @@ public class TestTqlElement {
     public void testEqualsFieldIsEmptyExpression() {
         FieldIsEmptyExpression fieldIsEmptyExpression = new FieldIsEmptyExpression(new FieldReference("field"));
 
-        assertFalse(fieldIsEmptyExpression.equals(null));
+        assertNotNull(fieldIsEmptyExpression);
         assertFalse(fieldIsEmptyExpression.equals(new FieldIsEmptyExpression(null)));
         assertFalse(fieldIsEmptyExpression.equals(new FieldIsEmptyExpression(new FieldReference("other"))));
         assertTrue(fieldIsEmptyExpression.equals(new FieldIsEmptyExpression(new FieldReference("field"))));
@@ -154,7 +155,7 @@ public class TestTqlElement {
     public void testEqualsFieldIsValidExpression() {
         FieldIsValidExpression fieldIsValidExpression = new FieldIsValidExpression(new FieldReference("field"));
 
-        assertFalse(fieldIsValidExpression.equals(null));
+        assertNotNull(fieldIsValidExpression);
         assertFalse(fieldIsValidExpression.equals(new FieldIsValidExpression(null)));
         assertFalse(fieldIsValidExpression.equals(new FieldIsValidExpression(new FieldReference("other"))));
         assertTrue(fieldIsValidExpression.equals(new FieldIsValidExpression(new FieldReference("field"))));
@@ -164,7 +165,7 @@ public class TestTqlElement {
     public void testEqualsFieldIsInvalidExpression() {
         FieldIsInvalidExpression fieldIsInvalidExpression = new FieldIsInvalidExpression(new FieldReference("field"));
 
-        assertFalse(fieldIsInvalidExpression.equals(null));
+        assertNotNull(fieldIsInvalidExpression);
         assertFalse(fieldIsInvalidExpression.equals(new FieldIsInvalidExpression(null)));
         assertFalse(fieldIsInvalidExpression.equals(new FieldIsInvalidExpression(new FieldReference("other"))));
         assertTrue(fieldIsInvalidExpression.equals(new FieldIsInvalidExpression(new FieldReference("field"))));
@@ -174,7 +175,7 @@ public class TestTqlElement {
     public void testEqualsFieldMatchesRegex() {
         FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(new FieldReference("field"), "regex");
 
-        assertFalse(fieldMatchesRegex.equals(null));
+        assertNotNull(fieldMatchesRegex);
         assertFalse(fieldMatchesRegex.equals(new FieldMatchesRegex(null, null)));
         assertFalse(fieldMatchesRegex.equals(new FieldMatchesRegex(new FieldReference("other"), "regex")));
         assertFalse(fieldMatchesRegex.equals(new FieldMatchesRegex(new FieldReference("field"), "other")));
@@ -185,7 +186,7 @@ public class TestTqlElement {
     public void testEqualsNotExpression() {
         NotExpression notExpression = new NotExpression(new OrExpression());
 
-        assertFalse(notExpression.equals(null));
+        assertNotNull(notExpression);
         assertFalse(notExpression.equals(new NotExpression(null)));
         assertFalse(notExpression.equals(new NotExpression(new AndExpression())));
         assertTrue(notExpression.equals(new NotExpression(new OrExpression())));
@@ -195,7 +196,7 @@ public class TestTqlElement {
     public void testEqualsOrExpression() {
         OrExpression orExpression = new OrExpression(new OrExpression());
 
-        assertFalse(orExpression.equals(null));
+        assertNotNull(orExpression);
         assertFalse(orExpression.equals(new OrExpression(null)));
         assertFalse(orExpression.equals(new OrExpression(new AndExpression())));
         assertTrue(orExpression.equals(new OrExpression(new OrExpression())));
