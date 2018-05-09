@@ -1,5 +1,6 @@
 package org.talend.tql.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.talend.tql.visitor.IASTVisitor;
 
 /*
@@ -36,6 +37,13 @@ public class LiteralValue implements TqlElement {
     @Override
     public <T> T accept(IASTVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object expression) {
+        return expression instanceof LiteralValue
+                && new EqualsBuilder().append(((LiteralValue) expression).getValue(), this.getValue())
+                        .append(((LiteralValue) expression).getLiteral(), this.getLiteral()).isEquals();
     }
 
     public enum Enum {
