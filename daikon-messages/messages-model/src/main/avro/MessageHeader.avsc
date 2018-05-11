@@ -24,7 +24,7 @@
         "fields": [
           {
             "name": "application",
-            "doc" : "Application identifier (e.g TDP, TDC, Streams ...)",
+            "doc" : "Application identifier (TDP, TDC, DSS ...). The application identifiers are defined in the class org.talend.daikon.messages.TalendApplication",
             "type": "string"
           },
           {
