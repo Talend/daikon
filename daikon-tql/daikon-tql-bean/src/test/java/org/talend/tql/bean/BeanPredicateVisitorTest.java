@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.junit.Test;
 import org.talend.tql.model.Expression;
 import org.talend.tql.parser.Tql;
@@ -372,6 +373,18 @@ public class BeanPredicateVisitorTest {
         query.accept(new BeanPredicateVisitor<>(Bean.class));
     }
 
+    @Test
+    public void shouldMatchOnJsonPropertyName() {
+        // given
+        final Expression query = Tql.parse("aDifferentName = 'myValue'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
     // Test class
     public static class Bean {
 
@@ -389,6 +402,16 @@ public class BeanPredicateVisitorTest {
 
         public NestedBean getNested() {
             return new NestedBean();
+        }
+
+        @JsonProperty("aDifferentName")
+        public String getMyValue() {
+            return "myValue";
+        }
+
+        @JsonProperty("aDifferentName")
+        public void setMyValue() {
+            // No code needed, just to ensure setters are not detected.
         }
     }
 

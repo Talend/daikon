@@ -12,6 +12,7 @@
 
 package org.talend.tql.bean;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -211,6 +212,22 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
                         LOGGER.debug("Can't find getter '{}'.", field, e);
                     }
                 }
+
+                // No method found, try using @JsonProperty
+                if (beforeFind == methods.size()) {
+                    LOGGER.debug("Unable to find method, try using @JsonProperty for '{}'.", methodName);
+                    final Method[] currentClassMethods = currentClass.getMethods();
+                    for (Method currentClassMethod : currentClassMethods) {
+                        final JsonProperty jsonProperty = currentClassMethod.getAnnotation(JsonProperty.class);
+                        if (jsonProperty != null && methodName.equals(jsonProperty.value())
+                                && !void.class.equals(currentClassMethod.getReturnType())) {
+                            LOGGER.debug("Found method '{}' using @JsonProperty.", currentClassMethod);
+                            methods.add(build(currentClassMethod));
+                        }
+                    }
+                }
+
+                // Check before continue
                 if (beforeFind == methods.size()) {
                     throw new UnsupportedOperationException("Can't find getter '" + field + "'.");
                 } else {
