@@ -12,34 +12,60 @@
 
 package org.talend.tql.bean;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.talend.tql.model.AllFields;
+import org.talend.tql.model.AndExpression;
+import org.talend.tql.model.ComparisonExpression;
+import org.talend.tql.model.ComparisonOperator;
+import org.talend.tql.model.Expression;
+import org.talend.tql.model.FieldBetweenExpression;
+import org.talend.tql.model.FieldCompliesPattern;
+import org.talend.tql.model.FieldContainsExpression;
+import org.talend.tql.model.FieldInExpression;
+import org.talend.tql.model.FieldIsEmptyExpression;
+import org.talend.tql.model.FieldIsInvalidExpression;
+import org.talend.tql.model.FieldIsValidExpression;
+import org.talend.tql.model.FieldMatchesRegex;
+import org.talend.tql.model.FieldReference;
+import org.talend.tql.model.LiteralValue;
+import org.talend.tql.model.NotExpression;
+import org.talend.tql.model.OrExpression;
+import org.talend.tql.model.TqlElement;
+import org.talend.tql.visitor.IASTVisitor;
+
+import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
 import static java.lang.Double.parseDouble;
 import static java.lang.String.valueOf;
 import static java.util.Collections.singleton;
 import static java.util.Optional.of;
 import static java.util.stream.Stream.concat;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
-
-import java.lang.reflect.Method;
-import java.text.ParseException;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.talend.tql.model.*;
-import org.talend.tql.visitor.IASTVisitor;
+import static org.talend.tql.bean.MethodAccessorFactory.build;
 
 /**
  * A {@link IASTVisitor} implementation that generates a {@link Predicate predicate} that allows matching on a
  * <code>T</code> instance.
- * 
+ *
  * @param <T> The bean class.
  */
 public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
@@ -50,19 +76,19 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
 
     private final Deque<String> literals = new ArrayDeque<>();
 
-    private final Deque<Method[]> currentMethods = new ArrayDeque<>();
+    private final Deque<MethodAccessor[]> currentMethods = new ArrayDeque<>();
 
     public BeanPredicateVisitor(Class<T> targetClass) {
         this.targetClass = targetClass;
     }
 
-    private static Object invoke(Object o, Method[] methods) {
+    private static Stream<Object> invoke(Object o, MethodAccessor[] methods) {
         try {
-            Object currentObject = o;
-            for (Method method : methods) {
-                currentObject = method.invoke(currentObject);
+            Set<Object> currentObject = Collections.singleton(o);
+            for (MethodAccessor method : methods) {
+                currentObject = method.getValues(currentObject);
             }
-            return currentObject;
+            return currentObject.stream();
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to invoke methods on '" + o + "'.", e);
         }
@@ -71,7 +97,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     /**
      * Test a string value against a pattern returned during value analysis.
      *
-     * @param value A string value. May be null.
+     * @param value   A string value. May be null.
      * @param pattern A pattern as returned in value analysis.
      * @return <code>true</code> if value complies, <code>false</code> otherwise.
      */
@@ -123,6 +149,10 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         return of(predicate).map(Unchecked::new).orElseGet(() -> new Unchecked<>(o -> false));
     }
 
+    private static <T> Predicate<T> anyMatch(MethodAccessor[] getters, Predicate<T> predicate) {
+        return root -> invoke(root, getters).map(o -> (T) o).anyMatch(unchecked(predicate));
+    }
+
     @Override
     public Predicate<T> visit(TqlElement tqlElement) {
         throw new UnsupportedOperationException();
@@ -146,11 +176,11 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         return null;
     }
 
-    private Method[] getMethods(FieldReference fieldReference) {
+    private MethodAccessor[] getMethods(FieldReference fieldReference) {
         return getMethods(fieldReference.getPath());
     }
 
-    private Method[] getMethods(String field) {
+    private MethodAccessor[] getMethods(String field) {
         StringTokenizer tokenizer = new StringTokenizer(field, ".");
         List<String> methodNames = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
@@ -158,12 +188,12 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         }
 
         Class currentClass = targetClass;
-        LinkedList<Method> methods = new LinkedList<>();
+        LinkedList<MethodAccessor> methods = new LinkedList<>();
         for (String methodName : methodNames) {
             if ("_class".equals(methodName)) {
                 try {
-                    methods.add(Class.class.getMethod("getClass"));
-                    methods.add(Class.class.getMethod("getName"));
+                    methods.add(build(Class.class.getMethod("getClass")));
+                    methods.add(build(Class.class.getMethod("getName")));
                 } catch (NoSuchMethodException e) {
                     throw new IllegalArgumentException("Unable to get methods for class' name.", e);
                 }
@@ -175,7 +205,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
                 final int beforeFind = methods.size();
                 for (String getterCandidate : getterCandidates) {
                     try {
-                        methods.add(currentClass.getMethod(getterCandidate));
+                        methods.add(build(currentClass.getMethod(getterCandidate)));
                         break;
                     } catch (Exception e) {
                         LOGGER.debug("Can't find getter '{}'.", field, e);
@@ -188,7 +218,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
                 }
             }
         }
-        return methods.toArray(new Method[0]);
+        return methods.toArray(new MethodAccessor[0]);
     }
 
     @Override
@@ -242,7 +272,8 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         }
     }
 
-    private Predicate<T> getComparisonPredicate(Method[] getters, ComparisonExpression comparisonExpression, Object value) {
+    private Predicate<T> getComparisonPredicate(MethodAccessor[] getters, ComparisonExpression comparisonExpression,
+            Object value) {
         // Standard methods
         final ComparisonOperator operator = comparisonExpression.getOperator();
         switch (operator.getOperator()) {
@@ -263,46 +294,34 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         }
     }
 
-    private Predicate<T> neq(Object value, Method[] getters) {
-        return unchecked( //
-                o -> !ObjectUtils.equals(invoke(o, getters), value) //
-        );
+    private Predicate<T> neq(Object value, MethodAccessor[] accessors) {
+        return anyMatch(accessors, o -> !ObjectUtils.equals(o, value));
     }
 
-    private Predicate<T> gt(Object value, Method[] getters) {
-        return unchecked( //
-                o -> parseDouble(valueOf(invoke(o, getters))) > parseDouble(valueOf(value)) //
-        );
+    private Predicate<T> gt(Object value, MethodAccessor[] accessors) {
+        return anyMatch(accessors, o -> parseDouble(valueOf(o)) > parseDouble(valueOf(value)));
     }
 
-    private Predicate<T> gte(Object value, Method[] getters) {
-        return unchecked( //
-                o -> parseDouble(valueOf(invoke(o, getters))) >= parseDouble(valueOf(value)) //
-        );
+    private Predicate<T> gte(Object value, MethodAccessor[] accessors) {
+        return anyMatch(accessors, o -> parseDouble(valueOf(o)) >= parseDouble(valueOf(value)));
     }
 
-    private Predicate<T> lt(Object value, Method[] getters) {
-        return unchecked( //
-                o -> parseDouble(valueOf(invoke(o, getters))) < parseDouble(valueOf(value)) //
-        );
+    private Predicate<T> lt(Object value, MethodAccessor[] accessors) {
+        return anyMatch(accessors, o -> parseDouble(valueOf(o)) < parseDouble(valueOf(value)));
     }
 
-    private Predicate<T> lte(Object value, Method[] getters) {
-        return unchecked( //
-                o -> parseDouble(valueOf(invoke(o, getters))) <= parseDouble(valueOf(value)) //
-        );
+    private Predicate<T> lte(Object value, MethodAccessor[] accessors) {
+        return anyMatch(accessors, o -> parseDouble(valueOf(o)) <= parseDouble(valueOf(value)));
     }
 
-    private Predicate<T> eq(Object value, Method[] getters) {
-        return unchecked( //
-                o -> equalsIgnoreCase(valueOf(invoke(o, getters)), valueOf(value)) //
-        );
+    private Predicate<T> eq(Object value, MethodAccessor[] accessors) {
+        return anyMatch(accessors, o -> equalsIgnoreCase(valueOf(o), valueOf(value)));
     }
 
     @Override
     public Predicate<T> visit(FieldInExpression fieldInExpression) {
         fieldInExpression.getField().accept(this);
-        final Method[] methods = currentMethods.pop();
+        final MethodAccessor[] methods = currentMethods.pop();
 
         final LiteralValue[] values = fieldInExpression.getValues();
         if (values.length > 0) {
@@ -320,7 +339,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     @Override
     public Predicate<T> visit(FieldIsEmptyExpression fieldIsEmptyExpression) {
         fieldIsEmptyExpression.getField().accept(this);
-        final Method[] methods = currentMethods.pop();
+        final MethodAccessor[] methods = currentMethods.pop();
         return unchecked(o -> StringUtils.isEmpty(valueOf(invoke(o, methods))));
     }
 
@@ -337,25 +356,25 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     @Override
     public Predicate<T> visit(FieldMatchesRegex fieldMatchesRegex) {
         fieldMatchesRegex.getField().accept(this);
-        final Method[] methods = currentMethods.pop();
+        final MethodAccessor[] methods = currentMethods.pop();
 
         final Pattern pattern = Pattern.compile(fieldMatchesRegex.getRegex());
-        return unchecked(o -> pattern.matcher(valueOf(invoke(o, methods))).matches());
+        return anyMatch(methods, o -> pattern.matcher(valueOf(o)).matches());
     }
 
     @Override
     public Predicate<T> visit(FieldCompliesPattern fieldCompliesPattern) {
         fieldCompliesPattern.getField().accept(this);
-        final Method[] methods = currentMethods.pop();
+        final MethodAccessor[] methods = currentMethods.pop();
 
         final String pattern = fieldCompliesPattern.getPattern();
-        return unchecked(o -> complies(valueOf(invoke(o, methods)), pattern));
+        return anyMatch(methods, o -> complies(valueOf(o), pattern));
     }
 
     @Override
     public Predicate<T> visit(FieldBetweenExpression fieldBetweenExpression) {
         fieldBetweenExpression.getField().accept(this);
-        final Method[] methods = currentMethods.pop();
+        final MethodAccessor[] methods = currentMethods.pop();
 
         fieldBetweenExpression.getLeft().accept(this);
         fieldBetweenExpression.getRight().accept(this);
@@ -385,9 +404,9 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     @Override
     public Predicate<T> visit(FieldContainsExpression fieldContainsExpression) {
         fieldContainsExpression.getField().accept(this);
-        final Method[] methods = currentMethods.pop();
+        final MethodAccessor[] methods = currentMethods.pop();
 
-        return unchecked(o -> StringUtils.containsIgnoreCase(valueOf(invoke(o, methods)), fieldContainsExpression.getValue()));
+        return anyMatch(methods, o -> StringUtils.containsIgnoreCase(valueOf(o), fieldContainsExpression.getValue()));
     }
 
     @Override
@@ -398,12 +417,12 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         return null;
     }
 
-    private void visitClassMethods(Class targetClass, Set<Class> visitedClasses, Method... previous) {
-        List<Method> previousMethods = Arrays.asList(previous);
+    private void visitClassMethods(Class targetClass, Set<Class> visitedClasses, MethodAccessor... previous) {
+        List<MethodAccessor> previousMethods = Arrays.asList(previous);
         for (Method method : targetClass.getMethods()) {
             if (method.getName().startsWith("get") || method.getName().startsWith("is")) {
-                final Method[] path = concat(previousMethods.stream(), Stream.of(method)).collect(Collectors.toList())
-                        .toArray(new Method[0]);
+                final MethodAccessor[] path = concat(previousMethods.stream(), Stream.of(build(method)))
+                        .toArray(MethodAccessor[]::new);
                 currentMethods.push(path);
 
                 // Recursively get methods to nested classes (and prevent infinite recursions).
