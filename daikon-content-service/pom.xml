@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>content-service-common</module>
+        <module>content-service-journal</module>
         <module>s3-content-service</module>
         <module>local-content-service</module>
     </modules>
