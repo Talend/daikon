@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-interface ResourceJournal {
+public interface ResourceJournal {
 
     /**
      * Synchronize the content of this journal with the underlying {@link org.talend.daikon.content.ResourceResolver}.

@@ -1,17 +1,6 @@
 package org.talend.daikon.content.journal;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.talend.daikon.content.DeletableResource;
-import org.talend.daikon.content.ResourceResolver;
-import org.talend.daikon.content.s3.provider.S3BucketProvider;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -20,21 +9,31 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.talend.daikon.content.DeletableResource;
+import org.talend.daikon.content.ResourceResolver;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK) // MOCK environment is important not to start tomcat (see TDKN-145)
-@TestPropertySource(properties = { "content-service.store=local", "content-service.store.local.path=${java.io.tmpdir}/dataprep" })
+@TestPropertySource(
+        properties = { "content-service.store=local", "content-service.store.local.path=${java.io.tmpdir}/dataprep" })
 /*
-@TestPropertySource(properties = {
-        "content-service.store=s3",
-        "content-service.store.s3.authentication=TOKEN",
-        "content-service.store.s3.accessKey=",
-        "content-service.store.s3.secretKey=",
-        "content-service.store.s3.bucket=data-prep-francois",
-        "content-service.store.s3.region=eu-west-1"
-})
-*/
+ * @TestPropertySource(properties = {
+ * "content-service.store=s3",
+ * "content-service.store.s3.authentication=TOKEN",
+ * "content-service.store.s3.accessKey=",
+ * "content-service.store.s3.secretKey=",
+ * "content-service.store.s3.bucket=data-prep-francois",
+ * "content-service.store.s3.region=eu-west-1"
+ * })
+ */
 public class PerformanceTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceTest.class);
