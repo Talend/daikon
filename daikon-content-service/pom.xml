@@ -12,9 +12,9 @@
     <modules>
         <module>content-service-common</module>
         <module>content-service-journal</module>
+        <module>content-service-journal-mongo</module>
         <module>s3-content-service</module>
         <module>local-content-service</module>
-        <module>content-service-journal-mongo</module>
     </modules>
     <build>
         <plugins>
@@ -40,6 +40,18 @@
                                 <exclude>*.properties</exclude>
                             </excludes>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

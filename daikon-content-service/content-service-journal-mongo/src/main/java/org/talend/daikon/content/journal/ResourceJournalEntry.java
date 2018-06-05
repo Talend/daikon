@@ -2,19 +2,16 @@ package org.talend.daikon.content.journal;
 
 import org.springframework.data.annotation.Id;
 
+/**
+ * A journal entry for {@link MongoResourceJournalResolver}.
+ */
 public class ResourceJournalEntry {
 
     @Id
-    private String id;
-
     private String name;
 
     public ResourceJournalEntry(String name) {
         this.name = name;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getName() {

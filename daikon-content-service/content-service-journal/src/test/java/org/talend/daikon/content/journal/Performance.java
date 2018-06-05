@@ -1,6 +1,11 @@
 package org.talend.daikon.content.journal;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.daikon.content.DeletableResource;
+import org.talend.daikon.content.ResourceResolver;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -9,34 +14,24 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.talend.daikon.content.DeletableResource;
-import org.talend.daikon.content.ResourceResolver;
-
+/*
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK) // MOCK environment is important not to start tomcat (see TDKN-145)
 @TestPropertySource(
         properties = { "content-service.store=local", "content-service.store.local.path=${java.io.tmpdir}/dataprep" })
-/*
- * @TestPropertySource(properties = {
- * "content-service.store=s3",
- * "content-service.store.s3.authentication=TOKEN",
- * "content-service.store.s3.accessKey=",
- * "content-service.store.s3.secretKey=",
- * "content-service.store.s3.bucket=data-prep-francois",
- * "content-service.store.s3.region=eu-west-1"
- * })
- */
-public class PerformanceTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceTest.class);
+  @TestPropertySource(properties = {
+  "content-service.store=s3",
+  "content-service.store.s3.authentication=TOKEN",
+  "content-service.store.s3.accessKey=",
+  "content-service.store.s3.secretKey=",
+  "content-service.store.s3.bucket=data-prep-francois",
+  "content-service.store.s3.region=eu-west-1"
+  })
+*/
+public class Performance {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Performance.class);
 
     @Autowired
     private ResourceResolver resolver;
@@ -48,17 +43,17 @@ public class PerformanceTest {
             final Set<String> locations = new TreeSet<>();
 
             @Override
-            public void sync() {
+            public void sync(ResourceResolver resourceResolver) {
                 // Do nothing
             }
 
             @Override
-            public Stream<String> matches(String pattern) throws IOException {
+            public Stream<String> matches(String pattern) {
                 return locations.stream().filter(s -> s.startsWith(pattern.substring(0, pattern.lastIndexOf('*') - 1)));
             }
 
             @Override
-            public void clear(String location) {
+            public void clear(String pattern) {
                 locations.clear();
             }
 
@@ -81,6 +76,21 @@ public class PerformanceTest {
             @Override
             public boolean exist(String location) {
                 return locations.contains(location);
+            }
+
+            @Override
+            public boolean ready() {
+                return true;
+            }
+
+            @Override
+            public void validate() {
+                // Do nothing
+            }
+
+            @Override
+            public void invalidate() {
+                // Do nothing
             }
         };
         resolver = new JournalizedResourceResolver(resolver, resourceJournal);

@@ -2,10 +2,10 @@ package org.talend.daikon.content.journal;
 
 import org.springframework.core.io.Resource;
 import org.talend.daikon.content.ResourceResolver;
+import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
 
 class ResourceResolverJournal implements ResourceJournal {
@@ -17,18 +17,21 @@ class ResourceResolverJournal implements ResourceJournal {
     }
 
     @Override
-    public void sync() {
+    public void sync(ResourceResolver resourceResolver) {
         // Nothing to do
     }
 
     @Override
-    public Stream<String> matches(String pattern) throws IOException {
-        return Stream.of(delegate.getResources(pattern)) //
-                .map(Resource::getFilename);
+    public Stream<String> matches(String pattern) {
+        try {
+            return Stream.of(delegate.getResources(pattern)).map(Resource::getFilename);
+        } catch (IOException e) {
+            throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     @Override
-    public void clear(String location) {
+    public void clear(String pattern) {
         // Nothing to do
     }
 
@@ -50,5 +53,20 @@ class ResourceResolverJournal implements ResourceJournal {
     @Override
     public boolean exist(String location) {
         return true;
+    }
+
+    @Override
+    public boolean ready() {
+        return false;
+    }
+
+    @Override
+    public void validate() {
+        // Nothing to do
+    }
+
+    @Override
+    public void invalidate() {
+        // Nothing to do
     }
 }

@@ -2,7 +2,6 @@ package org.talend.daikon.content.journal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 
@@ -24,16 +23,18 @@ public class JournalizedResourceResolver implements ResourceResolver {
     public JournalizedResourceResolver(ResourceResolver delegate, ResourceJournal resourceJournal) {
         this.delegate = delegate;
         this.resourceJournal = resourceJournal;
-        LOGGER.info("Starting sync...");
-        resourceJournal.sync();
-        LOGGER.error("Sync done.");
+        resourceJournal.sync(delegate);
     }
 
     @Override
     public DeletableResource[] getResources(String locationPattern) throws IOException {
-        return resourceJournal.matches(locationPattern) //
-                .map(this::getResource) //
-                .toArray(DeletableResource[]::new);
+        if (resourceJournal.ready()) {
+            return resourceJournal.matches(locationPattern) //
+                    .map(this::getResource) //
+                    .toArray(DeletableResource[]::new);
+        } else {
+            return delegate.getResources(locationPattern);
+        }
     }
 
     @Override
@@ -49,7 +50,7 @@ public class JournalizedResourceResolver implements ResourceResolver {
             try {
                 deletableResource.delete();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("Unable to delete resource '{}'", deletableResource.getFilename(), e);
             }
         });
         resourceJournal.clear(location);

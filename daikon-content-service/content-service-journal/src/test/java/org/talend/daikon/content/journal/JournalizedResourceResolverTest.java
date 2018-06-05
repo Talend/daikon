@@ -45,6 +45,7 @@ public class JournalizedResourceResolverTest {
         // given
         final DeletableResource resource1 = mock(DeletableResource.class);
         final DeletableResource resource2 = mock(DeletableResource.class);
+        when(resourceJournal.ready()).thenReturn(true);
         when(resourceJournal.matches(eq("/**"))).thenReturn(Stream.of("resource1.txt", "resource2.txt"));
         when(resource1.getFilename()).thenReturn("resource1.txt");
         when(resource2.getFilename()).thenReturn("resource2.txt");
@@ -63,11 +64,22 @@ public class JournalizedResourceResolverTest {
 
     @Test
     public void shouldClearRepository() throws IOException {
+        // given
+        when(resourceJournal.ready()).thenReturn(true);
+        when(resourceJournal.matches("/**")).thenReturn(Stream.of("/location1", "/location2"));
+        final DeletableResource location1 = mock(DeletableResource.class);
+        final DeletableResource location2 = mock(DeletableResource.class);
+        when(delegate.getResource(eq("/location1"))).thenReturn(location1);
+        when(delegate.getResource(eq("/location2"))).thenReturn(location2);
+
         // when
         journalizedResourceResolver.clear("/**");
 
         // then
         verify(resourceJournal, times(1)).clear(eq("/**"));
-        verify(delegate, times(1)).clear(eq("/**"));
+        verify(resourceJournal, times(1)).remove(eq("/location1"));
+        verify(resourceJournal, times(1)).remove(eq("/location2"));
+        verify(location1, times(1)).delete();
+        verify(location2, times(1)).delete();
     }
 }
