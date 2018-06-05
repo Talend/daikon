@@ -15,7 +15,6 @@
         <module>content-service-journal-mongo</module>
         <module>s3-content-service</module>
         <module>local-content-service</module>
-        <module>content-service-journal-mongo</module>
     </modules>
     <build>
         <plugins>

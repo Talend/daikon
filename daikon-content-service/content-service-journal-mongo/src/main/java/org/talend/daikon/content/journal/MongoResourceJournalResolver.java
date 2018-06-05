@@ -96,9 +96,9 @@ public class MongoResourceJournalResolver implements ResourceJournal {
             savedLocation = "/" + location;
         }
         if (!exist(savedLocation)) {
-            repository.save(new ResourceJournalEntry(location));
+            repository.save(new ResourceJournalEntry(savedLocation));
         }
-        LOGGER.debug("Location '{}' added to journal.", location);
+        LOGGER.debug("Location '{}' added to journal.", savedLocation);
     }
 
     @Override
