@@ -23,9 +23,9 @@ import java.util.Map;
 @ConditionalOnClass(ByteArraySerializer.class)
 @ConditionalOnMissingBean(Sender.class)
 @ConditionalOnProperty(value = "spring.zipkin.enabled", havingValue = "true")
-public class HistoryZipkinKafkaSenderConfiguration {
+public class ZipkinKafkaSenderConfiguration {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HistoryZipkinKafkaSenderConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ZipkinKafkaSenderConfiguration.class);
 
     @Value("${spring.zipkin.kafka.topic:zipkin}")
     private String topic;
