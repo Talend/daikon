@@ -16,6 +16,7 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
 		<spring-core.version>4.3.4.RELEASE</spring-core.version>
 		<spring-data-mongodb.version>1.8.2.RELEASE</spring-data-mongodb.version>
 		<jackson.version>2.9.4</jackson.version>
@@ -65,16 +66,16 @@
             <version>21.0</version>
         </dependency>
     </dependencies>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>talend_nexus_deployment</id>
-            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
-        </snapshotRepository>
-        <repository>
-            <id>talend_nexus_deployment</id>
-            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
-        </repository>
-    </distributionManagement>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>talend_nexus_deployment</id>
+			<url>${talend_snapshots_deployment}</url>
+		</snapshotRepository>
+		<repository>
+			<id>talend_nexus_deployment</id>
+			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+		</repository>
+	</distributionManagement>
     <pluginRepositories>
         <pluginRepository>
             <id>com.springsource.repository.bundles.release</id>

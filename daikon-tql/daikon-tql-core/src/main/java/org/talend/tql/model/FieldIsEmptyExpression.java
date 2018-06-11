@@ -1,5 +1,6 @@
 package org.talend.tql.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.talend.tql.visitor.IASTVisitor;
 
 /*
@@ -29,5 +30,11 @@ public class FieldIsEmptyExpression implements Atom {
     @Override
     public <T> T accept(IASTVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object expression) {
+        return expression instanceof FieldIsEmptyExpression
+                && new EqualsBuilder().append(field, ((FieldIsEmptyExpression) expression).field).isEquals();
     }
 }
