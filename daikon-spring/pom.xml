@@ -22,5 +22,6 @@
         <module>daikon-spring-mongo</module>
         <module>daikon-spring-security</module>
         <module>daikon-spring-tenancy</module>
+        <module>daikon-spring-zipkin</module>
     </modules>
 </project>
