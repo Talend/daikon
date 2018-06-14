@@ -3,7 +3,10 @@ package org.talend.daikon.content.journal.configuration;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+<<<<<<< HEAD
 import org.springframework.boot.diagnostics.FailureAnalyzer;
+=======
+>>>>>>> 70ffb14... * use `content-service.journalized` to enable journal.
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
