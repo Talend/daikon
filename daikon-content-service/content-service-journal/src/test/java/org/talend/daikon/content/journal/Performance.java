@@ -77,6 +77,21 @@ public class Performance {
             public boolean exist(String location) {
                 return locations.contains(location);
             }
+
+            @Override
+            public boolean ready() {
+                return true;
+            }
+
+            @Override
+            public void validate() {
+                // Do nothing
+            }
+
+            @Override
+            public void invalidate() {
+                // Do nothing
+            }
         };
         resolver = new JournalizedResourceResolver(resolver, resourceJournal);
 
