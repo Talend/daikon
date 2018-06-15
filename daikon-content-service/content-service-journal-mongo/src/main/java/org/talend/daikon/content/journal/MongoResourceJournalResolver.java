@@ -91,10 +91,11 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         if (StringUtils.isEmpty(location)) {
             return;
         }
+        String savedLocation = location;
         if (location.charAt(0) != '/') {
-            location = "/" + location;
+            savedLocation = "/" + location;
         }
-        repository.save(new ResourceJournalEntry(location));
+        repository.save(new ResourceJournalEntry(savedLocation));
         LOGGER.debug("Location '{}' added to journal.", location);
     }
 
