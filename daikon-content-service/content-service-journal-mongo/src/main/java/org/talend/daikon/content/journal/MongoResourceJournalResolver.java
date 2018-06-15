@@ -77,6 +77,9 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         }
 
         String patternForMatch = StringUtils.substringBeforeLast(pattern, "*");
+        if (patternForMatch.length() > 0 && patternForMatch.charAt(0) == '/') {
+            patternForMatch = patternForMatch.substring(1);
+        }
         return repository.findByNameStartsWith(patternForMatch).stream().map(ResourceJournalEntry::getName);
     }
 
