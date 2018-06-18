@@ -78,9 +78,7 @@ public class RequiresAuthorityAspect {
         final String value = annotation.value();
 
         if (StringUtils.isNotBlank(authority)) {
-            if (isAllowed(authority)) {
-                checkOk.set(true);
-            }
+            checkOk.set(isAllowed(authority));
         } else if (streamSupplier.get().anyMatch(StringUtils::isNotBlank)) {
             streamSupplier.get().filter(StringUtils::isNotBlank).forEach(currentAuthority -> {
                 if (isAllowed(currentAuthority)) {
@@ -88,9 +86,7 @@ public class RequiresAuthorityAspect {
                 }
             });
         } else if (StringUtils.isNotBlank(value)) {
-            if (isAllowed(value)) {
-                checkOk.set(true);
-            }
+            checkOk.set(isAllowed(value));
         }
 
         if (!checkOk.get()) {
