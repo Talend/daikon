@@ -24,7 +24,7 @@ public class MongoResourceJournalRepositoryImpl implements MongoResourceJournalR
 
     @Override
     public List<ResourceJournalEntry> findByNameStartsWith(String name) {
-        Query findByName = query(where("name").regex(name));
+        Query findByName = query(where("name").regex("^" + name));
         return mongoTemplate.find(findByName, ResourceJournalEntry.class, collectionName);
     }
 
