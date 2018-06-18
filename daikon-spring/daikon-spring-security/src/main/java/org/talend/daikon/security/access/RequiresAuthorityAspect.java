@@ -76,7 +76,7 @@ public class RequiresAuthorityAspect {
             final String[] values = annotation.value();
             checkOk = Stream.of(values) //
                     .filter(StringUtils::isNotBlank) //
-                    .allMatch(RequiresAuthorityAspect::isAllowed);
+                    .anyMatch(RequiresAuthorityAspect::isAllowed);
         }
 
         if (!checkOk) {

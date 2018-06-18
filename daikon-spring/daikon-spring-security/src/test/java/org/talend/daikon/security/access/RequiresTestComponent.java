@@ -28,7 +28,7 @@ public class RequiresTestComponent {
     }
 
     @RequiresAuthority({ "TestComponentExec", "" })
-    public String valuesValuePriority() {
+    public String valuesPriority() {
         return "secret string";
     }
 

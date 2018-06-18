@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 public @interface RequiresAuthority {
 
     /**
-     * @return The authority (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. Value is
+     * @return The authority list (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. Value is
      * ignored if {@link #authority()} is defined.
      */
     String[] value() default {};

@@ -82,9 +82,9 @@ public class RequiresAuthorityAspectTest {
     }
 
     @Test
-    public void shouldUseValuesWhenValueDefined() {
+    public void shouldUseValuesDefined() {
         try {
-            component.valuesValuePriority();
+            component.valuesPriority();
             fail("Expected an error.");
         } catch (TalendRuntimeException e) {
             assertEquals(403, e.getCode().getHttpStatus());
@@ -92,9 +92,9 @@ public class RequiresAuthorityAspectTest {
     }
 
     @Test
-    public void shouldInvokeSuccessfullyWithValuesAgainstValue() {
+    public void shouldInvokeSuccessfullyWithValues() {
         SecurityContextHolder.getContext().setAuthentication(GRANTED);
-        assertEquals("secret string", component.valuesValuePriority());
+        assertEquals("secret string", component.valuesPriority());
     }
 
     @Test
