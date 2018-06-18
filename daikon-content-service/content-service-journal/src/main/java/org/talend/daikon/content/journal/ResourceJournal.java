@@ -14,7 +14,8 @@ public interface ResourceJournal {
      * Method is not expected to block callee.
      * </p>
      *
-     * @param resourceResolver The {@link ResourceResolver} to use for synchronization.
+     * @param resourceResolver
+     *            The {@link ResourceResolver} to use for synchronization.
      */
     void sync(ResourceResolver resourceResolver);
 
@@ -37,6 +38,7 @@ public interface ResourceJournal {
 
     /**
      * Marks this journal as ready for use. After method completes, {@link #ready()} must return <code>true</code>.
+     * 
      * @see #ready()
      * @see #invalidate()
      */
@@ -45,6 +47,7 @@ public interface ResourceJournal {
     /**
      * Marks this journal as incomplete thus <b>not</b> ready for use. After method completes, {@link #ready()} must
      * return <code>false</code>.
+     * 
      * @see #ready()
      * @see #validate()
      */
