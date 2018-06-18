@@ -135,7 +135,9 @@ public class MongoResourceJournalResolver implements ResourceJournal {
     @Override
     public void validate() {
         final ResourceJournalEntry entry = new ResourceJournalEntry(JOURNAL_READY_MARKER);
-        repository.save(entry);
+        if(!repository.exists(JOURNAL_READY_MARKER)){
+            repository.save(entry);
+        }
     }
 
     @Override
