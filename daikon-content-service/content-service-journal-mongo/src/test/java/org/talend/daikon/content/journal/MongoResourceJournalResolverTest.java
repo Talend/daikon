@@ -2,6 +2,7 @@ package org.talend.daikon.content.journal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -19,7 +20,6 @@ import java.util.stream.Stream;
 import com.github.fakemongo.Fongo;
 import com.mongodb.MongoClient;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,17 +85,17 @@ public class MongoResourceJournalResolverTest {
 
     @Test
     public void testContext() {
-        Assert.assertNotNull(resolver);
-        Assert.assertNotNull(repository);
+        assertNotNull(resolver);
+        assertNotNull(repository);
     }
 
     @Test
     public void testStartWith() {
         List<ResourceJournalEntry> listLocation = repository.findByNameStartsWith("/location1");
 
-        Assert.assertEquals(3, listLocation.size());
+        assertEquals(3, listLocation.size());
         for (ResourceJournalEntry resourceJournalEntry : listLocation) {
-            Assert.assertTrue(resourceJournalEntry.getName().startsWith("/location1"));
+            assertTrue(resourceJournalEntry.getName().startsWith("/location1"));
         }
     }
 
