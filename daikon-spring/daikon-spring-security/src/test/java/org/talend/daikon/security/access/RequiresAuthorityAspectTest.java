@@ -70,6 +70,12 @@ public class RequiresAuthorityAspectTest {
     }
 
     @Test
+    public void shouldInvokeSuccessfullyWithAuthoritiesAgainstValues() {
+        SecurityContextHolder.getContext().setAuthentication(GRANTED);
+        assertEquals("secret string", component.authoritiesValuesPriority());
+    }
+
+    @Test
     public void shouldInvokeSuccessfullyWithAuthorityAgainstValues() {
         SecurityContextHolder.getContext().setAuthentication(GRANTED);
         assertEquals("secret string", component.authorityValuesPriority());
