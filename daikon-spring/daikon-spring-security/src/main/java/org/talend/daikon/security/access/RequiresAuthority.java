@@ -41,7 +41,7 @@ public @interface RequiresAuthority {
      * @return The authority (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. This has
      * precedence over {@link #value()}.
      */
-    String authority() default StringUtils.EMPTY;
+    String[] authority() default {};
 
     /**
      * @return A {@link AccessDenied} implementation to handle access denials.

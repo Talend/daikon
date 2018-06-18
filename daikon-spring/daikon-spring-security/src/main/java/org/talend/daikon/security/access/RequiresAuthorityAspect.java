@@ -28,6 +28,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -68,18 +69,21 @@ public class RequiresAuthorityAspect {
             throw new IllegalArgumentException("Missing @RequiresAuthority annotation."); // Rather unexpected
         }
 
-        final String authority = annotation.authority();
-        final boolean checkOk;
-        if (StringUtils.isNotBlank(authority)) {
-            checkOk = isAllowed(authority);
-        } else {
-            final String[] values = annotation.value();
-            checkOk = Stream.of(values) //
-                    .filter(StringUtils::isNotBlank) //
-                    .anyMatch(RequiresAuthorityAspect::isAllowed);
+        final String[] authorityArray = annotation.authority();
+        final Supplier<Stream<String>> authorityStreamSupplier = () -> Stream.of(authorityArray).filter(StringUtils::isNotBlank);
+
+        final String[] valueArray = annotation.value();
+        final Supplier<Stream<String>> valueStreamSupplier = () -> Stream.of(valueArray).filter(StringUtils::isNotBlank);
+
+        Supplier<Stream<String>> streamSupplier = null;
+
+        if (authorityStreamSupplier.get().count() > 0) {
+            streamSupplier = authorityStreamSupplier;
+        } else if (valueStreamSupplier.get().count() > 0) {
+            streamSupplier = valueStreamSupplier;
         }
 
-        if (!checkOk) {
+        if (streamSupplier != null && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
             LOGGER.debug("Access denied for user {} on {}.", authentication, method);
             final Class<? extends AccessDenied> onDeny = annotation.onDeny();
             final AccessDenied accessDenied;

@@ -17,17 +17,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class RequiresTestComponent {
 
-    @RequiresAuthority(authority = "TestComponentExec", value = { "Test" })
+    @RequiresAuthority(authority = "TestComponentExec", value = { "Test 1", "Test 2" })
     public String authorityValuesPriority() {
         return "secret string";
     }
 
-    @RequiresAuthority(authority = "", value = { "TestComponentExec" })
+    @RequiresAuthority(authority = "", value = { "TestComponentExec", "Test" })
     public String emptyAuthorityValuesPriority() {
         return "secret string";
     }
 
-    @RequiresAuthority({ "TestComponentExec", "" })
+    @RequiresAuthority({})
+    public String emptyValuesPriority() {
+        return "secret string";
+    }
+
+    @RequiresAuthority({ "TestComponentExec", "Test" })
     public String valuesPriority() {
         return "secret string";
     }
