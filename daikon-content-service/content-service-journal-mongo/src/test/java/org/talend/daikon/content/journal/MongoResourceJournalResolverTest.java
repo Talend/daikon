@@ -1,29 +1,8 @@
 package org.talend.daikon.content.journal;
 
-import com.github.fakemongo.Fongo;
-import com.mongodb.MongoClient;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.talend.daikon.content.DeletableResource;
-import org.talend.daikon.content.ResourceResolver;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -32,6 +11,30 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.github.fakemongo.Fongo;
+import com.mongodb.MongoClient;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.talend.daikon.content.DeletableResource;
+import org.talend.daikon.content.ResourceResolver;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataMongoTest
@@ -47,6 +50,12 @@ public class MongoResourceJournalResolverTest {
     @Autowired
     private MongoResourceJournalRepository repository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Value("${mongo.resource.journal.collection:resourceJournalEntry}")
+    private String collectionName;
+
     @Test
     public void testClear() {
 
@@ -61,23 +70,33 @@ public class MongoResourceJournalResolverTest {
 
     @Before
     public void initData() {
-        repository.deleteAll();
+        mongoTemplate.remove(new Query(), ResourceJournalEntry.class, collectionName);
         resolver.add("location1.1");
-        resolver.add("/location1.2"); // Intentional: implementation should accept absolute or relative paths
+        resolver.add("location1.2");
         resolver.add("location1.3");
-        resolver.add("/location2.1");
+        resolver.add("location2.1");
         resolver.add("location2.2");
     }
 
     @After
     public void cleanData() {
-        repository.deleteAll();
+        mongoTemplate.remove(new Query(), ResourceJournalEntry.class, collectionName);
     }
 
     @Test
     public void testContext() {
-        Assert.assertNotNull(resolver);
-        Assert.assertNotNull(repository);
+        assertNotNull(resolver);
+        assertNotNull(repository);
+    }
+
+    @Test
+    public void testStartWith() {
+        List<ResourceJournalEntry> listLocation = repository.findByNameStartsWith("/location1");
+
+        assertEquals(3, listLocation.size());
+        for (ResourceJournalEntry resourceJournalEntry : listLocation) {
+            assertTrue(resourceJournalEntry.getName().startsWith("/location1"));
+        }
     }
 
     @Test
@@ -102,11 +121,11 @@ public class MongoResourceJournalResolverTest {
     @Test
     public void testAdd() {
         // Given
-        long nbLocation = repository.count();
+        long nbLocation = countRecord();
         resolver.add("location3.0");
 
         // When
-        final long count = repository.count();
+        final long count = countRecord();
 
         // Then
         assertEquals("Nb location should be equals", nbLocation + 1, count);
@@ -115,11 +134,11 @@ public class MongoResourceJournalResolverTest {
     @Test
     public void testRemove() {
         // Given
-        long nbLocation = repository.count();
+        long nbLocation = countRecord();
         resolver.remove("/location2.2");
 
         // When
-        final long count = repository.count();
+        final long count = countRecord();
 
         // Then
         assertEquals("Nb location should be equals", nbLocation - 1, count);
@@ -200,7 +219,7 @@ public class MongoResourceJournalResolverTest {
         final ResourceResolver resourceResolver = mock(ResourceResolver.class);
         final DeletableResource resource1 = mock(DeletableResource.class);
         final DeletableResource resource2 = mock(DeletableResource.class);
-        when(resourceResolver.getResources(any())).thenReturn(new DeletableResource[]{resource1, resource2});
+        when(resourceResolver.getResources(any())).thenReturn(new DeletableResource[] { resource1, resource2 });
 
         // When
         resolver.sync(resourceResolver);
@@ -269,5 +288,9 @@ public class MongoResourceJournalResolverTest {
             return new Fongo("resourceJournal").getMongo();
         }
 
+    }
+
+    private long countRecord() {
+        return mongoTemplate.count(new Query(), ResourceJournalEntry.class, collectionName);
     }
 }

@@ -1,5 +1,8 @@
 package org.talend.daikon.content.journal;
 
+import java.io.IOException;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +14,6 @@ import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
-
-import java.io.IOException;
-import java.util.stream.Stream;
 
 /**
  * An implementation of {@link ResourceJournal} that uses a MongoDB database as backend.
@@ -95,8 +95,10 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         if (location.charAt(0) != '/') {
             savedLocation = "/" + location;
         }
-        repository.save(new ResourceJournalEntry(savedLocation));
-        LOGGER.debug("Location '{}' added to journal.", location);
+        if (!exist(savedLocation)) {
+            repository.save(new ResourceJournalEntry(savedLocation));
+        }
+        LOGGER.debug("Location '{}' added to journal.", savedLocation);
     }
 
     @Override
@@ -133,7 +135,9 @@ public class MongoResourceJournalResolver implements ResourceJournal {
     @Override
     public void validate() {
         final ResourceJournalEntry entry = new ResourceJournalEntry(JOURNAL_READY_MARKER);
-        repository.save(entry);
+        if(!repository.exists(JOURNAL_READY_MARKER)){
+            repository.save(entry);
+        }
     }
 
     @Override

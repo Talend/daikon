@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>daikon-content-service</artifactId>
         <groupId>org.talend.daikon</groupId>
-        <version>0.24.0-SNAPSHOT</version>
+        <version>0.24.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -27,13 +25,13 @@
         <dependency>
             <groupId>org.talend.daikon</groupId>
             <artifactId>local-content-service</artifactId>
-            <version>0.24.0-SNAPSHOT</version>
+            <version>0.24.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.talend.daikon</groupId>
             <artifactId>s3-content-service</artifactId>
-            <version>0.24.0-SNAPSHOT</version>
+            <version>0.24.0</version>
             <scope>test</scope>
         </dependency>
 
