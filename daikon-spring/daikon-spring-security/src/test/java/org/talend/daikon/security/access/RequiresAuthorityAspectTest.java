@@ -60,6 +60,50 @@ public class RequiresAuthorityAspectTest {
     }
 
     @Test
+    public void shouldUseAuthorityWhenValuesDefined() throws Exception {
+        try {
+            component.authorityValuesPriority();
+            fail("Expected an error.");
+        } catch (TalendRuntimeException e) {
+            assertEquals(403, e.getCode().getHttpStatus());
+        }
+    }
+
+    @Test
+    public void shouldInvokeSuccessfullyWithAuthorityAgainstValues() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(GRANTED);
+        assertEquals("secret string", component.authorityValuesPriority());
+    }
+
+    @Test
+    public void shouldInvokeSuccessfullyWithEmptyAuthorityAgainstValues() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(GRANTED);
+        assertEquals("secret string", component.emptyAuthorityValuesPriority());
+    }
+
+    @Test
+    public void shouldUseValuesWhenValueDefined() throws Exception {
+        try {
+            component.valuesValuePriority();
+            fail("Expected an error.");
+        } catch (TalendRuntimeException e) {
+            assertEquals(403, e.getCode().getHttpStatus());
+        }
+    }
+
+    @Test
+    public void shouldInvokeSuccessfullyWithValuesAgainstValue() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(GRANTED);
+        assertEquals("secret string", component.valuesValuePriority());
+    }
+
+    @Test
+    public void shouldInvokeSuccessfullyWithEmptyValuesAgainstValue() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(GRANTED);
+        assertEquals("secret string", component.emptyValuesValuePriority());
+    }
+
+    @Test
     public void shouldUseAuthorityWhenValueDefined() throws Exception {
         try {
             component.authorityValuePriority();
@@ -67,6 +111,18 @@ public class RequiresAuthorityAspectTest {
         } catch (TalendRuntimeException e) {
             assertEquals(403, e.getCode().getHttpStatus());
         }
+    }
+
+    @Test
+    public void shouldInvokeSuccessfullyWithAuthorityAgainstValue() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(GRANTED);
+        assertEquals("secret string", component.authorityValuePriority());
+    }
+
+    @Test
+    public void shouldInvokeSuccessfullyWithEmptyAuthorityAgainstValue() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(GRANTED);
+        assertEquals("secret string", component.emptyAuthorityValuePriority());
     }
 
     @Test

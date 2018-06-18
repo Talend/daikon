@@ -29,9 +29,15 @@ public @interface RequiresAuthority {
 
     /**
      * @return The authority (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. Value is
-     * ignored if {@link #authority()} is defined.
+     * ignored if {@link #authority()} or {@link #values()} is defined.
      */
     String value() default StringUtils.EMPTY;
+
+    /**
+     * @return The authority list (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. Values are
+     * ignored if {@link #authority()} is defined.
+     */
+    String[] values() default { StringUtils.EMPTY };
 
     /**
      * @return The authority (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. This has
