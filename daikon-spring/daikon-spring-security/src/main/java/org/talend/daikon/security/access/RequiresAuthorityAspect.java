@@ -28,8 +28,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -70,26 +68,18 @@ public class RequiresAuthorityAspect {
             throw new IllegalArgumentException("Missing @RequiresAuthority annotation."); // Rather unexpected
         }
 
-        AtomicBoolean checkOk = new AtomicBoolean(false);
-
         final String authority = annotation.authority();
-        final String[] values = annotation.values();
-        final Supplier<Stream<String>> streamSupplier = () -> Stream.of(values);
-        final String value = annotation.value();
-
+        final boolean checkOk;
         if (StringUtils.isNotBlank(authority)) {
-            checkOk.set(isAllowed(authority));
-        } else if (streamSupplier.get().anyMatch(StringUtils::isNotBlank)) {
-            streamSupplier.get().filter(StringUtils::isNotBlank).forEach(currentAuthority -> {
-                if (isAllowed(currentAuthority)) {
-                    checkOk.set(true);
-                }
-            });
-        } else if (StringUtils.isNotBlank(value)) {
-            checkOk.set(isAllowed(value));
+            checkOk = isAllowed(authority);
+        } else {
+            final String[] values = annotation.value();
+            checkOk = Stream.of(values) //
+                    .filter(StringUtils::isNotBlank) //
+                    .allMatch(RequiresAuthorityAspect::isAllowed);
         }
 
-        if (!checkOk.get()) {
+        if (!checkOk) {
             LOGGER.debug("Access denied for user {} on {}.", authentication, method);
             final Class<? extends AccessDenied> onDeny = annotation.onDeny();
             final AccessDenied accessDenied;
