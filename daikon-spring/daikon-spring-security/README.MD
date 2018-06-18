@@ -56,7 +56,7 @@ To add several permissions check, you can pass an array in the `@RequiresAuthori
 @Component
 public class MyRestrictedAccessClass {
 
-    @RequiresAuthority(values = { "SECRET_ACCESS", "OR_ANOTHER_SECRET_ACCESS" })
+    @RequiresAuthority({ "SECRET_ACCESS", "OR_ANOTHER_SECRET_ACCESS" })
     public String getMySecret() {
         return "something very secret";
     }
