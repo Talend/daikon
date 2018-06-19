@@ -22,7 +22,6 @@ import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 import org.talend.daikon.multitenant.context.TenancyContext;
 import org.talend.daikon.multitenant.context.TenancyContextHolder;
-import org.talend.daikon.multitenant.provider.DefaultTenant;
 
 import java.io.IOException;
 import java.util.List;
@@ -236,25 +235,6 @@ public class MongoResourceJournalResolverTest {
         verify(resource1, times(1)).getFilename();
         verify(resource2, times(1)).getFilename();
         assertTrue(repository.exists(MongoResourceJournalResolver.JOURNAL_READY_MARKER));
-    }
-
-    @Test
-    public void shouldSyncUsingTenancyContext() throws IOException, InterruptedException {
-        // Given
-        final ResourceResolver resourceResolver = mock(ResourceResolver.class);
-        final GetResourcesAnswer getResourcesAnswer = new GetResourcesAnswer();
-        when(resourceResolver.getResources(any())).then(getResourcesAnswer);
-        final TenancyContext context = TenancyContextHolder.createEmptyContext();
-        context.setTenant(new DefaultTenant("tenant-1234", null));
-
-        // When
-        TenancyContextHolder.setContext(context);
-        resolver.sync(resourceResolver);
-        resolver.waitForSync();
-
-        // Then
-        assertNotNull(getResourcesAnswer.getContext());
-        assertEquals(context, getResourcesAnswer.getContext());
     }
 
     @Test
