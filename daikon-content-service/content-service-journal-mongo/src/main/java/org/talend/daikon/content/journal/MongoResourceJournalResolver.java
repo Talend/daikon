@@ -1,8 +1,5 @@
 package org.talend.daikon.content.journal;
 
-import java.io.IOException;
-import java.util.stream.Stream;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +11,9 @@ import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
+
+import java.io.IOException;
+import java.util.stream.Stream;
 
 /**
  * An implementation of {@link ResourceJournal} that uses a MongoDB database as backend.
@@ -41,26 +41,21 @@ public class MongoResourceJournalResolver implements ResourceJournal {
             return;
         }
 
-        Runnable runnable = () -> {
-            try {
-                LOGGER.info("Running initial sync...");
-                final DeletableResource[] resources = resourceResolver.getResources("/**");
-                for (int i = 0; i < resources.length; i++) {
-                    add(resources[i].getFilename());
-                    if (i % 500 == 0) {
-                        LOGGER.info("Sync in progress ({}/{})", i, resources.length);
-                    }
+        try {
+            LOGGER.info("Running initial sync...");
+            final DeletableResource[] resources = resourceResolver.getResources("/**");
+            for (int i = 0; i < resources.length; i++) {
+                add(resources[i].getFilename());
+                if (i % 500 == 0) {
+                    LOGGER.info("Sync in progress ({}/{})", i, resources.length);
                 }
-                validate();
-                LOGGER.info("Initial sync done.");
-            } catch (IOException e) {
-                invalidate();
-                throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
             }
-        };
-        syncThread = new Thread(runnable);
-        syncThread.setDaemon(true);
-        syncThread.start();
+            validate();
+            LOGGER.info("Initial sync done.");
+        } catch (IOException e) {
+            invalidate();
+            throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     public void waitForSync() throws InterruptedException {
@@ -135,7 +130,7 @@ public class MongoResourceJournalResolver implements ResourceJournal {
     @Override
     public void validate() {
         final ResourceJournalEntry entry = new ResourceJournalEntry(JOURNAL_READY_MARKER);
-        if(!repository.exists(JOURNAL_READY_MARKER)){
+        if (!repository.exists(JOURNAL_READY_MARKER)) {
             repository.save(entry);
         }
     }

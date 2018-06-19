@@ -23,7 +23,6 @@ public class JournalizedResourceResolver implements ResourceResolver {
     public JournalizedResourceResolver(ResourceResolver delegate, ResourceJournal resourceJournal) {
         this.delegate = delegate;
         this.resourceJournal = resourceJournal;
-        resourceJournal.sync(delegate);
     }
 
     @Override

@@ -10,12 +10,7 @@ public interface ResourceJournal {
      * <p>
      * Synchronize the content of this journal with the {@link ResourceResolver} passed as parameter.
      * </p>
-     * <p>
-     * Method is not expected to block callee.
-     * </p>
-     *
-     * @param resourceResolver
-     *            The {@link ResourceResolver} to use for synchronization.
+     * @param resourceResolver The {@link ResourceResolver} to use for synchronization.
      */
     void sync(ResourceResolver resourceResolver);
 

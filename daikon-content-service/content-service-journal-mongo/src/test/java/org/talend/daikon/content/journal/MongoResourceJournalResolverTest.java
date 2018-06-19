@@ -1,22 +1,5 @@
 package org.talend.daikon.content.journal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.github.fakemongo.Fongo;
 import com.mongodb.MongoClient;
 import org.junit.After;
@@ -35,6 +18,24 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataMongoTest
@@ -239,7 +240,12 @@ public class MongoResourceJournalResolverTest {
         when(resourceResolver.getResources(any())).thenThrow(new IOException("Unchecked on purpose"));
 
         // When
-        resolver.sync(resourceResolver);
+        try {
+            resolver.sync(resourceResolver);
+            fail("Expected an exception.");
+        } catch (Exception e) {
+            // Expected
+        }
         resolver.waitForSync();
 
         // Then
@@ -293,4 +299,5 @@ public class MongoResourceJournalResolverTest {
     private long countRecord() {
         return mongoTemplate.count(new Query(), ResourceJournalEntry.class, collectionName);
     }
+
 }
