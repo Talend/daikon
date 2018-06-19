@@ -6,8 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -20,8 +18,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
-import org.talend.daikon.multitenant.context.TenancyContext;
-import org.talend.daikon.multitenant.context.TenancyContextHolder;
 
 import java.io.IOException;
 import java.util.List;
@@ -304,18 +300,4 @@ public class MongoResourceJournalResolverTest {
         return mongoTemplate.count(new Query(), ResourceJournalEntry.class, collectionName);
     }
 
-    private static class GetResourcesAnswer implements Answer<DeletableResource[]> {
-
-        private TenancyContext context;
-
-        @Override
-        public DeletableResource[] answer(InvocationOnMock invocation) {
-            context = TenancyContextHolder.getContext();
-            return new DeletableResource[0];
-        }
-
-        public TenancyContext getContext() {
-            return context;
-        }
-    }
 }
