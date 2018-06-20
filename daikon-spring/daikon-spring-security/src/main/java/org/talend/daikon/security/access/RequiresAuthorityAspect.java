@@ -12,13 +12,6 @@
 
 package org.talend.daikon.security.access;
 
-import static java.util.Optional.of;
-import static java.util.Optional.ofNullable;
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-
-import java.lang.reflect.Method;
-import java.util.Collections;
-
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -32,6 +25,14 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 /**
  * The aspect configuration that takes care of {@link RequiresAuthority} annotations.
@@ -49,11 +50,11 @@ public class RequiresAuthorityAspect {
 
     /**
      * The interceptor method for method annotated with {@link RequiresAuthority}.
-     * 
+     *
      * @param pjp The method invocation.
      * @return The object
      * @throws Throwable Throws {@link org.springframework.security.access.AccessDeniedException} in case of denied
-     * access to the invoked method.
+     *                   access to the invoked method.
      */
     @Around("@annotation(org.talend.daikon.security.access.RequiresAuthority)")
     public Object requires(ProceedingJoinPoint pjp) throws Throwable {
@@ -67,10 +68,22 @@ public class RequiresAuthorityAspect {
         if (annotation == null) {
             throw new IllegalArgumentException("Missing @RequiresAuthority annotation."); // Rather unexpected
         }
-        final String authority = of(annotation.authority()) //
-                .filter(StringUtils::isNotEmpty) //
-                .orElse(annotation.value());
-        if (!isAllowed(authority)) {
+
+        final String[] authorityArray = annotation.authority();
+        final Supplier<Stream<String>> authorityStreamSupplier = () -> Stream.of(authorityArray).filter(StringUtils::isNotBlank);
+
+        final String[] valueArray = annotation.value();
+        final Supplier<Stream<String>> valueStreamSupplier = () -> Stream.of(valueArray).filter(StringUtils::isNotBlank);
+
+        Supplier<Stream<String>> streamSupplier = null;
+
+        if (authorityStreamSupplier.get().count() > 0) {
+            streamSupplier = authorityStreamSupplier;
+        } else if (valueStreamSupplier.get().count() > 0) {
+            streamSupplier = valueStreamSupplier;
+        }
+
+        if (streamSupplier != null && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
             LOGGER.debug("Access denied for user {} on {}.", authentication, method);
             final Class<? extends AccessDenied> onDeny = annotation.onDeny();
             final AccessDenied accessDenied;
