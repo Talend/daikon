@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.daikon.messages.spring.consumer.sleuth;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
@@ -25,18 +24,20 @@ import org.talend.daikon.messages.header.consumer.CorrelationIdSetter;
 public class SpringSleuthSettersConfiguration {
 
     @Bean
-    public CorrelationIdSetter correlationIdSetter(@Autowired final Tracer tracer) {
+    public CorrelationIdSetter correlationIdSetter(Tracer tracer) {
         return new CorrelationIdSetter() {
 
             @Override
             public void setCurrentCorrelationId(String correlationId) {
                 long spanId = 0;
+                String name = "";
                 Span currentSpan = tracer.getCurrentSpan();
                 if (currentSpan != null) {
                     spanId = currentSpan.getSpanId();
+                    name = currentSpan.getName();
                 }
                 long traceId = Span.hexToId(correlationId, 0);
-                Span span = Span.builder().traceId(traceId).spanId(spanId).shared(true).build();
+                Span span = Span.builder().name(name).traceId(traceId).spanId(spanId).shared(true).build();
                 tracer.continueSpan(span);
             }
         };
