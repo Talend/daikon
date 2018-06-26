@@ -120,7 +120,7 @@ public class MongoResourceJournalResolverTest {
     }
 
     @Test
-    public void testClearWithPattern(){
+    public void testClearWithPattern() {
         // Given
         resolver.add("location3.0");
         resolver.add("location3.0/location3.1");
@@ -137,7 +137,6 @@ public class MongoResourceJournalResolverTest {
         assertFalse(resolver.exist("location3.0/location3.3/location3.3.1"));
 
     }
-
 
     @Test
     public void testAdd() {
