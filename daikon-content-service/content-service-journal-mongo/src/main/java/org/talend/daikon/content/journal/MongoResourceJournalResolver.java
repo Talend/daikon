@@ -1,5 +1,8 @@
 package org.talend.daikon.content.journal;
 
+import java.io.IOException;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +14,6 @@ import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
-
-import java.io.IOException;
-import java.util.stream.Stream;
 
 /**
  * An implementation of {@link ResourceJournal} that uses a MongoDB database as backend.
@@ -71,14 +71,15 @@ public class MongoResourceJournalResolver implements ResourceJournal {
             return Stream.empty();
         }
 
-        String patternForMatch = StringUtils.substringBeforeLast(pattern, "*");
+        String patternForMatch = formattingStringToMongoPattern(pattern);
         return repository.findByNameStartsWith(patternForMatch).stream().map(ResourceJournalEntry::getName);
     }
 
     @Override
     public void clear(String pattern) {
-        repository.deleteByNameStartsWith(pattern);
-        LOGGER.debug("Cleared location '{}'.", pattern);
+        String patternForClear = formattingStringToMongoPattern(pattern);
+        repository.deleteByNameStartsWith(patternForClear);
+        LOGGER.debug("Cleared location '{}'.", patternForClear);
     }
 
     @Override
@@ -86,10 +87,7 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         if (StringUtils.isEmpty(location)) {
             return;
         }
-        String savedLocation = location;
-        if (location.charAt(0) != '/') {
-            savedLocation = "/" + location;
-        }
+        String savedLocation = updateLocationToAbsolutePath(location);
         if (!exist(savedLocation)) {
             repository.save(new ResourceJournalEntry(savedLocation));
         }
@@ -117,7 +115,8 @@ public class MongoResourceJournalResolver implements ResourceJournal {
 
     @Override
     public boolean exist(String location) {
-        final boolean exist = repository.countByName(location) > 0L;
+        String savedLocation = updateLocationToAbsolutePath(location);
+        final boolean exist = repository.countByName(savedLocation) > 0L;
         LOGGER.debug("Location check on '{}': {}", location, exist);
         return exist;
     }
@@ -138,5 +137,17 @@ public class MongoResourceJournalResolver implements ResourceJournal {
     @Override
     public void invalidate() {
         repository.deleteByName(JOURNAL_READY_MARKER);
+    }
+
+    private String updateLocationToAbsolutePath(String location) {
+        String savedLocation = location;
+        if (location.charAt(0) != '/') {
+            savedLocation = "/" + location;
+        }
+        return savedLocation;
+    }
+
+    private String formattingStringToMongoPattern(String pattern) {
+        return StringUtils.remove(pattern, "*");
     }
 }
