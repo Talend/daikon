@@ -243,7 +243,6 @@ public class MongoResourceJournalResolverTest {
 
         // When
         resolver.sync(resourceResolver);
-        resolver.waitForSync();
 
         // Then
         verify(resourceResolver, times(1)).getResources(eq("/**"));
@@ -265,7 +264,6 @@ public class MongoResourceJournalResolverTest {
         } catch (Exception e) {
             // Expected
         }
-        resolver.waitForSync();
 
         // Then
         assertFalse(repository.exists(MongoResourceJournalResolver.JOURNAL_READY_MARKER));
@@ -280,7 +278,6 @@ public class MongoResourceJournalResolverTest {
         // When
         resolver.validate();
         resolver.sync(resourceResolver);
-        resolver.waitForSync();
 
         // Then
         verify(resourceResolver, never()).getResources(eq("/**"));

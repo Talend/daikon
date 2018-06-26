@@ -32,8 +32,6 @@ public class MongoResourceJournalResolver implements ResourceJournal {
     @Autowired
     private MongoResourceJournalRepository repository;
 
-    private Thread syncThread;
-
     @Override
     public void sync(ResourceResolver resourceResolver) {
         if (ready()) {
@@ -55,12 +53,6 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         } catch (IOException e) {
             invalidate();
             throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-        }
-    }
-
-    public void waitForSync() throws InterruptedException {
-        if (syncThread != null) {
-            syncThread.join();
         }
     }
 
