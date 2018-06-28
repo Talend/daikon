@@ -11,7 +11,6 @@
 
     <properties>
         <spring-boot-dependencies.version>1.5.2.RELEASE</spring-boot-dependencies.version>
-        <spring-cloud-dependencies.version>Edgware.SR3</spring-cloud-dependencies.version>
     </properties>
 
     <dependencyManagement>
@@ -20,13 +19,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot-dependencies.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -42,7 +34,7 @@
         <dependency>
             <groupId>io.zipkin.reporter2</groupId>
             <artifactId>zipkin-sender-kafka11</artifactId>
-            <scope>provided</scope>
+            <version>2.1.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
