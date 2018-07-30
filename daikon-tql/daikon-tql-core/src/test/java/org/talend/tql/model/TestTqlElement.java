@@ -117,7 +117,22 @@ public class TestTqlElement {
         assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(null, null)));
         assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("field"), "other")));
         assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("other"), "value")));
+        assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("field"), "value", false)));
+        assertTrue(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("field"), "value", true)));
         assertTrue(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("field"), "value")));
+    }
+
+    @Test
+    public void testEqualsContainsIgnoreCaseExpression() {
+        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(new FieldReference("field"), "value",
+                false);
+
+        assertNotNull(fieldContainsExpression);
+        assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(null, null, false)));
+        assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("field"), "other", false)));
+        assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("other"), "value", false)));
+        assertFalse(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("field"), "value", true)));
+        assertTrue(fieldContainsExpression.equals(new FieldContainsExpression(new FieldReference("field"), "value", false)));
     }
 
     @Test

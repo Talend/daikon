@@ -93,7 +93,14 @@ public class TestTqlParser_AllFields extends TestTqlParser_Abstract {
     @Test
     public void testParseLiteralComparisonContains() throws Exception {
         TqlElement tqlElement = doTest("* contains 'value1'");
-        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldContainsExpression{field='AllFields{}', value='value1'}]}]}";
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldContainsExpression{field='AllFields{}', value='value1', caseSensitive=true}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
+    public void testParseLiteralComparisonContainsIgnoreCase() throws Exception {
+        TqlElement tqlElement = doTest("* containsIgnoreCase 'value1'");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=[FieldContainsExpression{field='AllFields{}', value='value1', caseSensitive=false}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 }

@@ -30,6 +30,7 @@ GET: '>=';
 // advanced comparison operators
 IS : 'is';
 CONTAINS : 'contains';
+CONTAINS_IGNORE_CASE : 'containsIgnoreCase';
 MATCHES : '~';
 COMPLIES : 'complies';
 BETWEEN : 'between';

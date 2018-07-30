@@ -315,6 +315,19 @@ public class TqlBuilder {
 
     }
 
+    public static Expression containsIgnoreCase(String fieldname, String value) {
+
+        // Creating simple contains expression
+        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(new FieldReference(fieldname), value,
+                false);
+        Expression[] fieldContainsExpressions = new Expression[] { fieldContainsExpression };
+
+        // Adding it to a new AST
+        AndExpression andExpression = new AndExpression(fieldContainsExpressions);
+        return new OrExpression(andExpression);
+
+    }
+
     /**
      * Build a "complies" TQL expression
      *

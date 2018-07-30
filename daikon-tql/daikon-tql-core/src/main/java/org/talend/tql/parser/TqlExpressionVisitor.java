@@ -195,17 +195,28 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldContains(TqlParser.FieldContainsContext ctx) {
         LOG.debug("Visit field contains: " + ctx.getText());
-        TqlElement fieldName = ctx.getChild(0).accept(this);
-        ParseTree valueNode = ctx.getChild(2);
+        FieldContainsExpression fieldContainsExpression = getFieldContainsExpression(true, ctx.getChild(0).accept(this),
+                ctx.getChild(2));
+        LOG.debug("End visit field contains: " + ctx.getText());
+        return fieldContainsExpression;
+    }
 
+    @Override
+    public TqlElement visitFieldContainsIgnoreCase(TqlParser.FieldContainsIgnoreCaseContext ctx) {
+        LOG.debug("Visit field containsIgnoreCase: " + ctx.getText());
+        FieldContainsExpression fieldContainsExpression = getFieldContainsExpression(false, ctx.getChild(0).accept(this),
+                ctx.getChild(2));
+        LOG.debug("End visit field containsIgnoreCase: " + ctx.getText());
+        return fieldContainsExpression;
+    }
+
+    private FieldContainsExpression getFieldContainsExpression(boolean caseSensitive, TqlElement fieldName, ParseTree valueNode) {
         if (valueNode instanceof ErrorNode)
             throw new TqlException(valueNode.getText());
 
         String quotedValue = valueNode.getText();
         String value = quotedValue.substring(1, quotedValue.length() - 1);
-        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(fieldName, unescapeSingleQuotes(value));
-        LOG.debug("End visit field contains: " + ctx.getText());
-        return fieldContainsExpression;
+        return new FieldContainsExpression(fieldName, unescapeSingleQuotes(value), caseSensitive);
     }
 
     @Override
