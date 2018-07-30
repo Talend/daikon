@@ -387,7 +387,12 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         fieldContainsExpression.getField().accept(this);
         final Method[] methods = currentMethods.pop();
 
-        return unchecked(o -> StringUtils.containsIgnoreCase(valueOf(invoke(o, methods)), fieldContainsExpression.getValue()));
+        return unchecked(o -> {
+            String str = valueOf(invoke(o, methods));
+            String value = fieldContainsExpression.getValue();
+            return fieldContainsExpression.isCaseSensitive() ? StringUtils.contains(str, value)
+                    : StringUtils.containsIgnoreCase(str, value);
+        });
     }
 
     @Override
