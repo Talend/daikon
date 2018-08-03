@@ -112,7 +112,7 @@ public class BigDecimalParser {
         }
     }
 
-    protected static DecimalFormatSymbols guessSeparators(String from) {
+    public static DecimalFormatSymbols guessSeparators(String from) {
         final DecimalFormatSymbols toReturn = DecimalFormatSymbols.getInstance(Locale.US);
 
         /*
