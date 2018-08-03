@@ -3,6 +3,8 @@ package org.talend.daikon.number;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -210,6 +212,17 @@ public class BigDecimalParser {
      */
     private static BigDecimal toBigDecimal(Number number) {
         return new BigDecimal(number.toString());
+    }
+
+    /**
+     * Get the supported decimal formats.
+     * <p>
+     * Useful to check if a number is supported and can be parsed.
+     * @return the list of supported Formats
+     */
+    public static List<DecimalFormat> getSupportedFormats() {
+        return Arrays.asList(US_DECIMAL_PATTERN, EU_DECIMAL_PATTERN, EU_PERCENTAGE_DECIMAL_PATTERN, US_PERCENTAGE_DECIMAL_PATTERN, //
+                US_SCIENTIFIC_DECIMAL_PATTERN, EU_SCIENTIFIC_DECIMAL_PATTERN);
     }
 
 }
