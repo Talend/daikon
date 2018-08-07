@@ -209,6 +209,12 @@ public class BigDecimalParserTest {
     }
 
     @Test
+    public void testGuessSeparatorsTDP5153() {
+        assertGuessSeparators("5 555,555", ',', ' ');
+        assertGuessSeparators("5.555,555", ',', '.');
+    }
+
+    @Test
     public void testGetSupportedFormats() {
         List<DecimalFormat> supportedFormats = BigDecimalParser.getSupportedFormats();
         assertEquals(6, supportedFormats.size());

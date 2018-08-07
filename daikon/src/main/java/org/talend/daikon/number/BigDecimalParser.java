@@ -24,7 +24,7 @@ public class BigDecimalParser {
     private static final Pattern STARTS_WITH_DECIMAL_SEPARATOR_PATTERN = Pattern
             .compile("^[(-]?(?:\\d{3,}|\\d{0})([,.])\\d+[)]?");
 
-    private static final Pattern FEW_GROUP_SEP_PATTERN = Pattern.compile("^[(-]?\\d+([.,\\h']\\d{3}){2,}[)]?");
+    private static final Pattern FEW_GROUP_SEP_PATTERN = Pattern.compile("^[(-]?\\d+([.,\\h'])\\d{3}(\\1\\d{3})+[)]?");
 
     private static final Pattern TWO_DIFFERENT_SEPARATORS_PATTERN = Pattern.compile(".*\\d+([.\\h'])\\d+([,.])\\d+[)]?");
 
