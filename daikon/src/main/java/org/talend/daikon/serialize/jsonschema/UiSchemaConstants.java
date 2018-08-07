@@ -45,6 +45,11 @@ public class UiSchemaConstants {
      */
     public static final String TAG_OPTIONS = "ui:options";
 
+    /**
+     * Build-in tag. Represents the placeholder that should be used if a property isn't present.
+     */
+    public static final String TAG_PLACEHOLDER = "ui:placeholder";
+
     /** @deprecated please use PropertyTrigger#AFTER */
     @Deprecated
     public static final String TRIGGER_AFTER = PropertyTrigger.AFTER.name();
@@ -133,6 +138,19 @@ public class UiSchemaConstants {
      */
     public static final String TYPE_LIST_VIEW = "listview";
 
+    /**
+     * This widget will open a Wizard and let the user select an object inside it. For example, it will be used
+     * to select a Dataprep Preparation from the Dataprep Picker.
+     */
+    public static final String TYPE_SELECT_WIZARD = "selectWizard";
+
+    /**
+     * This widget will create a link button that will move the user to another webpage.
+     */
+    public static final String TYPE_EXTERNAL_LINK = "externalLink";
+
+    public static final String TYPE_COLUMNS = "columns";
+
     /*
      * ui:field values. ui:field is a more high-level element than a ui:widget. Widgets are used to represent singular
      * form element, for example a checkbox or a list of such elements. In order to present more complex elements, like
@@ -161,6 +179,11 @@ public class UiSchemaConstants {
         options = new HashMap<>();
         options.put(Widget.NESTED_PROPERTIES_TYPE_OPTION, "default");
         WIDGET_OPTIONS_MAPPING.put(Widget.NESTED_PROPERTIES, options);
+        WIDGET_OPTIONS_MAPPING.put(Widget.UNCOLLAPSIBLE_NESTED_PROPERTIES, options);
+
+        options = new HashMap<>();
+        options.put(Widget.NESTED_PROPERTIES_TYPE_OPTION, "default");
+        WIDGET_OPTIONS_MAPPING.put(Widget.COLUMNS_PROPERTIES, options);
 
         // null means use the default
         // WIDGET_MAPPING.put(Widget.DEFAULT_WIDGET_TYPE, null);
@@ -186,8 +209,17 @@ public class UiSchemaConstants {
         UI_MAPPERS.put(Widget.MULTIPLE_VALUE_SELECTOR_WIDGET_TYPE, new WidgetMapper(UiSchemaConstants.TYPE_LIST_VIEW));
         UI_MAPPERS.put(Widget.CODE_WIDGET_TYPE, new WidgetMapper(UiSchemaConstants.TYPE_CODE));
 
+        UI_MAPPERS.put(Widget.SELECT_WIZARD_WIDGET_TYPE, new WidgetMapper(UiSchemaConstants.TYPE_SELECT_WIZARD));
+        UI_MAPPERS.put(Widget.EXTERNAL_LINK_WIDGET_TYPE, new WidgetMapper(UiSchemaConstants.TYPE_EXTERNAL_LINK));
+
         UI_MAPPERS.put(Widget.NESTED_PROPERTIES, new NestedPropertiesFieldMapper(UiSchemaConstants.COLLAPSIBLE_FIELDSET));
 
+        // for the UI, a datalist with an empty "ui:field" will be considered as an uncollapsible nested fieldset.
+        UI_MAPPERS.put(Widget.UNCOLLAPSIBLE_NESTED_PROPERTIES, new NestedPropertiesFieldMapper(""));
+
+        // for the UI, the UI need the "columns" field to be a widget instead of a tag.
+        UI_MAPPERS.put(Widget.COLUMNS_PROPERTIES,
+                new NestedPropertiesFieldMapper(UiSchemaConstants.TAG_WIDGET, UiSchemaConstants.TYPE_COLUMNS));
         UI_MAPPERS = Collections.unmodifiableMap(UI_MAPPERS);
     }
 

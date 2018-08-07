@@ -23,4 +23,8 @@ public class FieldMapper extends Mapper {
         super(UiSchemaConstants.TAG_CUSTOM_WIDGET, uiType);
     }
 
+    public FieldMapper(String uiAttribute, String uiType) {
+        super(uiAttribute, uiType);
+    }
+
 }

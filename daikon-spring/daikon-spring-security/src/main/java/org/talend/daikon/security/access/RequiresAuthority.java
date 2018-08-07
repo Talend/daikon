@@ -12,10 +12,14 @@
 
 package org.talend.daikon.security.access;
 
-import java.lang.annotation.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * A helper annotation to indicate what authorities are needed to execute method.
@@ -28,16 +32,16 @@ import org.springframework.security.core.GrantedAuthority;
 public @interface RequiresAuthority {
 
     /**
-     * @return The authority (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. Value is
+     * @return The authority list (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. Value is
      * ignored if {@link #authority()} is defined.
      */
-    String value() default StringUtils.EMPTY;
+    String[] value() default {};
 
     /**
      * @return The authority (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. This has
      * precedence over {@link #value()}.
      */
-    String authority() default StringUtils.EMPTY;
+    String[] authority() default {};
 
     /**
      * @return A {@link AccessDenied} implementation to handle access denials.

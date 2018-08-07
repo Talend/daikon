@@ -30,6 +30,7 @@ GET: '>=';
 // advanced comparison operators
 IS : 'is';
 CONTAINS : 'contains';
+CONTAINS_IGNORE_CASE : 'containsIgnoreCase';
 MATCHES : '~';
 COMPLIES : 'complies';
 BETWEEN : 'between';
@@ -53,4 +54,5 @@ DECIMAL: ('-')?('0' .. '9')+('.')('0' .. '9')*;
 FIELD: ('a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '.' )+;
 
 // literal values
-QUOTED_VALUE : ( '\'' ( ~ '\'' )* '\'' );
+fragment ESC : '\\\'';
+QUOTED_VALUE : ( '\'' (ESC|.)*? '\'' );

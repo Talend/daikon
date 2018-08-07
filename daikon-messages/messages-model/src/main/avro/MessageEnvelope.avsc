@@ -1,0 +1,35 @@
+{
+  "name" : "MessageEnvelope",
+  "namespace" : "org.talend.daikon.messages",
+  "type" : "record",
+  "doc" : "A message envelope for any kind a text-based message",
+  "fields" : [
+    {
+      "name" : "header",
+      "doc" : "Common message header for technical interoperability",
+      "type" : "MessageHeader"
+    },
+    {
+      "name" : "payload",
+      "doc" : "the message payload",
+      "type" : {
+        "name" : "MessagePayload",
+        "doc" : "A message payload wrapper",
+        "namespace" : "org.talend.daikon.messages",
+        "type" : "record",
+        "fields" : [
+          {
+            "name" : "format",
+            "doc" : "Format identifier used to retrieve the appropriate message converter",
+            "type" : "string"
+          },
+          {
+            "name" : "content",
+            "doc" : "The serialized message content",
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -207,4 +207,12 @@ public class TestTqlApi_FieldComparison extends TestTqlParser_Abstract {
         Assert.assertEquals(expected.toString(), tqlElement.toString());
     }
 
+    @Test
+    public void testApiStringComparisonWithSingleQuote() throws Exception {
+        // TQL native query
+        TqlElement expected = doTest("field1 != 'fiel\\'d2'");
+        // TQL api query
+        TqlElement tqlElement = neq("field1", "fiel'd2");
+        Assert.assertEquals(expected.toString(), tqlElement.toString());
+    }
 }

@@ -13,7 +13,25 @@ import org.talend.tql.TqlLexer;
 import org.talend.tql.TqlParser;
 import org.talend.tql.TqlParserVisitor;
 import org.talend.tql.excp.TqlException;
-import org.talend.tql.model.*;
+import org.talend.tql.model.AllFields;
+import org.talend.tql.model.AndExpression;
+import org.talend.tql.model.BooleanValue;
+import org.talend.tql.model.ComparisonExpression;
+import org.talend.tql.model.ComparisonOperator;
+import org.talend.tql.model.Expression;
+import org.talend.tql.model.FieldBetweenExpression;
+import org.talend.tql.model.FieldCompliesPattern;
+import org.talend.tql.model.FieldContainsExpression;
+import org.talend.tql.model.FieldInExpression;
+import org.talend.tql.model.FieldIsEmptyExpression;
+import org.talend.tql.model.FieldIsInvalidExpression;
+import org.talend.tql.model.FieldIsValidExpression;
+import org.talend.tql.model.FieldMatchesRegex;
+import org.talend.tql.model.FieldReference;
+import org.talend.tql.model.LiteralValue;
+import org.talend.tql.model.NotExpression;
+import org.talend.tql.model.OrExpression;
+import org.talend.tql.model.TqlElement;
 
 /**
  * Visitor for building the AST Tql tree.
@@ -60,7 +78,8 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
         LiteralValue.Enum literalValue = LiteralValue.Enum.valueOf(symbolicName);
         LOG.debug("Found literal value " + literalValue);
         String v = symbol.getText();
-        String value = literalValue.equals(LiteralValue.Enum.QUOTED_VALUE) ? v.substring(1, v.length() - 1) : v;
+        String value = literalValue.equals(LiteralValue.Enum.QUOTED_VALUE) ? unescapeSingleQuotes(v.substring(1, v.length() - 1))
+                : v;
         LiteralValue lv = new LiteralValue(literalValue, value);
         LOG.debug("End visit literal value: " + ctx.getText());
         return lv;
@@ -154,38 +173,50 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
         return isInvalidExpression;
     }
 
+    /**
+     * The single quote is used in the ANTLR grammar as a literal delimiter, but can still be used inside a literal.
+     * To avoid literals being truncated when parsed by ANTLR, single quotes are escaped by the TQL clients, and then
+     * need to be unescaped after the parse operation.
+     *
+     * <pre>
+     * unescapeSingleQuotes(null)       = null
+     * unescapeSingleQuotes("O\'Reilly")= "O'Reilly"
+     * unescapeSingleQuotes("\\")= "\\"
+     *
+     * </pre>
+     *
+     * @param token the parsed token
+     * @return the token unescaped for single quotes
+     */
+    private static String unescapeSingleQuotes(String token) {
+        return token != null ? token.replaceAll("\\\\'", "'") : null;
+    }
+
     @Override
     public TqlElement visitFieldContains(TqlParser.FieldContainsContext ctx) {
         LOG.debug("Visit field contains: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        TqlElement fieldName = field.accept(this);
-        TerminalNode valueNode = ctx.getChild(TerminalNode.class, 2);
-
-        if (valueNode instanceof ErrorNode)
-            throw new TqlException(valueNode.getText());
-
-        String quotedValue = valueNode.getSymbol().getText();
-        String value = quotedValue.substring(1, quotedValue.length() - 1);
-        FieldContainsExpression fieldContainsExpression = new FieldContainsExpression(fieldName, value);
+        FieldContainsExpression fieldContainsExpression = getFieldContainsExpression(true, ctx.getChild(0).accept(this),
+                ctx.getChild(2));
         LOG.debug("End visit field contains: " + ctx.getText());
         return fieldContainsExpression;
     }
 
     @Override
-    public TqlElement visitFieldMatchesRegexp(TqlParser.FieldMatchesRegexpContext ctx) {
-        LOG.debug("Visit field matches: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        TqlElement fieldName = field.accept(this);
-        TerminalNode regexNode = ctx.getChild(TerminalNode.class, 2);
+    public TqlElement visitFieldContainsIgnoreCase(TqlParser.FieldContainsIgnoreCaseContext ctx) {
+        LOG.debug("Visit field containsIgnoreCase: " + ctx.getText());
+        FieldContainsExpression fieldContainsExpression = getFieldContainsExpression(false, ctx.getChild(0).accept(this),
+                ctx.getChild(2));
+        LOG.debug("End visit field containsIgnoreCase: " + ctx.getText());
+        return fieldContainsExpression;
+    }
 
-        if (regexNode instanceof ErrorNode)
-            throw new TqlException(regexNode.getText());
+    private FieldContainsExpression getFieldContainsExpression(boolean caseSensitive, TqlElement fieldName, ParseTree valueNode) {
+        if (valueNode instanceof ErrorNode)
+            throw new TqlException(valueNode.getText());
 
-        String quotedRegex = regexNode.getSymbol().getText();
-        String regex = quotedRegex.substring(1, quotedRegex.length() - 1);
-        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldName, regex);
-        LOG.debug("End visit field matches: " + ctx.getText());
-        return fieldMatchesRegex;
+        String quotedValue = valueNode.getText();
+        String value = quotedValue.substring(1, quotedValue.length() - 1);
+        return new FieldContainsExpression(fieldName, unescapeSingleQuotes(value), caseSensitive);
     }
 
     @Override
@@ -199,7 +230,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
 
         String quotedPattern = patternNode.getText();
         String pattern = quotedPattern.substring(1, quotedPattern.length() - 1);
-        FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldName, pattern);
+        FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldName, unescapeSingleQuotes(pattern));
         LOG.debug("End visit field complies: " + ctx.getText());
         return fieldCompliesPattern;
     }
@@ -224,8 +255,7 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitFieldIn(TqlParser.FieldInContext ctx) {
         LOG.debug("Visit field in: " + ctx.getText());
-        TerminalNode field = ctx.getChild(TerminalNode.class, 0);
-        TqlElement fieldName = field.accept(this);
+        TqlElement fieldName = ctx.getChild(0).accept(this);
         // All children which are not terminal values are the needed literal values (see syntax)
         LiteralValue[] literalValues = ctx.children.stream().filter(c -> c instanceof TqlParser.LiteralValueContext
                 || c instanceof TqlParser.BooleanValueContext || c instanceof ErrorNode).map(c -> (LiteralValue) c.accept(this))
@@ -309,5 +339,21 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
     @Override
     public TqlElement visitChildren(RuleNode node) {
         throw new TqlException("Unhandled children node: " + node.getText());
+    }
+
+    @Override
+    public TqlElement visitFieldMatchesRegexp(TqlParser.FieldMatchesRegexpContext ctx) {
+        LOG.debug("Visit field matches: " + ctx.getText());
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        ParseTree regexNode = ctx.getChild(2);
+
+        if (regexNode instanceof ErrorNode)
+            throw new TqlException(regexNode.getText());
+
+        String quotedRegex = regexNode.getText();
+        String regex = quotedRegex.substring(1, quotedRegex.length() - 1);
+        FieldMatchesRegex fieldMatchesRegex = new FieldMatchesRegex(fieldName, unescapeSingleQuotes(regex));
+        LOG.debug("End visit field matches: " + ctx.getText());
+        return fieldMatchesRegex;
     }
 }

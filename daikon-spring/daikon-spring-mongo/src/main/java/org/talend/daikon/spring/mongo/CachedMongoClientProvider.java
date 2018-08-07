@@ -1,18 +1,16 @@
 package org.talend.daikon.spring.mongo;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * An implementation of {@link MongoClientProvider} that has automatic client clean up after a time period.
@@ -82,7 +80,22 @@ public class CachedMongoClientProvider implements MongoClientProvider {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close(TenantInformationProvider provider) {
+        try {
+            final MongoClientURI uri = provider.getDatabaseURI();
+            final MongoClient mongoClient = cache.get(uri);
+            try {
+                mongoClient.close();
+            } finally {
+                cache.asMap().remove(uri);
+            }
+        } catch (Exception e) {
+            throw new InvalidDataAccessResourceUsageException("Unable to close client.", e);
+        }
+    }
+
+    @Override
+    public void close() {
         for (MongoClient client : cache.asMap().values()) {
             client.close();
         }

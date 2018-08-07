@@ -49,6 +49,23 @@ public class MyRestrictedAccessClass {
 The user that call the `getMySecret` method is required to at least have the `SECRET_ACCESS` authority.
 If this requirement is not met, a `org.springframework.security.access.AccessDeniedException` is thrown.
 
+#### Check several permissions
+To add several permissions check, you can pass an array in the `@RequiresAuthority` annotation:
+
+```java
+@Component
+public class MyRestrictedAccessClass {
+
+    @RequiresAuthority({ "SECRET_ACCESS", "OR_ANOTHER_SECRET_ACCESS" })
+    public String getMySecret() {
+        return "something very secret";
+    }
+}
+```
+
+The user that call the `getMySecret` method is required to at least have the `SECRET_ACCESS` or "OR_ANOTHER_SECRET_ACCESS" authority.
+Again, if this requirement is not met, a `org.springframework.security.access.AccessDeniedException` is thrown.
+
 #### Customize behavior in case of access denial
 
 By default, `@RequiresAuthority` throws an exception in case of access denial. 

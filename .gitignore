@@ -16,6 +16,14 @@ out/
 target/
 *.class
 
+# Node.js #
+etc
+lib
+lerna-debug.log
+node
+node_modules
+yarn-error.log
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 

@@ -36,4 +36,13 @@ public class TestTqlApi_Match extends TestTqlParser_Abstract {
         Assert.assertEquals(expected.toString(), tqlElement.toString());
     }
 
+    @Test
+    public void testApiFieldMatchPattern4() throws Exception {
+        // TQL native query
+        TqlElement expected = doTest("name ~ '^[A-Z][\\'][a-z]*$'");
+        // TQL api query
+        TqlElement tqlElement = match("name", "^[A-Z]['][a-z]*$");
+        Assert.assertEquals(expected.toString(), tqlElement.toString());
+    }
+
 }

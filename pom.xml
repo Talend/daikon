@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.talend.daikon</groupId>
     <artifactId>daikon-parent</artifactId>
-    <version>0.20.0-SNAPSHOT</version>
+    <version>0.26.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Daikon - parent pom</name>
     <url>https://github.com/Talend/daikon</url>
@@ -20,6 +20,10 @@
         <maven.compiler.target>1.7</maven.compiler.target>
         <talend_snapshots>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
         <talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
+        <pushChanges>false</pushChanges>
+	    <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
+	    <jackson.version>2.9.4</jackson.version>
+	    <jackson.version.annotations>2.9.0</jackson.version.annotations>
     </properties>
     <modules>
         <module>daikon</module>
@@ -30,10 +34,14 @@
         <module>daikon-logging</module>
         <module>daikon-multitenant</module>
         <module>daikon-tql</module>
+        <module>daikon-messages</module>
         <module>daikon-audit</module>
+      <module>daikon-i18n</module>
     </modules>
     <scm>
-        <connection>scm:git:https://github.com/Talend/daikon.git</connection>
+      <connection>scm:git:https://github.com/Talend/daikon.git</connection>
+      <developerConnection>scm:git:https://github.com/Talend/daikon.git</developerConnection>
+      <url>https://github.com/Talend/daikon</url>
       <tag>HEAD</tag>
   </scm>
     <repositories>
@@ -119,6 +127,14 @@
                  <!-- using a specific Talend artifact version until the next official release, the PR has been merge into master but not yet release. -->
                 <version>4.9.9-TALEND</version>
             </dependency>
+	        <!-- include fasterxml jackson's bom -->
+	        <dependency>
+		        <groupId>com.fasterxml.jackson</groupId>
+		        <artifactId>jackson-bom</artifactId>
+		        <version>${jackson.version}</version>
+		        <type>pom</type>
+		        <scope>import</scope>
+	        </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
@@ -220,9 +236,10 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.5.3</version>
 				<configuration>
-					<pushChanges>false</pushChanges>
+					<pushChanges>${pushChanges}</pushChanges>
 					<scmCommentPrefix xml:space="preserve">release: </scmCommentPrefix>
 					<tagNameFormat>daikon-@{project.version}</tagNameFormat>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
         </plugins>

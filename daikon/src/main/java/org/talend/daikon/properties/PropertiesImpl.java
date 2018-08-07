@@ -38,6 +38,7 @@ import org.talend.daikon.properties.property.Property.Flags;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.properties.property.PropertyVisitor;
 import org.talend.daikon.serialize.PostDeserializeSetup;
+import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.daikon.serialize.migration.PostDeserializeHandler;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
@@ -200,7 +201,10 @@ public class PropertiesImpl extends TranslatableTaggedImpl
             throw new IllegalArgumentException("The java field [" + this.getClass().getCanonicalName() + "." + f.getName()
                     + "] should be named identically to the instance name [" + value.getName() + "]");
         }
-        if (value instanceof PropertiesImpl) {// a nested Properties so recurse
+        if (value instanceof PropertiesList) {// a list of pros so set the formatter and recusrs
+            ((PropertiesImpl) value).initProperties();
+            value.setI18nMessageFormatter(getI18nMessageFormatter());
+        } else if (value instanceof PropertiesImpl) {// a nested Properties so recurse
             // Do not set the i18N for nested Properties, they already handle their i18n
             ((PropertiesImpl) value).initProperties();
         } else {// a simple Property or PresentationItem so just set i18n
@@ -242,7 +246,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
     public String toSerialized() {
         handleAllPropertyEncryption(ENCRYPT);
         try {
-            return JsonWriter.objectToJson(this);
+            return SerializerDeserializer.toSerialized(this, false);
         } finally {
             handleAllPropertyEncryption(!ENCRYPT);
         }

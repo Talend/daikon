@@ -124,6 +124,16 @@ public class Widget implements ToStringIndent {
     public static final String SELECT_WIDGET_TYPE = "widget.type.select";
 
     /**
+     * This widget is designed to select a dataprep preparation with data Dataprep Picker.
+     */
+    public static final String SELECT_WIZARD_WIDGET_TYPE = "widget.type.select.wizard";
+
+    /**
+     * This widget will allow the UI to access an external link.
+     */
+    public static final String EXTERNAL_LINK_WIDGET_TYPE = "widget.type.external.link";
+
+    /**
      * now it works for dataprep only
      */
     public static final String DATALIST_WIDGET_TYPE = "widget.type.datalist";
@@ -191,6 +201,38 @@ public class Widget implements ToStringIndent {
     public static final String NESTED_PROPERTIES_TYPE_OPTION = "type";
 
     /**
+     * This widget represents a nested properties widget - a list of additional properties which can be added or
+     * removed - that cannot be collapsed.
+     *
+     * We can set the ui:options type of nested properties by setting a configuration value with the following key:
+     * {@link Widget#NESTED_PROPERTIES_TYPE_OPTION}
+     *
+     * Using the following method: {@link Widget#setConfigurationValue(String, Object)}
+     *
+     * Default value is "default"
+     *
+     * Example:
+     * setConfigurationValue(NESTED_PROPERTIES_TYPE_OPTION, "filter")
+     */
+    public static final String UNCOLLAPSIBLE_NESTED_PROPERTIES = "widget.type.uncollapsibleNestedProperties";
+
+    /**
+     * This widget represents a nested properties widget - a list of additional properties which can be added or
+     * removed - that will be displayed on the UI side by side.
+     *
+     * We can set the ui:options type of nested properties by setting a configuration value with the following key:
+     * {@link Widget#NESTED_PROPERTIES_TYPE_OPTION}
+     *
+     * Using the following method: {@link Widget#setConfigurationValue(String, Object)}
+     *
+     * Default value is "default"
+     *
+     * Example:
+     * setConfigurationValue(NESTED_PROPERTIES_TYPE_OPTION, "filter")
+     */
+    public static final String COLUMNS_PROPERTIES = "widget.type.columns";
+
+    /**
      * This widget is designed to simplify and speed up input of source code.
      *
      * We can set the language that will be used for this code widget by setting a configuration value with the following key:
@@ -226,6 +268,11 @@ public class Widget implements ToStringIndent {
      * widget.
      */
     public static final String HIDE_TOOLBAR_WIDGET_CONF = "widget.conf.hide.toolbar";
+
+    /**
+     * The placeholder is a value to show to the user if they haven't yet specified a value.
+     */
+    public static final String PLACEHOLDER_WIDGET_CONF = "widget.conf.placeholder";
 
     /**
      * The row in the form where this property is to be presented. Starting with 1.

@@ -1,5 +1,6 @@
 package org.talend.tql.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.talend.tql.visitor.IASTVisitor;
 
 /*
@@ -59,5 +60,15 @@ public class FieldBetweenExpression implements Atom {
     @Override
     public <T> T accept(IASTVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object expression) {
+        return expression instanceof FieldBetweenExpression
+                && new EqualsBuilder().append(field, ((FieldBetweenExpression) expression).field)
+                        .append(left, ((FieldBetweenExpression) expression).left)
+                        .append(right, ((FieldBetweenExpression) expression).right)
+                        .append(isLowerOpen, ((FieldBetweenExpression) expression).isLowerOpen)
+                        .append(isUpperOpen, ((FieldBetweenExpression) expression).isUpperOpen).isEquals();
     }
 }

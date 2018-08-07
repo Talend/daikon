@@ -22,7 +22,15 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,7 +41,24 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.tql.model.*;
+import org.talend.tql.model.AllFields;
+import org.talend.tql.model.AndExpression;
+import org.talend.tql.model.ComparisonExpression;
+import org.talend.tql.model.ComparisonOperator;
+import org.talend.tql.model.Expression;
+import org.talend.tql.model.FieldBetweenExpression;
+import org.talend.tql.model.FieldCompliesPattern;
+import org.talend.tql.model.FieldContainsExpression;
+import org.talend.tql.model.FieldInExpression;
+import org.talend.tql.model.FieldIsEmptyExpression;
+import org.talend.tql.model.FieldIsInvalidExpression;
+import org.talend.tql.model.FieldIsValidExpression;
+import org.talend.tql.model.FieldMatchesRegex;
+import org.talend.tql.model.FieldReference;
+import org.talend.tql.model.LiteralValue;
+import org.talend.tql.model.NotExpression;
+import org.talend.tql.model.OrExpression;
+import org.talend.tql.model.TqlElement;
 import org.talend.tql.visitor.IASTVisitor;
 
 /**
@@ -387,7 +412,12 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         fieldContainsExpression.getField().accept(this);
         final Method[] methods = currentMethods.pop();
 
-        return unchecked(o -> StringUtils.containsIgnoreCase(valueOf(invoke(o, methods)), fieldContainsExpression.getValue()));
+        return unchecked(o -> {
+            String invokeResultString = valueOf(invoke(o, methods));
+            String expressionValue = fieldContainsExpression.getValue();
+            return fieldContainsExpression.isCaseSensitive() ? StringUtils.contains(invokeResultString, expressionValue)
+                    : StringUtils.containsIgnoreCase(invokeResultString, expressionValue);
+        });
     }
 
     @Override

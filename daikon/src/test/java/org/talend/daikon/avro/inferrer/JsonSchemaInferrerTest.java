@@ -654,6 +654,10 @@ public class JsonSchemaInferrerTest {
         List<Schema> fieldPostalCodeTypes = fieldPostalCode.schema().getTypes();
         assertThat(fieldPostalCodeTypes.get(0).getName(), is(equalTo("string")));
         assertThat(fieldPostalCodeTypes.get(1).getName(), is(equalTo("null")));
+
+        // Ensure that the inference is deterministic (generates the same schema twice).
+        Schema schema2 = jsonSchemaInferrer.inferSchema(realComplexRecord);
+        assertThat(schema, equalTo(schema2));
     }
 
     /**

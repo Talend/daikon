@@ -80,4 +80,22 @@ public class TestTqlApi_Comply extends TestTqlParser_Abstract {
         TqlElement tqlElement = complies("name", "");
         Assert.assertEquals(expected.toString(), tqlElement.toString());
     }
+
+    @Test
+    public void testApiFieldCompliesPattern9() throws Exception {
+        // TQL native query
+        TqlElement expected = doTest("name complies '\\''");
+        // TQL api query
+        TqlElement tqlElement = complies("name", "'");
+        Assert.assertEquals(expected.toString(), tqlElement.toString());
+    }
+
+    @Test
+    public void testApiFieldCompliesPattern10() throws Exception {
+        // TQL native query
+        TqlElement expected = doTest("name complies 'C\\'est quoi'");
+        // TQL api query
+        TqlElement tqlElement = complies("name", "C'est quoi");
+        Assert.assertEquals(expected.toString(), tqlElement.toString());
+    }
 }

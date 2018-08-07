@@ -16,6 +16,8 @@ import org.talend.tqlmongo.excp.TqlMongoException;
  */
 public class ASTVisitor implements IASTVisitor<Object> {
 
+    public static final String MONGO_REGEX_IGNORE_CASE_OPTION = "i";
+
     private boolean isNegation = false;
 
     @Override
@@ -199,11 +201,12 @@ public class ASTVisitor implements IASTVisitor<Object> {
 
     @Override
     public Object visit(FieldContainsExpression elt) {
+        String options = elt.isCaseSensitive() ? "" : MONGO_REGEX_IGNORE_CASE_OPTION;
         String fieldName = (String) elt.getField().accept(this);
         String value = elt.getValue();
         if (!isNegation)
-            return Criteria.where(fieldName).regex(value);
-        return Criteria.where(fieldName).not().regex(value);
+            return Criteria.where(fieldName).regex(value, options);
+        return Criteria.where(fieldName).not().regex(value, options);
     }
 
     @Override

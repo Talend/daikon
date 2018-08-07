@@ -5,18 +5,38 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-tql</artifactId>
-        <version>0.20.0-SNAPSHOT</version>
+        <version>0.26.0-SNAPSHOT</version>
     </parent>
     <artifactId>daikon-tql-core</artifactId>
     <name>Daikon TQL core libraries.</name>
 
     <properties>
         <antlr.version>4.5.3</antlr.version>
-        <node.version>v7.7.4</node.version>
-        <npm.version>3.10.10</npm.version>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyyMMddHHmmssSSS</maven.build.timestamp.format>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>${antlr.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -81,63 +101,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>npm</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.5</version>
-
-                        <executions>
-                            <execution>
-
-                                <id>install node and yarn</id>
-                                <goals>
-                                    <goal>install-node-and-npm</goal>
-                                </goals>
-                                <phase>deploy</phase>
-                                <configuration>
-                                    <nodeVersion>${node.version}</nodeVersion>
-                                    <npmVersion>${npm.version}</npmVersion>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm build module</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <phase>deploy</phase>
-                                <configuration>
-                                    <arguments>publish ${basedir}/target/generated-modules/tql</arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>${antlr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-    </dependencies>
-
 </project>

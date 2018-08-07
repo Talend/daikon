@@ -1,0 +1,76 @@
+version: "2"
+
+services:
+
+    service1:
+        image: "org.talend.daikon.messages-demo/demo-producer"
+        ports:
+           - "8080:8080"
+        depends_on:
+           - kafka
+           - schema_registry
+           - zookeeper
+        links:
+           - "kafka"
+           - "schema_registry"
+           - "zookeeper"
+        environment:
+           - KAFKA_CONNECT=kafka:9092
+           - ZK_CONNECT=zookeeper:2181
+           - SCHEMA_REGISTRY_URL=http://schema_registry:8081
+
+    service2:
+        image: "org.talend.daikon.messages-demo/demo-listener"
+        ports:
+           - "8082:8080"
+        depends_on:
+           - kafka
+           - schema_registry
+           - zookeeper
+        links:
+           - "kafka"
+           - "schema_registry"
+           - "zookeeper"
+        environment:
+           - KAFKA_CONNECT=kafka:9092
+           - ZK_CONNECT=zookeeper:2181
+           - SCHEMA_REGISTRY_URL=http://schema_registry:8081
+
+    zookeeper:
+        image: "jplock/zookeeper"
+        ports:
+           - "2181:2181"
+
+    kafka:
+        image: "wurstmeister/kafka:0.10.0.0"
+        depends_on:
+           - zookeeper
+        ports:
+           - "9092:9092"
+        links:
+            - "zookeeper"
+        environment:
+            - KAFKA_ADVERTISED_HOST_NAME=kafka
+            - KAFKA_ADVERTISED_PORT=9092
+            - KAFKA_CREATE_TOPICS=productEvents:1:1
+            - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+
+
+    schema_registry:
+        image: "confluentinc/cp-schema-registry:3.2.2"
+        hostname: schema_registry
+        depends_on:
+          - zookeeper
+          - kafka
+        links:
+          - "zookeeper"
+          - "kafka"
+        ports:
+          - "8081:8081"
+        environment:
+          - SCHEMA_REGISTRY_HOST_NAME=schema_registry
+          - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
+

@@ -88,7 +88,31 @@ public class BeanPredicateVisitorTest {
     @Test
     public void containsShouldMatchBean() throws Exception {
         // given
+        final Expression query = Tql.parse("value contains 'alu'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
+    @Test
+    public void containsShouldNotMatchBean() throws Exception {
+        // given
         final Expression query = Tql.parse("value contains 'ALU'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertFalse(predicate.test(bean));
+    }
+
+    @Test
+    public void containsIgnoreCaseShouldMatchBean() throws Exception {
+        // given
+        final Expression query = Tql.parse("value containsIgnoreCase 'ALu'");
 
         // when
         final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));

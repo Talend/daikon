@@ -93,7 +93,15 @@ public class TestTqlParser_Complex extends TestTqlParser_Abstract {
     public void testParseFieldContainsValue() throws Exception {
         TqlElement tqlElement = doTest("field1 contains 'value1'");
         String expected = "OrExpression{expressions=[AndExpression{expressions=["
-                + "FieldContainsExpression{field='FieldReference{path='field1'}', value='value1'}]}]}";
+                + "FieldContainsExpression{field='FieldReference{path='field1'}', value='value1', caseSensitive=true}]}]}";
+        Assert.assertEquals(expected, tqlElement.toString());
+    }
+
+    @Test
+    public void testParseFieldContainsIgnoreCaseValue() throws Exception {
+        TqlElement tqlElement = doTest("field1 containsIgnoreCase 'value1'");
+        String expected = "OrExpression{expressions=[AndExpression{expressions=["
+                + "FieldContainsExpression{field='FieldReference{path='field1'}', value='value1', caseSensitive=false}]}]}";
         Assert.assertEquals(expected, tqlElement.toString());
     }
 

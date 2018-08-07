@@ -8,10 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.talend.logging.audit.LogLevel;
-import org.talend.logging.audit.impl.AbstractBackend;
-import org.talend.logging.audit.impl.AuditConfigurationMap;
-import org.talend.logging.audit.impl.Log4j1Configurer;
-import org.talend.logging.audit.impl.LogbackConfigurer;
 
 /**
  * Backend for both slf4j and Logback.

@@ -1,6 +1,5 @@
 package org.talend.daikon.spring.mongo;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +38,17 @@ public class SimpleMongoClientProvider implements MongoClientProvider {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close(TenantInformationProvider provider) {
+        final MongoClientURI uri = provider.getDatabaseURI();
+        final MongoClient mongoClient = clients.get(uri);
+        if (mongoClient != null) {
+            mongoClient.close();
+        }
+        clients.remove(uri);
+    }
+
+    @Override
+    public void close() {
         for (Map.Entry<MongoClientURI, MongoClient> entry : clients.entrySet()) {
             entry.getValue().close();
         }

@@ -207,8 +207,8 @@ In addition to the fields above, you can add other fields to the LoggingEvent ei
 #### Global Custom Fields
 
 In all the Talend services developers should provide 2 custom fields.
-* service : this represent the service name and more precisely the releasable entity abbreviation as defined in the Naming Policy (available in the wiki).
-* application : this represent the application or project abbreviation that this service belongs to (like *tdp* for Talend Dataprep), the project name is defined in the Talend Naming Policy (available in the wiki).
+* service : this represent the service name and more precisely the releasable entity name as defined in the [Talend Naming Policy] (https://github.com/Talend/policies/blob/master/official/Naming.md#releasable-entity-api-name).
+* application : this represent the application or project abbreviation that this service belongs to (like *tdp* for Talend Dataprep), the project name is defined in the [Talend Naming Policy](https://github.com/Talend/policies/blob/master/official/Naming.md#project) in lower case.
 
 Log4j config
 

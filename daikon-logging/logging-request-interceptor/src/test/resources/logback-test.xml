@@ -1,0 +1,25 @@
+<configuration>
+ <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- encoders are assigned the type
+         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <encoder>
+      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+    </encoder>
+ </appender>
+ <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>application.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>application.log.%d{yyyy-MM-dd}</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
+        <param name="UserFields" value="foo:bar,baz:quz" />
+        <param name="LocationInfo" value="true"/>
+    </layout>
+ </appender>
+
+  <root level="TRACE">
+     <appender-ref ref="STDOUT" />
+     <appender-ref ref="FILE" />
+  </root>
+</configuration>

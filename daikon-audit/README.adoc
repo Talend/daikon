@@ -233,6 +233,22 @@ Context ctx = ContextBuilder.create("flowId", "1234").build();
 auditLogger.flowFailed(ctx);
 ----
 
+==== Common audit events fields
+
+We have defined in the {javadoc_url}/org/talend/logging/audit/AuditEvent.html[AuditEvent] the MDC common keys fields, all apps must use those keys for those actions {operation, resource, result} on user:
+
+
+[source,java]
+----
+public interface CustomClass  {
+	MDC.put(EventFields.USER, "user0");
+	MDC.put(EventFields.OPERATION, "create user");
+	MDC.put(EventFields.RESOURCE, "user");
+	MDC.put(EventFields.RESULT, "success");
+	...
+}
+----
+
 
 ==== Using simple API
 
