@@ -87,28 +87,18 @@ public class ZipVerifier {
                 throw new MissingEntryException("Missing entry:" + JarFile.MANIFEST_NAME); //$NON-NLS-1$
             }
             Map<String, Attributes> manifestEntryMap = mainfest.getEntries();
-
             Enumeration<JarEntry> entriesEnum = jarFile.entries();
             Set<String> verifiedEntryNameSet = new HashSet<String>();
             while (entriesEnum.hasMoreElements()) {
                 JarEntry entry = entriesEnum.nextElement();
-                try (InputStream inputStream = jarFile.getInputStream(entry)) {
-                    byte[] bytes = new byte[4096];
-                    InputStream is = jarFile.getInputStream(entry);
-                    while ((is.read(bytes, 0, bytes.length)) != -1) {
-                        // A SecurityException is thrown here if the digest is incorrect.
-                    }
-                }
                 if (entry.isDirectory() || isSignatureRelatedEntry(entry.getName())) {
                     continue;
                 }
-
+                readAndCheckEntry(jarFile, entry);
                 if (!manifestEntryMap.containsKey(entry.getName()) || entry.getCodeSigners() == null
                         || entry.getCodeSigners().length == 0) {
                     throw new Exception("Find unsigned entry:" + entry.getName());
                 }
-
-                // Verify code signer's CertPath
                 checkCodeSigners(entry);
                 verifiedEntryNameSet.add(entry.getName());
             }
@@ -126,6 +116,22 @@ public class ZipVerifier {
         } finally {
             if (jarFile != null) {
                 jarFile.close();
+            }
+        }
+    }
+
+    private void readAndCheckEntry(JarFile jarFile, JarEntry entry) throws IOException, VerifyFailedException {
+        InputStream is = null;
+        byte[] buffer = new byte[8192];
+        try {
+            is = jarFile.getInputStream(entry);
+            while ((is.read(buffer, 0, buffer.length)) != -1)
+                ;
+        } catch (java.lang.SecurityException ex) {
+            throw new VerifyFailedException("Verify failed." + ex.getMessage(), ex);
+        } finally {
+            if (is != null) {
+                is.close();
             }
         }
     }
