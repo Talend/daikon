@@ -1,5 +1,3 @@
-package org.talend.daikon.signature.verify;
-
 // ============================================================================
 //
 // Copyright (C) 2006-2018 Talend Inc. - www.talend.com
@@ -12,6 +10,7 @@ package org.talend.daikon.signature.verify;
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
+package org.talend.daikon.signature.verify;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,8 +41,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.talend.daikon.signature.exceptions.InvalidKeyStoreException;
 import org.talend.daikon.signature.exceptions.MissingEntryException;
 import org.talend.daikon.signature.exceptions.NoCodeSignCertificateException;
@@ -55,8 +52,6 @@ import sun.security.provider.certpath.X509CertPath;
 
 public class ZipVerifier {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KeyStoreManager.class);
-
     private PKIXParameters param;
 
     public ZipVerifier() throws Exception {
@@ -66,7 +61,6 @@ public class ZipVerifier {
     private void initPKIXParameter() throws Exception {
         final KeyStore keyStore = getKeyStore();
         if (keyStore == null) {
-            LOGGER.error("Can't load the key store for verify"); //$NON-NLS-1$
             throw new InvalidKeyStoreException("Can't load the key store for verify"); //$NON-NLS-1$
         }
         param = new PKIXParameters(keyStore);
@@ -146,7 +140,6 @@ public class ZipVerifier {
                 }
             }
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage() + ex);
             throw new VerifyFailedException("Verify failed." + ex.getMessage(), ex); //$NON-NLS-1$
         } finally {
             if (jarFile != null) {

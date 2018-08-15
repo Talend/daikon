@@ -1,4 +1,3 @@
-package org.talend.daikon.signature.exceptions;
 // ============================================================================
 //
 // Copyright (C) 2006-2018 Talend Inc. - www.talend.com
@@ -11,12 +10,10 @@ package org.talend.daikon.signature.exceptions;
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
+package org.talend.daikon.signature.exceptions;
 
 public class NoValidCertificateException extends VerifyException {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     public NoValidCertificateException(String message) {

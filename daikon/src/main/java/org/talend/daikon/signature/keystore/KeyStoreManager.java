@@ -1,5 +1,3 @@
-package org.talend.daikon.signature.keystore;
-
 // ============================================================================
 //
 // Copyright (C) 2006-2018 Talend Inc. - www.talend.com
@@ -12,6 +10,7 @@ package org.talend.daikon.signature.keystore;
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
+package org.talend.daikon.signature.keystore;
 
 import java.net.URL;
 import java.security.KeyStore;

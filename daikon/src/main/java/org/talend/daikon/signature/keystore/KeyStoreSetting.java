@@ -1,4 +1,3 @@
-package org.talend.daikon.signature.keystore;
 // ============================================================================
 //
 // Copyright (C) 2006-2018 Talend Inc. - www.talend.com
@@ -11,6 +10,7 @@ package org.talend.daikon.signature.keystore;
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
+package org.talend.daikon.signature.keystore;
 
 import java.net.URL;
 
@@ -18,15 +18,8 @@ public class KeyStoreSetting {
 
     public static final String JKS = "JKS";
 
-    /**
-     * support for JKS, PKCS12
-     * 
-     */
     private String storeType = JKS;
 
-    /**
-     * if the key type of keystore should be same as signatureMethod.
-     */
     private URL storeUrl;
 
     private char[] storePassword;

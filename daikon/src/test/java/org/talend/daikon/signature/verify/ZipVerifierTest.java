@@ -1,5 +1,3 @@
-package org.talend.daikon.signature.verify;
-
 // ============================================================================
 //
 // Copyright (C) 2006-2018 Talend Inc. - www.talend.com
@@ -12,21 +10,20 @@ package org.talend.daikon.signature.verify;
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
+package org.talend.daikon.signature.verify;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.net.URL;
 import java.security.KeyStore;
-
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.talend.daikon.signature.exceptions.VerifyFailedException;
 import org.talend.daikon.signature.keystore.KeyStoreManager;
 import org.talend.daikon.signature.keystore.KeyStoreSetting;
 
 public class ZipVerifierTest {
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Test // Use talend-code-vrfy.jks
     public void testVerifySignedJob() throws Exception {
@@ -39,37 +36,48 @@ public class ZipVerifierTest {
     public void testVerifyUnsignedJob() throws Exception {
         String unSignedJobPath = getResourceFilePath("TJava_0.1.zip");
         ZipVerifier verifer = new ZipVerifier();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Verify failed.");
-        verifer.verify(unSignedJobPath);
-
+        try {
+            verifer.verify(unSignedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertEquals("Verify failed.Missing entry:META-INF/MANIFEST.MF", ex.getMessage());
+        }
     }
 
     @Test // Use talend-code-vrfy.jks
     public void testVerifySignedJobModifiedOneFile() throws Exception {
         String unSignedJobPath = getResourceFilePath("TJava_0.1_signed_modified.zip");
         ZipVerifier verifer = new ZipVerifier();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Verify failed.");
-        verifer.verify(unSignedJobPath);
+        try {
+            verifer.verify(unSignedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getMessage().contains("Verify failed.SHA-256 digest error"));
+        }
     }
 
     @Test // Use talend-code-vrfy.jks
     public void testVerifySignedJobDeleteOneFile() throws Exception {
         String unSignedJobPath = getResourceFilePath("TJava_0.1_signed_delete_one_file.zip");
         ZipVerifier verifer = new ZipVerifier();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Missing entry");
-        verifer.verify(unSignedJobPath);
+        try {
+            verifer.verify(unSignedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getMessage().contains("Missing entry"));
+        }
     }
 
     @Test // Use talend-code-vrfy.jks
     public void testVerifySignedJobAddOneFile() throws Exception {
         String unSignedJobPath = getResourceFilePath("TJava_0.1_signed_add_new_file.zip");
         ZipVerifier verifer = new ZipVerifier();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Verify failed.");
-        verifer.verify(unSignedJobPath);
+        try {
+            verifer.verify(unSignedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getMessage().contains("Verify failed.Find unsigned entry"));
+        }
     }
 
     private String getResourceFilePath(String fileName) {
@@ -90,9 +98,12 @@ public class ZipVerifierTest {
         String signedJobPath = getResourceFilePath("signed-by-web.zip");
         ZipVerifierForTest.setJksFileName("truststore.jks");
         ZipVerifier verifer = new ZipVerifierForTest();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Verify failed.");
-        verifer.verify(signedJobPath);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getMessage().contains("Verify failed."));
+        }
     }
 
     @Test // Use third party jks
@@ -100,9 +111,12 @@ public class ZipVerifierTest {
         String signedJobPath = getResourceFilePath("signed-valid.zip");
         ZipVerifierForTest.setJksFileName("truststore2.jks");
         ZipVerifier verifer = new ZipVerifierForTest();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Verify failed.");
-        verifer.verify(signedJobPath);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getMessage().contains("Verify failed.Path does not chain with any of the trust anchors"));
+        }
     }
 
     @Test // Use third party jks
@@ -110,9 +124,12 @@ public class ZipVerifierTest {
         String signedJobPath = getResourceFilePath("unsigned.zip");
         ZipVerifierForTest.setJksFileName("truststore.jks");
         ZipVerifier verifer = new ZipVerifierForTest();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Verify failed.");
-        verifer.verify(signedJobPath);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getMessage().contains("Verify failed.Missing entry:META-INF/MANIFEST.MF"));
+        }
     }
 
     @Test // Use third party jks
@@ -120,9 +137,12 @@ public class ZipVerifierTest {
         String signedJobPath = getResourceFilePath("added-unsigned-file.zip");
         ZipVerifierForTest.setJksFileName("truststore.jks");
         ZipVerifier verifer = new ZipVerifierForTest();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Verify failed.");
-        verifer.verify(signedJobPath);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getMessage().contains("Verify failed.Find unsigned entry"));
+        }
     }
 
     @Test // Use third party jks
@@ -130,9 +150,12 @@ public class ZipVerifierTest {
         String signedJobPath = getResourceFilePath("modified-signed-valid.zip");
         ZipVerifierForTest.setJksFileName("truststore.jks");
         ZipVerifier verifer = new ZipVerifierForTest();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Verify failed.");
-        verifer.verify(signedJobPath);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getMessage().contains("Verify failed.SHA-256 digest error"));
+        }
     }
 
     @Test // Use third party jks
@@ -140,9 +163,12 @@ public class ZipVerifierTest {
         String signedJobPath = getResourceFilePath("deleted-signed-valid.zip");
         ZipVerifierForTest.setJksFileName("truststore.jks");
         ZipVerifier verifer = new ZipVerifierForTest();
-        expectedEx.expect(VerifyFailedException.class);
-        expectedEx.expectMessage("Missing entry");
-        verifer.verify(signedJobPath);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getMessage().contains("Missing entry"));
+        }
     }
 }
 
