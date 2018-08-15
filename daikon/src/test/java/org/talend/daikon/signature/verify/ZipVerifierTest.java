@@ -141,7 +141,7 @@ public class ZipVerifierTest {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.Find unsigned entry"));
+            assertTrue(ex.getMessage().contains("Verify failed."));
         }
     }
 
