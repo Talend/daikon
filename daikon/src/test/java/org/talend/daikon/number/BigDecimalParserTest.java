@@ -3,7 +3,9 @@ package org.talend.daikon.number;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.After;
@@ -204,6 +206,18 @@ public class BigDecimalParserTest {
         assertGuessSeparators("45,5555", ',', '.');
         assertGuessSeparators("45.5555", '.', ',');
         assertGuessSeparators("45" + ((char) 160) + "555,5", ',', ((char) 160)); // char(160) is non-breaking space
+    }
+
+    @Test
+    public void testGuessSeparatorsTDP5153() {
+        assertGuessSeparators("5 555,555", ',', ' ');
+        assertGuessSeparators("5.555,555", ',', '.');
+    }
+
+    @Test
+    public void testGetSupportedFormats() {
+        List<DecimalFormat> supportedFormats = BigDecimalParser.getSupportedFormats();
+        assertEquals(6, supportedFormats.size());
     }
 
     private void assertGuessSeparators(String value, char expectedDecimalSeparator, char expectedGroupingSeparator) {
