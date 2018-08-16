@@ -79,6 +79,14 @@ public final class LayoutUtils {
                 || "X-Span-Export".equals(fieldName);
     }
 
+    /**
+     * This method moves pre-defined values from MDC into event structure (otherwise it would go into custom info map).
+     *
+     * @param existingMdc the MDC values
+     * @param logstashEvent the Log Event
+     * @param metaFields map of the fields to be moved (key - field name in MDC, value - field name in log event)
+     * @return MDC map without fields which have become part of log event
+     */
     public static Map<String, String> processMDCMetaFields(Map<String, String> existingMdc, JSONObject logstashEvent,
             Map<String, String> metaFields) {
         final Map<String, String> mdc = new LinkedHashMap<>(existingMdc);

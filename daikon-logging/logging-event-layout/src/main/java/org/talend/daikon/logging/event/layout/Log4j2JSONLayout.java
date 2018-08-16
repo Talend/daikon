@@ -109,8 +109,9 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         logstashEvent.put(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
         logstashEvent.put(LayoutFields.THREAD_NAME, loggingEvent.getThreadName());
         logstashEvent.put(LayoutFields.AGENT_TIME_STAMP, LayoutUtils.dateFormat(new Date().getTime()));
-        if (loggingEvent.getMessage().getFormattedMessage() != null) {
-            logstashEvent.put(LayoutFields.LOG_MESSAGE, loggingEvent.getMessage().getFormattedMessage());
+        final String formattedMessage = loggingEvent.getMessage().getFormattedMessage();
+        if (formattedMessage != null) {
+            logstashEvent.put(LayoutFields.LOG_MESSAGE, formattedMessage);
         }
         handleThrown(logstashEvent, loggingEvent);
         JSONObject logSourceEvent = createLogSourceEvent(loggingEvent, host);
