@@ -1,20 +1,74 @@
-:javadoc_url: https://ci-common.datapwn.com/view/Daikon/job/daikon_master/ws/daikon-audit/audit-common/target/apidocs
-:audit_source_url: ./audit-common
+:javadoc_url: https://ci-common.datapwn.com/view/Daikon/job/daikon_master/ws/daikon-audit/target/apidocs
+:audit_source_url: .
 :audit_sample_url: https://github.com/Talend/platform-services-logging/blob/audit-logging-tpsvc-3638/samples/audit
 
 = Audit Logging API
-:toc:
+
+Rq: template taken from https://in.talend.com/13994923[R&D Policies and Procedures wiki].
 
 Audit Logging client library provides unified API for logging and processing audit events.
-It's uses conventional logging frameworks to process audit events.
 
-.Currently supported logging frameworks:
-* log4j 1.x
-* logback 1.x
+|===
+|Project|Talend Audit Logging
+|API Name|audit logging
+|API Abbreviation|audit
+|Java Package Name|org.talend.logging.audit
+|Next version|1.0
+|Packaging|Library
+|Programming model|Library
+|Java version|JDK 1.7 or higher
+|Javadoc|{javadoc_url}/allclasses-noframe.html[Here]
+|Swagger|<does not apply>|
+|===
 
-=== Usage
+:toc:
 
-To start using Audit Logging it is necessary to:
+== Glossary
+
+- Category - each event is associated with a category like for example security, activity, failure. Each application
+may use as many categories as required.
+
+- MDC - Mapped Diagnostic Context (generally speaking a static map which holds context
+to be associated with each logged event).
+
+
+== Assumptions
+
+- First release is targeted solely for 6.5 release to be used by TAC and MDM. Because of this,
+only log4j 1.2 is supported.
+
+- Each application decides which audit events to send, but for improved compatibility and reusability we
+provide a set of predefined events.
+
+
+== Analysis/Investigation
+
+=== Problem Statement
+
+Logging is essential part of any application. There are two kind of logs:
+
+- technical logs are used to detect and analyze problems with application (bugs)
+- audit logs are used to detect and analyze problems in how application is being used
+(attempted attacks, malicious activities by authorized users, etc)
+
+This framework provides means for logging and processing audit logs which can be reused by all Talend products.
+
+
+=== Architecture
+
+Audit Logging reuses Talend LogServer for storing and displaying audit logs, although it
+treats them separately from normal logs (in particular, it stores them in a separate index and
+provides separate dashboard).
+
+On application side it provides dedicated Audit Logging API which builds its own pipeline
+using the same framework as the application (but does it independently of normal logging configuration).
+
+image:diagrams/audit_arch.png[]
+
+
+=== Use Cases
+
+Overall, to start using Audit Logging it is necessary to:
 
 . Add dependencies
 . Create a configuration file
@@ -22,33 +76,29 @@ To start using Audit Logging it is necessary to:
 
 In most cases, the logs will be sent to LogStash which needs to have a special input configured (see Configuration section).
 
-=== Adding dependencies
+==== Adding dependencies
 
 To start using Audit Logging client it's necessary to add the next dependencies.
 
-.For logback 1.x:
+WARNING: Audit Logging artifact group and id will change after moving it to daikon repository.
+
+.For gradle:
+[source,groovy]
+----
+compile "org.talend.daikon:daikon-audit:$auditLoggingVersion"
+
+compile "org.slf4j:slf4j-log4j12:1.7.25"
+
+compile "log4j:log4j:1.2.17"
+----
+
+.For maven:
 [source,xml]
 ----
 <dependency>
     <groupId>org.talend.daikon</groupId>
-    <artifactId>audit-logback</artifactId>
-    <version>${audit.version}</version>
-</dependency>
-
-<dependency>
-    <groupId>ch.qos.logback</groupId>
-    <artifactId>logback-classic</artifactId>
-    <version>1.2.3</version>
-</dependency>
-----
-
-.For log4j 1.x:
-[source,xml]
-----
-<dependency>
-    <groupId>org.talend.daikon</groupId>
-    <artifactId>audit-log4j1</artifactId>
-    <version>${audit.version}</version>
+    <artifactId>daikon-audit</artifactId>
+    <version>...</version>
 </dependency>
 
 <dependency>
@@ -65,7 +115,7 @@ To start using Audit Logging client it's necessary to add the next dependencies.
 ----
 
 
-=== Configuration
+==== Configuration
 
 Audit Logging client uses simple properties file
 for all its configuration (in future, if needed, yaml-based configuration may be implemented).
@@ -97,7 +147,7 @@ input {
 NOTE: Platform Service team provides LogServer with LogStash which is pre-configured for audit logging.
 
 
-=== Logging a standard audit event
+==== Logging a standard audit event
 
 From applications perspective the basic use case is logging an audit event.
 If it's one of the standard audit events, then all that is necessary to do is to create an instance of
@@ -114,7 +164,7 @@ auditLogger.loginSuccess();
 This code logs audit message corresponding to login success event attaching values from MDC.
 
 
-=== Passing context explicitly
+==== Passing context explicitly
 
 If application needs to pass context explicitly rather than via MDC it can be done like this:
 
@@ -131,7 +181,7 @@ For details, see
 and {javadoc_url}/org/talend/logging/audit/ContextBuilder.html[ContextBuilder].
 
 
-=== Passing an exception as a parameter
+==== Passing an exception as a parameter
 
 If there's an exception associated with audit event it can be passed as a parameter (some events
 require an exception as a parameter, but basically it can be passed to any event):
@@ -150,7 +200,7 @@ StandardEventAuditLogger auditLogger = AuditLoggerFactory.getEventAuditLogger(St
 Of course the context parameter doesn't have to be there.
 
 
-=== Defining a custom event
+==== Defining a custom event
 
 If application needs to log events which are not part of StandardEventAuditLogger
 it can extend this interface with new events:
@@ -183,7 +233,7 @@ Context ctx = ContextBuilder.create("flowId", "1234").build();
 auditLogger.flowFailed(ctx);
 ----
 
-=== Common audit events fields
+==== Common audit events fields
 
 We have defined in the {javadoc_url}/org/talend/logging/audit/AuditEvent.html[AuditEvent] the MDC common keys fields, all apps must use those keys for those actions {operation, resource, result} on user:
 
@@ -200,7 +250,7 @@ public interface CustomClass  {
 ----
 
 
-=== Using simple API
+==== Using simple API
 
 For exceptional cases an application may log audit messages similarly to normal logging frameworks:
 
@@ -214,7 +264,7 @@ auditLogger.warning("security", "Account has been locked");
 First parameter is audit event category. As with event APIs, a context and/or an exception may be passed as parameters.
 
 
-=== Deactivating audit logging
+==== Deactivating audit logging
 
 If audit logging needs to be deactivated for some reason, it can be done by changing the configuration:
 
@@ -224,3 +274,80 @@ log.appender=none
 ----
 
 NOTE: If application is running it needs to be restarted for this change to take effect.
+
+
+=== Existing Technology
+
+No existing technology has been identified as completely fulfilling the requirements
+(log4j-audit was considered but rejected because it follows completely different model
+which couldn't be easily adjusted for our requirements).
+
+audit4j and inspektr could be used as backends instead of log4j (which we will use in the first release), but they
+don't have some of the desired features to be used directly as company-wide audit logging API (for example,
+possibility to have a catalog of standard pre-defined events which can be reused by the applications). In a way,
+Audit Logging client can be compared to slf4j, while audit4j and inspektr can be compared to log4j and logback
+(i.e. facade vs implementation).
+
+
+=== Supported Standards
+
+No standard specs are implemented in Audit Logging.
+
+
+== Customers
+
+=== Internal Consumers
+
+Initially:
+
+- TAC
+- MDM
+
+In future:
+
+- IAM
+- TDP
+- ...
+
+
+=== External Consumers
+
+None expected.
+
+
+== Proposed API
+
+The framework provides two kinds of APIs:
+
+- {javadoc_url}/org/talend/logging/audit/StandardEventAuditLogger.html[Event-based] (main)
+- {javadoc_url}/org/talend/logging/audit/AuditLogger.html[Simple] (mostly for tests and very simple applications)
+
+There are a few {audit_sample_url}[samples] that show how to use the API:
+
+- {audit_sample_url}/src/main/java/org/talend/logging/samples/audit/events/EventMain.java[Event-based]
+- {audit_sample_url}/src/main/java/org/talend/logging/samples/audit/simple/SimpleMain.java[Simple]
+
+
+== Security
+
+In the first version there will be no extra security features except those already implemented by LogServer.
+
+In future versions we may add client authentication and/or audit event signing.
+
+
+== Dependencies
+
+=== Internal APIs
+
+- https://github.com/Talend/daikon/tree/master/daikon-logging/logging-event-layout[Daikon Logging Event Layout]
+
+
+=== External Dependencies
+
+- https://www.slf4j.org/[slf4j]
+- https://logging.apache.org/log4j/1.2/[log4j]
+
+
+== Versions
+
+<describe each released or proposed versions>
