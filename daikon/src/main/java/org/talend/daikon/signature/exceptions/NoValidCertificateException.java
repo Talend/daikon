@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.daikon.signature.exceptions;
 
-public class NoValidCertificateException extends VerifyException {
+public class NoValidCertificateException extends VerifyFailedException {
 
     private static final long serialVersionUID = 1L;
 

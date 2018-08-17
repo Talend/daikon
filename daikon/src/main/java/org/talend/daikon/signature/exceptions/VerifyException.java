@@ -1,3 +1,5 @@
+package org.talend.daikon.signature.exceptions;
+
 // ============================================================================
 //
 // Copyright (C) 2006-2018 Talend Inc. - www.talend.com
@@ -10,7 +12,6 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.daikon.signature.exceptions;
 
 public class VerifyException extends Exception {
 

@@ -12,75 +12,121 @@
 // ============================================================================
 package org.talend.daikon.signature.verify;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.net.URL;
-import java.security.KeyStore;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.security.cert.CertPathValidatorException;
 
 import org.junit.Test;
+import org.talend.daikon.signature.exceptions.MissingEntryException;
+import org.talend.daikon.signature.exceptions.NoCodeSignCertificateException;
+import org.talend.daikon.signature.exceptions.UnsignedEntryException;
 import org.talend.daikon.signature.exceptions.VerifyFailedException;
-import org.talend.daikon.signature.keystore.KeyStoreSetting;
 
 public class ZipVerifierTest {
 
-    @Test // Use talend-code-vrfy.jks
-    public void testVerifySignedJob() throws Exception {
-        String signedJobPath = getResourceFilePath("TJava_0.1_signed.zip");
-        ZipVerifier verifer = new ZipVerifier();
-        boolean hasException = false;
+    private String storePass = "c1b966f70a2529d8adc13e13d293"; //$NON-NLS-1$
+
+    @Test
+    public void testVerifySignedValid() throws Exception {
+        String signedJobPath = getResourceFilePath("signed-valid.zip");
+        String keyStorePath = getResourceFilePath("truststore.jks");
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        Exception exception = null;
         try {
             verifer.verify(signedJobPath);
         } catch (Exception ex) {
-            hasException = true;
+            exception = ex;
         }
-        assertFalse(hasException);
+        assertTrue(exception == null);
     }
 
-    @Test // Use talend-code-vrfy.jks
-    public void testVerifyUnsignedJob() throws Exception {
-        String unSignedJobPath = getResourceFilePath("TJava_0.1.zip");
-        ZipVerifier verifer = new ZipVerifier();
+    @Test
+    public void testVerifySignedJobByWebTruststore() throws Exception {
+        String signedJobPath = getResourceFilePath("signed-by-zip.zip");
+        String keyStorePath = getResourceFilePath("truststore.jks");
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         try {
-            verifer.verify(unSignedJobPath);
+            verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertEquals("Verify failed.Missing entry:META-INF/MANIFEST.MF", ex.getMessage());
-        }
-    }
-
-    @Test // Use talend-code-vrfy.jks
-    public void testVerifySignedJobModifiedOneFile() throws Exception {
-        String unSignedJobPath = getResourceFilePath("TJava_0.1_signed_modified.zip");
-        ZipVerifier verifer = new ZipVerifier();
-        try {
-            verifer.verify(unSignedJobPath);
-            fail("exception should have been thrown in the previous line");
-        } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.SHA-256 digest error"));
+            assertTrue(ex.getCause() instanceof VerifyFailedException);
         }
     }
 
-    @Test // Use talend-code-vrfy.jks
-    public void testVerifySignedJobDeleteOneFile() throws Exception {
-        String unSignedJobPath = getResourceFilePath("TJava_0.1_signed_delete_one_file.zip");
-        ZipVerifier verifer = new ZipVerifier();
+    @Test
+    public void testVerifySignedJobByTruststore2() throws Exception {
+        String signedJobPath = getResourceFilePath("signed-valid.zip");
+        String keyStorePath = getResourceFilePath("truststore2.jks");
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         try {
-            verifer.verify(unSignedJobPath);
+            verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Missing entry"));
+            assertTrue(ex.getCause() instanceof CertPathValidatorException);
         }
     }
 
-    @Test // Use talend-code-vrfy.jks
-    public void testVerifySignedJobAddOneFile() throws Exception {
-        String unSignedJobPath = getResourceFilePath("TJava_0.1_signed_add_new_file.zip");
-        ZipVerifier verifer = new ZipVerifier();
+    @Test
+    public void testVerifyUnsignedJobByTruststore() throws Exception {
+        String signedJobPath = getResourceFilePath("unsigned.zip");
+        String keyStorePath = getResourceFilePath("truststore.jks");
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         try {
-            verifer.verify(unSignedJobPath);
+            verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.Find unsigned entry"));
+            assertTrue(ex.getCause() instanceof MissingEntryException);
+        }
+    }
+
+    @Test
+    public void testVerifyAddedSignedJobByTruststore() throws Exception {
+        String signedJobPath = getResourceFilePath("added-unsigned-file.zip");
+        String keyStorePath = getResourceFilePath("truststore.jks");
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getCause() instanceof UnsignedEntryException);
+        }
+    }
+
+    @Test
+    public void testVerifyModifiedSignedJobByTruststore() throws Exception {
+        String signedJobPath = getResourceFilePath("modified-signed-valid.zip");
+        String keyStorePath = getResourceFilePath("truststore.jks");
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getCause() instanceof VerifyFailedException);
+        }
+    }
+
+    @Test
+    public void testVerifyDeletedSignedJobByTruststore() throws Exception {
+        String signedJobPath = getResourceFilePath("deleted-signed-valid.zip");
+        String keyStorePath = getResourceFilePath("truststore.jks");
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getCause() instanceof MissingEntryException);
         }
     }
 
@@ -89,126 +135,8 @@ public class ZipVerifierTest {
         return resourcePath;
     }
 
-    @Test // Use third party jks
-    public void testVerifySignedValid() throws Exception {
-        String signedJobPath = getResourceFilePath("signed-valid.zip");
-        ZipVerifierForTest.setJksFileName("truststore.jks");
-        ZipVerifier verifer = new ZipVerifierForTest();
-        boolean hasException = false;
-        try {
-            verifer.verify(signedJobPath);
-        } catch (Exception ex) {
-            hasException = true;
-        }
-        assertFalse(hasException);
-    }
-
-    @Test // Use third party jks
-    public void testVerifySignedJobByWebTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("signed-by-web.zip");
-        ZipVerifierForTest.setJksFileName("truststore.jks");
-        ZipVerifier verifer = new ZipVerifierForTest();
-        try {
-            verifer.verify(signedJobPath);
-            fail("exception should have been thrown in the previous line");
-        } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed."));
-        }
-    }
-
-    @Test // Use third party jks
-    public void testVerifySignedJobByTruststore2() throws Exception {
-        String signedJobPath = getResourceFilePath("signed-valid.zip");
-        ZipVerifierForTest.setJksFileName("truststore2.jks");
-        ZipVerifier verifer = new ZipVerifierForTest();
-        try {
-            verifer.verify(signedJobPath);
-            fail("exception should have been thrown in the previous line");
-        } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed."));
-        }
-    }
-
-    @Test // Use third party jks
-    public void testVerifyUnsignedJobByTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("unsigned.zip");
-        ZipVerifierForTest.setJksFileName("truststore.jks");
-        ZipVerifier verifer = new ZipVerifierForTest();
-        try {
-            verifer.verify(signedJobPath);
-            fail("exception should have been thrown in the previous line");
-        } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.Missing entry:META-INF/MANIFEST.MF"));
-        }
-    }
-
-    @Test // Use third party jks
-    public void testVerifyAddedSignedJobByTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("added-unsigned-file.zip");
-        ZipVerifierForTest.setJksFileName("truststore.jks");
-        ZipVerifier verifer = new ZipVerifierForTest();
-        try {
-            verifer.verify(signedJobPath);
-            fail("exception should have been thrown in the previous line");
-        } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed."));
-        }
-    }
-
-    @Test // Use third party jks
-    public void testVerifyModifiedSignedJobByTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("modified-signed-valid.zip");
-        ZipVerifierForTest.setJksFileName("truststore.jks");
-        ZipVerifier verifer = new ZipVerifierForTest();
-        try {
-            verifer.verify(signedJobPath);
-            fail("exception should have been thrown in the previous line");
-        } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.SHA-256 digest error"));
-        }
-    }
-
-    @Test // Use third party jks
-    public void testVerifyDeletedSignedJobByTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("deleted-signed-valid.zip");
-        ZipVerifierForTest.setJksFileName("truststore.jks");
-        ZipVerifier verifer = new ZipVerifierForTest();
-        try {
-            verifer.verify(signedJobPath);
-            fail("exception should have been thrown in the previous line");
-        } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Missing entry"));
-        }
-    }
-}
-
-class ZipVerifierForTest extends ZipVerifier {
-
-    private static String jksFileName = "truststore.jks";
-
-    public ZipVerifierForTest() throws Exception {
-        super();
-    }
-
-    protected KeyStore getKeyStore() throws Exception {
-        KeyStoreSetting setting = new KeyStoreSetting();
-        String verifyStorePass = "704e6a56993db27996eac284b83e"; //$NON-NLS-1$
-        setting.setStoreUrl(getJKSUrl());
-        setting.setStorePassword(verifyStorePass.toCharArray());
-        KeyStore keyStore = KeyStore.getInstance(setting.getStoreType());
-        keyStore.load(setting.getStoreUrl().openStream(), setting.getStorePassword());
-        return keyStore;
-    }
-
-    public static String getJksFileName() {
-        return jksFileName;
-    }
-
-    public static void setJksFileName(String jksFileName) {
-        ZipVerifierForTest.jksFileName = jksFileName;
-    }
-
-    private URL getJKSUrl() {
-        return ZipVerifierTest.class.getResource(jksFileName);
+    private InputStream getKeyStoreInputStream(String path) throws FileNotFoundException {
+        File keyStoreFile = new File(path);
+        return new FileInputStream(keyStoreFile);
     }
 }
