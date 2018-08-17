@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.security.CodeSigner;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
@@ -42,15 +43,20 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.daikon.signature.exceptions.InvalidKeyStoreException;
 import org.talend.daikon.signature.exceptions.MissingEntryException;
 import org.talend.daikon.signature.exceptions.NoCodeSignCertificateException;
 import org.talend.daikon.signature.exceptions.NoValidCertificateException;
+import org.talend.daikon.signature.exceptions.UnsignedEntryException;
 import org.talend.daikon.signature.exceptions.VerifyException;
 import org.talend.daikon.signature.exceptions.VerifyFailedException;
 import org.talend.daikon.signature.keystore.KeyStoreManager;
 
 public class ZipVerifier {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZipVerifier.class);
 
     private PKIXParameters param;
 
@@ -58,16 +64,16 @@ public class ZipVerifier {
         initPKIXParameter();
     }
 
-    private void initPKIXParameter() throws Exception {
+    private void initPKIXParameter() throws InvalidKeyStoreException, KeyStoreException, InvalidAlgorithmParameterException {
         final KeyStore keyStore = getKeyStore();
         if (keyStore == null) {
-            throw new InvalidKeyStoreException("Can't load the key store for verify"); //$NON-NLS-1$
+            throw new InvalidKeyStoreException("Can't load the key store"); //$NON-NLS-1$
         }
         param = new PKIXParameters(keyStore);
         param.setRevocationEnabled(false);
     }
 
-    protected KeyStore getKeyStore() throws Exception {
+    protected KeyStore getKeyStore() throws InvalidKeyStoreException {
         KeyStoreManager keyStoreManager = KeyStoreManager.getInstance();
         KeyStore keyStore = keyStoreManager.getVerifyKeyStore();
         return keyStore;
@@ -77,7 +83,7 @@ public class ZipVerifier {
         assert (filePath != null);
         File file = new File(filePath);
         if (!file.exists()) {
-            throw new IOException("The file is not exist:" + filePath); //$NON-NLS-1$
+            throw new IOException("The file does not exist:" + filePath); //$NON-NLS-1$
         }
         JarFile jarFile = null;
         try {
@@ -97,7 +103,7 @@ public class ZipVerifier {
                 readAndCheckEntry(jarFile, entry);
                 if (!manifestEntryMap.containsKey(entry.getName()) || entry.getCodeSigners() == null
                         || entry.getCodeSigners().length == 0) {
-                    throw new Exception("Find unsigned entry:" + entry.getName());
+                    throw new UnsignedEntryException("Find unsigned entry:" + entry.getName());
                 }
                 checkCodeSigners(entry);
                 verifiedEntryNameSet.add(entry.getName());
@@ -120,7 +126,7 @@ public class ZipVerifier {
         }
     }
 
-    private void readAndCheckEntry(JarFile jarFile, JarEntry entry) throws IOException, VerifyFailedException {
+    private void readAndCheckEntry(JarFile jarFile, JarEntry entry) throws VerifyFailedException {
         InputStream is = null;
         byte[] buffer = new byte[8192];
         try {
@@ -129,9 +135,15 @@ public class ZipVerifier {
                 ;
         } catch (java.lang.SecurityException ex) {
             throw new VerifyFailedException("Verify failed." + ex.getMessage(), ex);
+        } catch (IOException ex) {
+            throw new VerifyFailedException("Verify failed." + ex.getMessage(), ex);
         } finally {
             if (is != null) {
-                is.close();
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                    LOGGER.debug("Close stream failed:" + ex);
+                }
             }
         }
     }
@@ -175,8 +187,8 @@ public class ZipVerifier {
                         x509Cert.checkValidity(param.getDate());
                     }
                     validCertList.add(x509Cert);
-                } catch (CertificateExpiredException | CertificateNotYetValidException e) {
-                    // Ignore here
+                } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
+                    LOGGER.debug("Find invalid certificate:" + ex);
                 }
             }
         }

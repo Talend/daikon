@@ -19,4 +19,8 @@ public class InvalidKeyStoreException extends VerifyException {
     public InvalidKeyStoreException(String message) {
         super(message);
     }
+
+    public InvalidKeyStoreException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

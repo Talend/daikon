@@ -12,11 +12,16 @@
 // ============================================================================
 package org.talend.daikon.signature.keystore;
 
+import java.io.IOException;
 import java.net.URL;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.daikon.signature.exceptions.InvalidKeyStoreException;
 
 public class KeyStoreManager {
 
@@ -28,7 +33,7 @@ public class KeyStoreManager {
 
     private static KeyStoreManager instance = null;
 
-    public static KeyStoreManager getInstance() throws Exception {
+    public static KeyStoreManager getInstance() {
         if (instance == null) {
             synchronized (KeyStoreManager.class) {
                 if (instance == null) {
@@ -39,38 +44,35 @@ public class KeyStoreManager {
         return instance;
     }
 
-    private KeyStoreManager() throws Exception {
+    private KeyStoreManager() {
         initKeyStoreSettings();
     }
 
-    protected void initKeyStoreSettings() throws Exception {
+    protected void initKeyStoreSettings() {
         verifyStoreSettings = null;
-        try {
-            String verifyStorePass = "ABC14A986449D5C6511E675B7C37658B"; //$NON-NLS-1$
-            URL verifyJKSUrl = KeyStoreManager.class.getResource("talend-code-vrfy.jks"); //$NON-NLS-1$
-            verifyStoreSettings = new KeyStoreSetting();
-            verifyStoreSettings.setStoreUrl(verifyJKSUrl);
-            verifyStoreSettings.setStorePassword(verifyStorePass.toCharArray());
-        } catch (Throwable e) {
-            LOGGER.error("Init key store failed:" + e); //$NON-NLS-1$
-            throw e;
-        }
+        String verifyStorePass = "ABC14A986449D5C6511E675B7C37658B"; //$NON-NLS-1$
+        URL verifyJKSUrl = KeyStoreManager.class.getResource("talend-code-vrfy.jks"); //$NON-NLS-1$
+        verifyStoreSettings = new KeyStoreSetting();
+        verifyStoreSettings.setStoreUrl(verifyJKSUrl);
+        verifyStoreSettings.setStorePassword(verifyStorePass.toCharArray());
     }
 
     public KeyStoreSetting getVerifyStoreSettings() {
         return verifyStoreSettings;
     }
 
-    public KeyStore getVerifyKeyStore() {
+    public KeyStore getVerifyKeyStore() throws InvalidKeyStoreException {
         if (verifyKeyStore == null) {
             final KeyStoreSetting verifyKeyStoreSetting = getVerifyStoreSettings();
             if (verifyKeyStoreSetting != null) {
+                KeyStore keyStore;
                 try {
-                    KeyStore keyStore = KeyStore.getInstance(verifyKeyStoreSetting.getStoreType());
+                    keyStore = KeyStore.getInstance(verifyKeyStoreSetting.getStoreType());
                     keyStore.load(verifyKeyStoreSetting.getStoreUrl().openStream(), verifyKeyStoreSetting.getStorePassword());
                     verifyKeyStore = keyStore;
-                } catch (Throwable e) {
-                    LOGGER.error("Load key store failed:" + e);//$NON-NLS-1$
+                } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
+                    LOGGER.error("Load key store failed." + e);//$NON-NLS-1$
+                    throw new InvalidKeyStoreException("Load key store failed." + e.getMessage(), e);
                 }
             }
         }

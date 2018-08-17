@@ -12,12 +12,23 @@
 // ============================================================================
 package org.talend.daikon.signature.verify;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.net.URL;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertPathValidatorException;
+import java.security.cert.CertificateException;
 
 import org.junit.Test;
+import org.talend.daikon.signature.exceptions.InvalidKeyStoreException;
+import org.talend.daikon.signature.exceptions.MissingEntryException;
+import org.talend.daikon.signature.exceptions.NoCodeSignCertificateException;
+import org.talend.daikon.signature.exceptions.UnsignedEntryException;
 import org.talend.daikon.signature.exceptions.VerifyFailedException;
 import org.talend.daikon.signature.keystore.KeyStoreSetting;
 
@@ -44,7 +55,7 @@ public class ZipVerifierTest {
             verifer.verify(unSignedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertEquals("Verify failed.Missing entry:META-INF/MANIFEST.MF", ex.getMessage());
+            assertTrue(ex.getCause() instanceof MissingEntryException);
         }
     }
 
@@ -56,7 +67,7 @@ public class ZipVerifierTest {
             verifer.verify(unSignedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.SHA-256 digest error"));
+            assertTrue(ex.getCause() instanceof VerifyFailedException);
         }
     }
 
@@ -68,7 +79,7 @@ public class ZipVerifierTest {
             verifer.verify(unSignedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Missing entry"));
+            assertTrue(ex.getCause() instanceof MissingEntryException);
         }
     }
 
@@ -80,7 +91,7 @@ public class ZipVerifierTest {
             verifer.verify(unSignedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.Find unsigned entry"));
+            assertTrue(ex.getCause() instanceof UnsignedEntryException);
         }
     }
 
@@ -112,7 +123,7 @@ public class ZipVerifierTest {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed."));
+            assertTrue(ex.getCause() instanceof NoCodeSignCertificateException);
         }
     }
 
@@ -125,7 +136,7 @@ public class ZipVerifierTest {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed."));
+            assertTrue(ex.getCause() instanceof CertPathValidatorException);
         }
     }
 
@@ -138,7 +149,7 @@ public class ZipVerifierTest {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.Missing entry:META-INF/MANIFEST.MF"));
+            assertTrue(ex.getCause() instanceof MissingEntryException);
         }
     }
 
@@ -151,7 +162,7 @@ public class ZipVerifierTest {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed."));
+            assertTrue(ex.getCause() instanceof UnsignedEntryException);
         }
     }
 
@@ -164,7 +175,7 @@ public class ZipVerifierTest {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.SHA-256 digest error"));
+            assertTrue(ex.getCause() instanceof VerifyFailedException);
         }
     }
 
@@ -177,7 +188,7 @@ public class ZipVerifierTest {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Missing entry"));
+            assertTrue(ex.getCause() instanceof MissingEntryException);
         }
     }
 }
@@ -190,13 +201,19 @@ class ZipVerifierForTest extends ZipVerifier {
         super();
     }
 
-    protected KeyStore getKeyStore() throws Exception {
+    protected KeyStore getKeyStore() throws InvalidKeyStoreException {
         KeyStoreSetting setting = new KeyStoreSetting();
         String verifyStorePass = "704e6a56993db27996eac284b83e"; //$NON-NLS-1$
         setting.setStoreUrl(getJKSUrl());
         setting.setStorePassword(verifyStorePass.toCharArray());
-        KeyStore keyStore = KeyStore.getInstance(setting.getStoreType());
-        keyStore.load(setting.getStoreUrl().openStream(), setting.getStorePassword());
+        KeyStore keyStore;
+        try {
+            keyStore = KeyStore.getInstance(setting.getStoreType());
+            keyStore.load(setting.getStoreUrl().openStream(), setting.getStorePassword());
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
+            throw new InvalidKeyStoreException("Load key store failed." + e.getMessage(), e);
+        }
+
         return keyStore;
     }
 
