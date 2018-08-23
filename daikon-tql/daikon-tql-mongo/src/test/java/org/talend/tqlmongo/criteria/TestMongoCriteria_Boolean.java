@@ -17,8 +17,9 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
         Criteria expectedCriteria = Criteria.where("isGoodBoy").is(true);
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
-        Assert.assertEquals(1, records.size());
+        Assert.assertEquals(2, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("invalid+*name")).count());
     }
 
     @Test
@@ -52,8 +53,9 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
         Criteria expectedCriteria = Criteria.where("isGoodBoy").ne(false);
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
-        Assert.assertEquals(1, records.size());
+        Assert.assertEquals(2, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("invalid+*name")).count());
     }
 
 }

@@ -58,7 +58,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
         Criteria expectedCriteria = Criteria.where("name").regex("");
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
-        Assert.assertEquals(4, records.size());
+        Assert.assertEquals(5, records.size());
     }
 
     @Test
@@ -79,5 +79,15 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Ghassen")).count());
+    }
+
+    @Test
+    public void testParseFieldContainsValue8() throws Exception {
+        Criteria criteria = doTest("name contains 'd+*'");
+        Criteria expectedCriteria = Criteria.where("name").regex("d\\+\\*");
+        Assert.assertEquals(expectedCriteria, criteria);
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(1, records.size());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("invalid+*name")).count());
     }
 }

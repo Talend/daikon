@@ -58,7 +58,7 @@ public class TestMongoCriteria_ContainsIgnoreCase extends TestMongoCriteria_Abst
         Criteria expectedCriteria = Criteria.where("name").regex("");
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
-        Assert.assertEquals(4, records.size());
+        Assert.assertEquals(5, records.size());
     }
 
     @Test
@@ -81,5 +81,15 @@ public class TestMongoCriteria_ContainsIgnoreCase extends TestMongoCriteria_Abst
         Assert.assertEquals(2, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Ghassen")).count());
+    }
+
+    @Test
+    public void testParseFieldContainsIgnoreCaseValue8() throws Exception {
+        Criteria criteria = doTest("name containsIgnoreCase 'D+*'");
+        Criteria expectedCriteria = Criteria.where("name").regex("D\\+\\*");
+        Assert.assertEquals(expectedCriteria, criteria);
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(1, records.size());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("invalid+*name")).count());
     }
 }
