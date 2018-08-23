@@ -32,8 +32,9 @@ public class ZipVerifierTest {
     private String storePass = "c1b966f70a2529d8adc13e13d293"; //$NON-NLS-1$
 
     /**
-     * signed-valid.zip contain two certificates 1. code sign certificate validity: [From: Mon Aug 20 16:13:06 CST 2018, To: Sat Feb
-     * 16 16:13:06 CST 2019] 2. validity: [From: Mon Aug 20 16:13:05 CST 2018, To: Thu Aug 15 16:13:05 CST 2019]
+     * signed-valid.zip contain two certificates 1. code sign certificate validity: [From: Mon Aug 20 16:13:06 CST 2018,
+     * To: Sat Feb 16 16:13:06 CST 2019] 2. validity: [From: Mon Aug 20 16:13:05 CST 2018, To: Thu Aug 15 16:13:05 CST
+     * 2019]
      * 
      * @throws Exception
      */

@@ -185,7 +185,8 @@ public class ZipVerifier {
         byte[] buffer = new byte[8192];
         try {
             is = jarFile.getInputStream(entry);
-            // Perform an explicit read of a file entry. will throw a SecurityException if entry's signature checks fail.
+            // Perform an explicit read of a file entry. will throw a SecurityException if
+            // entry's signature checks fail.
             while ((is.read(buffer, 0, buffer.length)) != -1)
                 ;
         } catch (java.lang.SecurityException ex) {
@@ -256,7 +257,7 @@ public class ZipVerifier {
     }
 
     private boolean isSignatureRelatedEntry(String entryName) {
-        return entryName.toUpperCase().equals(JarFile.MANIFEST_NAME) || entryName.toUpperCase().matches("META-INF/.*.SF") //$NON-NLS-1$
+        return entryName.equalsIgnoreCase(JarFile.MANIFEST_NAME) || entryName.toUpperCase().matches("META-INF/.*.SF") //$NON-NLS-1$
                 || entryName.toUpperCase().matches("META-INF/.*.RSA") || entryName.toUpperCase().matches("META-INF/.*.EC")
                 || entryName.toUpperCase().matches("META-INF/.*.DSA");
     }
@@ -276,13 +277,15 @@ public class ZipVerifier {
     }
 
     private boolean isCodeSignCert(final X509Certificate cert) throws CertificateParsingException {
-        // Check digitalSignature KU.
+        // Check digitalSignature Key Usage.
         boolean[] keyUsages = cert.getKeyUsage();
+        boolean isDigitalSignature = true;
         if (keyUsages == null || keyUsages[0] == false) {
-            LOGGER.error("Certificate is missing digitalSignature KeyUsage.");
-            return false;
+            LOGGER.error("Certificate is missing digital signature KeyUsage.");
+            isDigitalSignature = false;
         }
-        List<String> keyUsage = cert.getExtendedKeyUsage();
-        return keyUsage != null && (keyUsage.contains("2.5.29.37.0") || keyUsage.contains("1.3.6.1.5.5.7.3.3")); //$NON-NLS-1$ //$NON-NLS-2$
+        List<String> extendesKeyUsage = cert.getExtendedKeyUsage();
+        return isDigitalSignature && extendesKeyUsage != null
+                && (extendesKeyUsage.contains("2.5.29.37.0") || extendesKeyUsage.contains("1.3.6.1.5.5.7.3.3")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }
