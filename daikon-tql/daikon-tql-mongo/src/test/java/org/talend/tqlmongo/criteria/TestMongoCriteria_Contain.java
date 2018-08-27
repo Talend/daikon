@@ -88,7 +88,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
-        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
-        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
     }
 
     @Test
@@ -108,16 +108,31 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
-        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
     }
 
-    //    @Test
-    //    public void testParseFieldContainsValue11() {
-    //        Criteria criteria = doTest("name contains '''");
-    //        Criteria expectedCriteria = Criteria.where("name").regex("\\'");
-    //        Assert.assertEquals(expectedCriteria, criteria);
-    //        List<Record> records = this.getRecords(criteria);
-    //        Assert.assertEquals(1, records.size());
-    //        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
-    //    }
+    @Test
+    public void testParseFieldContainsValue11() {
+        Criteria criteria = doTest("name contains '\\''");
+        Criteria expectedCriteria = Criteria.where("name").regex("'");
+        Assert.assertEquals(expectedCriteria, criteria);
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(1, records.size());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
+    }
+
+    // ANTLR uses simple quotes as a delimiter, so if the string contains a simple quote, it should be escaped
+    // otherwise all what comes after the first simple quote is ignored
+    @Test
+    public void testParseFieldContainsValue_checkSimpleQuoteShouldBeEscaped() {
+        Criteria criteria = doTest("name contains '''"); // equals a search on an empty string
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(5, records.size()); // returns all records
+
+        criteria = doTest("name contains 'ghassen''"); // equals a search on 'ghassen'
+        records = this.getRecords(criteria);
+        Assert.assertEquals(1, records.size()); // returns only 'ghassen' record
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());
+    }
+
 }

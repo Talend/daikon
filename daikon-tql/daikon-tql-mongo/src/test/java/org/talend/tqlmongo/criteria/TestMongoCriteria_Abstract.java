@@ -37,7 +37,7 @@ public abstract class TestMongoCriteria_Abstract {
     private final static Map<String, Double> RECORDS = Collections.unmodifiableMap(Stream
             .of(new AbstractMap.SimpleEntry<>("ghassen", 30d), new AbstractMap.SimpleEntry<>("Ghassen", 31.2d),
                     new AbstractMap.SimpleEntry<>("Benoit", 29d), new AbstractMap.SimpleEntry<>("Benoit 2eme", 28.8d),
-                    new AbstractMap.SimpleEntry<>("+?'$", 28.8d))
+                    new AbstractMap.SimpleEntry<>("+?'n$", 28.8d))
             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
 
     private static MongoTemplate mongoTemplate;

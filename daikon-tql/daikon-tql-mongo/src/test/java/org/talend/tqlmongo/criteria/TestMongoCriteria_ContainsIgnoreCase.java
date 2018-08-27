@@ -90,7 +90,7 @@ public class TestMongoCriteria_ContainsIgnoreCase extends TestMongoCriteria_Abst
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
-        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class TestMongoCriteria_ContainsIgnoreCase extends TestMongoCriteria_Abst
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
-        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
     }
 
     @Test
@@ -110,6 +110,16 @@ public class TestMongoCriteria_ContainsIgnoreCase extends TestMongoCriteria_Abst
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
-        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
+    }
+
+    @Test
+    public void testParseFieldContainsIgnoreCaseValue11() {
+        Criteria criteria = doTest("name containsIgnoreCase '\\''");
+        Criteria expectedCriteria = Criteria.where("name").regex("'");
+        Assert.assertEquals(expectedCriteria, criteria);
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(1, records.size());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
     }
 }

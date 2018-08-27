@@ -31,7 +31,7 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit")).count());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit 2eme")).count());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Ghassen")).count());
-        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
 
     }
 
@@ -45,7 +45,7 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit")).count());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit 2eme")).count());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Ghassen")).count());
-        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
     }
 
     @Test
