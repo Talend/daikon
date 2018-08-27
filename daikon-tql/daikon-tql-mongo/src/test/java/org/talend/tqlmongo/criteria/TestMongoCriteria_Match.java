@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
 
     @Test
-    public void testParseFieldMatchesRegex1() throws Exception {
+    public void testParseFieldMatchesRegex1() {
         Criteria criteria = doTest("name ~ '^[A-Z][a-z]*$'");
         Criteria expectedCriteria = Criteria.where("name").regex("^[A-Z][a-z]*$");
         Assert.assertEquals(expectedCriteria, criteria);
@@ -23,7 +23,7 @@ public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldMatchesRegex2() throws Exception {
+    public void testParseFieldMatchesRegex2() {
         Criteria criteria = doTest("name ~ '^[A-Z|a-z]*$'");
         Criteria expectedCriteria = Criteria.where("name").regex("^[A-Z|a-z]*$");
         Assert.assertEquals(expectedCriteria, criteria);
@@ -35,7 +35,7 @@ public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldMatchesRegex3() throws Exception {
+    public void testParseFieldMatchesRegex3() {
         Criteria criteria = doTest("name ~ '^[A-Z]'");
         Criteria expectedCriteria = Criteria.where("name").regex("^[A-Z]");
         Assert.assertEquals(expectedCriteria, criteria);
@@ -47,7 +47,7 @@ public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldMatchesRegex4() throws Exception {
+    public void testParseFieldMatchesRegex4() {
         Criteria criteria = doTest("name ~ '\\d'"); // contains any digit
         Criteria expectedCriteria = Criteria.where("name").regex("\\d");
         Assert.assertEquals(expectedCriteria, criteria);
@@ -57,7 +57,7 @@ public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldMatchesRegex5() throws Exception {
+    public void testParseFieldMatchesRegex5() {
         Criteria criteria = doTest("name ~ ''"); // contains any digit
         Criteria expectedCriteria = Criteria.where("name").is("");
         Assert.assertEquals(expectedCriteria, criteria);

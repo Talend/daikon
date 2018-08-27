@@ -71,8 +71,8 @@ public class ASTVisitor implements IASTVisitor<Object> {
         if (criteria.size() == 1)
             return criteria.get(0);
         if (!isNegation)
-            return new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()]));
-        return new Criteria().orOperator(criteria.toArray(new Criteria[criteria.size()]));
+            return new Criteria().andOperator(criteria.toArray(new Criteria[0]));
+        return new Criteria().orOperator(criteria.toArray(new Criteria[0]));
     }
 
     @Override
@@ -88,8 +88,8 @@ public class ASTVisitor implements IASTVisitor<Object> {
         if (criteria.size() == 1)
             return criteria.get(0);
         if (!isNegation)
-            return new Criteria().orOperator(criteria.toArray(new Criteria[criteria.size()]));
-        return new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()]));
+            return new Criteria().orOperator(criteria.toArray(new Criteria[0]));
+        return new Criteria().andOperator(criteria.toArray(new Criteria[0]));
     }
 
     @Override
@@ -204,9 +204,11 @@ public class ASTVisitor implements IASTVisitor<Object> {
         String options = elt.isCaseSensitive() ? "" : MONGO_REGEX_IGNORE_CASE_OPTION;
         String fieldName = (String) elt.getField().accept(this);
         String value = elt.getValue();
+        String regex = value.replaceAll("[\\.\\^\\$\\*\\+\\?\\(\\)\\[\\{\\\\\\|]", "\\\\$0");
+
         if (!isNegation)
-            return Criteria.where(fieldName).regex(value, options);
-        return Criteria.where(fieldName).not().regex(value, options);
+            return Criteria.where(fieldName).regex(regex, options);
+        return Criteria.where(fieldName).not().regex(regex, options);
     }
 
     @Override

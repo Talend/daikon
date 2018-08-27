@@ -16,49 +16,49 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void testParseLiteralComparison() throws Exception {
+    public void testParseLiteralComparison() {
         Criteria criteria = doTest("field1='value1'");
         Criteria expectedCriteria = Criteria.where("field1").is("value1");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testParseLiteralComparisonWithParenthesis() throws Exception {
+    public void testParseLiteralComparisonWithParenthesis() {
         Criteria criteria = doTest("(((field1='value1')))");
         Criteria expectedCriteria = Criteria.where("field1").is("value1");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testParseFieldIsEmpty() throws Exception {
+    public void testParseFieldIsEmpty() {
         Criteria criteria = doTest("field1 is empty");
         Criteria expectedCriteria = new Criteria().orOperator(Criteria.where("field1").is(""), Criteria.where("field1").is(null));
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testParseFieldIsValid() throws Exception {
+    public void testParseFieldIsValid() {
         expectedException.expect(TqlMongoException.class);
         doTest("field1 is valid");
         Assert.fail();
     }
 
     @Test
-    public void testParseFieldIsInvalid() throws Exception {
+    public void testParseFieldIsInvalid() {
         expectedException.expect(TqlMongoException.class);
         doTest("field1 is invalid");
         Assert.fail();
     }
 
     @Test
-    public void testParseNotExpression() throws Exception {
+    public void testParseNotExpression() {
         Criteria criteria = doTest("not (field1='value1')");
         Criteria expectedCriteria = Criteria.where("field1").ne("value1");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testIntegerCompound() throws Exception {
+    public void testIntegerCompound() {
         Criteria criteria = doTest("field1 <= 123 and field2 = 456");
         Criteria c1 = Criteria.where("field1").lte(123L);
         Criteria c2 = Criteria.where("field2").is(456L);
@@ -67,7 +67,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseAndExpressions() throws Exception {
+    public void testParseAndExpressions() {
         Criteria criteria = doTest("field1='value1' and field2='value2' and field3='value3'");
         Criteria c1 = Criteria.where("field1").is("value1");
         Criteria c2 = Criteria.where("field2").is("value2");
@@ -77,7 +77,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseComplexExpressions() throws Exception {
+    public void testParseComplexExpressions() {
         Criteria criteria = doTest("field1='value1' and field2 is empty or ((field3='value3'))");
         Criteria c1 = Criteria.where("field1").is("value1");
         Criteria c2 = new Criteria().orOperator(Criteria.where("field2").is(""), Criteria.where("field2").is(null));
@@ -89,7 +89,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseAndExpressionsParenthesis1() throws Exception {
+    public void testParseAndExpressionsParenthesis1() {
         Criteria criteria = doTest("(field1='value1' and field2='value2') or field3='value3'");
         Criteria c1 = Criteria.where("field1").is("value1");
         Criteria c2 = Criteria.where("field2").is("value2");
@@ -101,7 +101,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseAndExpressionsParenthesis2() throws Exception {
+    public void testParseAndExpressionsParenthesis2() {
         Criteria criteria = doTest("field1='value1' and (field2='value2' or field3='value3')");
         Criteria c1 = Criteria.where("field1").is("value1");
         Criteria c2 = Criteria.where("field2").is("value2");
@@ -113,7 +113,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseComplexExpressionsNoParenthesis() throws Exception {
+    public void testParseComplexExpressionsNoParenthesis() {
         Criteria criteria = doTest("field1='value1' or field2='value2' and field3='value3'");
         Criteria c1 = Criteria.where("field1").is("value1");
         Criteria c2 = Criteria.where("field2").is("value2");
