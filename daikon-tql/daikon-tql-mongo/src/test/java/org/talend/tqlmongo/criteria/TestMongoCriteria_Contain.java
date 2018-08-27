@@ -111,13 +111,13 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
     }
 
-//    @Test
-//    public void testParseFieldContainsValue11() {
-//        Criteria criteria = doTest("name contains '''");
-//        Criteria expectedCriteria = Criteria.where("name").regex("\\'");
-//        Assert.assertEquals(expectedCriteria, criteria);
-//        List<Record> records = this.getRecords(criteria);
-//        Assert.assertEquals(1, records.size());
-//        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
-//    }
+    //    @Test
+    //    public void testParseFieldContainsValue11() {
+    //        Criteria criteria = doTest("name contains '''");
+    //        Criteria expectedCriteria = Criteria.where("name").regex("\\'");
+    //        Assert.assertEquals(expectedCriteria, criteria);
+    //        List<Record> records = this.getRecords(criteria);
+    //        Assert.assertEquals(1, records.size());
+    //        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'$")).count());
+    //    }
 }
