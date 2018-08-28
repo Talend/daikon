@@ -133,6 +133,11 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
         records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size()); // returns only 'ghassen' record
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());
+
+        criteria = doTest("name contains 'ghassen'xxxxxxxxxxxxxxxxxxxx"); // equals a search on on 'ghassen'
+        records = this.getRecords(criteria);
+        Assert.assertEquals(1, records.size()); // returns only 'ghassen' record
+        Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());
     }
 
 }

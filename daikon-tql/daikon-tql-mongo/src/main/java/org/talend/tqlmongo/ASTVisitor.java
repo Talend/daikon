@@ -18,6 +18,8 @@ public class ASTVisitor implements IASTVisitor<Object> {
 
     public static final String MONGO_REGEX_IGNORE_CASE_OPTION = "i";
 
+    public static final String MONGO_ESCAPE_PATTERN = "[\\.\\^\\$\\*\\+\\?\\(\\)\\[\\{\\\\\\|]";
+
     private boolean isNegation = false;
 
     @Override
@@ -204,7 +206,7 @@ public class ASTVisitor implements IASTVisitor<Object> {
         String options = elt.isCaseSensitive() ? "" : MONGO_REGEX_IGNORE_CASE_OPTION;
         String fieldName = (String) elt.getField().accept(this);
         String value = elt.getValue();
-        String regex = value.replaceAll("[\\.\\^\\$\\*\\+\\?\\(\\)\\[\\{\\\\\\|]", "\\\\$0");
+        String regex = value.replaceAll(MONGO_ESCAPE_PATTERN, "\\\\$0");
 
         if (!isNegation)
             return Criteria.where(fieldName).regex(regex, options);
@@ -280,7 +282,7 @@ public class ASTVisitor implements IASTVisitor<Object> {
                 break;
             default:
                 // Special characters for PCRE syntax (used by mongoDB for regex) need to be escaped.
-                sb.append(String.valueOf(c).replaceAll("[\\.\\^\\$\\*\\+\\?\\(\\)\\[\\{\\\\\\|]", "\\\\$0"));
+                sb.append(String.valueOf(c).replaceAll(MONGO_ESCAPE_PATTERN, "\\\\$0"));
                 break;
             }
         }
