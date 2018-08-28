@@ -124,7 +124,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     // ANTLR uses simple quotes as a delimiter, so if the string contains a simple quote, it should be escaped
     // otherwise all what comes after the first simple quote is ignored
     @Test
-    public void testParseFieldContainsValue_checkSimpleQuoteShouldBeEscaped() {
+    public void testParseFieldContainsValueCheckSimpleQuoteShouldBeEscaped() {
         Criteria criteria = doTest("name contains '''"); // equals a search on an empty string
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(5, records.size()); // returns all records
