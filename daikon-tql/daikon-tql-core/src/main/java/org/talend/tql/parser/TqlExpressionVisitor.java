@@ -13,25 +13,7 @@ import org.talend.tql.TqlLexer;
 import org.talend.tql.TqlParser;
 import org.talend.tql.TqlParserVisitor;
 import org.talend.tql.excp.TqlException;
-import org.talend.tql.model.AllFields;
-import org.talend.tql.model.AndExpression;
-import org.talend.tql.model.BooleanValue;
-import org.talend.tql.model.ComparisonExpression;
-import org.talend.tql.model.ComparisonOperator;
-import org.talend.tql.model.Expression;
-import org.talend.tql.model.FieldBetweenExpression;
-import org.talend.tql.model.FieldCompliesPattern;
-import org.talend.tql.model.FieldContainsExpression;
-import org.talend.tql.model.FieldInExpression;
-import org.talend.tql.model.FieldIsEmptyExpression;
-import org.talend.tql.model.FieldIsInvalidExpression;
-import org.talend.tql.model.FieldIsValidExpression;
-import org.talend.tql.model.FieldMatchesRegex;
-import org.talend.tql.model.FieldReference;
-import org.talend.tql.model.LiteralValue;
-import org.talend.tql.model.NotExpression;
-import org.talend.tql.model.OrExpression;
-import org.talend.tql.model.TqlElement;
+import org.talend.tql.model.*;
 
 /**
  * Visitor for building the AST Tql tree.
@@ -233,6 +215,23 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
         FieldCompliesPattern fieldCompliesPattern = new FieldCompliesPattern(fieldName, unescapeSingleQuotes(pattern));
         LOG.debug("End visit field complies: " + ctx.getText());
         return fieldCompliesPattern;
+    }
+
+    @Override
+    public TqlElement visitFieldWordCompliesPattern(TqlParser.FieldWordCompliesPatternContext ctx) {
+        LOG.debug("Visit field wordComplies: " + ctx.getText());
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        ParseTree patternNode = ctx.getChild(2);
+
+        if (patternNode instanceof ErrorNode)
+            throw new TqlException(patternNode.getText());
+
+        String quotedPattern = patternNode.getText();
+        String pattern = quotedPattern.substring(1, quotedPattern.length() - 1);
+        FieldWordCompliesPattern fieldWordCompliesPattern = new FieldWordCompliesPattern(fieldName,
+                unescapeSingleQuotes(pattern));
+        LOG.debug("End visit field wordComplies: " + ctx.getText());
+        return fieldWordCompliesPattern;
     }
 
     @Override

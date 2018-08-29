@@ -93,6 +93,12 @@ public interface IASTVisitor<T> {
     T visit(FieldCompliesPattern elt);
 
     /**
+     * Visits a {@link FieldWordCompliesPattern}
+     * @param elt element to visit
+     */
+    T visit(FieldWordCompliesPattern elt);
+
+    /**
      * Visits a {@link FieldBetweenExpression}
      * @param elt element to visit
      */

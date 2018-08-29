@@ -8,8 +8,10 @@ An Operator inherits from the `Operator` class (which implements the `ISerializa
 
 The following operators are supported :
 
-- `complies`
 - `contains`
+- `cotainsIgnoreCase`
+- `complies`
+- `wordComplies`
 - `is empty`
 - `is invalid`
 - `is valid`

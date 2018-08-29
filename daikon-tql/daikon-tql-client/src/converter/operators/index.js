@@ -1,7 +1,9 @@
 import Empty from './empty';
 import Equal from './equal';
 import Contains from './contains';
+import ContainsIgnoreCase from './containsIgnoreCase';
 import Complies from './complies';
+import WordComplies from './wordComplies';
 import GreaterThan from './greater-than';
 import LessThan from './less-than';
 import Valid from './valid';
@@ -13,7 +15,9 @@ export {
 	Empty,
 	Equal,
 	Contains,
+	ContainsIgnoreCase,
 	Complies,
+	WordComplies,
 	GreaterThan,
 	LessThan,
 	Valid,

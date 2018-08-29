@@ -202,6 +202,22 @@ public class ASTVisitor implements IASTVisitor<Object> {
     }
 
     @Override
+    public Object visit(FieldWordCompliesPattern elt) {
+        String fieldName = (String) elt.getField().accept(this);
+        String pattern = elt.getPattern();
+        if (StringUtils.isEmpty(pattern)) {
+            if (!isNegation)
+                return Criteria.where(fieldName).is("");
+            return Criteria.where(fieldName).ne("");
+        }
+        String regex = this.wordPatternToMongoRegex(pattern);
+        Pattern regexCompiled = Pattern.compile(regex);
+        if (!isNegation)
+            return Criteria.where(fieldName).regex(regexCompiled);
+        return Criteria.where(fieldName).not().regex(regexCompiled);
+    }
+
+    @Override
     public Object visit(FieldContainsExpression elt) {
         String options = elt.isCaseSensitive() ? "" : MONGO_REGEX_IGNORE_CASE_OPTION;
         String fieldName = (String) elt.getField().accept(this);
@@ -288,6 +304,10 @@ public class ASTVisitor implements IASTVisitor<Object> {
         }
         sb.append("$");
         return sb.toString();
+    }
+
+    protected String wordPatternToMongoRegex(String pattern) {
+        return null;
     }
 
 }

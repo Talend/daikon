@@ -41,24 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.tql.model.AllFields;
-import org.talend.tql.model.AndExpression;
-import org.talend.tql.model.ComparisonExpression;
-import org.talend.tql.model.ComparisonOperator;
-import org.talend.tql.model.Expression;
-import org.talend.tql.model.FieldBetweenExpression;
-import org.talend.tql.model.FieldCompliesPattern;
-import org.talend.tql.model.FieldContainsExpression;
-import org.talend.tql.model.FieldInExpression;
-import org.talend.tql.model.FieldIsEmptyExpression;
-import org.talend.tql.model.FieldIsInvalidExpression;
-import org.talend.tql.model.FieldIsValidExpression;
-import org.talend.tql.model.FieldMatchesRegex;
-import org.talend.tql.model.FieldReference;
-import org.talend.tql.model.LiteralValue;
-import org.talend.tql.model.NotExpression;
-import org.talend.tql.model.OrExpression;
-import org.talend.tql.model.TqlElement;
+import org.talend.tql.model.*;
 import org.talend.tql.visitor.IASTVisitor;
 
 /**
@@ -142,6 +125,11 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
             }
         }
         return true;
+    }
+
+    private static boolean wordComplies(String value, String pattern) {
+        // To be implemented by DP.
+        return false;
     }
 
     private static <T> Predicate<T> unchecked(Predicate<T> predicate) {
@@ -375,6 +363,15 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
 
         final String pattern = fieldCompliesPattern.getPattern();
         return unchecked(o -> complies(valueOf(invoke(o, methods)), pattern));
+    }
+
+    @Override
+    public Predicate<T> visit(FieldWordCompliesPattern fieldWordCompliesPattern) {
+        fieldWordCompliesPattern.getField().accept(this);
+        final Method[] methods = currentMethods.pop();
+
+        final String pattern = fieldWordCompliesPattern.getPattern();
+        return unchecked(o -> wordComplies(valueOf(invoke(o, methods)), pattern));
     }
 
     @Override

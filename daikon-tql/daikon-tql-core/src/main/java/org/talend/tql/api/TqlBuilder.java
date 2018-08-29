@@ -348,6 +348,25 @@ public class TqlBuilder {
     }
 
     /**
+     * Build a "wordComplies" TQL expression
+     *
+     * @param fieldname field
+     * @param pattern   pattern
+     * @return TQL Expression
+     */
+    public static Expression wordComplies(String fieldname, String pattern) {
+
+        // Creating simple wordComplies expression
+        FieldWordCompliesPattern fieldWordCompliesPattern = new FieldWordCompliesPattern(new FieldReference(fieldname), pattern);
+        Expression[] fieldWordCompliesPatternExpressions = new Expression[] { fieldWordCompliesPattern };
+
+        // Adding it to a new AST
+        AndExpression andExpression = new AndExpression(fieldWordCompliesPatternExpressions);
+        return new OrExpression(andExpression);
+
+    }
+
+    /**
      * Build a "match" TQL expression with a regexp
      *
      * @param fieldname field
@@ -554,7 +573,7 @@ public class TqlBuilder {
                 // Cloning the first level "andExpr"
                 List<Expression> currentAtomsExpression = Arrays
                         .asList(((AndExpression) currentAndExpressions.get(0)).getExpressions());
-                Atom[] newAtomTab = currentAtomsExpression.toArray(new Atom[currentAtomsExpression.size()]);
+                Atom[] newAtomTab = currentAtomsExpression.toArray(new Atom[0]);
                 // Adding it with the first level andExpressions of the new AST
                 AndExpression newAndExpression = new AndExpression(newAtomTab);
                 newAndExpressions.add(newAndExpression);
@@ -570,7 +589,7 @@ public class TqlBuilder {
         }
 
         // Creating a new TQL AST from the newly built AndExpressions
-        Expression[] tab = newAndExpressions.toArray(new Expression[newAndExpressions.size()]);
+        Expression[] tab = newAndExpressions.toArray(new Expression[0]);
         return new OrExpression(tab);
 
     }
@@ -620,7 +639,7 @@ public class TqlBuilder {
             }
         }
 
-        Expression[] newAtomTabs = newAtomExpressions.toArray(new Expression[newAtomExpressions.size()]);
+        Expression[] newAtomTabs = newAtomExpressions.toArray(new Expression[0]);
 
         AndExpression newAndExpression = new AndExpression(newAtomTabs);
         AndExpression[] newAndExpressionTab = new AndExpression[1];
@@ -670,7 +689,7 @@ public class TqlBuilder {
      */
     public static Expression cloneExpression(Expression expression) {
 
-        List<Expression> currentAndExpressions = Arrays.asList(((OrExpression) expression).getExpressions());
+        Expression[] currentAndExpressions = ((OrExpression) expression).getExpressions();
 
         List<AndExpression> newAndExpressions = new ArrayList<>();
 
@@ -679,7 +698,7 @@ public class TqlBuilder {
 
             List<Expression> currentAtomsExpression = Arrays.asList(((AndExpression) currentAndExpression).getExpressions());
 
-            Expression[] newAtomTab = currentAtomsExpression.toArray(new Expression[currentAtomsExpression.size()]);
+            Expression[] newAtomTab = currentAtomsExpression.toArray(new Expression[0]);
 
             AndExpression newAndExpression = new AndExpression(newAtomTab);
 
@@ -687,7 +706,7 @@ public class TqlBuilder {
             newAndExpressions.add(newAndExpression);
         }
 
-        AndExpression[] newAndExpressionsTab = newAndExpressions.toArray(new AndExpression[newAndExpressions.size()]);
+        AndExpression[] newAndExpressionsTab = newAndExpressions.toArray(new AndExpression[0]);
 
         // Return it as a new TQL Expression
         return new OrExpression(newAndExpressionsTab);
