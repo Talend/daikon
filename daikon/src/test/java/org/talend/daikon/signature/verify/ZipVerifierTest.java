@@ -12,15 +12,13 @@
 // ============================================================================
 package org.talend.daikon.signature.verify;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.File;
+import static org.junit.Assert.*;
+
 import java.net.URL;
 import java.security.KeyStore;
+
 import org.junit.Test;
 import org.talend.daikon.signature.exceptions.VerifyFailedException;
-import org.talend.daikon.signature.keystore.KeyStoreManager;
 import org.talend.daikon.signature.keystore.KeyStoreSetting;
 
 public class ZipVerifierTest {
@@ -29,7 +27,13 @@ public class ZipVerifierTest {
     public void testVerifySignedJob() throws Exception {
         String signedJobPath = getResourceFilePath("TJava_0.1_signed.zip");
         ZipVerifier verifer = new ZipVerifier();
-        verifer.verify(signedJobPath);
+        boolean hasException = false;
+        try {
+            verifer.verify(signedJobPath);
+        } catch (Exception ex) {
+            hasException = true;
+        }
+        assertFalse(hasException);
     }
 
     @Test // Use talend-code-vrfy.jks
@@ -90,7 +94,13 @@ public class ZipVerifierTest {
         String signedJobPath = getResourceFilePath("signed-valid.zip");
         ZipVerifierForTest.setJksFileName("truststore.jks");
         ZipVerifier verifer = new ZipVerifierForTest();
-        verifer.verify(signedJobPath);
+        boolean hasException = false;
+        try {
+            verifer.verify(signedJobPath);
+        } catch (Exception ex) {
+            hasException = true;
+        }
+        assertFalse(hasException);
     }
 
     @Test // Use third party jks

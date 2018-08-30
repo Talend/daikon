@@ -25,6 +25,7 @@ import java.security.cert.CertPathValidatorException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.PKIXCertPathValidatorResult;
@@ -45,10 +46,9 @@ import org.talend.daikon.signature.exceptions.InvalidKeyStoreException;
 import org.talend.daikon.signature.exceptions.MissingEntryException;
 import org.talend.daikon.signature.exceptions.NoCodeSignCertificateException;
 import org.talend.daikon.signature.exceptions.NoValidCertificateException;
+import org.talend.daikon.signature.exceptions.VerifyException;
 import org.talend.daikon.signature.exceptions.VerifyFailedException;
 import org.talend.daikon.signature.keystore.KeyStoreManager;
-
-import sun.security.provider.certpath.X509CertPath;
 
 public class ZipVerifier {
 
@@ -108,26 +108,8 @@ public class ZipVerifier {
                     throw new Exception("Find unsigned entry:" + entry.getName());
                 }
 
-                // Verify the CertPath
-                boolean isContainSignCert = false;
-                for (CodeSigner cs : entry.getCodeSigners()) {
-                    if (!isContainSignCert && isContainCodeSignCert(cs)) {
-                        isContainSignCert = true;
-                    }
-                    if (cs.getTimestamp() != null) {
-                        param.setDate(cs.getTimestamp().getTimestamp());
-                    } else {
-                        param.setDate(null);
-                    }
-                    PKIXCertPathValidatorResult result = validate(cs.getSignerCertPath());
-                    if (result == null) {
-                        throw new RuntimeException("No validate result for cert path."); //$NON-NLS-1$
-                    }
-                }
-                if (!isContainSignCert) {
-                    throw new NoCodeSignCertificateException(
-                            "Can't find any code sign certificate for the entry:" + entry.getName()); //$NON-NLS-1$
-                }
+                // Verify code signer's CertPath
+                checkCodeSigners(entry);
                 verifiedEntryNameSet.add(entry.getName());
             }
 
@@ -145,6 +127,28 @@ public class ZipVerifier {
             if (jarFile != null) {
                 jarFile.close();
             }
+        }
+    }
+
+    private void checkCodeSigners(JarEntry entry) throws NoSuchAlgorithmException, CertPathValidatorException,
+            InvalidAlgorithmParameterException, CertificateException, VerifyException {
+        boolean isContainSignCert = false;
+        for (CodeSigner cs : entry.getCodeSigners()) {
+            if (!isContainSignCert && isContainCodeSignCert(cs)) {
+                isContainSignCert = true;
+            }
+            if (cs.getTimestamp() != null) {
+                param.setDate(cs.getTimestamp().getTimestamp());
+            } else {
+                param.setDate(null);
+            }
+            PKIXCertPathValidatorResult result = validate(cs.getSignerCertPath());
+            if (result == null) {
+                throw new VerifyException("No validate result for cert path."); //$NON-NLS-1$
+            }
+        }
+        if (!isContainSignCert) {
+            throw new NoCodeSignCertificateException("Can't find any code sign certificate for the entry:" + entry.getName()); //$NON-NLS-1$
         }
     }
 
@@ -166,24 +170,22 @@ public class ZipVerifier {
                     }
                     validCertList.add(x509Cert);
                 } catch (CertificateExpiredException | CertificateNotYetValidException e) {
-                    // Igore here
+                    // Ignore here
                 }
             }
         }
         if (validCertList.size() == 0) {
             throw new NoValidCertificateException("No valid certificate, all certificates are expired."); //$NON-NLS-1$
         }
-
-        CertPathValidator validator = CertPathValidator.getInstance("PKIX");
-        return (PKIXCertPathValidatorResult) validator.validate(new X509CertPath(validCertList), param);
+        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509"); //$NON-NLS-1$
+        CertPath toVerifyCertPath = certificateFactory.generateCertPath(validCertList);
+        CertPathValidator validator = CertPathValidator.getInstance("PKIX"); //$NON-NLS-1$
+        return (PKIXCertPathValidatorResult) validator.validate(toVerifyCertPath, param);
     }
 
     private boolean isSignatureRelatedEntry(String entryName) {
-        if (entryName.equals(JarFile.MANIFEST_NAME) || entryName.matches("META-INF/.*.SF") //$NON-NLS-1$
-                || entryName.matches("META-INF/.*.RSA")) { //$NON-NLS-1$
-            return true;
-        }
-        return false;
+        return entryName.equals(JarFile.MANIFEST_NAME) || entryName.matches("META-INF/.*.SF") //$NON-NLS-1$
+                || entryName.matches("META-INF/.*.RSA");
     }
 
     private boolean isContainCodeSignCert(CodeSigner codeSigner) throws CertificateParsingException {
