@@ -37,6 +37,8 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     private String customUserFields;
 
+    private Map<String, String> metaFields = new HashMap<>();
+
     protected Log4j2JSONLayout(final Boolean locationInfo, final Charset charset,
             final Map<String, String> additionalLogAttributes) {
         super(charset);
@@ -94,16 +96,14 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         JSONObject logstashEvent = new JSONObject();
         JSONObject userFieldsEvent = new JSONObject();
         HostData host = new HostData();
-        Map<String, String> mdc = loggingEvent.getContextData().toMap();
 
-        /**
-         * Extract and add fields from log4j2 config, if defined
-         */
+        // Extract and add fields from log4j2 config, if defined
         LayoutUtils.addUserFields(ADDITIONNAL_ATTRIBUTES, userFieldsEvent);
 
-        /**
-         * Now we start injecting our own stuff.
-         */
+        Map<String, String> mdc = LayoutUtils.processMDCMetaFields(loggingEvent.getContextData().toMap(), logstashEvent,
+                metaFields);
+
+        // Now we start injecting our own stuff.
         logstashEvent.put(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
         logstashEvent.put(LayoutFields.TIME_STAMP, LayoutUtils.dateFormat(loggingEvent.getTimeMillis()));
         logstashEvent.put(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
@@ -212,5 +212,4 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
             logstashEvent.put(LayoutFields.STACK_TRACE, stackTrace);
         }
     }
-
 }
