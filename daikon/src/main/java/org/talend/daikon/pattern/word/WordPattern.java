@@ -10,75 +10,42 @@ public enum WordPattern {
     // @formatter:off
     WORD(
             "[Word]",
-            "["
-                    + WordPatternToRegexConstants.CHAR
-                    + "]{2,}",
-
-                    WordPatternToRegexConstants.UPPER_CHAR
-                    + "["
-                    + WordPatternToRegexConstants.LOWER_CHAR
-                    + "]{1,}"),
+            "[" + WordPatternToRegexConstants.CHAR + "]{2,}",
+            WordPatternToRegexConstants.UPPER_CHAR + "[" + WordPatternToRegexConstants.LOWER_CHAR + "]{1,}"),
     LOWER_WORD(
             "[word]",
-            "["
-                    + WordPatternToRegexConstants.CHAR
-                    + "]{2,}",
-            "["
-                    + WordPatternToRegexConstants.LOWER_CHAR
-                    + "]{2,}"),
+            "[" + WordPatternToRegexConstants.CHAR + "]{2,}",
+            "[" + WordPatternToRegexConstants.LOWER_CHAR + "]{2,}"),
     UPPER_WORD(
             "[WORD]",
-            "["
-                    + WordPatternToRegexConstants.CHAR
-                    + "]{2,}",
-            "["
-                    + WordPatternToRegexConstants.UPPER_CHAR
-                    + "]{2,}"),
+            "[" + WordPatternToRegexConstants.CHAR + "]{2,}",
+            "[" + WordPatternToRegexConstants.UPPER_CHAR + "]{2,}"),
     LOWER_CHAR(
             "[char]",
-            "["
-                    + WordPatternToRegexConstants.CHAR
-                    + "]",
-            "["
-                    + WordPatternToRegexConstants.LOWER_CHAR
-                    + "]"),
+            "[" + WordPatternToRegexConstants.CHAR + "]",
+            "[" + WordPatternToRegexConstants.LOWER_CHAR + "]"),
     UPPER_CHAR(
             "[Char]",
-            "["
-                    + WordPatternToRegexConstants.CHAR
-                    + "]",
-            "["
-                    + WordPatternToRegexConstants.UPPER_CHAR
-                    + "]"),
-    NUMBER("[number]",
-            "["
-                    + WordPatternToRegexConstants.DIGIT
-                    + "]{2,}"),
-    DIGIT("[digit]",
-            "["
-                    + WordPatternToRegexConstants.DIGIT
-                    + "]"),
+            "[" + WordPatternToRegexConstants.CHAR + "]",
+            "[" + WordPatternToRegexConstants.UPPER_CHAR + "]"),
+    NUMBER(
+            "[number]",
+            "[" + WordPatternToRegexConstants.DIGIT + "]{2,}"),
+    DIGIT(
+            "[digit]",
+            "[" + WordPatternToRegexConstants.DIGIT + "]"),
     ALPHANUMERIC(
             "[alnum]",
-            "["
-                    + WordPatternToRegexConstants.DIGIT
-                    + "|"
-                    + WordPatternToRegexConstants.CHAR
-                    + "]{2,}"),
-    IDEOGRAM("[Ideogram]",
-            "["
-                    + WordPatternToRegexConstants.IDEOGRAM
-                    + "]"),
-    IDEOGRAM_SEQUENCE("[IdeogramSeq]",
-            "["
-                    + WordPatternToRegexConstants.IDEOGRAM
-                    + "]{2,}"),
-    ALPHANUMERIC_CJK("[alnum(CJK)]",
-            "["
-                    + WordPatternToRegexConstants.DIGIT
-                    + "|"
-                    + WordPatternToRegexConstants.IDEOGRAM
-                    + "]{2,}");
+            "[" + WordPatternToRegexConstants.DIGIT + "|" + WordPatternToRegexConstants.CHAR + "]{2,}"),
+    IDEOGRAM(
+            "[Ideogram]",
+            "[" + WordPatternToRegexConstants.IDEOGRAM + "]"),
+    IDEOGRAM_SEQUENCE(
+            "[IdeogramSeq]",
+            "[" + WordPatternToRegexConstants.IDEOGRAM + "]{2,}"),
+    ALPHANUMERIC_CJK(
+            "[alnum(CJK)]",
+            "[" + WordPatternToRegexConstants.DIGIT + "|" + WordPatternToRegexConstants.IDEOGRAM + "]{2,}");
     // @formatter:on
     private static final Map<String, WordPattern> lookup = new HashMap<>();
 

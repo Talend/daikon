@@ -37,6 +37,9 @@ public class WordPatternToRegexTest {
         assertMatches("a]b", service.toRegex("[char]][char]", true));
         assertMatches("a+b", service.toRegex("[char]+[char]", true));
         assertMatches("a*b", service.toRegex("[char]*[char]", true));
+
+        assertTrue("At least one of the characters [({^+*|\\.?$})] is not well escaped",
+                service.toRegex("[({^+*|\\.?$})]", true).equals("^\\[\\(\\{\\^\\+\\*\\|\\\\\\.\\?\\$\\}\\)\\]$"));
     }
 
     @Test

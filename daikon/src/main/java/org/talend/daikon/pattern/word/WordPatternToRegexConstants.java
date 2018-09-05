@@ -1,8 +1,5 @@
 package org.talend.daikon.pattern.word;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class WordPatternToRegexConstants {
 
     // Iso to Character.isDigit
@@ -22,6 +19,6 @@ public class WordPatternToRegexConstants {
     public static final String LOWER_CHAR = CHAR + "&&[^" // Except uppers because only lower won't contain insensitive letters
             + WordPatternToRegexConstants.UPPER_CHAR + "]";
 
-    public static final List<Character> ESCAPE_CHARACTERS = Arrays.asList('(', ')', '[', ']', '.', '?', '+', '*');
+    public static final String REGEX_ESCAPE_PATTERN = "[\\.\\^\\$\\*\\+\\?\\(\\)\\[\\]\\{\\}\\\\\\|]";
 
 }
