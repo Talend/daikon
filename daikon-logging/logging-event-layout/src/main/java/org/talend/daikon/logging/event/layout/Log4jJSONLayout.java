@@ -4,7 +4,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.log4j.Layout;
@@ -66,7 +65,7 @@ public class Log4jJSONLayout extends Layout {
             LayoutUtils.addUserFields(userFlds, userFieldsEvent);
         }
 
-        Map<String, String> mdc = processMDCMetaFields(loggingEvent, logstashEvent, metaFields);
+        Map<String, String> mdc = LayoutUtils.processMDCMetaFields(loggingEvent.getProperties(), logstashEvent, metaFields);
 
         // Now we start injecting our own stuff
         logstashEvent.put(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
@@ -88,21 +87,6 @@ public class Log4jJSONLayout extends Layout {
         }
 
         return logstashEvent.toString() + "\n";
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    protected Map<String, String> processMDCMetaFields(LoggingEvent loggingEvent, JSONObject logstashEvent,
-            Map<String, String> metaFields) {
-        Map<String, String> mdc = new LinkedHashMap<>(loggingEvent.getProperties());
-
-        for (Map.Entry<String, String> field : metaFields.entrySet()) {
-            if (mdc.containsKey(field.getKey())) {
-                String val = mdc.remove(field.getKey());
-                logstashEvent.put(field.getValue(), val);
-            }
-        }
-
-        return mdc;
     }
 
     @Override

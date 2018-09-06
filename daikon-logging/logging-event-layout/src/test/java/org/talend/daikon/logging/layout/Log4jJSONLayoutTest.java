@@ -9,18 +9,17 @@ import java.util.Map;
 import java.util.Properties;
 
 import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.junit.Test;
+import org.talend.daikon.logging.event.field.LayoutFields;
 import org.talend.daikon.logging.event.layout.Log4jJSONLayout;
 
 public class Log4jJSONLayoutTest extends AbstractLayoutTest {
-
-    static final Logger LOGGER = Logger.getRootLogger();
 
     @Test
     public void testDefaultLocationInfo() {
@@ -36,19 +35,9 @@ public class Log4jJSONLayoutTest extends AbstractLayoutTest {
         final String metaFieldKeyValue = "metaFieldValue";
         final String processedMetaFieldKey = "some.meta";
 
-        final String userFieldKey = "user";
-        final String userFieldKeyValue = "user0";
-        final String operationFieldKey = "operation";
-        final String operationFieldKeyValue = "create user";
-        final String resultFieldKey = "result";
-        final String resultFieldKeyValue = "success";
-
         Map<String, String> mdc = new LinkedHashMap<>();
         mdc.put(customFieldKey, customFieldValue);
         mdc.put(metaFieldKey, metaFieldKeyValue);
-        mdc.put(userFieldKey, userFieldKeyValue);
-        mdc.put(operationFieldKey, operationFieldKeyValue);
-        mdc.put(resultFieldKey, resultFieldKeyValue);
 
         LogDetails logDetails = new LogDetails(this.getClass());
         logDetails.setMdc(mdc);
@@ -56,34 +45,26 @@ public class Log4jJSONLayoutTest extends AbstractLayoutTest {
 
         Map<String, String> metaFields = new LinkedHashMap<>();
         metaFields.put(metaFieldKey, processedMetaFieldKey);
-        metaFields.put(userFieldKey, userFieldKeyValue);
-        metaFields.put(operationFieldKey, operationFieldKeyValue);
-        metaFields.put(resultFieldKey, resultFieldKeyValue);
-        Log4jJSONLayout layout = new Log4jJSONLayout() {
 
-            @Override
-            protected Map<String, String> processMDCMetaFields(LoggingEvent loggingEvent, JSONObject logstashEvent,
-                    Map<String, String> metaFields) {
-                Map<String, String> newMdc = super.processMDCMetaFields(loggingEvent, logstashEvent, metaFields);
-                assertFalse(newMdc.containsKey(metaFieldKey));
-                assertFalse(newMdc.containsKey(processedMetaFieldKey));
-                assertEquals(customFieldValue, newMdc.get(customFieldKey));
-
-                assertFalse(logstashEvent.containsKey(metaFieldKey));
-                assertFalse(logstashEvent.containsKey(customFieldKey));
-                assertEquals(metaFieldKeyValue, logstashEvent.getAsString(processedMetaFieldKey));
-                assertFalse(logstashEvent.containsKey(userFieldKey));
-                assertFalse(logstashEvent.containsKey(operationFieldKey));
-                assertFalse(logstashEvent.containsKey(resultFieldKey));
-
-                return newMdc;
-            }
-        };
+        Log4jJSONLayout layout = new Log4jJSONLayout();
         layout.setMetaFields(metaFields);
 
         String result = layout.format(event);
 
-        assertTrue(result.contains(processedMetaFieldKey));
+        // ------------------------------------------
+
+        JSONObject resultJson = JSONValue.parse(result, JSONObject.class);
+
+        assertFalse(resultJson.containsKey(metaFieldKey));
+        assertFalse(resultJson.containsKey(customFieldKey));
+        assertTrue(resultJson.containsKey(processedMetaFieldKey));
+        assertEquals(metaFieldKeyValue, resultJson.get(processedMetaFieldKey));
+
+        JSONObject customInfo = (JSONObject) resultJson.get(LayoutFields.CUSTOM_INFO);
+        assertFalse(customInfo.containsKey(metaFieldKey));
+        assertFalse(customInfo.containsKey(processedMetaFieldKey));
+        assertTrue(customInfo.containsKey(customFieldKey));
+        assertEquals(customFieldValue, customInfo.get(customFieldKey));
     }
 
     @Override

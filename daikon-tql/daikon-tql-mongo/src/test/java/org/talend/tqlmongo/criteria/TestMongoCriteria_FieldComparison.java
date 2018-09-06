@@ -10,42 +10,42 @@ import org.springframework.data.mongodb.core.query.Criteria;
 public class TestMongoCriteria_FieldComparison extends TestMongoCriteria_Abstract {
 
     @Test
-    public void testFieldEq() throws Exception {
+    public void testFieldEq() {
         Criteria criteria = doTest("field1 = field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").is("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testFieldNe() throws Exception {
+    public void testFieldNe() {
         Criteria criteria = doTest("field1 != field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").ne("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testFieldLt() throws Exception {
+    public void testFieldLt() {
         Criteria criteria = doTest("field1 < field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").lt("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testFieldGt() throws Exception {
+    public void testFieldGt() {
         Criteria criteria = doTest("field1 > field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").gt("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testFieldGte() throws Exception {
+    public void testFieldGte() {
         Criteria criteria = doTest("field1 >= field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").gte("field2");
         Assert.assertEquals(expectedCriteria, criteria);
     }
 
     @Test
-    public void testFieldLte() throws Exception {
+    public void testFieldLte() {
         Criteria criteria = doTest("field1 <= field(field2)");
         Criteria expectedCriteria = Criteria.where("field1").lte("field2");
         Assert.assertEquals(expectedCriteria, criteria);
