@@ -36,7 +36,8 @@
         <module>daikon-tql</module>
         <module>daikon-messages</module>
         <module>daikon-audit</module>
-      <module>daikon-i18n</module>
+      	<module>daikon-i18n</module>
+      	<module>daikon-signature-verifier</module>
     </modules>
     <scm>
       <connection>scm:git:https://github.com/Talend/daikon.git</connection>
