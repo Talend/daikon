@@ -46,6 +46,15 @@ public class JsonPropertiesListTest {
         Assert.assertEquals(expectedJson, jsonValue);
     }
 
+    @Test
+    public void testResolveJsonPropertiesListLegacy() throws Exception {
+        String jsonDataStr = JsonSchemaUtilTest.readJson("PropertiesListPropertiesLegacy.json");
+        TestComponentProperties properties = (TestComponentProperties) JsonSchemaUtil.fromJson(jsonDataStr,
+                new TestComponentProperties("compProperties").init());
+
+        FullExampleTestUtil.assertPropertiesValueAreEquals(createAndSetupTestProperties(), properties);
+    }
+
     private static TestComponentProperties createAndSetupTestProperties() {
         TestComponentProperties compProperties = new TestComponentProperties("compProperties");
         PropertiesList<TestProperties> propsList = compProperties.filters;

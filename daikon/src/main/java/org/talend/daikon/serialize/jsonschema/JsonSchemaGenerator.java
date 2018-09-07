@@ -73,8 +73,8 @@ public class JsonSchemaGenerator {
             // Override the title to always use the property display name.  This is necessary because PropertyList UI
             // representations use the title to describe the type of element it contains.
             schema.put(JsonSchemaConstants.TAG_TITLE, cProperties.getDisplayName());
-            schema.put(JsonSchemaConstants.TAG_MIN_ITEMS, ((PropertiesList<?>) cProperties).getMinItems());
-            schema.put(JsonSchemaConstants.TAG_MAX_ITEMS, ((PropertiesList<?>) cProperties).getMaxItems());
+            schema.put(JsonSchemaConstants.TAG_MIN_ITEMS, Integer.parseInt(((PropertiesList<?>) cProperties).getMinItems()));
+            schema.put(JsonSchemaConstants.TAG_MAX_ITEMS, Integer.parseInt(((PropertiesList<?>) cProperties).getMaxItems()));
             schema.put(JsonSchemaConstants.TAG_TYPE, JsonSchemaConstants.TYPE_ARRAY);
             // Generate items node
             ObjectNode itemsObjectNode = processTProperties(((PropertiesList<?>) cProperties).getDefaultProperties(), formName,
