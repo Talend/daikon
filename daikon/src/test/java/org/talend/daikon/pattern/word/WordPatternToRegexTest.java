@@ -36,8 +36,8 @@ public class WordPatternToRegexTest {
         assertMatches("a+b", WordPatternToRegex.toRegex("[char]+[char]", true));
         assertMatches("a*b", WordPatternToRegex.toRegex("[char]*[char]", true));
 
-        assertTrue("At least one of the characters [({^+*|\\.?$})] is not well escaped",
-                WordPatternToRegex.toRegex("[({^+*|\\.?$})]", true).equals("^\\[\\(\\{\\^\\+\\*\\|\\\\\\.\\?\\$\\}\\)\\]$"));
+        assertEquals("At least one of the characters [({^+*|\\.?$})] is not well escaped",
+                WordPatternToRegex.toRegex("[({^+*|\\.?$})]", true), "^\\[\\(\\{\\^\\+\\*\\|\\\\\\.\\?\\$\\}\\)\\]$");
     }
 
     @Test
@@ -468,8 +468,8 @@ public class WordPatternToRegexTest {
 
     @Test
     public void arabic() {
-        final String example = "اجيد البرمجة بلغة الجافا ."; // Note that we don't support arabic accents
-        final String pattern = "[word] [word] [word] [word] .";
+        final String example = "أجيد البرمجة بلغة جافا."; // Note that we don't support arabic accents
+        final String pattern = "[word] [word] [word] [word].";
 
         String regex = WordPatternToRegex.toRegex(pattern, false);
         assertMatches(example, regex);
