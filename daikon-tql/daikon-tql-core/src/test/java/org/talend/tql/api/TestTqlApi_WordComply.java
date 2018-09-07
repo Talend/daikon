@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.talend.tql.TestTqlParser_Abstract;
 import org.talend.tql.model.TqlElement;
 
-import static org.talend.tql.api.TqlBuilder.complies;
 import static org.talend.tql.api.TqlBuilder.wordComplies;
 
 public class TestTqlApi_WordComply extends TestTqlParser_Abstract {

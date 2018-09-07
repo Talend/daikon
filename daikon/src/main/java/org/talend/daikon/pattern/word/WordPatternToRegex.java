@@ -10,7 +10,11 @@ import static org.talend.daikon.pattern.word.WordPatternToRegexConstants.REGEX_E
  */
 public class WordPatternToRegex {
 
-    public String toRegex(String pattern, boolean caseSensitive) {
+    private WordPatternToRegex() {
+        // Do not instantiate
+    }
+
+    public static String toRegex(String pattern, boolean caseSensitive) {
         StringBuilder sb = new StringBuilder();
         sb.append("^");
         for (String current : splitPattern(pattern)) {
@@ -29,12 +33,12 @@ public class WordPatternToRegex {
 
     }
 
-    private String escapeCharacters(String current) {
+    private static String escapeCharacters(String current) {
         return current.replaceAll(REGEX_ESCAPE_PATTERN, "\\\\$0");
     }
 
-    private List<String> splitPattern(final String pattern) {
-        List<String> result = new ArrayList<>();
+    private static List<String> splitPattern(final String pattern) {
+        List result = new ArrayList<String>();
         if (pattern.startsWith("[")) {
             int closeBracket = pattern.indexOf(']');
             int openBracket = pattern.indexOf('[', 1);

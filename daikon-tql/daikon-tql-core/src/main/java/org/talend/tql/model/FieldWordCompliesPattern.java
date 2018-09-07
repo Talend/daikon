@@ -4,12 +4,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.talend.tql.visitor.IASTVisitor;
 
 /*
- * Tql expression for pattern compliance.
+ * Tql expression for word pattern compliance.
  */
 
-/**
- * Created by bguillon on 23/06/16.
- */
 public class FieldWordCompliesPattern implements Atom {
 
     private final TqlElement field;

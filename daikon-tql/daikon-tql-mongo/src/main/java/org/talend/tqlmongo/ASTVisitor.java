@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.util.StringUtils;
+import org.talend.daikon.pattern.word.WordPatternToRegex;
 import org.talend.tql.model.*;
 import org.talend.tql.visitor.IASTVisitor;
 import org.talend.tqlmongo.excp.TqlMongoException;
@@ -210,7 +211,7 @@ public class ASTVisitor implements IASTVisitor<Object> {
                 return Criteria.where(fieldName).is("");
             return Criteria.where(fieldName).ne("");
         }
-        String regex = this.wordPatternToMongoRegex(pattern);
+        String regex = WordPatternToRegex.toRegex(pattern, true);
         Pattern regexCompiled = Pattern.compile(regex);
         if (!isNegation)
             return Criteria.where(fieldName).regex(regexCompiled);
@@ -304,10 +305,6 @@ public class ASTVisitor implements IASTVisitor<Object> {
         }
         sb.append("$");
         return sb.toString();
-    }
-
-    protected String wordPatternToMongoRegex(String pattern) {
-        return null;
     }
 
 }

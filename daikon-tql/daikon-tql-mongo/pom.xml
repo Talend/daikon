@@ -18,6 +18,11 @@
         </dependency>
         <dependency>
             <groupId>org.talend.daikon</groupId>
+            <artifactId>daikon</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.talend.daikon</groupId>
             <artifactId>daikon-tql-core</artifactId>
             <version>${project.version}</version>
         </dependency>

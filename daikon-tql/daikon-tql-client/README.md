@@ -9,7 +9,7 @@ An Operator inherits from the `Operator` class (which implements the `ISerializa
 The following operators are supported :
 
 - `contains`
-- `cotainsIgnoreCase`
+- `containsIgnoreCase`
 - `complies`
 - `wordComplies`
 - `is empty`
