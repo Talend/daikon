@@ -382,6 +382,30 @@ public class BeanPredicateVisitorTest {
         query.accept(new BeanPredicateVisitor<>(Bean.class));
     }
 
+    @Test
+    public void testAccept_parseFieldCompliesPatternword() {
+        // given
+        final Expression query = Tql.parse("value wordComplies '[word]'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
+    @Test
+    public void testParseFieldNotCompliesPatternWord() {
+        // given
+        final Expression query = Tql.parse("value wordComplies '[Word]'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertFalse(predicate.test(bean));
+    }
+
     // Test class
     public static class Bean {
 

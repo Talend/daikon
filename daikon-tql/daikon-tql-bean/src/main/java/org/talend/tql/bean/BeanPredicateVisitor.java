@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.daikon.pattern.word.WordPatternToRegex;
 import org.talend.tql.model.*;
 import org.talend.tql.visitor.IASTVisitor;
 
@@ -128,8 +129,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     }
 
     private static boolean wordComplies(String value, String pattern) {
-        // To be implemented by DP.
-        return false;
+        return value != null && pattern != null && value.matches(WordPatternToRegex.toRegex(pattern, true));
     }
 
     private static <T> Predicate<T> unchecked(Predicate<T> predicate) {
