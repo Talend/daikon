@@ -6,6 +6,11 @@ const mapping = {
 		getValues: node => node.args.phrase,
 		getOptions: () => {},
 	},
+	contains_ignore_case: {
+		operator: 'containsIgnoreCase',
+		getValues: node => node.args.phrase,
+		getOptions: () => {},
+	},
 	exact: {
 		operator: 'equal',
 		getValues: node => node.args.phrase,
@@ -28,6 +33,11 @@ const mapping = {
 	},
 	matches: {
 		operator: 'complies',
+		getValues: node => node.args.patterns,
+		getOptions: () => {},
+	},
+	word_matches: {
+		operator: 'wordComplies',
 		getValues: node => node.args.patterns,
 		getOptions: () => {},
 	},

@@ -91,14 +91,25 @@ const mock = [
 		badgeClass: 'exact',
 		value: [{ value: 'Indonesia', label: 'Indonesia' }, { value: 'Russia', label: 'Russia' }],
 	},
+	{
+		type: 'word_matches',
+		colId: '0009',
+		colName: 'departement_birth',
+		editable: false,
+		args: { patterns: [{ value: '[alnum]/[number]/[number]' }] },
+		removeFilterFn: null,
+		badgeClass: 'word_matches',
+		value: [{ value: '[alnum]/[number]/[number]' }],
+	},
 ];
 
 describe('Parser', () => {
 	it('should parse a tree', () => {
 		const query = Parser.parse(mock);
 
-		expect(query.serialize()).toEqual(
-			"((0001 contains 'euge') or (0001 contains 'secondtestvalue')) and ((0000 between [342273, 542874[) or (0000 between [13456, 7891011])) and (* is invalid) and (* is valid) and (* is empty) and ((* is empty) or (* is invalid)) and ((0006 = 'Indonesia') or (0006 = 'Russia'))",
-		);
+		expect(query.serialize())
+			.toEqual(
+				'((0001 contains \'euge\') or (0001 contains \'secondtestvalue\')) and ((0000 between [342273, 542874[) or (0000 between [13456, 7891011])) and (* is invalid) and (* is valid) and (* is empty) and ((* is empty) or (* is invalid)) and ((0006 = \'Indonesia\') or (0006 = \'Russia\')) and ((0009 wordComplies \'[alnum]/[number]/[number]\'))',
+			);
 	});
 });

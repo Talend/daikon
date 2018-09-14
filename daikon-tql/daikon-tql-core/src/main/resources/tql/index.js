@@ -8,11 +8,13 @@ var parse = function(
     tql,
     onExactFilter,
     onContainsFilter,
+    onContainsIgnoreCaseFilter,
     onCompliesFilter,
     onBetweenFilter,
     onEmptyFilter,
     onValidFilter,
-    onInvalidFilter
+    onInvalidFilter,
+    onWordCompliesFilter
 ) {
     var chars = new antlr4.InputStream(tql);
     var lexer = new TqlLexer(chars);
@@ -28,7 +30,9 @@ var parse = function(
     listener.enterFieldIsValid = onValidFilter || noop;
     listener.enterFieldIsInvalid = onInvalidFilter || noop;
     listener.enterFieldContains = onContainsFilter || noop;
+    listener.enterFieldContainsIgnoreCase = onContainsIgnoreCaseFilter || noop;
     listener.enterFieldCompliesPattern = onCompliesFilter || noop;
+    listener.enterFieldWordCompliesPattern = onWordCompliesFilter || noop;
     listener.enterFieldBetween = onBetweenFilter || noop;
     listener.enterLiteralComparison = function(ctx) {
         if (ctx.children[1].getText() === "=" && onExactFilter) {
