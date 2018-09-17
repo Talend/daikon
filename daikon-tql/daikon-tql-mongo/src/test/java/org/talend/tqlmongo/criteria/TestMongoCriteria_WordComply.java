@@ -11,8 +11,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     @Test
     public void testParseFieldCompliesPattern1() {
         Criteria criteria = doTest("name wordComplies '[word]'");
-        Criteria expectedCriteria = Criteria.where("name").regex(
-                "^[\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{2,}$");
+        Criteria expectedCriteria = Criteria.where("name").regex("^[\\p{Ll}]{2,}$");
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
@@ -22,8 +21,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     @Test
     public void testParseFieldCompliesPattern2() {
         Criteria criteria = doTest("name wordComplies '[Word]'");
-        Criteria expectedCriteria = Criteria.where("name").regex(
-                "^\\p{Lu}[\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{1,}$");
+        Criteria expectedCriteria = Criteria.where("name").regex("^\\p{Lu}[\\p{Ll}]{1,}$");
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(2, records.size());
@@ -34,8 +32,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     @Test
     public void testParseFieldCompliesPattern3() {
         Criteria criteria = doTest("name wordComplies '[Word] [digit][word]'");
-        Criteria expectedCriteria = Criteria.where("name").regex(
-                "^\\p{Lu}[\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{1,} [\\p{Nd}][\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{2,}$");
+        Criteria expectedCriteria = Criteria.where("name").regex("^\\p{Lu}[\\p{Ll}]{1,} [\\p{Nd}][\\p{Ll}]{2,}$");
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
@@ -45,8 +42,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     @Test
     public void testParseFieldCompliesPattern4() {
         Criteria criteria = doTest("name wordComplies '[Word] [Word]'");
-        Criteria expectedCriteria = Criteria.where("name").regex(
-                "^\\p{Lu}[\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{1,} \\p{Lu}[\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{1,}$");
+        Criteria expectedCriteria = Criteria.where("name").regex("^\\p{Lu}[\\p{Ll}]{1,} \\p{Lu}[\\p{Ll}]{1,}$");
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());
@@ -55,8 +51,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     @Test
     public void testParseFieldCompliesPattern5() {
         Criteria criteria = doTest("name wordComplies '[Word]_[Number]'");
-        Criteria expectedCriteria = Criteria.where("name").regex(
-                "^\\p{Lu}[\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{1,}_\\[Number\\]$");
+        Criteria expectedCriteria = Criteria.where("name").regex("^\\p{Lu}[\\p{Ll}]{1,}_\\[Number\\]$");
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());
@@ -65,8 +60,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     @Test
     public void testParseFieldCompliesPattern6() {
         Criteria criteria = doTest("name wordComplies '][word]@'");
-        Criteria expectedCriteria = Criteria.where("name").regex(
-                "^\\][\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{2,}@$");
+        Criteria expectedCriteria = Criteria.where("name").regex("^\\][\\p{Ll}]{2,}@$");
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());
@@ -75,8 +69,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     @Test
     public void testParseFieldCompliesPattern7() {
         Criteria criteria = doTest("name wordComplies '[Word] [word] [Word]'");
-        Criteria expectedCriteria = Criteria.where("name").regex(
-                "^\\p{Lu}[\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{1,} [\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{2,} \\p{Lu}[\\p{L}&&[^\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}]&&[^\\p{Lu}]]{1,}$");
+        Criteria expectedCriteria = Criteria.where("name").regex("^\\p{Lu}[\\p{Ll}]{1,} [\\p{Ll}]{2,} \\p{Lu}[\\p{Ll}]{1,}$");
         Assert.assertEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());

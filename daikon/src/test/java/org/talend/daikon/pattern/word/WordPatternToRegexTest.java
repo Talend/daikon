@@ -18,7 +18,7 @@ public class WordPatternToRegexTest {
         String regex = WordPatternToRegex.toRegex(pattern, false);
         assertMatches("a", regex);
         assertMatches("b", regex);
-        assertMatches("こ", regex);
+        assertNoMatches("こ", regex);
         assertNoMatches("0", regex);
         assertNoMatches("袁", regex);
         assertNoMatches("a b", regex);
@@ -392,7 +392,7 @@ public class WordPatternToRegexTest {
     @Test
     public void japaneseAlphanumeric() {
         final String example = "こんにちは123";
-        final String pattern = "[alnum]";
+        final String pattern = "こんにちは[alnum]";
 
         testCaseInsensitivePattern(example, pattern);
     }
@@ -400,38 +400,12 @@ public class WordPatternToRegexTest {
     @Test
     public void japaneseWord() {
         final String example = "こんにちは";
-        final String pattern = "[word]";
+        final String pattern = "こんにちは";
 
-        System.out.println(Character.isIdeographic('ㅃ'));
         String regex = WordPatternToRegex.toRegex(pattern, false);
         assertMatches(example, regex);
 
         String regexCase = WordPatternToRegex.toRegex(pattern, true);
-        assertMatches(example, regexCase);
-    }
-
-    @Test
-    public void japaneseNoCase() {
-        final String example = "こんにちは123 こんにちは？你好/Hello!";
-        final String patternNoCase = "[alnum] [word]？[IdeogramSeq]/[word]!";
-
-        String regex = WordPatternToRegex.toRegex(patternNoCase, false);
-        assertMatches(example, regex);
-
-        String regexCase = WordPatternToRegex.toRegex(patternNoCase, true);
-        assertNoMatches(example, regexCase);
-    }
-
-    @Test
-    public void japaneseCase() {
-        final String example = "こんにちは123 こんにちは？你好/Hello!";
-        final String patternCase = "[word][number] [word]？[IdeogramSeq]/[Word]!";
-        assertCaseInsensitiveRegexMatche(example, patternCase);
-
-        String regex = WordPatternToRegex.toRegex(patternCase, false);
-        assertMatches(example, regex);
-
-        String regexCase = WordPatternToRegex.toRegex(patternCase, true);
         assertMatches(example, regexCase);
     }
 
@@ -464,137 +438,6 @@ public class WordPatternToRegexTest {
         testCaseInsensitivePattern("𠀐𠀑我𠀒𠀓", "[IdeogramSeq]");
         testCaseInsensitivePattern("𠀐12//𠀑我?𠀑", "[alnum(CJK)]//[IdeogramSeq]?[Ideogram]");
         testCaseInsensitivePattern("𠀐12//𠀑我?𠀑", "[Ideogram][number]//[IdeogramSeq]?[Ideogram]");
-    }
-
-    @Test
-    public void arabic() {
-        final String example = "أجيد البرمجة بلغة جافا."; // Note that we don't support arabic accents
-        final String pattern = "[word] [word] [word] [word].";
-
-        String regex = WordPatternToRegex.toRegex(pattern, false);
-        assertMatches(example, regex);
-
-        String regexCase = WordPatternToRegex.toRegex(pattern, true);
-        assertMatches(example, regexCase);
-    }
-
-    @Test
-    public void ancientGreekWordInsensitive() {
-        final String pattern = "[Word]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, false);
-
-        assertMatches("Ἰοὺ", regex);
-        assertMatches("ἰοὺ", regex);
-        assertMatches("ἸΟῪ", regex);
-    }
-
-    @Test
-    public void ancientGreekLowerWordInsensitive() {
-        final String pattern = "[word]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, false);
-
-        assertMatches("Ἰοὺ", regex);
-        assertMatches("ἰοὺ", regex);
-        assertMatches("ἸΟῪ", regex);
-        assertMatches("πάντʼ", regex);
-    }
-
-    @Test
-    public void ancientGreekLowerWord() {
-        final String pattern = "[word]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, true);
-
-        assertNoMatches("Ἰοὺ", regex);
-        assertMatches("ἰοὺ", regex);
-        assertNoMatches("ἸΟῪ", regex);
-        assertMatches("πάντʼ", regex);
-    }
-
-    @Test
-    public void ancientGreekUpperWordInsensitive() {
-        final String pattern = "[WORD]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, false);
-
-        assertMatches("Ἰοὺ", regex);
-        assertMatches("ἰοὺ", regex);
-        assertMatches("ἸΟῪ", regex);
-        assertMatches("πάντʼ", regex);
-    }
-
-    @Test
-    public void ancientGreekUpperWord() {
-        final String pattern = "[WORD]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, true);
-
-        assertNoMatches("Ἰοὺ", regex);
-        assertNoMatches("ἰοὺ", regex);
-        assertMatches("ἸΟῪ", regex);
-        assertNoMatches("πάντʼ", regex);
-    }
-
-    @Test
-    public void ancientGreekChar() {
-        final String pattern = "[char]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, true);
-
-        assertMatches("ʼ", regex);
-        assertMatches("ἰ", regex);
-        assertNoMatches("Ἰ", regex);
-    }
-
-    @Test
-    public void ancientGreekCharInsensitive() {
-        final String pattern = "[char]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, false);
-
-        assertMatches("ʼ", regex);
-        assertMatches("ἰ", regex);
-        assertMatches("Ἰ", regex);
-    }
-
-    @Test
-    public void ancientGreekUpperChar() {
-        final String pattern = "[Char]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, true);
-
-        assertNoMatches("ἰ", regex);
-        assertMatches("Ἰ", regex);
-        assertMatches("Ὦ", regex);
-    }
-
-    @Test
-    public void ancientGreekUpperCharInsensitive() {
-        final String pattern = "[Char]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, false);
-
-        assertMatches("ʼ", regex);
-        assertMatches("ἰ", regex);
-        assertMatches("Ἰ", regex);
-        assertMatches("Ὦ", regex);
-    }
-
-    @Test
-    public void ancientGreek() {
-        final String example = "Ἰοὺ ἰού· τὰ πάντʼ ἂν ἐξήκοι σαφῆ.Ὦ φῶς, τελευταῖόν σε προσϐλέψαιμι νῦν,ὅστις πέφασμαι φύς τʼ ἀφʼ ὧν οὐ χρῆν, ξὺν οἷς τʼοὐ χρῆν ὁμιλῶν, οὕς τέ μʼ οὐκ ἔδει κτανών.";
-        final String pattern = "[Word] [word]· [word] [word] [word] [word] [word].[Char] [word], [word] [word] [word] [word],[word] [word] [word] [word] [word] [word] [word] [word], [word] [word] [word] [word] [word], [word] [word] [word] [word] [word] [word].";
-
-        String regex = WordPatternToRegex.toRegex(pattern, false);
-
-        assertMatches(example, regex);
-    }
-
-    private void assertCaseInsensitiveRegexMatche(String example, String pattern) {
-        String regex = WordPatternToRegex.toRegex(pattern, false);
-        assertTrue(Pattern.compile(regex).matcher(example).matches());
     }
 
     private void assertMatches(String example, String regex) {

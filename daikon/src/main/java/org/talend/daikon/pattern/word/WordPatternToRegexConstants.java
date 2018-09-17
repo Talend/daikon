@@ -5,19 +5,16 @@ public class WordPatternToRegexConstants {
     // Iso to Character.isDigit
     public static final String DIGIT = "\\p{Nd}";
 
-    // Iso to Character.isLetter
-    public static final String LETTER = "\\p{L}";
+    // almost iso to Character.isIdeographic
+    public static final String IDEOGRAM = "\\p{script=Han}";
 
-    // Iso to Character.isIdeographic
-    public static final String IDEOGRAM = "\\p{InHangul_Jamo}|\\p{InHangul_Compatibility_Jamo}|\\p{InHangul_Syllables}|\\p{script=Han}";
-
-    public static final String CHAR = WordPatternToRegexConstants.LETTER + "&&[^" + IDEOGRAM + "]"; // Except ideograms
-
-    // Iso to Character.isUpperCase
+    // Iso to Character.getType(codePoint) == Character.UPPERCASE_LETTER
     public static final String UPPER_CHAR = "\\p{Lu}";
 
-    public static final String LOWER_CHAR = CHAR + "&&[^" // Except uppers because only lower won't contain insensitive letters
-            + WordPatternToRegexConstants.UPPER_CHAR + "]";
+    // Iso to Character.getType(codePoint) == Character.LOWERCASE_LETTER
+    public static final String LOWER_CHAR = "\\p{Ll}";
+
+    public static final String CHAR = WordPatternToRegexConstants.UPPER_CHAR + WordPatternToRegexConstants.LOWER_CHAR;
 
     public static final String REGEX_ESCAPE_PATTERN = "[\\.\\^\\$\\*\\+\\?\\(\\)\\[\\]\\{\\}\\\\\\|]";
 
