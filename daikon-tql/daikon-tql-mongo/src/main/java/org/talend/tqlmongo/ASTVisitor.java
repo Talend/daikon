@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.util.StringUtils;
 import org.talend.daikon.pattern.word.WordPatternToRegex;
@@ -212,10 +214,20 @@ public class ASTVisitor implements IASTVisitor<Object> {
             return Criteria.where(fieldName).ne("");
         }
         String regex = WordPatternToRegex.toRegex(pattern, true);
-        Pattern regexCompiled = Pattern.compile(regex);
-        if (!isNegation)
-            return Criteria.where(fieldName).regex(regexCompiled);
-        return Criteria.where(fieldName).not().regex(regexCompiled);
+        return getRegexpForWordPattern(fieldName, regex, isNegation);
+    }
+
+    private Criteria getRegexpForWordPattern(String fieldName, String regex, boolean isWithNegation) {
+        return new Criteria() {
+
+            @Override
+            public DBObject getCriteriaObject() {
+                DBObject regexObject = new BasicDBObject("$regex", regex.replaceAll("script=Han", "Han"));
+                if (!isWithNegation)
+                    return new BasicDBObject(fieldName, regexObject);
+                return new BasicDBObject(fieldName, new BasicDBObject("$not", regexObject));
+            }
+        };
     }
 
     @Override
