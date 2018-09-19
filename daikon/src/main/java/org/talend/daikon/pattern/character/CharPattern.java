@@ -38,10 +38,10 @@ public enum CharPattern {
     private String pattern;
 
     // Useful for quick contain
-    private Set<Integer> codePointSet;
+    private Set<Integer> codePointSet = new HashSet<>();
 
     // Useful for quick get
-    private List<Integer> codePointList;
+    private List<Integer> codePointList = new ArrayList<>();
 
     private static final Map<Character, CharPattern> lookup = new HashMap<>();
 
@@ -62,9 +62,6 @@ public enum CharPattern {
     }
 
     private void buildCharacters(String pattern) {
-        codePointSet = new HashSet<>();
-        codePointList = new ArrayList<>();
-
         for (String subPattern : pattern.substring(1, pattern.length() - 1).split("\\|")) {
             if (isInterval(subPattern)) {
                 String[] startEnd = subPattern.split("-");

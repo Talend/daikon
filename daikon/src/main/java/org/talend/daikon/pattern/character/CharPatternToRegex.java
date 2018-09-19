@@ -9,7 +9,6 @@ public class CharPatternToRegex {
     }
 
     public static String toRegex(String pattern) {
-
         StringBuilder stringBuilder = new StringBuilder("^");
         for (int pos = 0; pos < pattern.length(); pos++) {
             int codePoint = pattern.codePointAt(pos);
