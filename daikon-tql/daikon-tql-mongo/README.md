@@ -4,9 +4,10 @@
 
 Provided a TQL filter, this module computes a mongodb compliant Criteria.
 
-It implements the [IASTVisitor](../daikon-tql-core/src/main/java/org/talend/tql/visitor/IASTVisitor.java) interface from the [daikon-tql-core](../daikon-tql-core)  module.
+The principle is to parse the AST generated from the TQL, using the [ASTVisitor](/src/main/java/org/talend/tqlmongo/ASTVisitor.java)
+which implements the [IASTVisitor](../daikon-tql-core/src/main/java/org/talend/tql/visitor/IASTVisitor.java) interface from the [daikon-tql-core](../daikon-tql-core)  module.
 
-You can also extend its implementation for more specifc needs.
+You can also extend this implementation for more specifc needs.
 
 ## Limitations
 
