@@ -160,6 +160,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
 
     private Criteria getExpectedCriteria(String field, String regex, boolean negation) {
         return new Criteria() {
+
             @Override
             public DBObject getCriteriaObject() {
                 if (!negation)
