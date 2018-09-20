@@ -15,48 +15,48 @@ package org.talend.logging.audit;
  */
 public interface StandardEventAuditLogger extends EventAuditLogger {
 
-    @AuditEvent(category = "security", message = "User has logged in successfully")
+    @AuditEvent(category = "security", message = "User has logged in successfully.")
     void loginSuccess(Object... args);
 
-    @AuditEvent(category = "security", message = "User login attempt failed")
+    @AuditEvent(category = "security", message = "User login attempt failed.")
     void loginFail(Object... args);
 
-    @AuditEvent(category = "security", message = "User has been locked out")
+    @AuditEvent(category = "security", message = "User has been locked out.")
     void userLockout(Object... args);
 
-    @AuditEvent(category = "security", message = "User has been created")
+    @AuditEvent(category = "security", message = "User has been created.")
     void userCreated(Object... args);
 
-    @AuditEvent(category = "security", message = "User has been modified")
+    @AuditEvent(category = "security", message = "User has been modified.")
     void userModified(Object... args);
 
-    @AuditEvent(category = "security", message = "User has been deleted")
+    @AuditEvent(category = "security", message = "User has been deleted.")
     void userDeleted(Object... args);
 
-    @AuditEvent(category = "security", message = "User password has been changed")
+    @AuditEvent(category = "security", message = "User password has been changed.")
     void passwordChanged(Object... args);
 
-    @AuditEvent(category = "security", message = "User password has been reset")
+    @AuditEvent(category = "security", message = "User password has been reset.")
     void passwordReset(Object... args);
 
-    @AuditEvent(category = "security", message = "Role has been created")
+    @AuditEvent(category = "security", message = "Role has been created.")
     void roleCreated(Object... args);
 
-    @AuditEvent(category = "security", message = "Role has been deleted")
+    @AuditEvent(category = "security", message = "Role has been deleted.")
     void roleDeleted(Object... args);
 
-    @AuditEvent(category = "security", message = "Role has been assigned to user")
+    @AuditEvent(category = "security", message = "Role has been assigned to user.")
     void roleAssigned(Object... args);
 
-    @AuditEvent(category = "security", message = "Role has been revoked from user")
+    @AuditEvent(category = "security", message = "Role has been revoked from user.")
     void roleRevoked(Object... args);
 
-    @AuditEvent(category = "security", message = "Invalid user input")
+    @AuditEvent(category = "security", message = "Invalid user input.")
     void invalidInput(Object... args);
 
-    @AuditEvent(category = "security", message = "Invalid session")
+    @AuditEvent(category = "security", message = "Invalid session.")
     void invalidSession(Object... args);
 
-    @AuditEvent(category = "failure", message = "Unexpected exception")
+    @AuditEvent(category = "failure", message = "Unexpected exception.")
     void systemException(Throwable throwable, Object... args);
 }
