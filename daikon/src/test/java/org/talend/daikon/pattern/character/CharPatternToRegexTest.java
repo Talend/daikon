@@ -1,7 +1,11 @@
 package org.talend.daikon.pattern.character;
 
+import org.junit.Assert;
 import org.junit.Test;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +53,13 @@ public class CharPatternToRegexTest {
         assertNoMatches("袁", regex);
         assertNoMatches("a b", regex);
 
+        String jsRegex = CharPatternToRegex.toJavaScriptRegex(pattern);
+        assertJavaScriptMatches("a", jsRegex);
+        assertJavaScriptMatches("b", jsRegex);
+        assertJavaScriptNoMatches("こ", jsRegex);
+        assertJavaScriptNoMatches("0", jsRegex);
+        assertJavaScriptNoMatches("袁", jsRegex);
+        assertJavaScriptNoMatches("a b", jsRegex);
     }
 
     @Test
@@ -60,12 +71,22 @@ public class CharPatternToRegexTest {
         assertNoMatches("b", regex);
         assertNoMatches("0", regex);
         assertNoMatches("A B", regex);
+
+        String jsRegexegex = CharPatternToRegex.toJavaScriptRegex(pattern);
+        assertJavaScriptMatches("A", jsRegexegex);
+        assertJavaScriptMatches("B", jsRegexegex);
+        assertJavaScriptNoMatches("b", jsRegexegex);
+        assertJavaScriptNoMatches("0", jsRegexegex);
+        assertJavaScriptNoMatches("A B", jsRegexegex);
     }
 
     @Test
     public void mixedLatin() {
         assertMatches("D d", CharPatternToRegex.toRegex("A a"));
         assertMatches("aBcDeFgHiJkL", CharPatternToRegex.toRegex("aAaAaAaAaAaA"));
+
+        assertJavaScriptMatches("D d", CharPatternToRegex.toJavaScriptRegex("A a"));
+        assertJavaScriptMatches("aBcDeFgHiJkL", CharPatternToRegex.toJavaScriptRegex("aAaAaAaAaAaA"));
     }
 
     @Test
@@ -73,17 +94,24 @@ public class CharPatternToRegexTest {
         final String pattern = "[...";
         String regex = CharPatternToRegex.toRegex(pattern);
         assertMatches("[...", regex);
+        String jsRegexegex = CharPatternToRegex.toJavaScriptRegex(pattern);
+        assertJavaScriptMatches("[...", jsRegexegex);
     }
 
     @Test
     public void number() {
         assertMatches("123", CharPatternToRegex.toRegex("999"));
         assertMatches("1 2;3", CharPatternToRegex.toRegex("9 9;9"));
+
+        assertJavaScriptMatches("123", CharPatternToRegex.toJavaScriptRegex("999"));
+        assertJavaScriptMatches("1 2;3", CharPatternToRegex.toJavaScriptRegex("9 9;9"));
+
     }
 
     @Test
     public void email() {
         assertMatches("toto@talend.com", CharPatternToRegex.toRegex("aaaa@aaaaaa.aaa"));
+        assertJavaScriptMatches("toto@talend.com", CharPatternToRegex.toJavaScriptRegex("aaaa@aaaaaa.aaa"));
     }
 
     @Test
@@ -97,6 +125,15 @@ public class CharPatternToRegexTest {
         assertNoMatches(".aaa", regex);
         assertNoMatches("a袁", regex);
         assertNoMatches("ac袁", regex);
+
+        String jsRegex = CharPatternToRegex.toJavaScriptRegex(pattern);
+        assertJavaScriptMatches("袁", jsRegex);
+        assertJavaScriptMatches("蘭", jsRegex);
+        assertJavaScriptNoMatches("9", jsRegex);
+        assertJavaScriptNoMatches("a", jsRegex);
+        assertJavaScriptNoMatches(".aaa", jsRegex);
+        assertJavaScriptNoMatches("a袁", jsRegex);
+        assertJavaScriptNoMatches("ac袁", jsRegex);
     }
 
     @Test
@@ -105,6 +142,11 @@ public class CharPatternToRegexTest {
         assertNoMatches("괛괜괝괞괟", CharPatternToRegex.toRegex("aaaaa"));
         assertNoMatches("괛괜괝괞괟", CharPatternToRegex.toRegex("AAAAA"));
         assertNoMatches("괛괜괝괞괟", CharPatternToRegex.toRegex("CCCCC"));
+
+        assertJavaScriptMatches("괛괜괝괞괟", CharPatternToRegex.toJavaScriptRegex("GGGGG"));
+        assertJavaScriptNoMatches("괛괜괝괞괟", CharPatternToRegex.toJavaScriptRegex("aaaaa"));
+        assertJavaScriptNoMatches("괛괜괝괞괟", CharPatternToRegex.toJavaScriptRegex("AAAAA"));
+        assertJavaScriptNoMatches("괛괜괝괞괟", CharPatternToRegex.toJavaScriptRegex("CCCCC"));
     }
 
     @Test
@@ -112,6 +154,10 @@ public class CharPatternToRegexTest {
         assertMatches("こんにちは", CharPatternToRegex.toRegex("HHHHH"));
         assertMatches("っゃゅょゎ", CharPatternToRegex.toRegex("hhhhh"));
         assertMatches("ぁあいぃうえ", CharPatternToRegex.toRegex("hHHhHH"));
+
+        assertJavaScriptMatches("こんにちは", CharPatternToRegex.toJavaScriptRegex("HHHHH"));
+        assertJavaScriptMatches("っゃゅょゎ", CharPatternToRegex.toJavaScriptRegex("hhhhh"));
+        assertJavaScriptMatches("ぁあいぃうえ", CharPatternToRegex.toJavaScriptRegex("hHHhHH"));
     }
 
     @Test
@@ -119,11 +165,17 @@ public class CharPatternToRegexTest {
         assertMatches("ㇾㇿｧｨｩ", CharPatternToRegex.toRegex("kkkkk"));
         assertMatches("モヤユ", CharPatternToRegex.toRegex("KKK"));
         assertMatches("モヤユㇿｧ", CharPatternToRegex.toRegex("KKKkk"));
+
+        assertJavaScriptMatches("ㇾㇿｧｨｩ", CharPatternToRegex.toJavaScriptRegex("kkkkk"));
+        assertJavaScriptMatches("モヤユ", CharPatternToRegex.toJavaScriptRegex("KKK"));
+        assertJavaScriptMatches("モヤユㇿｧ", CharPatternToRegex.toJavaScriptRegex("KKKkk"));
     }
 
     @Test
     public void mixedAll() {
         assertMatches("0aAぁあァア一가", CharPatternToRegex.toRegex("9aAhHkKCG"));
+
+        assertJavaScriptMatches("0aAぁあァア一가", CharPatternToRegex.toJavaScriptRegex("9aAhHkKCG"));
     }
 
     @Test
@@ -131,6 +183,10 @@ public class CharPatternToRegexTest {
         assertMatches("0123456789０１２３４５６７８９", CharPatternToRegex.toRegex("99999999999999999999"));
         assertMatches("ＶＷＸＹＺVWXYZ", CharPatternToRegex.toRegex("AAAAAAAAAA"));
         assertMatches("ａｂｃｄｅabcde", CharPatternToRegex.toRegex("aaaaaaaaaa"));
+
+        assertJavaScriptMatches("0123456789０１２３４５６７８９", CharPatternToRegex.toJavaScriptRegex("99999999999999999999"));
+        assertJavaScriptMatches("ＶＷＸＹＺVWXYZ", CharPatternToRegex.toJavaScriptRegex("AAAAAAAAAA"));
+        assertJavaScriptMatches("ａｂｃｄｅabcde", CharPatternToRegex.toJavaScriptRegex("aaaaaaaaaa"));
     }
 
     @Test
