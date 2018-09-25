@@ -10,51 +10,71 @@ public class CharPatternToRegex {
 
     public static String toRegex(String pattern) {
         StringBuilder stringBuilder = new StringBuilder("^");
-        for (int pos = 0; pos < pattern.length(); pos++) {
+        int pos = 0;
+        while (pos < pattern.length()) {
             int codePoint = pattern.codePointAt(pos);
+            int consecutiveValues = getConsecutiveCodepoints(codePoint, pattern, pos + 1);
             switch (codePoint) {
             case 'h':
-                stringBuilder.append(CharPatternToRegexConstants.LOWER_HIRAGANA);
+                buildString(stringBuilder, CharPatternToRegexConstants.LOWER_HIRAGANA, consecutiveValues);
                 break;
             case 'H':
-                stringBuilder.append(CharPatternToRegexConstants.UPPER_HIRAGANA);
+                buildString(stringBuilder, CharPatternToRegexConstants.UPPER_HIRAGANA, consecutiveValues);
                 break;
             case 'k':
-                stringBuilder.append(CharPatternToRegexConstants.LOWER_KATAKANA);
+                buildString(stringBuilder, CharPatternToRegexConstants.LOWER_KATAKANA, consecutiveValues);
                 break;
             case 'K':
-                stringBuilder.append(CharPatternToRegexConstants.UPPER_KATAKANA);
+                buildString(stringBuilder, CharPatternToRegexConstants.UPPER_KATAKANA, consecutiveValues);
                 break;
             case 'C':
-                stringBuilder.append(CharPatternToRegexConstants.KANJI);
+                buildString(stringBuilder, CharPatternToRegexConstants.KANJI, consecutiveValues);
                 break;
             case 'G':
-                stringBuilder.append(CharPatternToRegexConstants.HANGUL);
+                buildString(stringBuilder, CharPatternToRegexConstants.HANGUL, consecutiveValues);
                 break;
             case 'a':
                 String regexa = buildRegex(CharPatternToRegexConstants.LOWER_LATIN,
                         CharPatternToRegexConstants.FULLWIDTH_LOWER_LATIN);
-                stringBuilder.append(regexa);
+                buildString(stringBuilder, regexa, consecutiveValues);
                 break;
             case 'A':
                 String regexA = buildRegex(CharPatternToRegexConstants.UPPER_LATIN,
                         CharPatternToRegexConstants.FULLWIDTH_UPPER_LATIN);
-                stringBuilder.append(regexA);
+                buildString(stringBuilder, regexA, consecutiveValues);
                 break;
             case '9':
                 String regex9 = buildRegex(CharPatternToRegexConstants.DIGIT, CharPatternToRegexConstants.FULLWIDTH_DIGIT);
-                stringBuilder.append(regex9);
+                buildString(stringBuilder, regex9, consecutiveValues);
                 break;
             default:
-                String notRecognized = String.valueOf(Character.toChars(codePoint));
-                stringBuilder.append(escapeCharacters(notRecognized));
+                String notRecognized = escapeCharacters(String.valueOf(Character.toChars(codePoint)));
+                buildString(stringBuilder, notRecognized, consecutiveValues);
                 break;
             }
-            if (Character.isSurrogate(pattern.charAt(pos)))
-                pos++;
+            pos += consecutiveValues;
         }
         stringBuilder.append("$");
         return stringBuilder.toString();
+    }
+
+    private static void buildString(StringBuilder stringBuilder, String regex, int consecutiveValues) {
+        if (consecutiveValues == 1)
+            stringBuilder.append(regex);
+        else
+            stringBuilder.append(regex + "{" + consecutiveValues + "}");
+    }
+
+    private static int getConsecutiveCodepoints(int codePoint, String pattern, int currentPos) {
+        int lastPos = currentPos;
+        while (lastPos < pattern.length() && pattern.codePointAt(lastPos) == codePoint) {
+            if (Character.isSurrogate(pattern.charAt(lastPos)))
+                lastPos += 2;
+            else
+                lastPos++;
+
+        }
+        return (lastPos - currentPos + 1);
     }
 
     // Utils to remove middle parenthesis of regexes
