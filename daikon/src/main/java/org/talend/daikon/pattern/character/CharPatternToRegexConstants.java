@@ -1,6 +1,6 @@
 package org.talend.daikon.pattern.character;
 
-enum CharPatternToRegexConstants {
+public enum CharPatternToRegexConstants {
 
     DIGIT("([\\x{30}-\\x{39}])", "([\\u0030-\\u0039])"),
 
@@ -27,7 +27,6 @@ enum CharPatternToRegexConstants {
             "(\\x{30A1}|\\x{30A3}|\\x{30A5}|\\x{30A7}|\\x{30A9}|\\x{30C3}|\\x{30E3}|\\x{30E5}|\\x{30E7}|\\x{30EE}|\\x{30F5}|\\x{30F6}" // FullWidth
                     + "|[\\x{31F0}-\\x{31FF}]" // Phonetic extension
                     + "|[\\x{FF67}-\\x{FF6F}])", // HalfWidth
-
             "([\\u30A1\\u30A3\\u30A5\\u30A7\\u30A9\\u30C3\\u30E3\\u30E5\\u30E7\\u30EE\\u30F5\\u30F6\\u31F0-\\u31FF\\uFF67-\\uFF6F])"),
 
     UPPER_KATAKANA(
@@ -46,21 +45,18 @@ enum CharPatternToRegexConstants {
             "|[\\x{2F00}-\\x{2FD5}]" + // KangXi Radicals
             "|[\\x{2E80}-\\x{2E99}]|[\\x{2E9B}-\\x{2EF3}]" + // Radical Supplement
             "|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}]" + // Symbol and punctuation added for TDQ-11343
-            ")", "([\\u4E00-\\u9FEF]|[\\u3400-\\u4DB5]" + "|[\\ud840-\\ud868][\\udc00-\\udfff]|\\ud869[\\udc00-\\uded6]" + // Extension B
-                    "|[\\ud86a-\\ud86c][\\udc00-\\udfff]|\\ud869[\\udf00-\\udfff]|\\ud86d[\\udc00-\\udf34]" + // Extension
-                    // C
+            ")", "([\\u4E00-\\u9FEF]" + "|[\\u3400-\\u4DB5]" + "|[\\ud840-\\ud868][\\udc00-\\udfff]|\\ud869[\\udc00-\\uded6]" + // Extension B
+                    "|[\\ud86a-\\ud86c][\\udc00-\\udfff]|\\ud869[\\udf00-\\udfff]|\\ud86d[\\udc00-\\udf34]" + // Extension C
                     "|\\ud86d[\\udf40-\\udfff]|\\ud86e[\\udc00-\\udc1d]" + // Extension D
-                    "|[\\ud86f-\\ud872][\\udc00-\\udfff]|\\ud86e[\\udc20-\\udfff]|\\ud873[\\udc00-\\udea1]" + // Extension
-                    // E
-                    "|[\\ud874-\\ud879][\\udc00-\\udfff]|\\ud873[\\udeb0-\\udfff]|\\ud87a[\\udc00-\\udfe0]" + // Extension
-                    // F
+                    "|[\\ud86f-\\ud872][\\udc00-\\udfff]|\\ud86e[\\udc20-\\udfff]|\\ud873[\\udc00-\\udea1]" + // Extension E
+                    "|[\\ud874-\\ud879][\\udc00-\\udfff]|\\ud873[\\udeb0-\\udfff]|\\ud87a[\\udc00-\\udfe0]" + // Extension F
                     "|[\\uF900-\\uFA6D]|[\\uFA70-\\uFAD9]" + // Compatibility Ideograph
                     "|\\ud87e[\\udc00-\\ude1d]" + // Compatibility Ideograph Supplement
                     "|[\\u2F00}-\\u2FD5]" + // KangXi Radicals
                     "|[\\u2E80}-\\u2E99]|[\\u2E9B-\\u2EF3]" + // Radical Supplement
-                    "|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B]" + // Symbol and punctuation added for
-                    // TDQ-11343
+                    "|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B]" + // Symbol and punctuation added for TDQ-11343
                     ")"),
+
     HANGUL("([\\x{AC00}-\\x{D7AF}])", "([\\uAC00-\\uD7AF])");
 
     private String regex;

@@ -59,7 +59,6 @@ public enum CharPattern {
         replaceChar = replace;
         this.pattern = pattern;
         buildCharacters(pattern.getRegex());
-        buildCharacters(pattern.getJavaScriptRegex());
     }
 
     private void buildCharacters(String pattern) {
