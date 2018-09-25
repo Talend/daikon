@@ -1,6 +1,5 @@
 package org.talend.daikon.pattern.character;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.script.ScriptEngine;
@@ -47,10 +46,10 @@ public class CharPatternToRegexTest {
 
     @Test
     public void checkJavaScriptRegexes() {
-        Assert.assertEquals("^([\\u0030-\\u0039]|[\\uFF10-\\uFF19]){4}$", CharPatternToRegex.toJavaScriptRegex("9999"));
-        Assert.assertEquals("^([\\u0041-\\u005A\\u00C0-\\u00D6\\u00D8-\\u00DE]|[\\uFF21-\\uFF3A]){2}$",
+        assertEquals("^([\\u0030-\\u0039]|[\\uFF10-\\uFF19]){4}$", CharPatternToRegex.toJavaScriptRegex("9999"));
+        assertEquals("^([\\u0041-\\u005A\\u00C0-\\u00D6\\u00D8-\\u00DE]|[\\uFF21-\\uFF3A]){2}$",
                 CharPatternToRegex.toJavaScriptRegex("AA"));
-        Assert.assertEquals("^([\\u3041\\u3043\\u3045\\u3047\\u3049\\u3063\\u3083\\u3085\\u3087\\u308E\\u3095\\u3096])$",
+        assertEquals("^([\\u3041\\u3043\\u3045\\u3047\\u3049\\u3063\\u3083\\u3085\\u3087\\u308E\\u3095\\u3096])$",
                 CharPatternToRegex.toJavaScriptRegex("h"));
         assertEquals(
                 "^([\\u3042\\u3044\\u3046\\u3048\\u304A-\\u3062\\u3064-\\u3082\\u3084\\u3086\\u3088-\\u308D\\u308F-\\u3094]){3}$",
@@ -228,7 +227,7 @@ public class CharPatternToRegexTest {
         assertMatches("a]b", CharPatternToRegex.toRegex("a]a"));
         assertMatches("a+b", CharPatternToRegex.toRegex("a+a"));
         assertMatches("a*b", CharPatternToRegex.toRegex("a*a"));
-        Assert.assertEquals("At least one of the characters [({^+*|\\.?$})] is not well escaped",
+        assertEquals("At least one of the characters [({^+*|\\.?$})] is not well escaped",
                 "^\\[\\(\\{\\^\\+\\*\\|\\\\\\.\\?\\$\\}\\)\\]$", CharPatternToRegex.toRegex("[({^+*|\\.?$})]"));
 
         assertJavaScriptMatches("a b", CharPatternToRegex.toJavaScriptRegex("a a"));
@@ -239,7 +238,7 @@ public class CharPatternToRegexTest {
         assertJavaScriptMatches("a]b", CharPatternToRegex.toJavaScriptRegex("a]a"));
         assertJavaScriptMatches("a+b", CharPatternToRegex.toJavaScriptRegex("a+a"));
         assertJavaScriptMatches("a*b", CharPatternToRegex.toJavaScriptRegex("a*a"));
-        Assert.assertEquals("At least one of the characters [({^+*|\\.?$})] is not well escaped",
+        assertEquals("At least one of the characters [({^+*|\\.?$})] is not well escaped",
                 "^\\[\\(\\{\\^\\+\\*\\|\\\\\\.\\?\\$\\}\\)\\]$", CharPatternToRegex.toJavaScriptRegex("[({^+*|\\.?$})]"));
     }
 
@@ -270,7 +269,7 @@ public class CharPatternToRegexTest {
             engine.put("string", example);
             engine.eval("var rg = new RegExp(regEx);");
             boolean result = (boolean) engine.eval("rg.test(string);"); // test function
-            Assert.assertEquals(expectedResult, result);
+            assertEquals(expectedResult, result);
         } catch (ScriptException e) {
             throw new IllegalArgumentException("Invalid regex for JavaScript: " + regex);
         }
