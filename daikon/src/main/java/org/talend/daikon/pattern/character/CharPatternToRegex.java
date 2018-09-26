@@ -9,6 +9,14 @@ public class CharPatternToRegex {
     }
 
     public static String toRegex(String pattern) {
+        return computeRegex(pattern, false);
+    }
+
+    public static String toJavaScriptRegex(String pattern) {
+        return computeRegex(pattern, true);
+    }
+
+    private static String computeRegex(String pattern, boolean isForJavaScript) {
         StringBuilder stringBuilder = new StringBuilder("^");
         int pos = 0;
         while (pos < pattern.length()) {
@@ -16,36 +24,40 @@ public class CharPatternToRegex {
             int consecutiveValues = getConsecutiveCodepoints(codePoint, pattern, pos + 1);
             switch (codePoint) {
             case 'h':
-                buildString(stringBuilder, CharPatternToRegexConstants.LOWER_HIRAGANA.getRegex(), consecutiveValues);
+                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.LOWER_HIRAGANA, isForJavaScript),
+                        consecutiveValues);
                 break;
             case 'H':
-                buildString(stringBuilder, CharPatternToRegexConstants.UPPER_HIRAGANA.getRegex(), consecutiveValues);
+                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.UPPER_HIRAGANA, isForJavaScript),
+                        consecutiveValues);
                 break;
             case 'k':
-                buildString(stringBuilder, CharPatternToRegexConstants.LOWER_KATAKANA.getRegex(), consecutiveValues);
+                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.LOWER_KATAKANA, isForJavaScript),
+                        consecutiveValues);
                 break;
             case 'K':
-                buildString(stringBuilder, CharPatternToRegexConstants.UPPER_KATAKANA.getRegex(), consecutiveValues);
+                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.UPPER_KATAKANA, isForJavaScript),
+                        consecutiveValues);
                 break;
             case 'C':
-                buildString(stringBuilder, CharPatternToRegexConstants.KANJI.getRegex(), consecutiveValues);
+                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.KANJI, isForJavaScript), consecutiveValues);
                 break;
             case 'G':
-                buildString(stringBuilder, CharPatternToRegexConstants.HANGUL.getRegex(), consecutiveValues);
+                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.HANGUL, isForJavaScript), consecutiveValues);
                 break;
             case 'a':
-                String regexa = buildRegex(CharPatternToRegexConstants.LOWER_LATIN.getRegex(),
-                        CharPatternToRegexConstants.FULLWIDTH_LOWER_LATIN.getRegex());
+                String regexa = buildRegex(getRegex(CharPatternToRegexConstants.LOWER_LATIN, isForJavaScript),
+                        getRegex(CharPatternToRegexConstants.FULLWIDTH_LOWER_LATIN, isForJavaScript));
                 buildString(stringBuilder, regexa, consecutiveValues);
                 break;
             case 'A':
-                String regexA = buildRegex(CharPatternToRegexConstants.UPPER_LATIN.getRegex(),
-                        CharPatternToRegexConstants.FULLWIDTH_UPPER_LATIN.getRegex());
+                String regexA = buildRegex(getRegex(CharPatternToRegexConstants.UPPER_LATIN, isForJavaScript),
+                        getRegex(CharPatternToRegexConstants.FULLWIDTH_UPPER_LATIN, isForJavaScript));
                 buildString(stringBuilder, regexA, consecutiveValues);
                 break;
             case '9':
-                String regex9 = buildRegex(CharPatternToRegexConstants.DIGIT.getRegex(),
-                        CharPatternToRegexConstants.FULLWIDTH_DIGIT.getRegex());
+                String regex9 = buildRegex(getRegex(CharPatternToRegexConstants.DIGIT, isForJavaScript),
+                        getRegex(CharPatternToRegexConstants.FULLWIDTH_DIGIT, isForJavaScript));
                 buildString(stringBuilder, regex9, consecutiveValues);
                 break;
             default:
@@ -59,55 +71,8 @@ public class CharPatternToRegex {
         return stringBuilder.toString();
     }
 
-    public static String toJavaScriptRegex(String pattern) {
-        StringBuilder stringBuilder = new StringBuilder("^");
-        int pos = 0;
-        while (pos < pattern.length()) {
-            int codePoint = pattern.codePointAt(pos);
-            int consecutiveValues = getConsecutiveCodepoints(codePoint, pattern, pos + 1);
-            switch (codePoint) {
-            case 'h':
-                buildString(stringBuilder, CharPatternToRegexConstants.LOWER_HIRAGANA.getJavaScriptRegex(), consecutiveValues);
-                break;
-            case 'H':
-                buildString(stringBuilder, CharPatternToRegexConstants.UPPER_HIRAGANA.getJavaScriptRegex(), consecutiveValues);
-                break;
-            case 'k':
-                buildString(stringBuilder, CharPatternToRegexConstants.LOWER_KATAKANA.getJavaScriptRegex(), consecutiveValues);
-                break;
-            case 'K':
-                buildString(stringBuilder, CharPatternToRegexConstants.UPPER_KATAKANA.getJavaScriptRegex(), consecutiveValues);
-                break;
-            case 'C':
-                buildString(stringBuilder, CharPatternToRegexConstants.KANJI.getJavaScriptRegex(), consecutiveValues);
-                break;
-            case 'G':
-                buildString(stringBuilder, CharPatternToRegexConstants.HANGUL.getJavaScriptRegex(), consecutiveValues);
-                break;
-            case 'a':
-                String regexa = buildRegex(CharPatternToRegexConstants.LOWER_LATIN.getJavaScriptRegex(),
-                        CharPatternToRegexConstants.FULLWIDTH_LOWER_LATIN.getJavaScriptRegex());
-                buildString(stringBuilder, regexa, consecutiveValues);
-                break;
-            case 'A':
-                String regexA = buildRegex(CharPatternToRegexConstants.UPPER_LATIN.getJavaScriptRegex(),
-                        CharPatternToRegexConstants.FULLWIDTH_UPPER_LATIN.getJavaScriptRegex());
-                buildString(stringBuilder, regexA, consecutiveValues);
-                break;
-            case '9':
-                String regex9 = buildRegex(CharPatternToRegexConstants.DIGIT.getJavaScriptRegex(),
-                        CharPatternToRegexConstants.FULLWIDTH_DIGIT.getJavaScriptRegex());
-                buildString(stringBuilder, regex9, consecutiveValues);
-                break;
-            default:
-                String notRecognized = escapeCharacters(String.valueOf(Character.toChars(codePoint)));
-                buildString(stringBuilder, notRecognized, consecutiveValues);
-                break;
-            }
-            pos += consecutiveValues;
-        }
-        stringBuilder.append("$");
-        return stringBuilder.toString();
+    private static String getRegex(CharPatternToRegexConstants patternConstant, boolean isForJavaScript) {
+        return (isForJavaScript) ? patternConstant.getJavaScriptRegex() : patternConstant.getRegex();
     }
 
     private static void buildString(StringBuilder stringBuilder, String regex, int consecutiveValues) {

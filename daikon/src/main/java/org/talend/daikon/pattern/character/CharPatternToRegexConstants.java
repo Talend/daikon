@@ -20,7 +20,6 @@ public enum CharPatternToRegexConstants {
 
     UPPER_HIRAGANA(
             "(\\x{3042}|\\x{3044}|\\x{3046}|\\x{3048}|[\\x{304A}-\\x{3062}]|[\\x{3064}-\\x{3082}]|\\x{3084}|\\x{3086}|[\\x{3088}-\\x{308D}]|[\\x{308F}-\\x{3094}])",
-
             "([\\u3042\\u3044\\u3046\\u3048\\u304A-\\u3062\\u3064-\\u3082\\u3084\\u3086\\u3088-\\u308D\\u308F-\\u3094])"),
 
     LOWER_KATAKANA(
@@ -34,24 +33,27 @@ public enum CharPatternToRegexConstants {
                     + "|\\x{FF66}|[\\x{FF71}-\\x{FF9D}])",
             "([\\u30A2\\u30A4\\u30A6\\u30A8\\u30AA-\\u30C2\\u30C4-\\u30E2\\u30E4\\u30E6\\u30E8-\\u30ED\\u30EF-\\u30F4\\u30F7-\\u30FA\\uFF66\\uFF71-\\uFF9D])"),
 
-    KANJI("([\\x{4E00}-\\x{9FEF}]" + "|[\\x{3400}-\\x{4DB5}]" + // Extension A
-            "|[\\x{20000}-\\x{2A6D6}]" + // Extension B
-            "|[\\x{2A700}-\\x{2B734}]" + // Extension C
-            "|[\\x{2B740}-\\x{2B81D}]" + // Extension D
-            "|[\\x{2B820}-\\x{2CEA1}]" + // Extension E
-            "|[\\x{2CEB0}-\\x{2EBE0}]" + // Extension F
-            "|[\\x{F900}-\\x{FA6D}]|[\\x{FA70}-\\x{FAD9}]" + // Compatibility Ideograph
-            "|[\\x{2F800}-\\x{2FA1D}]" + // Compatibility Ideograph Supplement
-            "|[\\x{2F00}-\\x{2FD5}]" + // KangXi Radicals
-            "|[\\x{2E80}-\\x{2E99}]|[\\x{2E9B}-\\x{2EF3}]" + // Radical Supplement
-            "|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}]" + // Symbol and punctuation added for TDQ-11343
-            ")", "([\\u4E00-\\u9FEF]" + "|[\\u3400-\\u4DB5]" + "|[\\ud840-\\ud868][\\udc00-\\udfff]|\\ud869[\\udc00-\\uded6]" + // Extension B
+    KANJI(
+            "([\\x{4E00}-\\x{9FEF}]" + "|[\\x{3400}-\\x{4DB5}]" + // Extension A
+                    "|[\\x{20000}-\\x{2A6D6}]" + // Extension B
+                    "|[\\x{2A700}-\\x{2B734}]" + // Extension C
+                    "|[\\x{2B740}-\\x{2B81D}]" + // Extension D
+                    "|[\\x{2B820}-\\x{2CEA1}]" + // Extension E
+                    "|[\\x{2CEB0}-\\x{2EBE0}]" + // Extension F
+                    "|[\\x{F900}-\\x{FA6D}]|[\\x{FA70}-\\x{FAD9}]" + // Compatibility Ideograph
+                    "|[\\x{2F800}-\\x{2FA1D}]" + // Compatibility Ideograph Supplement
+                    "|[\\x{2F00}-\\x{2FD5}]" + // KangXi Radicals
+                    "|[\\x{2E80}-\\x{2E99}]|[\\x{2E9B}-\\x{2EF3}]" + // Radical Supplement
+                    "|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}]" + // Symbol and punctuation added for TDQ-11343
+                    ")", //
+            "([\\u4E00-\\u9FEF]" + "|[\\u3400-\\u4DB5]" + // Extension A
+                    "|[\\ud840-\\ud868][\\udc00-\\udfff]|\\ud869[\\udc00-\\uded6]" + // Extension B
                     "|[\\ud86a-\\ud86c][\\udc00-\\udfff]|\\ud869[\\udf00-\\udfff]|\\ud86d[\\udc00-\\udf34]" + // Extension C
                     "|\\ud86d[\\udf40-\\udfff]|\\ud86e[\\udc00-\\udc1d]" + // Extension D
                     "|[\\ud86f-\\ud872][\\udc00-\\udfff]|\\ud86e[\\udc20-\\udfff]|\\ud873[\\udc00-\\udea1]" + // Extension E
                     "|[\\ud874-\\ud879][\\udc00-\\udfff]|\\ud873[\\udeb0-\\udfff]|\\ud87a[\\udc00-\\udfe0]" + // Extension F
                     "|[\\uF900-\\uFA6D]|[\\uFA70-\\uFAD9]" + // Compatibility Ideograph
-                    "|\\ud87e[\\udc00-\\ude1d]" + // Compatibility Ideograph Supplement
+                    "|\\ud87e[\\udc00-\\ude1d]" + // Compdatibility Ideograph Supplement
                     "|[\\u2F00}-\\u2FD5]" + // KangXi Radicals
                     "|[\\u2E80}-\\u2E99]|[\\u2E9B-\\u2EF3]" + // Radical Supplement
                     "|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B]" + // Symbol and punctuation added for TDQ-11343
