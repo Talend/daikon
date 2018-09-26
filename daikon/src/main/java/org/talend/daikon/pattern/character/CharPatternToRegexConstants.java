@@ -53,7 +53,7 @@ public enum CharPatternToRegexConstants {
                     "|[\\ud86f-\\ud872][\\udc00-\\udfff]|\\ud86e[\\udc20-\\udfff]|\\ud873[\\udc00-\\udea1]" + // Extension E
                     "|[\\ud874-\\ud879][\\udc00-\\udfff]|\\ud873[\\udeb0-\\udfff]|\\ud87a[\\udc00-\\udfe0]" + // Extension F
                     "|[\\uF900-\\uFA6D]|[\\uFA70-\\uFAD9]" + // Compatibility Ideograph
-                    "|\\ud87e[\\udc00-\\ude1d]" + // Compdatibility Ideograph Supplement
+                    "|\\ud87e[\\udc00-\\ude1d]" + // Compatibility Ideograph Supplement
                     "|[\\u2F00}-\\u2FD5]" + // KangXi Radicals
                     "|[\\u2E80}-\\u2E99]|[\\u2E9B-\\u2EF3]" + // Radical Supplement
                     "|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B]" + // Symbol and punctuation added for TDQ-11343
