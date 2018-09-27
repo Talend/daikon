@@ -238,6 +238,7 @@ public class CharPatternToRegexTest {
         assertJavaScriptMatches("a]b", CharPatternToRegex.toJavaScriptRegex("a]a"));
         assertJavaScriptMatches("a+b", CharPatternToRegex.toJavaScriptRegex("a+a"));
         assertJavaScriptMatches("a*b", CharPatternToRegex.toJavaScriptRegex("a*a"));
+        assertJavaScriptMatches("a/b", CharPatternToRegex.toJavaScriptRegex("a/a"));
         assertEquals("At least one of the characters [({^+*|\\.?$})] is not well escaped",
                 "^\\[\\(\\{\\^\\+\\*\\|\\\\\\.\\?\\$\\}\\)\\]$", CharPatternToRegex.toJavaScriptRegex("[({^+*|\\.?$})]"));
     }

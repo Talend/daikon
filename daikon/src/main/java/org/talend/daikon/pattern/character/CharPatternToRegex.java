@@ -61,7 +61,7 @@ public class CharPatternToRegex {
                 buildString(stringBuilder, regex9, consecutiveValues);
                 break;
             default:
-                String notRecognized = escapeCharacters(String.valueOf(Character.toChars(codePoint)));
+                String notRecognized = escapeCharacters(String.valueOf(Character.toChars(codePoint)), isForJavaScript);
                 buildString(stringBuilder, notRecognized, consecutiveValues);
                 break;
             }

@@ -21,7 +21,7 @@ public class WordPatternToRegex {
             WordPattern wordPattern = WordPattern.get(current);
             String regex;
             if (wordPattern == null)
-                regex = escapeCharacters(current);
+                regex = escapeCharacters(current, false);
             else if (caseSensitive)
                 regex = wordPattern.getCaseSensitive();
             else
