@@ -115,7 +115,7 @@ public class ZipVerifierTest {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
         } catch (VerifyFailedException ex) {
-            assertTrue(ex.getMessage().contains("Verify failed.Path does not chain with any of the trust anchors"));
+            assertTrue(ex.getMessage().contains("Verify failed."));
         }
     }
 
