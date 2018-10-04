@@ -10,6 +10,7 @@
     </parent>
     <artifactId>daikon-signature-verifier</artifactId>
     <name>daikon signature verifier library</name>
+    <packaging>bundle</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
