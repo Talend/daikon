@@ -1,5 +1,9 @@
 # Talend Daikon TQL
 
+## Description
+
+TQL stands for Talend Query Language.
+
 ## Contents
 
 This folder contains:

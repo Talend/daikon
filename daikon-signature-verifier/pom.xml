@@ -1,67 +1,69 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.talend.daikon</groupId>
-		<artifactId>daikon-parent</artifactId>
-		<version>0.26.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
-	<artifactId>daikon-signature-verifier</artifactId>
-	<name>daikon signature verifier library</name>
+    <parent>
+        <groupId>org.talend.daikon</groupId>
+        <artifactId>daikon-parent</artifactId>
+        <version>0.26.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>daikon-signature-verifier</artifactId>
+    <name>daikon signature verifier library</name>
+    <packaging>bundle</packaging>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.7</java.version>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-log4j12</artifactId>
-		    <version>1.7.21</version>
-		    <scope>test</scope>
-		</dependency>
-	</dependencies>
-	<build>
-		<plugins>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.7</java.version>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-				  <execution>
-				    <id>copy-installed</id>
-				    <phase>generate-test-resources</phase>
-				    <goals>
-				      <goal>copy</goal>
-				    </goals>
-				    <configuration>
-				      <artifactItems>
-				        <artifactItem>
-				          <groupId>org.talend.daikon</groupId>
-				          <artifactId>daikon-test-signature</artifactId>
-				          <version>1.0.0</version>
-				          <type>zip</type>
-				        </artifactItem>
-				      </artifactItems>
-				      <outputDirectory>src/test/resources/org/talend/daikon/signature/verify/</outputDirectory>
-				    </configuration>
-				  </execution>
+                <executions>
+                    <execution>
+                        <id>copy-installed</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.talend.daikon</groupId>
+                                    <artifactId>daikon-test-signature</artifactId>
+                                    <version>1.0.0</version>
+                                    <type>zip</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>src/test/resources/org/talend/daikon/signature/verify/</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -72,7 +74,8 @@
                         <phase>generate-test-resources</phase>
                         <configuration>
                             <tasks>
-                                <unzip src="src/test/resources/org/talend/daikon/signature/verify/daikon-test-signature-1.0.0.zip" dest="src/test/resources/org/talend/daikon/signature/verify/" />
+                                <unzip src="src/test/resources/org/talend/daikon/signature/verify/daikon-test-signature-1.0.0.zip"
+                                       dest="src/test/resources/org/talend/daikon/signature/verify/"/>
                             </tasks>
                         </configuration>
                         <goals>
@@ -81,6 +84,41 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
-	</build>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>bundle-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>bundle</classifier>
+                            <instructions>
+                                <Bundle-SymbolicName>org.talend.daikon.signature.verify</Bundle-SymbolicName>
+                                <DynamicImport-Package>*</DynamicImport-Package>
+                                <Service-Component>*</Service-Component>
+                                <Embed-Transitive>true</Embed-Transitive>
+                                <Embed-Dependency>*;artifactId=paranamer|snappy-java|commons-compress|xz;inline=true
+                                </Embed-Dependency>
+                                <Import-Package>
+                                    com.cedarsoftware.*;resolution:=optional,com.fasterxml.*;resolution:=optional,org.apache.*;resolution:=optional,*
+                                </Import-Package>
+                            </instructions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.util.StringUtils;
+import org.talend.daikon.pattern.character.CharPatternToRegex;
 import org.talend.daikon.pattern.word.WordPatternToRegex;
 import org.talend.tql.model.*;
 import org.talend.tql.visitor.IASTVisitor;
@@ -195,7 +198,7 @@ public class ASTVisitor implements IASTVisitor<Object> {
                 return Criteria.where(fieldName).is("");
             return Criteria.where(fieldName).ne("");
         }
-        String regex = this.patternToMongoRegex(pattern);
+        String regex = CharPatternToRegex.toRegex(pattern);
         Pattern regexCompiled = Pattern.compile(regex);
         if (!isNegation)
             return Criteria.where(fieldName).regex(regexCompiled);
@@ -212,10 +215,20 @@ public class ASTVisitor implements IASTVisitor<Object> {
             return Criteria.where(fieldName).ne("");
         }
         String regex = WordPatternToRegex.toRegex(pattern, true);
-        Pattern regexCompiled = Pattern.compile(regex);
-        if (!isNegation)
-            return Criteria.where(fieldName).regex(regexCompiled);
-        return Criteria.where(fieldName).not().regex(regexCompiled);
+        return getRegexpForWordPattern(fieldName, regex, isNegation);
+    }
+
+    private Criteria getRegexpForWordPattern(String fieldName, String regex, boolean isWithNegation) {
+        return new Criteria() {
+
+            @Override
+            public DBObject getCriteriaObject() {
+                DBObject regexObject = new BasicDBObject("$regex", regex.replaceAll("script=Han", "Han"));
+                if (!isWithNegation)
+                    return new BasicDBObject(fieldName, regexObject);
+                return new BasicDBObject(fieldName, new BasicDBObject("$not", regexObject));
+            }
+        };
     }
 
     @Override
@@ -281,30 +294,4 @@ public class ASTVisitor implements IASTVisitor<Object> {
     private String getFieldName(String fieldName) {
         return fieldName;
     }
-
-    protected String patternToMongoRegex(String pattern) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("^");
-        for (int i = 0; i < pattern.length(); i++) {
-            char c = pattern.charAt(i);
-            switch (c) {
-            case 'a':
-                sb.append("[a-z|à-ÿ]");
-                break;
-            case 'A':
-                sb.append("[A-Z|À-ß]");
-                break;
-            case '9':
-                sb.append("[0-9]");
-                break;
-            default:
-                // Special characters for PCRE syntax (used by mongoDB for regex) need to be escaped.
-                sb.append(String.valueOf(c).replaceAll(MONGO_ESCAPE_PATTERN, "\\\\$0"));
-                break;
-            }
-        }
-        sb.append("$");
-        return sb.toString();
-    }
-
 }

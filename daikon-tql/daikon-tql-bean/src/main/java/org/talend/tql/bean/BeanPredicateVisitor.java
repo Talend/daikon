@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.daikon.pattern.character.CharPatternToRegex;
 import org.talend.daikon.pattern.word.WordPatternToRegex;
 import org.talend.tql.model.*;
 import org.talend.tql.visitor.IASTVisitor;
@@ -85,47 +86,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
      * @return <code>true</code> if value complies, <code>false</code> otherwise.
      */
     private static boolean complies(String value, String pattern) {
-        if (value == null && pattern == null) {
-            return true;
-        }
-        if (value == null) {
-            return false;
-        }
-        // Character based patterns
-        if (StringUtils.containsAny(pattern, new char[] { 'A', 'a', '9' })) {
-            if (value.length() != pattern.length()) {
-                return false;
-            }
-            final char[] valueArray = value.toCharArray();
-            final char[] patternArray = pattern.toCharArray();
-            for (int i = 0; i < valueArray.length; i++) {
-                if (patternArray[i] == 'A') {
-                    if (!Character.isUpperCase(valueArray[i])) {
-                        return false;
-                    }
-                } else if (patternArray[i] == 'a') {
-                    if (!Character.isLowerCase(valueArray[i])) {
-                        return false;
-                    }
-                } else if (patternArray[i] == '9') {
-                    if (!Character.isDigit(valueArray[i])) {
-                        return false;
-                    }
-                } else {
-                    if (valueArray[i] != patternArray[i]) {
-                        return false;
-                    }
-                }
-            }
-        } else {
-            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-            try {
-                formatter.toFormat().parseObject(value);
-            } catch (ParseException e) {
-                return false;
-            }
-        }
-        return true;
+        return value != null && pattern != null && value.matches(CharPatternToRegex.toRegex(pattern));
     }
 
     private static boolean wordComplies(String value, String pattern) {

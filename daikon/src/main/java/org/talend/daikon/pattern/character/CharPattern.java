@@ -35,7 +35,7 @@ public enum CharPattern {
 
     private Character replaceChar;
 
-    private String pattern;
+    private CharPatternToRegexConstants pattern;
 
     // Useful for quick contain
     private Set<Integer> codePointSet = new HashSet<>();
@@ -55,10 +55,10 @@ public enum CharPattern {
         return lookup.get(pattern);
     }
 
-    CharPattern(char replace, String pattern) {
+    CharPattern(char replace, CharPatternToRegexConstants pattern) {
         replaceChar = replace;
         this.pattern = pattern;
-        buildCharacters(pattern);
+        buildCharacters(pattern.getRegex());
     }
 
     private void buildCharacters(String pattern) {
@@ -96,7 +96,7 @@ public enum CharPattern {
         return replaceChar;
     }
 
-    public String getPattern() {
+    public CharPatternToRegexConstants getPattern() {
         return pattern;
     }
 
