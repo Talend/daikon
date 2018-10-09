@@ -11,7 +11,7 @@ import java.util.List;
 public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
 
     @Test
-    public void testParseFieldCompliesPattern1() {
+    public void lowerLatin() {
         Criteria criteria = doTest("name wordComplies '[word]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^[\\p{Ll}]{2,}$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -21,7 +21,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern2() {
+    public void upperLatin() {
         Criteria criteria = doTest("name wordComplies '[Word]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^\\p{Lu}[\\p{Ll}]{1,}$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -32,7 +32,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern3() {
+    public void mixedLatin() {
         Criteria criteria = doTest("name wordComplies '[Word] [digit][word]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^\\p{Lu}[\\p{Ll}]{1,} [\\p{Nd}][\\p{Ll}]{2,}$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -42,7 +42,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern4() {
+    public void mixedLatin2() {
         Criteria criteria = doTest("name wordComplies '[Word] [Word]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^\\p{Lu}[\\p{Ll}]{1,} \\p{Lu}[\\p{Ll}]{1,}$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -51,7 +51,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern5() {
+    public void underscore() {
         Criteria criteria = doTest("name wordComplies '[Word]_[Number]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^\\p{Lu}[\\p{Ll}]{1,}_\\[Number\\]$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -60,7 +60,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern6() {
+    public void bracketsAndEmail() {
         Criteria criteria = doTest("name wordComplies '][word]@'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^\\][\\p{Ll}]{2,}@$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -69,7 +69,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern7() {
+    public void caseSensitiveWord() {
         Criteria criteria = doTest("name wordComplies '[Word] [word] [Word]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^\\p{Lu}[\\p{Ll}]{1,} [\\p{Ll}]{2,} \\p{Lu}[\\p{Ll}]{1,}$",
                 false);
@@ -79,7 +79,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern8() {
+    public void empty() {
         Criteria criteria = doTest("name wordComplies ''");
         Criteria expectedCriteria = Criteria.where("name").is("");
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -88,7 +88,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern9() {
+    public void ideogram() {
         Criteria criteria = doTest("name wordComplies '[Ideogram]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^[\\p{Han}]$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -97,7 +97,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern10() {
+    public void lowerChar() {
         Criteria criteria = doTest("name wordComplies '[char]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^[\\p{Ll}]$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -106,7 +106,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern11() {
+    public void upperChar() {
         Criteria criteria = doTest("name wordComplies '[Char]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^[\\p{Lu}]$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -115,7 +115,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern12() {
+    public void alnum() {
         Criteria criteria = doTest("name wordComplies '[alnum]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^[\\p{Nd}|\\p{Lu}\\p{Ll}]{2,}$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -128,7 +128,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern13() {
+    public void ideogramSeq() {
         Criteria criteria = doTest("name wordComplies '[IdeogramSeq]'");
         Criteria expectedCriteria = getExpectedCriteria("name", "^[\\p{Han}]{2,}$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
@@ -137,16 +137,63 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     }
 
     @Test
-    public void testParseFieldCompliesPattern14() {
-        Criteria criteria = doTest("name wordComplies '[alnum(CJK)]'");
-        Criteria expectedCriteria = getExpectedCriteria("name", "^[\\p{Nd}|\\p{Han}]{2,}$", false);
+    public void hiragana() {
+        Criteria criteria = doTest("name wordComplies '[hira]'");
+        Criteria expectedCriteria = getExpectedCriteria("name", "^([\\x{3041}-\\x{3096}])$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());
     }
 
     @Test
-    public void testParseFieldCompliesPattern15() {
+    public void hiraganaSeq() {
+        Criteria criteria = doTest("name wordComplies '[hiraSeq]'");
+        Criteria expectedCriteria = getExpectedCriteria("name", "^([\\x{3041}-\\x{3096}]){2,}$", false);
+        Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(0, records.size());
+    }
+
+    @Test
+    public void katakana() {
+        Criteria criteria = doTest("name wordComplies '[kata]'");
+        Criteria expectedCriteria = getExpectedCriteria("name",
+                "^([\\x{FF66}-\\x{FF6F}]|[\\x{FF71}-\\x{FF9D}]|[\\x{30A1}-\\x{30FA}]|[\\x{31F0}-\\x{31FF}])$", false);
+        Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(0, records.size());
+    }
+
+    @Test
+    public void katakanaSeq() {
+        Criteria criteria = doTest("name wordComplies '[kataSeq]'");
+        Criteria expectedCriteria = getExpectedCriteria("name",
+                "^([\\x{FF66}-\\x{FF6F}]|[\\x{FF71}-\\x{FF9D}]|[\\x{30A1}-\\x{30FA}]|[\\x{31F0}-\\x{31FF}]){2,}$", false);
+        Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(0, records.size());
+    }
+
+    @Test
+    public void hangul() {
+        Criteria criteria = doTest("name wordComplies '[hangul]'");
+        Criteria expectedCriteria = getExpectedCriteria("name", "^([\\x{AC00}-\\x{D7AF}])$", false);
+        Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(0, records.size());
+    }
+
+    @Test
+    public void hangulSeq() {
+        Criteria criteria = doTest("name wordComplies '[hangulSeq]'");
+        Criteria expectedCriteria = getExpectedCriteria("name", "^([\\x{AC00}-\\x{D7AF}]){2,}$", false);
+        Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
+        List<Record> records = this.getRecords(criteria);
+        Assert.assertEquals(0, records.size());
+    }
+
+    @Test
+    public void negation() {
         Criteria criteria = doTest("not (name wordComplies '[word]')");
         Criteria expectedCriteria = getExpectedCriteria("name", "^[\\p{Ll}]{2,}$", true);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());

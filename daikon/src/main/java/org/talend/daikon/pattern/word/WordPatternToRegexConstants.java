@@ -1,5 +1,8 @@
 package org.talend.daikon.pattern.word;
 
+import org.talend.daikon.pattern.PatternRegexUtils;
+import org.talend.daikon.pattern.character.CharPatternToRegexConstants;
+
 class WordPatternToRegexConstants {
 
     // Iso to Character.isDigit
@@ -7,6 +10,9 @@ class WordPatternToRegexConstants {
 
     // almost iso to Character.isIdeographic
     static final String IDEOGRAM = "\\p{script=Han}";
+
+    static final String KATAKANA = PatternRegexUtils.buildRegex(CharPatternToRegexConstants.HALFWIDTH_KATAKANA.getRegex(),
+            CharPatternToRegexConstants.FULLWIDTH_KATAKANA.getRegex());
 
     // Iso to Character.getType(codePoint) == Character.UPPERCASE_LETTER
     static final String UPPER_CHAR = "\\p{Lu}";

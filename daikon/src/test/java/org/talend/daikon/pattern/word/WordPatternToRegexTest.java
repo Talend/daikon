@@ -343,25 +343,9 @@ public class WordPatternToRegexTest {
     }
 
     @Test
-    public void chineseAlphanumeric() {
-        final String pattern = "[alnum(CJK)]";
-
-        String regex = WordPatternToRegex.toRegex(pattern, false);
-        assertEquals(regex, WordPatternToRegex.toRegex(pattern, true));
-
-        assertMatches("花木蘭88", regex);
-        assertMatches("花木蘭88袁", regex);
-        assertNoMatches("pony42", regex);
-        assertNoMatches("a", regex);
-        assertNoMatches(".aaa", regex);
-        assertNoMatches("a袁", regex);
-        assertNoMatches("ac袁", regex);
-    }
-
-    @Test
     public void chinese() {
         final String example = "袁 花木蘭88";
-        final String patternNoCase = "[Ideogram] [alnum(CJK)]";
+        final String patternNoCase = "[Ideogram] [IdeogramSeq][number]";
 
         testCaseInsensitivePattern(example, patternNoCase);
 
@@ -384,7 +368,7 @@ public class WordPatternToRegexTest {
     @Test
     public void chineseQuestion() {
         final String example = "不亦1說乎？有";
-        final String pattern = "[alnum(CJK)]？[Ideogram]";
+        final String pattern = "[IdeogramSeq][digit][IdeogramSeq]？[Ideogram]";
 
         testCaseInsensitivePattern(example, pattern);
     }
@@ -392,7 +376,7 @@ public class WordPatternToRegexTest {
     @Test
     public void japaneseAlphanumeric() {
         final String example = "こんにちは123";
-        final String pattern = "こんにちは[alnum]";
+        final String pattern = "[hiraSeq][alnum]";
 
         testCaseInsensitivePattern(example, pattern);
     }
@@ -400,7 +384,7 @@ public class WordPatternToRegexTest {
     @Test
     public void japaneseWord() {
         final String example = "こんにちは";
-        final String pattern = "こんにちは";
+        final String pattern = "[hiraSeq]";
 
         String regex = WordPatternToRegex.toRegex(pattern, false);
         assertMatches(example, regex);
@@ -412,7 +396,7 @@ public class WordPatternToRegexTest {
     @Test
     public void japaneseCJKNoCase() {
         final String example = "日本語123 日本語？你好/Hello!";
-        final String patternNoCase = "[alnum(CJK)] [IdeogramSeq]？[IdeogramSeq]/[word]!";
+        final String patternNoCase = "[IdeogramSeq][number] [IdeogramSeq]？[IdeogramSeq]/[word]!";
         String regex = WordPatternToRegex.toRegex(patternNoCase, false);
         assertMatches(example, regex);
 
@@ -433,10 +417,34 @@ public class WordPatternToRegexTest {
     }
 
     @Test
+    public void japaneseSentence() {
+        final String example = "クリスマスは かぞくと いっしょに すごします。";
+        final String pattern = "[kataSeq][hira] [hiraSeq] [hiraSeq] [hiraSeq]。";
+
+        String regex = WordPatternToRegex.toRegex(pattern, false);
+        assertMatches(example, regex);
+
+        String regexCase = WordPatternToRegex.toRegex(pattern, true);
+        assertMatches(example, regexCase);
+    }
+
+    @Test
+    public void koreanWord() {
+        final String example = "그러던데";
+        final String pattern = "[hangulSeq]";
+
+        String regex = WordPatternToRegex.toRegex(pattern, false);
+        assertMatches(example, regex);
+
+        String regexCase = WordPatternToRegex.toRegex(pattern, true);
+        assertMatches(example, regexCase);
+    }
+
+    @Test
     public void surrogatePair() {
         testCaseInsensitivePattern("𠀐", "[Ideogram]");
         testCaseInsensitivePattern("𠀐𠀑我𠀒𠀓", "[IdeogramSeq]");
-        testCaseInsensitivePattern("𠀐12//𠀑我?𠀑", "[alnum(CJK)]//[IdeogramSeq]?[Ideogram]");
+        testCaseInsensitivePattern("𠀐12//𠀑我?𠀑", "[Ideogram][number]//[IdeogramSeq]?[Ideogram]");
         testCaseInsensitivePattern("𠀐12//𠀑我?𠀑", "[Ideogram][number]//[IdeogramSeq]?[Ideogram]");
     }
 

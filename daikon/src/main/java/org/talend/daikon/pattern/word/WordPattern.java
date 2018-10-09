@@ -1,5 +1,7 @@
 package org.talend.daikon.pattern.word;
 
+import org.talend.daikon.pattern.character.CharPatternToRegexConstants;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,9 +45,25 @@ public enum WordPattern {
     IDEOGRAM_SEQUENCE(
             "[IdeogramSeq]",
             "[" + WordPatternToRegexConstants.IDEOGRAM + "]{2,}"),
-    ALPHANUMERIC_CJK(
-            "[alnum(CJK)]",
-            "[" + WordPatternToRegexConstants.DIGIT + "|" + WordPatternToRegexConstants.IDEOGRAM + "]{2,}");
+    HANGUL(
+            "[hangul]",
+            CharPatternToRegexConstants.HANGUL.getRegex()),
+    HANGUL_SEQUENCE(
+            "[hangulSeq]",
+            CharPatternToRegexConstants.HANGUL.getRegex() + "{2,}"),
+    HIRAGANA(
+            "[hira]",
+            CharPatternToRegexConstants.HIRAGANA.getRegex()),
+    HIRAGANA_SEQUENCE(
+            "[hiraSeq]",
+            CharPatternToRegexConstants.HIRAGANA.getRegex() + "{2,}"),
+    KATAKANA(
+            "[kata]",
+            WordPatternToRegexConstants.KATAKANA),
+    KATAKANA_SEQUENCE(
+            "[kataSeq]",
+            WordPatternToRegexConstants.KATAKANA + "{2,}");
+
     // @formatter:on
     private static final Map<String, WordPattern> lookup = new HashMap<>();
 

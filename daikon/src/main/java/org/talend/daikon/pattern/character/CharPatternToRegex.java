@@ -1,5 +1,6 @@
 package org.talend.daikon.pattern.character;
 
+import static org.talend.daikon.pattern.PatternRegexUtils.buildRegex;
 import static org.talend.daikon.pattern.PatternRegexUtils.escapeCharacters;
 
 public class CharPatternToRegex {
@@ -90,8 +91,4 @@ public class CharPatternToRegex {
         return (lastPos - currentPos + 1);
     }
 
-    // Utils to remove middle parenthesis of regexes
-    private static String buildRegex(String pattern1, String pattern2) {
-        return pattern1.substring(0, pattern1.length() - 1) + "|" + pattern2.substring(1);
-    }
 }
