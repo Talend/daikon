@@ -23,22 +23,18 @@ public class CharPatternToRegex {
             int codePoint = pattern.codePointAt(pos);
             int consecutiveValues = getConsecutiveCodepoints(codePoint, pattern, pos + 1);
             switch (codePoint) {
-            case 'h':
-                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.LOWER_HIRAGANA, isForJavaScript),
-                        consecutiveValues);
-                break;
             case 'H':
-                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.UPPER_HIRAGANA, isForJavaScript),
-                        consecutiveValues);
+                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.HIRAGANA, isForJavaScript), consecutiveValues);
                 break;
             case 'k':
-                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.LOWER_KATAKANA, isForJavaScript),
+                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.HALFWIDTH_KATAKANA, isForJavaScript),
                         consecutiveValues);
                 break;
             case 'K':
-                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.UPPER_KATAKANA, isForJavaScript),
+                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.FULLWIDTH_KATAKANA, isForJavaScript),
                         consecutiveValues);
                 break;
+
             case 'C':
                 buildString(stringBuilder, getRegex(CharPatternToRegexConstants.KANJI, isForJavaScript), consecutiveValues);
                 break;

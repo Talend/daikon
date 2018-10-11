@@ -14,24 +14,14 @@ public enum CharPatternToRegexConstants {
 
     FULLWIDTH_UPPER_LATIN("([\\x{FF21}-\\x{FF3A}])", "([\\uFF21-\\uFF3A])"),
 
-    LOWER_HIRAGANA(
-            "(\\x{3041}|\\x{3043}|\\x{3045}|\\x{3047}|\\x{3049}|\\x{3063}|\\x{3083}|\\x{3085}|\\x{3087}|\\x{308E}|\\x{3095}|\\x{3096})",
-            "([\\u3041\\u3043\\u3045\\u3047\\u3049\\u3063\\u3083\\u3085\\u3087\\u308E\\u3095\\u3096])"),
+    HIRAGANA("([\\x{3041}-\\x{3096}])", "([\\u3041-\\u3096])"),
 
-    UPPER_HIRAGANA(
-            "(\\x{3042}|\\x{3044}|\\x{3046}|\\x{3048}|[\\x{304A}-\\x{3062}]|[\\x{3064}-\\x{3082}]|\\x{3084}|\\x{3086}|[\\x{3088}-\\x{308D}]|[\\x{308F}-\\x{3094}])",
-            "([\\u3042\\u3044\\u3046\\u3048\\u304A-\\u3062\\u3064-\\u3082\\u3084\\u3086\\u3088-\\u308D\\u308F-\\u3094])"),
+    HALFWIDTH_KATAKANA("([\\x{FF66}-\\x{FF6F}]|[\\x{FF71}-\\x{FF9D}])", "([\\uFF66-\\uFF6F\\uFF71-\\uFF9D])"),
 
-    LOWER_KATAKANA(
-            "(\\x{30A1}|\\x{30A3}|\\x{30A5}|\\x{30A7}|\\x{30A9}|\\x{30C3}|\\x{30E3}|\\x{30E5}|\\x{30E7}|\\x{30EE}|\\x{30F5}|\\x{30F6}" // FullWidth
-                    + "|[\\x{31F0}-\\x{31FF}]" // Phonetic extension
-                    + "|[\\x{FF67}-\\x{FF6F}])", // HalfWidth
-            "([\\u30A1\\u30A3\\u30A5\\u30A7\\u30A9\\u30C3\\u30E3\\u30E5\\u30E7\\u30EE\\u30F5\\u30F6\\u31F0-\\u31FF\\uFF67-\\uFF6F])"),
-
-    UPPER_KATAKANA(
-            "(\\x{30A2}|\\x{30A4}|\\x{30A6}|\\x{30A8}|[\\x{30AA}-\\x{30C2}]|[\\x{30C4}-\\x{30E2}]|\\x{30E4}|\\x{30E6}|[\\x{30E8}-\\x{30ED}]|[\\x{30EF}-\\x{30F4}]|[\\x{30F7}-\\x{30FA}]" // FullWidth
-                    + "|\\x{FF66}|[\\x{FF71}-\\x{FF9D}])",
-            "([\\u30A2\\u30A4\\u30A6\\u30A8\\u30AA-\\u30C2\\u30C4-\\u30E2\\u30E4\\u30E6\\u30E8-\\u30ED\\u30EF-\\u30F4\\u30F7-\\u30FA\\uFF66\\uFF71-\\uFF9D])"),
+    FULLWIDTH_KATAKANA(
+            "([\\x{30A1}-\\x{30FA}]" // FullWidth
+                    + "|[\\x{31F0}-\\x{31FF}])", // Phonetic extension,
+            "([\\u30A1-\\u30FA\\u31F0-\\u31FF])"),
 
     KANJI(
             "([\\x{4E00}-\\x{9FEF}]" + "|[\\x{3400}-\\x{4DB5}]" + // Extension A

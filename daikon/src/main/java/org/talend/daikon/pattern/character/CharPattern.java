@@ -21,13 +21,11 @@ public enum CharPattern {
 
     FULLWIDTH_UPPER_LATIN('A', CharPatternToRegexConstants.FULLWIDTH_UPPER_LATIN),
 
-    LOWER_HIRAGANA('h', CharPatternToRegexConstants.LOWER_HIRAGANA),
+    HIRAGANA('H', CharPatternToRegexConstants.HIRAGANA),
 
-    UPPER_HIRAGANA('H', CharPatternToRegexConstants.UPPER_HIRAGANA),
+    HALFWIDTH_KATAKANA('k', CharPatternToRegexConstants.HALFWIDTH_KATAKANA),
 
-    LOWER_KATAKANA('k', CharPatternToRegexConstants.LOWER_KATAKANA),
-
-    UPPER_KATAKANA('K', CharPatternToRegexConstants.UPPER_KATAKANA),
+    FULLWIDTH_KATAKANA('K', CharPatternToRegexConstants.FULLWIDTH_KATAKANA),
 
     KANJI('C', CharPatternToRegexConstants.KANJI),
 
