@@ -24,7 +24,11 @@ public enum CharPatternToRegexConstants {
             "([\\u30A1-\\u30FA\\u31F0-\\u31FF])"),
 
     KANJI(
-            "([\\x{4E00}-\\x{9FEF}]" + "|[\\x{3400}-\\x{4DB5}]" + // Extension A
+            "([\\x{4E00}-\\x{9FEF}]" + "|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}])", // Symbol and punctuation added for TDQ-11343
+            "([\\u4E00-\\u9FEF]" + "|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B])"), // Symbol and punctuation added for TDQ-11343
+
+    KANJI_RARE(
+            "([\\x{3400}-\\x{4DB5}]" + // Extension A
                     "|[\\x{20000}-\\x{2A6D6}]" + // Extension B
                     "|[\\x{2A700}-\\x{2B734}]" + // Extension C
                     "|[\\x{2B740}-\\x{2B81D}]" + // Extension D
@@ -33,10 +37,9 @@ public enum CharPatternToRegexConstants {
                     "|[\\x{F900}-\\x{FA6D}]|[\\x{FA70}-\\x{FAD9}]" + // Compatibility Ideograph
                     "|[\\x{2F800}-\\x{2FA1D}]" + // Compatibility Ideograph Supplement
                     "|[\\x{2F00}-\\x{2FD5}]" + // KangXi Radicals
-                    "|[\\x{2E80}-\\x{2E99}]|[\\x{2E9B}-\\x{2EF3}]" + // Radical Supplement
-                    "|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}]" + // Symbol and punctuation added for TDQ-11343
-                    ")", //
-            "([\\u4E00-\\u9FEF]" + "|[\\u3400-\\u4DB5]" + // Extension A
+                    "|[\\x{2E80}-\\x{2E99}]|[\\x{2E9B}-\\x{2EF3}])" // Radical Supplement
+            ,
+            "([\\u3400-\\u4DB5]" + // Extension A
                     "|[\\ud840-\\ud868][\\udc00-\\udfff]|\\ud869[\\udc00-\\uded6]" + // Extension B
                     "|[\\ud86a-\\ud86c][\\udc00-\\udfff]|\\ud869[\\udf00-\\udfff]|\\ud86d[\\udc00-\\udf34]" + // Extension C
                     "|\\ud86d[\\udf40-\\udfff]|\\ud86e[\\udc00-\\udc1d]" + // Extension D
@@ -45,9 +48,7 @@ public enum CharPatternToRegexConstants {
                     "|[\\uF900-\\uFA6D]|[\\uFA70-\\uFAD9]" + // Compatibility Ideograph
                     "|\\ud87e[\\udc00-\\ude1d]" + // Compatibility Ideograph Supplement
                     "|[\\u2F00}-\\u2FD5]" + // KangXi Radicals
-                    "|[\\u2E80}-\\u2E99]|[\\u2E9B-\\u2EF3]" + // Radical Supplement
-                    "|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B]" + // Symbol and punctuation added for TDQ-11343
-                    ")"),
+                    "|[\\u2E80}-\\u2E99]|[\\u2E9B-\\u2EF3])"), // Radical Supplement),
 
     HANGUL("([\\x{AC00}-\\x{D7AF}])", "([\\uAC00-\\uD7AF])");
 

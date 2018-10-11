@@ -29,6 +29,8 @@ public enum CharPattern {
 
     KANJI('C', CharPatternToRegexConstants.KANJI),
 
+    KANJI_RARE('C', CharPatternToRegexConstants.KANJI_RARE),
+
     HANGUL('G', CharPatternToRegexConstants.HANGUL);
 
     private Character replaceChar;

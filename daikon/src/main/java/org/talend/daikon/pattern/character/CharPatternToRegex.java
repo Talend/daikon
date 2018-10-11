@@ -36,7 +36,9 @@ public class CharPatternToRegex {
                 break;
 
             case 'C':
-                buildString(stringBuilder, getRegex(CharPatternToRegexConstants.KANJI, isForJavaScript), consecutiveValues);
+                String regexC = buildRegex(getRegex(CharPatternToRegexConstants.KANJI, isForJavaScript),
+                        getRegex(CharPatternToRegexConstants.KANJI_RARE, isForJavaScript));
+                buildString(stringBuilder, regexC, consecutiveValues);
                 break;
             case 'G':
                 buildString(stringBuilder, getRegex(CharPatternToRegexConstants.HANGUL, isForJavaScript), consecutiveValues);

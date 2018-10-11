@@ -23,11 +23,12 @@ public class CharPatternToRegexTest {
         assertEquals("^([\\x{3041}-\\x{3096}]){3}$", CharPatternToRegex.toRegex("HHH"));
         assertEquals("^([\\x{FF66}-\\x{FF6F}]|[\\x{FF71}-\\x{FF9D}])$", CharPatternToRegex.toRegex("k"));
         assertEquals("^([\\x{30A1}-\\x{30FA}]|[\\x{31F0}-\\x{31FF}])$", CharPatternToRegex.toRegex("K"));
-        assertEquals("^([\\x{4E00}-\\x{9FEF}]" + "|[\\x{3400}-\\x{4DB5}]"
-                + "|[\\x{20000}-\\x{2A6D6}]|[\\x{2A700}-\\x{2B734}]|[\\x{2B740}-\\x{2B81D}]"
-                + "|[\\x{2B820}-\\x{2CEA1}]|[\\x{2CEB0}-\\x{2EBE0}]|[\\x{F900}-\\x{FA6D}]|[\\x{FA70}-\\x{FAD9}]"
-                + "|[\\x{2F800}-\\x{2FA1D}]|[\\x{2F00}-\\x{2FD5}]|[\\x{2E80}-\\x{2E99}]|[\\x{2E9B}-\\x{2EF3}]"
-                + "|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}])$", CharPatternToRegex.toRegex("C"));
+        assertEquals(
+                "^([\\x{4E00}-\\x{9FEF}]|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}]"
+                        + "|[\\x{3400}-\\x{4DB5}]" + "|[\\x{20000}-\\x{2A6D6}]|[\\x{2A700}-\\x{2B734}]|[\\x{2B740}-\\x{2B81D}]"
+                        + "|[\\x{2B820}-\\x{2CEA1}]|[\\x{2CEB0}-\\x{2EBE0}]|[\\x{F900}-\\x{FA6D}]|[\\x{FA70}-\\x{FAD9}]"
+                        + "|[\\x{2F800}-\\x{2FA1D}]|[\\x{2F00}-\\x{2FD5}]|[\\x{2E80}-\\x{2E99}]|[\\x{2E9B}-\\x{2EF3}]" + ")$",
+                CharPatternToRegex.toRegex("C"));
         assertEquals("^([\\x{AC00}-\\x{D7AF}])$", CharPatternToRegex.toRegex("G"));
         assertEquals(
                 "^([\\x{61}-\\x{7a}]|[\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}]|[\\x{FF41}-\\x{FF5A}]){4}@"
@@ -46,7 +47,7 @@ public class CharPatternToRegexTest {
         assertEquals("^([\\uFF66-\\uFF6F\\uFF71-\\uFF9D])$", CharPatternToRegex.toJavaScriptRegex("k"));
         assertEquals("^([\\u30A1-\\u30FA\\u31F0-\\u31FF])$", CharPatternToRegex.toJavaScriptRegex("K"));
         assertEquals(
-                "^([\\u4E00-\\u9FEF]|[\\u3400-\\u4DB5]|[\\ud840-\\ud868][\\udc00-\\udfff]|\\ud869[\\udc00-\\uded6]|[\\ud86a-\\ud86c][\\udc00-\\udfff]|\\ud869[\\udf00-\\udfff]|\\ud86d[\\udc00-\\udf34]|\\ud86d[\\udf40-\\udfff]|\\ud86e[\\udc00-\\udc1d]|[\\ud86f-\\ud872][\\udc00-\\udfff]|\\ud86e[\\udc20-\\udfff]|\\ud873[\\udc00-\\udea1]|[\\ud874-\\ud879][\\udc00-\\udfff]|\\ud873[\\udeb0-\\udfff]|\\ud87a[\\udc00-\\udfe0]|[\\uF900-\\uFA6D]|[\\uFA70-\\uFAD9]|\\ud87e[\\udc00-\\ude1d]|[\\u2F00}-\\u2FD5]|[\\u2E80}-\\u2E99]|[\\u2E9B-\\u2EF3]|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B])$",
+                "^([\\u4E00-\\u9FEF]|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B]|[\\u3400-\\u4DB5]|[\\ud840-\\ud868][\\udc00-\\udfff]|\\ud869[\\udc00-\\uded6]|[\\ud86a-\\ud86c][\\udc00-\\udfff]|\\ud869[\\udf00-\\udfff]|\\ud86d[\\udc00-\\udf34]|\\ud86d[\\udf40-\\udfff]|\\ud86e[\\udc00-\\udc1d]|[\\ud86f-\\ud872][\\udc00-\\udfff]|\\ud86e[\\udc20-\\udfff]|\\ud873[\\udc00-\\udea1]|[\\ud874-\\ud879][\\udc00-\\udfff]|\\ud873[\\udeb0-\\udfff]|\\ud87a[\\udc00-\\udfe0]|[\\uF900-\\uFA6D]|[\\uFA70-\\uFAD9]|\\ud87e[\\udc00-\\ude1d]|[\\u2F00}-\\u2FD5]|[\\u2E80}-\\u2E99]|[\\u2E9B-\\u2EF3])$",
                 CharPatternToRegex.toJavaScriptRegex("C"));
         assertEquals("^([\\uAC00-\\uD7AF])$", CharPatternToRegex.toJavaScriptRegex("G"));
         assertEquals(
