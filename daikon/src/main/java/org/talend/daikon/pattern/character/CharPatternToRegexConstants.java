@@ -14,14 +14,19 @@ public enum CharPatternToRegexConstants {
 
     FULLWIDTH_UPPER_LATIN("([\\x{FF21}-\\x{FF3A}])", "([\\uFF21-\\uFF3A])"),
 
-    HIRAGANA("([\\x{3041}-\\x{3096}])", "([\\u3041-\\u3096])"),
+    HIRAGANA(
+            "([\\x{3041}-\\x{3096}]|\\x{309D}|\\x{309E})",
+            "([\\x{3041}-\\x{3096}]|\\x{309D}|\\x{309E}|\\x{30FC})",
+            "([\\u3041-\\u3096]|\\u309D|\\u309E|\\u30FC)"),
 
-    HALFWIDTH_KATAKANA("([\\x{FF66}-\\x{FF6F}]|[\\x{FF71}-\\x{FF9D}])", "([\\uFF66-\\uFF6F\\uFF71-\\uFF9D])"),
+    HALFWIDTH_KATAKANA("([\\x{FF66}-\\x{FF9D}])", "([\\uFF66-\\uFF9D])"),
 
     FULLWIDTH_KATAKANA(
-            "([\\x{30A1}-\\x{30FA}]" // FullWidth
-                    + "|[\\x{31F0}-\\x{31FF}])", // Phonetic extension,
-            "([\\u30A1-\\u30FA\\u31F0-\\u31FF])"),
+            "([\\x{30A1}-\\x{30FA}]|\\x{30FD}|\\x{30FE}|[\\x{31F0}-\\x{31FF}])",
+            "([\\x{30A1}-\\x{30FA}]|\\x{30FD}|\\x{30FE}" // FullWidth
+                    + "|[\\x{31F0}-\\x{31FF}]" + // Phonetic extension
+                    "|\\x{30FC})", // KATAKANA-HIRAGANA PROLONGED SOUND MARK
+            "([\\u30A1-\\u30FA\\u31F0-\\u31FF]|\\u30FC\\u30FD\\u30FE)"),
 
     KANJI(
             "([\\x{4E00}-\\x{9FEF}]" + "|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}])", // Symbol and punctuation added for TDQ-11343
@@ -52,13 +57,24 @@ public enum CharPatternToRegexConstants {
 
     HANGUL("([\\x{AC00}-\\x{D7AF}])", "([\\uAC00-\\uD7AF])");
 
+    private String range;
+
     private String regex;
 
     private String javaScriptRegex;
 
     CharPatternToRegexConstants(String regex, String javaScriptRegex) {
+        this(regex, regex, javaScriptRegex);
+    }
+
+    CharPatternToRegexConstants(String range, String regex, String javaScriptRegex) {
+        this.range = range;
         this.regex = regex;
         this.javaScriptRegex = javaScriptRegex;
+    }
+
+    public String getRange() {
+        return range;
     }
 
     public String getRegex() {

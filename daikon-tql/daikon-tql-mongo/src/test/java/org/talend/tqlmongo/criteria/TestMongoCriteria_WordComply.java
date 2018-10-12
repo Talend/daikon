@@ -139,7 +139,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     @Test
     public void hiragana() {
         Criteria criteria = doTest("name wordComplies '[hira]'");
-        Criteria expectedCriteria = getExpectedCriteria("name", "^([\\x{3041}-\\x{3096}])$", false);
+        Criteria expectedCriteria = getExpectedCriteria("name", "^([\\x{3041}-\\x{3096}]|\\x{309D}|\\x{309E}|\\x{30FC})$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());
@@ -148,7 +148,8 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     @Test
     public void hiraganaSeq() {
         Criteria criteria = doTest("name wordComplies '[hiraSeq]'");
-        Criteria expectedCriteria = getExpectedCriteria("name", "^([\\x{3041}-\\x{3096}]){2,}$", false);
+        Criteria expectedCriteria = getExpectedCriteria("name", "^([\\x{3041}-\\x{3096}]|\\x{309D}|\\x{309E}|\\x{30FC}){2,}$",
+                false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());
@@ -158,7 +159,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     public void katakana() {
         Criteria criteria = doTest("name wordComplies '[kata]'");
         Criteria expectedCriteria = getExpectedCriteria("name",
-                "^([\\x{FF66}-\\x{FF6F}]|[\\x{FF71}-\\x{FF9D}]|[\\x{30A1}-\\x{30FA}]|[\\x{31F0}-\\x{31FF}])$", false);
+                "^([\\x{FF66}-\\x{FF9D}]|[\\x{30A1}-\\x{30FA}]|\\x{30FD}|\\x{30FE}|[\\x{31F0}-\\x{31FF}]|\\x{30FC})$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());
@@ -168,7 +169,7 @@ public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
     public void katakanaSeq() {
         Criteria criteria = doTest("name wordComplies '[kataSeq]'");
         Criteria expectedCriteria = getExpectedCriteria("name",
-                "^([\\x{FF66}-\\x{FF6F}]|[\\x{FF71}-\\x{FF9D}]|[\\x{30A1}-\\x{30FA}]|[\\x{31F0}-\\x{31FF}]){2,}$", false);
+                "^([\\x{FF66}-\\x{FF9D}]|[\\x{30A1}-\\x{30FA}]|\\x{30FD}|\\x{30FE}|[\\x{31F0}-\\x{31FF}]|\\x{30FC}){2,}$", false);
         Assert.assertEquals(expectedCriteria.getCriteriaObject(), criteria.getCriteriaObject());
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());

@@ -58,7 +58,7 @@ public enum CharPattern {
     CharPattern(char replace, CharPatternToRegexConstants pattern) {
         replaceChar = replace;
         this.pattern = pattern;
-        buildCharacters(pattern.getRegex());
+        buildCharacters(pattern.getRange());
     }
 
     private void buildCharacters(String pattern) {
