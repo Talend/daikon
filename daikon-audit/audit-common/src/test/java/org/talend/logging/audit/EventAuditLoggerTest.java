@@ -37,14 +37,14 @@ public class EventAuditLoggerTest {
 
         auditLogger.loginSuccess();
 
-        checkLogEntry(testBackend.getEntries(), "security", LogLevel.INFO, "User has logged in successfully", null);
+        checkLogEntry(testBackend.getEntries(), "security", LogLevel.INFO, "User has logged in successfully.", null);
         assertEquals(mdc, testBackend.getCopyOfContextMap());
 
         final RuntimeException exception = new RuntimeException("Test");
 
         auditLogger.systemException(exception);
 
-        checkLogEntry(testBackend.getEntries(), "failure", LogLevel.INFO, "Unexpected exception", exception);
+        checkLogEntry(testBackend.getEntries(), "failure", LogLevel.INFO, "Unexpected exception.", exception);
         assertEquals(mdc, testBackend.getCopyOfContextMap());
     }
 
