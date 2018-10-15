@@ -16,4 +16,10 @@ public class PatternRegexUtils {
         }
         return escaped;
     }
+
+    // Utils to remove middle parenthesis of regexes
+    public static String buildRegex(String pattern1, String pattern2) {
+        return pattern1.substring(0, pattern1.length() - 1) + "|" + pattern2.substring(1);
+    }
+
 }
