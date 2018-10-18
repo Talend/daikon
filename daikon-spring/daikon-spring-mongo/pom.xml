@@ -17,9 +17,9 @@
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
-		<spring-core.version>4.3.4.RELEASE</spring-core.version>
+		<spring-core.version>4.3.20.RELEASE</spring-core.version>
 		<spring-data-mongodb.version>1.8.2.RELEASE</spring-data-mongodb.version>
-		<jackson.version>2.9.4</jackson.version>
+		<jackson.version>2.9.5</jackson.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>

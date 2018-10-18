@@ -22,7 +22,7 @@
         <talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
         <pushChanges>false</pushChanges>
 	    <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
-	    <jackson.version>2.9.4</jackson.version>
+	    <jackson.version>2.9.5</jackson.version>
 	    <jackson.version.annotations>2.9.0</jackson.version.annotations>
     </properties>
     <modules>
