@@ -87,7 +87,7 @@
 		<repository>
 			<id>talend_nexus</id>
 			<name>talend-opensource-snapshot</name>
-			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<url>${talend_snapshots_deployment}</url>
 			<releases>
                 <enabled>false</enabled>
             </releases>
@@ -98,7 +98,7 @@
 		<repository>
 			<id>talend-opensource-release</id>
 			<name>talend-opensource-release</name>
-			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<url>${talend_snapshots_deployment}</url>
 			<releases>
                 <enabled>true</enabled>
             </releases>
@@ -114,7 +114,7 @@
 		</snapshotRepository>
 		<repository>
 			<id>talend_nexus_deployment</id>
-			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<url>${talend_snapshots_deployment}</url>
 		</repository>
 	</distributionManagement>
 

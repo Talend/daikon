@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.talend.daikon</groupId>
     <artifactId>daikon-parent</artifactId>
@@ -15,15 +16,65 @@
     </licenses>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.7</java.version>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <talend_snapshots>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
-        <talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <talend_snapshots>https://artifacts-zl.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/
+        </talend_snapshots>
+        <talend_releases>https://artifacts-zl.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/
+        </talend_releases>
         <pushChanges>false</pushChanges>
-	    <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
-	    <jackson.version>2.9.5</jackson.version>
-	    <jackson.version.annotations>2.9.0</jackson.version.annotations>
+        <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
+        <jackson.version>2.9.5</jackson.version>
+        <jackson.version.annotations>2.9.0</jackson.version.annotations>
+        <slf4j.version>1.7.25</slf4j.version>
+        <log4j1.version>1.2.17</log4j1.version>
+        <logback.version>1.2.3</logback.version>
+        <easymock.version>3.5.1</easymock.version>
+        <avro.version>1.8.1</avro.version>
+        <commons-io.version>1.3.2</commons-io.version>
+        <reactor-core.version>3.1.6.RELEASE</reactor-core.version>
+        <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+        <fongo.version>2.0.12</fongo.version>
+        <s3mock.version>0.1.6</s3mock.version>
+        <aws-java-sdk-s3.version>1.11.18</aws-java-sdk-s3.version>
+        <spring-cloud-aws-context.version>1.1.3.RELEASE</spring-cloud-aws-context.version>
+        <junit.version>4.12</junit.version>
+        <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+        <openfeign.version>9.3.1</openfeign.version>
+        <okhttp.version>3.9.1</okhttp.version>
+        <assertj-core.version>3.8.0</assertj-core.version>
+        <mockwebserver.version>3.9.1</mockwebserver.version>
+        <rest-assured.version>2.9.0</rest-assured.version>
+        <enunciate-version>2.8.0</enunciate-version>
+        <commons-lang3.version>3.4</commons-lang3.version>
+        <slf4j-log4j12.version>1.7.21</slf4j-log4j12.version>
+        <mongodb-driver.version>3.4.2</mongodb-driver.version>
+        <guava.version>21</guava.version>
+        <spring-core.version>4.3.20.RELEASE</spring-core.version>
+        <spring-data-mongodb.version>1.8.2.RELEASE</spring-data-mongodb.version>
+        <jackson.version>2.9.5</jackson.version>
+        <aspectjweaver.version>1.8.9</aspectjweaver.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <spring-aop.version>4.3.6.RELEASE</spring-aop.version>
+        <spring-security-core.version>4.2.1.RELEASE</spring-security-core.version>
+        <bnd.version>3.0.0</bnd.version>
+        <zipkin-sender-kafka11.version>2.1.4</zipkin-sender-kafka11.version>
+        <kafka-clients.version>0.10.0.0</kafka-clients.version>
+        <spring-data-mongodb.version>1.8.1.RELEASE</spring-data-mongodb.version>
+        <spring.version>4.3.3.RELEASE</spring.version>
+        <jsonassert.version>1.2.3</jsonassert.version>
+        <commons-codec.version>1.6</commons-codec.version>
+        <javax.inject.version>1</javax.inject.version>
+        <pax-url-aether.version>2.4.7</pax-url-aether.version>
+        <mockito-core.version>2.2.15</mockito-core.version>
+        <ch.qos.logback.version>1.1.7</ch.qos.logback.version>
+        <log4j2.version>2.7</log4j2.version>
+        <hamcrest-all.version>1.3</hamcrest-all.version>
+        <hamcrest-json.version>0.2</hamcrest-json.version>
+        <json-path-assert.version>2.2.0</json-path-assert.version>
+        <log4j.version>1.2.17</log4j.version>
+        <json-smart.version>2.2.1</json-smart.version>
     </properties>
     <modules>
         <module>daikon</module>
@@ -36,15 +87,15 @@
         <module>daikon-tql</module>
         <module>daikon-messages</module>
         <module>daikon-audit</module>
-      	<module>daikon-i18n</module>
-      	<module>daikon-signature-verifier</module>
+        <module>daikon-i18n</module>
+        <module>daikon-signature-verifier</module>
     </modules>
     <scm>
-      <connection>scm:git:https://github.com/Talend/daikon.git</connection>
-      <developerConnection>scm:git:https://github.com/Talend/daikon.git</developerConnection>
-      <url>https://github.com/Talend/daikon</url>
-      <tag>daikon-0.27.0</tag>
-  </scm>
+        <connection>scm:git:https://github.com/Talend/daikon.git</connection>
+        <developerConnection>scm:git:https://github.com/Talend/daikon.git</developerConnection>
+        <url>https://github.com/Talend/daikon</url>
+        <tag>daikon-0.27.0</tag>
+    </scm>
     <repositories>
         <repository>
             <id>talend_nexus</id>
@@ -60,7 +111,7 @@
         <repository>
             <id>talend-opensource-release</id>
             <name>talend-opensource-release</name>
-            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <url>${talend_releases}</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -73,7 +124,7 @@
         <pluginRepository>
             <id>talend-opensource-snapshot</id>
             <name>talend-opensource-snapshot</name>
-            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+            <url>${talend_snapshots}</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -84,7 +135,7 @@
         <pluginRepository>
             <id>talend-opensource-release</id>
             <name>talend-opensource-release</name>
-            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <url>${talend_releases}</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -96,11 +147,11 @@
     <distributionManagement>
         <snapshotRepository>
             <id>talend_nexus_deployment</id>
-            <url>${talend_snapshots_deployment}</url>
+            <url>${talend_snapshots}</url>
         </snapshotRepository>
         <repository>
             <id>talend_nexus_deployment</id>
-            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <url>${talend_releases}</url>
         </repository>
     </distributionManagement>
     <dependencyManagement>
@@ -108,7 +159,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -120,22 +171,22 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.12</version>
+                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.cedarsoftware</groupId>
                 <artifactId>json-io</artifactId>
-                 <!-- using a specific Talend artifact version until the next official release, the PR has been merge into master but not yet release. -->
+                <!-- using a specific Talend artifact version until the next official release, the PR has been merge into master but not yet release. -->
                 <version>4.9.9-TALEND</version>
             </dependency>
-	        <!-- include fasterxml jackson's bom -->
-	        <dependency>
-		        <groupId>com.fasterxml.jackson</groupId>
-		        <artifactId>jackson-bom</artifactId>
-		        <version>${jackson.version}</version>
-		        <type>pom</type>
-		        <scope>import</scope>
-	        </dependency>
+            <!-- include fasterxml jackson's bom -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
@@ -157,22 +208,22 @@
                         </dependency>
                     </dependencies>
                 </plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.18</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<version>3.0.1</version>
-				</plugin>
-			</plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.18</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+            </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
@@ -219,7 +270,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
+                <version>2.10.4</version>
                 <configuration>
                     <failOnError>false</failOnError>
                 </configuration>
@@ -232,17 +283,17 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.3</version>
-				<configuration>
-					<pushChanges>${pushChanges}</pushChanges>
-					<scmCommentPrefix xml:space="preserve">release: </scmCommentPrefix>
-					<tagNameFormat>daikon-@{project.version}</tagNameFormat>
-					<autoVersionSubmodules>true</autoVersionSubmodules>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <pushChanges>${pushChanges}</pushChanges>
+                    <scmCommentPrefix xml:space="preserve">release: </scmCommentPrefix>
+                    <tagNameFormat>daikon-@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <profiles>
