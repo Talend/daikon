@@ -52,8 +52,8 @@ public enum CharPatternToRegexConstants {
                     "|[\\ud874-\\ud879][\\udc00-\\udfff]|\\ud873[\\udeb0-\\udfff]|\\ud87a[\\udc00-\\udfe0]" + // Extension F
                     "|[\\uF900-\\uFA6D]|[\\uFA70-\\uFAD9]" + // Compatibility Ideograph
                     "|\\ud87e[\\udc00-\\ude1d]" + // Compatibility Ideograph Supplement
-                    "|[\\u2F00}-\\u2FD5]" + // KangXi Radicals
-                    "|[\\u2E80}-\\u2E99]|[\\u2E9B-\\u2EF3])"), // Radical Supplement),
+                    "|[\\u2F00-\\u2FD5]" + // KangXi Radicals
+                    "|[\\u2E80-\\u2E99]|[\\u2E9B-\\u2EF3])"), // Radical Supplement),
 
     HANGUL("([\\x{AC00}-\\x{D7AF}])", "([\\uAC00-\\uD7AF])");
 
