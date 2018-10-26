@@ -66,10 +66,10 @@ public class ZipUtil {
 
     private static void zips(ZipOutputStream out, File f, String base, FileFilter fileFilter) throws IOException {
         if (f.isDirectory()) {
-            base += f.getName() + '/';
-            out.putNextEntry(new ZipEntry(base));
+            String newBase = base + f.getName() + '/';
+            out.putNextEntry(new ZipEntry(newBase));
             for (File element : f.listFiles(fileFilter)) {
-                zips(out, element, base, fileFilter);
+                zips(out, element, newBase, fileFilter);
             }
         } else {
             out.putNextEntry(new ZipEntry(base + f.getName()));
