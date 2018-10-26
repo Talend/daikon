@@ -350,7 +350,7 @@ public class CertificateGenerater {
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(keyStoreFile);
-            keyStore.load(inputStream, rootJKSKeyPass.toCharArray());
+            keyStore.load(inputStream, storePass.toCharArray());
         } finally {
             if (inputStream != null) {
                 inputStream.close();
