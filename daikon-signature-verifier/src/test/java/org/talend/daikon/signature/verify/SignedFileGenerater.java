@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,6 +103,22 @@ public class SignedFileGenerater {
         toAddFile.createNewFile();
         ZipUtil.zipFolderRecursion(tempFolder.getAbsolutePath(),
                 new File(workspacePath, validArchiveAddedName).getAbsolutePath());
+    }
+
+    private void prepareUnsignedFile() throws IOException {
+        String tempFolderName = "temp_folder";
+        File tempFolder = new File(workspacePath, tempFolderName);
+        if (tempFolder.exists()) {
+            FileUtils.deleteDirectory(tempFolder);
+        }
+        tempFolder.mkdirs();
+        File readMeFile = new File(tempFolder, "readme.txt");
+        readMeFile.createNewFile();
+        FileUtils.writeStringToFile(readMeFile, RandomStringUtils.randomAlphabetic(256), "utf-8");
+        File toModifyFile = new File(tempFolder, toModifyFileName);
+        toModifyFile.createNewFile();
+        FileUtils.writeStringToFile(toModifyFile, RandomStringUtils.randomAlphabetic(256), "utf-8");
+        ZipUtil.zipFolderRecursion(tempFolder.getAbsolutePath(), new File(workspacePath, archiveFileName).getAbsolutePath());
     }
 
     private void prepareDeleteFileAfterSigned() throws IOException {
@@ -199,6 +216,8 @@ public class SignedFileGenerater {
     public void generateSignedFiles() throws Exception {
         certTool.generateCertificate();
         LOGGER.debug("Generated certificate");
+        prepareUnsignedFile();
+        LOGGER.debug("Generated unsigned file");
         signUseValidCert();
         LOGGER.debug("Signed file use valid certificate");
         signUseExpiredCert();

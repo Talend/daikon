@@ -47,10 +47,8 @@ public class ZipVerifierTest {
             FileUtils.deleteDirectory(workingFolder);
         }
         workingFolder.mkdirs();
-        String unSignJobPath = getResourceFilePath(unSignArchiveName);
-        FileUtils.copyFileToDirectory(new File(unSignJobPath), workingFolder);
         SignedFileGenerater generater = new SignedFileGenerater(workingFolder.getAbsolutePath(),
-                new File(workingFolder, unSignJobPath), storePass);
+                new File(workingFolder, unSignArchiveName), storePass);
         generater.generateSignedFiles();
     }
 
