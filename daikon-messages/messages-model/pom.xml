@@ -19,6 +19,12 @@
             <resource>
                 <directory>src/main/avro</directory>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.vm</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -45,6 +51,8 @@
                                 <import>${project.basedir}/src/main/avro/MessageHeader.avsc</import>
                                 <import>${project.basedir}/src/main/avro/MessagePayload.avsc</import>
                             </imports>
+                            <fieldVisibility>private</fieldVisibility>
+                            <templateDirectory>${project.basedir}/src/main/resources/org/talend/daikon/messages/</templateDirectory>
                         </configuration>
                     </execution>
                 </executions>
