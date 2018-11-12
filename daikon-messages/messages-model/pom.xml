@@ -51,6 +51,7 @@
                                 <import>${project.basedir}/src/main/avro/MessageHeader.avsc</import>
                                 <import>${project.basedir}/src/main/avro/MessagePayload.avsc</import>
                             </imports>
+                            <fieldVisibility>private</fieldVisibility>
                             <templateDirectory>${project.basedir}/src/main/resources/org/talend/daikon/messages/</templateDirectory>
                         </configuration>
                     </execution>
