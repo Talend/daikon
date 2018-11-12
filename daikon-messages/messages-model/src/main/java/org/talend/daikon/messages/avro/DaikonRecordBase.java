@@ -10,6 +10,6 @@ public abstract class DaikonRecordBase extends SpecificRecordBase {
 
     @Override
     public String toString() {
-        return "<hidden information>";
+        return SecuredData.get().toString(this);
     }
 }

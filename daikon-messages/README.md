@@ -279,3 +279,17 @@ and listener can receive Avro message by using:
     }
 ```
 
+## Sensitive data
+
+Avro may contain sensitive data (e.g. authentication token) that must be excluded from the `toString()` result of the Avro record. This can happen when message is logged for example.
+
+To indicate a sensitive field, you can use the "secured" flag in the field definition:
+
+```json
+{
+  "name" : "securityToken",
+  "doc" : "User's security token",
+  "type" : ["null", "string"],
+  "secured": true
+}
+```

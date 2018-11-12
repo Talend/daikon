@@ -34,15 +34,17 @@ public class TestMessageHeaderExtractor {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void testExtractMessageHeaderToString() {
-        MessageHeader messageHeader = MessageHeader.newBuilder().setId("My id").setCorrelationId("Correlation id")
-                .setTimestamp(123L)
+    public void testHiddenSecuredField() {
+        MessageHeader messageHeader = MessageHeader.newBuilder().setId("My id") //
+                .setCorrelationId("Correlation id") //
+                .setTimestamp(123L) //
                 .setIssuer(MessageIssuer.newBuilder().setApplication("Application1").setService("Service1").setVersion("ABC")
-                        .build())
-                .setType(MessageTypes.COMMAND).setName("name").setTenantId("tenantId").setUserId("userId")
+                        .build()) //
+                .setType(MessageTypes.COMMAND).setName("name").setTenantId("tenantId").setUserId("userId") //
                 .setSecurityToken("securityToken").build();
 
-        Assert.assertEquals("<hidden information>", messageHeader.toString());
+        Assert.assertNotNull(messageHeader.toString());
+        Assert.assertTrue(messageHeader.toString().contains("\"securityToken\": <hidden>"));
     }
 
     @Test
