@@ -27,6 +27,7 @@
     </properties>
     <modules>
         <module>daikon</module>
+        <module>daikon-exception</module>
         <module>daikon-spring</module>
         <module>daikon-service</module>
         <module>reporting</module>
