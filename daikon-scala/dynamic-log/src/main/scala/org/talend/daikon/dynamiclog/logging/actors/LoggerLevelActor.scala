@@ -3,15 +3,13 @@ package org.talend.daikon.dynamiclog.logging.actors
 import java.util.concurrent.TimeUnit
 
 import javax.inject.{Inject, Named}
-import akka.actor.{ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.cluster.pubsub.DistributedPubSubMediator.{Subscribe, SubscribeAck}
 import akka.pattern._
 import akka.util.Timeout
 import ch.qos.logback.classic
 import ch.qos.logback.classic.Level
 import org.slf4j.LoggerFactory
-import org.talend.dataflow.common.akka.actors.ActorNames._
-import org.talend.dataflow.common.akka.actors.UnhandledExceptionLogging
 import org.talend.daikon.dynamiclog.logging.actors.LoggerLevelActor._
 import play.api.Configuration
 
@@ -44,9 +42,9 @@ case class UpdateLoggerLevel(name: LoggerName, level: LoggerLevel)
   * @param configuration             the Play configuration
   */
 class LoggerLevelActor @Inject()(
-  @Named(DISTRIBUTED_PUB_SUB_MEDIATOR) val distributedPubSubMediator: ActorRef,
+  @Named("distributed-pub-sub-mediator") val distributedPubSubMediator: ActorRef,
   val configuration: Configuration
-) extends UnhandledExceptionLogging {
+) extends Actor with ActorLogging {
 
   override def preStart(): Unit = {
     super.preStart()
@@ -78,6 +76,12 @@ class LoggerLevelActor @Inject()(
         log.error(s"Unexpected response after subscribing to {$LOGGER_LEVEL_TOPIC} topic: $other")
     }
   }
+
+  override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
+    super.preRestart(reason, message)
+    log.error(reason, s"Unhandled exception '${reason.getMessage}' for received message: {}", message)
+  }
+
 }
 
 object LoggerLevelActor {
