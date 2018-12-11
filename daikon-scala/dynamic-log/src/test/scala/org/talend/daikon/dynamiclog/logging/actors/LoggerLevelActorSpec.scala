@@ -20,7 +20,10 @@ import scala.concurrent.duration.FiniteDuration
 import play.api.Application
 import play.api.Logger
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
+import org.junit.runner.RunWith
+import org.specs2.runner.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class LoggerLevelActorSpec
   extends TestKitBase
     with SpecificationLike
@@ -28,8 +31,6 @@ class LoggerLevelActorSpec
     with AskSupport {
 
   sequential
-
-  Logger.info("\n\nHERE\n\n")
 
   override def afterAll {
     shutdown()
