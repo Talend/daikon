@@ -4,9 +4,8 @@ import java.util.concurrent.TimeUnit
 
 import akka.cluster.pubsub.DistributedPubSubMediator.{Subscribe, SubscribeAck}
 import akka.pattern.AskSupport
-import akka.testkit.TestProbe
 import akka.actor.ActorSystem
-import akka.testkit.TestKitBase
+import akka.testkit.{TestKitBase, TestProbe}
 import akka.util.Timeout
 import ch.qos.logback.classic
 import ch.qos.logback.classic.Level
@@ -14,11 +13,9 @@ import org.slf4j.LoggerFactory
 import org.specs2.mutable.SpecificationLike
 import org.specs2.specification.AfterAll
 import org.talend.daikon.dynamiclog.logging.actors.LoggerLevelActor._
-import play.api.Configuration
 import play.api.test.WithApplication
 import scala.concurrent.duration.FiniteDuration
-import play.api.Application
-import play.api.Logger
+import play.api.{Application, Configuration, Logger}
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner

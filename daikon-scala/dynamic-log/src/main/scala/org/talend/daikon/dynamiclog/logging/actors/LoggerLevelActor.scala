@@ -66,14 +66,14 @@ class LoggerLevelActor @Inject()(
 
   private def subscribeToMediator(): Unit = {
     val timeout: FiniteDuration =
-      FiniteDuration(configuration.getOptional[Long]("bridge-to-actor.timeout_sec").getOrElse(DEFAULT_TIMEOUT), TimeUnit.SECONDS)
+      FiniteDuration(configuration.getOptional[Long]("bridge-to-actor.timeout_sec").getOrElse(defaultTimeout), TimeUnit.SECONDS)
     implicit val akkaTimeout: Timeout = akka.util.Timeout(timeout)
-    val subscribe = distributedPubSubMediator ? Subscribe(LOGGER_LEVEL_TOPIC, self)
+    val subscribe = distributedPubSubMediator ? Subscribe(loggerLevelTopic, self)
     Await.result(subscribe, timeout) match {
       case SubscribeAck(_) =>
-        log.info(s"Subscribed to {$LOGGER_LEVEL_TOPIC} topic through DistributedPubSubMediator.")
+        log.info(s"Subscribed to {$loggerLevelTopic} topic through DistributedPubSubMediator.")
       case other =>
-        log.error(s"Unexpected response after subscribing to {$LOGGER_LEVEL_TOPIC} topic: $other")
+        log.error(s"Unexpected response after subscribing to {$loggerLevelTopic} topic: $other")
     }
   }
 
@@ -92,9 +92,9 @@ object LoggerLevelActor {
 
   implicit def stringToLoggerLevel(name: String): LoggerLevel = LoggerLevel(name)
 
-  val LOGGER_LEVEL_TOPIC: String = "logger-level"
+  val loggerLevelTopic: String = "logger-level"
 
-  val DEFAULT_TIMEOUT : Long = 5
+  val defaultTimeout : Long = 5
 
   /**
     * @param distributedPubSubMediator the [[akka.cluster.pubsub.DistributedPubSubMediator]] actor reference
