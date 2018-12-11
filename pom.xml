@@ -40,7 +40,6 @@
       	<module>daikon-i18n</module>
       	<module>daikon-signature-verifier</module>
         <module>daikon-scala</module>
-        <module>daikon-scala/dynamic-log</module>
     </modules>
     <scm>
       <connection>scm:git:https://github.com/Talend/daikon.git</connection>
