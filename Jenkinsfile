@@ -3,6 +3,14 @@ def version = 'will be replaced'
 def image = 'will be replaced'
 
 pipeline {
+
+  parameters {
+    booleanParam(
+      name: "RELEASE",
+      description: "Build a release from current commit.",
+      defaultValue: false)
+  }
+
   agent {
     kubernetes {
       label 'all_daikon'
@@ -43,7 +51,7 @@ spec:
   }
 
   triggers {
-    cron(env.BRANCH_NAME == "master" ? "@daily" : "")
+    pollSCM "* * * * *"
   }
 
   stages {
@@ -55,6 +63,20 @@ spec:
           }
         }
       }
+    }
+
+    stage("Release") {
+        when {
+            expression { params.RELEASE }
+        }
+        steps {
+            container('maven') {
+              configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
+                sh "mvn -B -s $MAVEN_SETTINGS release:prepare"
+                sh "mvn -B -s $MAVEN_SETTINGS release:perform"
+              }
+            }
+        }
     }
   }
   post {
