@@ -9,6 +9,10 @@ pipeline {
       name: "RELEASE",
       description: "Build a release from current commit.",
       defaultValue: false)
+    booleanParam(
+      name: "NEXT_VERSION",
+      description: "Next version.",
+      defaultValue: "0.0.0-SNAPSHOT")
   }
 
   agent {
@@ -72,8 +76,8 @@ spec:
         steps {
             container('maven') {
               configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-                sh "mvn -B -s $MAVEN_SETTINGS release:prepare"
-                sh "mvn -B -s $MAVEN_SETTINGS release:perform"
+                sh "mvn -B -s $MAVEN_SETTINGS -DdryRun=true -DdevelopmentVersion={ params.NEXT_VERSION } release:prepare"
+                sh "mvn -B -s $MAVEN_SETTINGS -DdryRun=true release:perform"
               }
             }
         }
