@@ -9,7 +9,7 @@ pipeline {
       name: "RELEASE",
       description: "Build a release from current commit.",
       defaultValue: false)
-    booleanParam(
+    string(
       name: "NEXT_VERSION",
       description: "Next version.",
       defaultValue: "0.0.0-SNAPSHOT")
