@@ -63,6 +63,17 @@ spec:
   }
 
   stages {
+    stage('Check git connectivity') {
+      steps {
+        container('maven') {
+          configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
+            sh 'git tag ci-kuke-test && git push --tags'
+            sh 'git push --delete origin ci-kuke-test && git tag --delete ci-kuke-test'
+          }
+        }
+      }
+    }
+
     stage('Build') {
       steps {
         container('maven') {
