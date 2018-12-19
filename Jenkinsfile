@@ -69,9 +69,11 @@ spec:
       steps {
         container('maven') {
           withCredentials([gitCredentials]) {
-            sh "./jenkins/configure_git_credentials.sh '${GIT_LOGIN}' '${GIT_PASSWORD}'"
-            sh "git tag ci-kuke-test && git push --tags"
-            sh "git push --delete origin ci-kuke-test && git tag --delete ci-kuke-test"
+            sh """
+                ./jenkins/configure_git_credentials.sh '${GIT_LOGIN}' '${GIT_PASSWORD}'
+                git tag ci-kuke-test && git push --tags
+                git push --delete origin ci-kuke-test && git tag --delete ci-kuke-test
+            """
           }
         }
       }
