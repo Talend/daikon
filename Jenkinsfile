@@ -6,12 +6,16 @@ pipeline {
 
   parameters {
     booleanParam(
-      name: "RELEASE",
-      description: "Build a release from current commit.",
+      name: "release",
+      description: "Build a release from current commit",
       defaultValue: false)
     string(
-      name: "NEXT_VERSION",
-      description: "Next version.",
+      name: "release_version",
+      description: "Release version",
+      defaultValue: "0.0.0"
+    string(
+      name: "next_version",
+      description: "Next version",
       defaultValue: "0.0.0-SNAPSHOT")
   }
 
@@ -59,11 +63,21 @@ spec:
   }
 
   stages {
-    stage('Build & Deploy') {
+    stage('Build') {
       steps {
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-            sh 'mvn clean deploy -B -s $MAVEN_SETTINGS'
+            sh 'mvn package -B -s $MAVEN_SETTINGS'
+          }
+        }
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        container('maven') {
+          configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
+            sh 'mvn deploy -B -s $MAVEN_SETTINGS'
           }
         }
       }
@@ -71,13 +85,13 @@ spec:
 
     stage("Release") {
         when {
-            expression { params.RELEASE }
+            expression { params.release }
         }
         steps {
             container('maven') {
               configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-                sh "mvn -B -s $MAVEN_SETTINGS -DdryRun=true -DdevelopmentVersion={ params.NEXT_VERSION } release:prepare"
-                sh "mvn -B -s $MAVEN_SETTINGS -DdryRun=true release:perform"
+                sh "mvn -B -s $MAVEN_SETTINGS -Darguments="-DskipTests" -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DpreparationGoals="deploy" -DdevelopmentVersion=${params.next_version} release:prepare"
+                sh "mvn -B -s $MAVEN_SETTINGS -Darguments="-DskipTests" release:perform"
               }
             }
         }
