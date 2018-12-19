@@ -1,6 +1,8 @@
 def slackChannel = 'daikon'
-def version = 'will be replaced'
-def image = 'will be replaced'
+def gitCredentials = usernamePassword(
+    credentialsId: 'github-credentials',
+    passwordVariable: 'GIT_PASSWORD',
+    usernameVariable: 'GIT_LOGIN')
 
 pipeline {
 
@@ -47,11 +49,6 @@ spec:
 """
     }
   }
-
-  def gitCredentials = usernamePassword(
-    credentialsId: 'github-credentials',
-    passwordVariable: 'GIT_PASSWORD',
-    usernameVariable: 'GIT_LOGIN')
 
   environment {
     MAVEN_OPTS = '-Dmaven.artifact.threads=128 -Dorg.slf4j.simpleLogger.showThreadName=true -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss'
