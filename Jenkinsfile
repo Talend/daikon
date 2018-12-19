@@ -12,8 +12,7 @@ pipeline {
     string(
       name: "release_version",
       description: "Release version",
-      defaultValue: "0.0.0"
-    )
+      defaultValue: "0.0.0")
     string(
       name: "next_version",
       description: "Next version",
@@ -91,8 +90,8 @@ spec:
         steps {
             container('maven') {
               configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-                sh "mvn -B -s $MAVEN_SETTINGS -Darguments="-DskipTests" -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DpreparationGoals="deploy" -DdevelopmentVersion=${params.next_version} release:prepare"
-                sh "mvn -B -s $MAVEN_SETTINGS -Darguments="-DskipTests" release:perform"
+                sh "mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DpreparationGoals='deploy' -DdevelopmentVersion=${params.next_version} release:prepare"
+                sh "mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' release:perform"
               }
             }
         }
