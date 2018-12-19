@@ -29,6 +29,7 @@
 		<enunciate-version>2.8.0</enunciate-version>
 		<servlet-version>3.1.0</servlet-version>
 		<talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
+		<talend_releases_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</talend_releases_deployment>
 		<jackson.version>2.9.5</jackson.version>
 	</properties>
 
@@ -98,7 +99,7 @@
 		<repository>
 			<id>talend-opensource-release</id>
 			<name>talend-opensource-release</name>
-			<url>${talend_snapshots_deployment}</url>
+			<url>${talend_releases_deployment}</url>
 			<releases>
                 <enabled>true</enabled>
             </releases>
@@ -114,7 +115,7 @@
 		</snapshotRepository>
 		<repository>
 			<id>talend_nexus_deployment</id>
-			<url>${talend_snapshots_deployment}</url>
+			<url>${talend_releases_deployment}</url>
 		</repository>
 	</distributionManagement>
 
