@@ -66,9 +66,10 @@ spec:
     stage('Check git connectivity') {
       steps {
         container('maven') {
-          configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-            sh 'git tag ci-kuke-test && git push --tags'
-            sh 'git push --delete origin ci-kuke-test && git tag --delete ci-kuke-test'
+          withCredentials([gitCredentials]) {
+            sh "./jenkins/configure_git_credentials.sh '${GIT_LOGIN}' '${GIT_PASSWORD}'"
+            sh "git tag ci-kuke-test && git push --tags"
+            sh "git push --delete origin ci-kuke-test && git tag --delete ci-kuke-test"
           }
         }
       }
@@ -99,10 +100,12 @@ spec:
             expression { params.release }
         }
         steps {
-            container('maven') {
-              configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-                sh "mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DpreparationGoals='deploy' -DdevelopmentVersion=${params.next_version} release:prepare"
-                sh "mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' release:perform"
+            withCredentials([gitCredentials]) {
+              container('maven') {
+                configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
+                  sh "mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DpreparationGoals='deploy' -DdevelopmentVersion=${params.next_version} release:prepare"
+                  sh "mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' release:perform"
+                }
               }
             }
         }
