@@ -33,13 +33,15 @@ import org.talend.daikon.service.ApiVersionRequestMappingHandlerMapping;
  * &#064;ApiVersion({ "1", "2" })
  * public class ABCSuite {
  *      &#064;RequestMapping("bananas")
- *      public List<Banana> getBananas(){...}
+ *      public List&lt;Banana&gt; getBananas(){...}
  * }
  * </pre>
  * 
  * You will then have 2 routes exposed :
+ * <ul>
  * <li>/v1/bananas</li>
  * <li>/v2/bananas</li>
+ * </ul>
  * 
  * <br>
  * In order to enable the version mapping of the routes, you need to override the Spring RequestMappingHandlerMapping
