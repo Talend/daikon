@@ -18,7 +18,7 @@ public final class LayoutFields {
 
     public static final FastDateFormat DATETIME_TIME_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", UTC);
 
-    //Json fields
+    // Json fields
     public static final String VERSION = "@version";
 
     public static final String EVENT_UUID = "eventUUID";
@@ -59,7 +59,7 @@ public final class LayoutFields {
 
     public static final String PROCESS_ID = "process.id";
 
-    //Users fields defined by MDC
+    // Users fields defined by MDC
     public static final String CUSTOM_INFO = "customInfo";
 
     private LayoutFields() {

@@ -38,6 +38,7 @@
 			<groupId>org.talend.daikon</groupId>
 			<artifactId>daikon-spring</artifactId>
 			<version>${project.version}</version>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.talend.daikon</groupId>
@@ -47,11 +48,6 @@
 		<dependency>
 			<groupId>org.talend.daikon</groupId>
 			<artifactId>service-docs</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.daikon</groupId>
-			<artifactId>service-examples</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

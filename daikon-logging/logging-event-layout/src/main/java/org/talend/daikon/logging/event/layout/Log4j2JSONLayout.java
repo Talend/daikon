@@ -23,6 +23,7 @@ import net.minidev.json.JSONObject;
 
 /**
  * Log4j2 JSON Layout
+ * 
  * @author sdiallo
  *
  */
@@ -50,25 +51,25 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
      * Creates a JSON Layout.
      *
      * @param locationInfo
-     *        If "true", includes the location information in the generated JSON.
+     * If "true", includes the location information in the generated JSON.
      * @param properties
-     *        If "true", includes the thread context in the generated JSON.
+     * If "true", includes the thread context in the generated JSON.
      * @param complete
-     *        If "true", includes the JSON header and footer, defaults to "false".
+     * If "true", includes the JSON header and footer, defaults to "false".
      * @param compact
-     *        If "true", does not use end-of-lines and indentation, defaults to "false".
+     * If "true", does not use end-of-lines and indentation, defaults to "false".
      * @param eventEol
-     *        If "true", forces an EOL after each log event (even if compact is "true"), defaults to "false". This
-     *        allows one even per line, even in compact mode.
+     * If "true", forces an EOL after each log event (even if compact is "true"), defaults to "false". This
+     * allows one even per line, even in compact mode.
      * @param charset
-     *        The character set to use, if {@code null}, uses "UTF-8".
+     * The character set to use, if {@code null}, uses "UTF-8".
      * @param pairs
-     *          MDC attributes
+     * MDC attributes
      * @return A JSON Layout.
      */
     @PluginFactory
     public static AbstractStringLayout createLayout(
-            // @formatter:off
+    // @formatter:off
             @PluginAttribute(value = "locationInfo", defaultBoolean = false) final boolean locationInfo,
             @PluginAttribute(value = "properties", defaultBoolean = false) final boolean properties,
             @PluginAttribute(value = "complete", defaultBoolean = false) final boolean complete,
@@ -79,7 +80,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
             // @formatter:on
     ) {
 
-        //Unpacke the pairs list
+        // Unpacke the pairs list
         final Map<String, String> additionalLogAttributes = unpackPairs(pairs);
         return new Log4j2JSONLayout(locationInfo, charset, additionalLogAttributes);
 

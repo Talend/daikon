@@ -45,7 +45,7 @@ public class StringTimestampConverter extends StringConverter<Long> {
      * from string to timestamp
      * 
      * @param datePattern
-     *            date pattern, e.g. "dd-MM-yyyy hh:mm:ss:SSS"
+     * date pattern, e.g. "dd-MM-yyyy hh:mm:ss:SSS"
      */
     public StringTimestampConverter(String datePattern) {
         if (datePattern == null) {

@@ -126,7 +126,9 @@ public class BigDecimalParserTest {
                                                                                                                    // space
         assertFewLocales(new BigDecimal("268435000000000000"), BigDecimalParser.toBigDecimal("268 435 000 000 000 000"));
         assertFewLocales(new BigDecimal("268435000000000000"), BigDecimalParser.toBigDecimal("268" + ((char) 160) + "435"
-                + ((char) 160) + "000" + ((char) 160) + "000" + ((char) 160) + "000" + ((char) 160) + "000")); // char(160) is non-breaking space
+                + ((char) 160) + "000" + ((char) 160) + "000" + ((char) 160) + "000" + ((char) 160) + "000")); // char(160) is
+                                                                                                               // non-breaking
+                                                                                                               // space
 
         // we want the non-breaking space to be managed even if the classical space is defined as grouping separator:
         assertFewLocales(new BigDecimal("10012.5"), BigDecimalParser.toBigDecimal("10" + ((char) 160) + "012,5", ',', ' '));

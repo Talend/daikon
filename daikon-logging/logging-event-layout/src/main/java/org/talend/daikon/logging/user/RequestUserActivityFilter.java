@@ -19,7 +19,8 @@ import org.talend.daikon.logging.event.field.MdcKeys;
 
 /**
  * Checks for atcivity id in the header.
- * If it doesn't exist,  establishes a new  id.
+ * If it doesn't exist, establishes a new id.
+ * 
  * @author sdiallo
  */
 public class RequestUserActivityFilter implements Filter {

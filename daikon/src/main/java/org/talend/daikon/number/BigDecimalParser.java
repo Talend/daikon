@@ -218,6 +218,7 @@ public class BigDecimalParser {
      * Get the supported decimal formats.
      * <p>
      * Useful to check if a number is supported and can be parsed.
+     * 
      * @return the list of supported Formats
      */
     public static List<DecimalFormat> getSupportedFormats() {
