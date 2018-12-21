@@ -48,6 +48,7 @@ public interface MessageKeyFactory {
 
         /**
          * adds a partitioning key to the message key
+         * 
          * @param key the name of the partitioning key
          * @param value the value of the partitioning key
          * @return this builder

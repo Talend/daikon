@@ -13,11 +13,6 @@
 	<name>Daikon library for handling exception</name>
 	<url>https://github.com/Talend/daikon</url>
 
-	<properties>
-		<java.version>1.7</java.version>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>

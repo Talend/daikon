@@ -39,6 +39,7 @@ public interface MessageEnvelopeHandler {
 
     /**
      * Retrieves the actual message that is wrapped in the provided envelope
+     * 
      * @param envelop the enveloped containing the message
      * @param <T> the message type
      * @return the message

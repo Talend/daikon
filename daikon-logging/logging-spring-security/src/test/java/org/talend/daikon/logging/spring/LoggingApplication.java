@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.daikon.logging.spring;
 
+import java.util.concurrent.Callable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,8 +26,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.concurrent.Callable;
-
 @SpringBootApplication
 public class LoggingApplication {
 
@@ -35,8 +35,8 @@ public class LoggingApplication {
 
     public static final String PASSWORD = "password";
 
-    public static void main(String[] args) { //NOSONAR
-        SpringApplication.run(LoggingApplication.class, args); //NOSONAR
+    public static void main(String[] args) { // NOSONAR
+        SpringApplication.run(LoggingApplication.class, args); // NOSONAR
     }
 
     @Configuration
