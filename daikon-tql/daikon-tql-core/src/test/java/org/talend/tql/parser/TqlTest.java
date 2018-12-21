@@ -1,11 +1,11 @@
 package org.talend.tql.parser;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.talend.tql.excp.TqlException;
 import org.talend.tql.model.Expression;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 public class TqlTest {
 

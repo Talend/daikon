@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.mongodb.DBObject;
-import com.mongodb.FongoDB;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +25,8 @@ import org.talend.tqlmongo.ASTVisitor;
 import com.github.fakemongo.Fongo;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBObject;
+import com.mongodb.FongoDB;
 
 /**
  * Created by gmzoughi on 06/07/16.

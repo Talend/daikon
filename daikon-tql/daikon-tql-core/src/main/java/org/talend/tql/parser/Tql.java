@@ -10,6 +10,7 @@ import org.talend.tql.model.TqlElement;
 
 /**
  * Provides utility to parse TQL queries.
+ * 
  * @see #parse(String)
  */
 public class Tql {
@@ -19,6 +20,7 @@ public class Tql {
 
     /**
      * Parses the query text and returns a {@link TqlElement AST} of the query.
+     * 
      * @param query A valid query text.
      * @return A {@link TqlElement AST} of the query.
      */

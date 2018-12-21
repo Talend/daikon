@@ -1,6 +1,17 @@
 package org.talend.tql.api;
 
-import static org.talend.tql.api.TqlBuilder.*;
+import static org.talend.tql.api.TqlBuilder.eq;
+import static org.talend.tql.api.TqlBuilder.eqFields;
+import static org.talend.tql.api.TqlBuilder.gt;
+import static org.talend.tql.api.TqlBuilder.gtFields;
+import static org.talend.tql.api.TqlBuilder.gte;
+import static org.talend.tql.api.TqlBuilder.gteFields;
+import static org.talend.tql.api.TqlBuilder.lt;
+import static org.talend.tql.api.TqlBuilder.ltFields;
+import static org.talend.tql.api.TqlBuilder.lte;
+import static org.talend.tql.api.TqlBuilder.lteFields;
+import static org.talend.tql.api.TqlBuilder.neq;
+import static org.talend.tql.api.TqlBuilder.neqFields;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -316,7 +316,7 @@
                         <executions>
                             <execution>
                                 <goals>
-                                    <goal>validate</goal>
+                                    <goal>format</goal>
                                 </goals>
                             </execution>
                         </executions>
