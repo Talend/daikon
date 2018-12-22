@@ -79,17 +79,7 @@ spec:
       }
     }
 
-    stage('Build') {
-      steps {
-        container('maven') {
-          configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-            sh 'mvn package -B -s $MAVEN_SETTINGS'
-          }
-        }
-      }
-    }
-
-    stage('Deploy') {
+    stage('Build & deploy') {
       steps {
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
