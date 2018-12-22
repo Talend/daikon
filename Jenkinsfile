@@ -60,10 +60,6 @@ spec:
     skipStagesAfterUnstable()
   }
 
-  triggers {
-    pollSCM "* * * * *"
-  }
-
   stages {
     stage('Check git connectivity') {
       steps {
