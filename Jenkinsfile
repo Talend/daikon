@@ -79,7 +79,27 @@ spec:
       }
     }
 
+    stage('Configure branch deployment') {
+      when {
+        expression { env.BRANCH_NAME != 'master' }
+      }
+      steps {
+        container('maven') {
+          withCredentials([gitCredentials]) {
+            sh """
+                escaped_branch=$(echo ${env.BRANCH_NAME} | tr '[:upper:]' '[:lower:]')
+                sed -i "/<\/settings>/ i <mirrors>\n<mirror>\n<id>talend_nexus_smart_proxy</id>\n<mirrorOf>talend_nexus</mirrorOf>\n<name>branch repos</name>\n<url>https://nexus-smart-branch.datapwn.com/nexus/content/repositories/branch_${escaped_branch}</url>\n</mirror>\n</mirrors>" $MAVEN_SETTINGS
+                cat $MAVEN_SETTINGS
+            """
+          }
+        }
+      }
+    }
+
     stage('Build & deploy') {
+      when {
+        expression { false }
+      }
       steps {
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
@@ -97,9 +117,12 @@ spec:
             withCredentials([gitCredentials]) {
               container('maven') {
                 configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-                  sh "git config --global push.default current"
-                  sh "mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DdevelopmentVersion=${params.next_version} release:prepare"
-                  sh "mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -DlocalCheckout=true -Dusername=${GIT_LOGIN} -Dpassword=${GIT_PASSWORD} release:perform"
+                  sh """
+                    git config --global push.default current"
+                    mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DdevelopmentVersion=${params.next_version} release:prepare
+                    mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -DlocalCheckout=true -Dusername=${GIT_LOGIN} -Dpassword=${GIT_PASSWORD} release:perform
+                    git push
+                  """
                 }
               }
             }
