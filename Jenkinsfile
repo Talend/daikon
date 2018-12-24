@@ -88,7 +88,7 @@ spec:
           withCredentials([gitCredentials]) {
             sh """
                 escaped_branch=$(echo ${env.BRANCH_NAME} | tr '[:upper:]' '[:lower:]')
-                sed -i "/<\/settings>/ i <mirrors>\n<mirror>\n<id>talend_nexus_smart_proxy</id>\n<mirrorOf>talend_nexus</mirrorOf>\n<name>branch repos</name>\n<url>https://nexus-smart-branch.datapwn.com/nexus/content/repositories/branch_${escaped_branch}</url>\n</mirror>\n</mirrors>" $MAVEN_SETTINGS
+                sed -i '/<\/settings>/ i <mirrors>\n<mirror>\n<id>talend_nexus_smart_proxy</id>\n<mirrorOf>talend_nexus</mirrorOf>\n<name>branch repos</name>\n<url>https://nexus-smart-branch.datapwn.com/nexus/content/repositories/branch_${escaped_branch}</url>\n</mirror>\n</mirrors>' $MAVEN_SETTINGS
                 cat $MAVEN_SETTINGS
             """
           }
