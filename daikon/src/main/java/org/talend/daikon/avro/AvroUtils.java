@@ -184,9 +184,8 @@ public class AvroUtils {
                 return schema;
             }
 
-            ArrayList<Schema> typesWithNullable = new ArrayList<>();
+            ArrayList<Schema> typesWithNullable = new ArrayList<>(unionTypes);
             typesWithNullable.add(Schema.create(Schema.Type.NULL));
-            typesWithNullable.addAll(unionTypes);
             return Schema.createUnion(typesWithNullable);
         }
         return SchemaBuilder.nullable().type(schema);

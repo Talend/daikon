@@ -43,9 +43,9 @@ public class AvroUtilsTest {
         Schema mixWithNullable = SchemaBuilder.builder().unionOf().booleanType().and().nullType().and().intType().endUnion();
         assertThat(AvroUtils.wrapAsNullable(mixWithNullable), sameInstance(mixWithNullable));
 
-        // A union with three elements, none nullable, has a nullable added at the first position.
+        // A union with three elements, none nullable, has a nullable added. to the end.
         Schema mixWithNoNullable = SchemaBuilder.builder().unionOf().booleanType().and().doubleType().and().intType().endUnion();
-        expected = SchemaBuilder.builder().unionOf().nullType().and().booleanType().and().doubleType().and().intType().endUnion();
+        expected = SchemaBuilder.builder().unionOf().booleanType().and().doubleType().and().intType().and().nullType().endUnion();
         assertThat(AvroUtils.wrapAsNullable(mixWithNoNullable), is(expected));
     }
 
