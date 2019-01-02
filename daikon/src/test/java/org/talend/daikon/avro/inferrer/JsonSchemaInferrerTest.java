@@ -14,6 +14,7 @@ package org.talend.daikon.avro.inferrer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
@@ -514,6 +515,7 @@ public class JsonSchemaInferrerTest {
     public void testInferSchemaOfRealComplexRecord() throws IOException {
 
         Schema schema = jsonSchemaInferrer.inferSchema(realComplexRecord);
+        assertThat(schema.getName(), is(startsWith("outer_record")));
         List<Schema.Field> fieldList = schema.getFields();
         assertThat(fieldList, hasSize(2));
 
@@ -656,6 +658,7 @@ public class JsonSchemaInferrerTest {
         assertThat(fieldPostalCodeTypes.get(1).getName(), is(equalTo("null")));
 
         // Ensure that the inference is deterministic (generates the same schema twice).
+        // This also ensure that for a given schema, the name is deterministic.
         Schema schema2 = jsonSchemaInferrer.inferSchema(realComplexRecord);
         assertThat(schema, equalTo(schema2));
     }
