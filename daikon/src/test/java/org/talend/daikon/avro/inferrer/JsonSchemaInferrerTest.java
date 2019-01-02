@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 import java.io.IOException;
@@ -661,6 +662,20 @@ public class JsonSchemaInferrerTest {
         // This also ensure that for a given schema, the name is deterministic.
         Schema schema2 = jsonSchemaInferrer.inferSchema(realComplexRecord);
         assertThat(schema, equalTo(schema2));
+    }
+
+    /**
+     * Test {@link JsonSchemaInferrer#inferSchema(String)}
+     *
+     * Check if two schemas are named differently
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testInferSchemaUnicity() throws IOException {
+        Schema schema1 = jsonSchemaInferrer.inferSchema(realComplexRecord);
+        Schema schema2 = jsonSchemaInferrer.inferSchema(jsonArrayOfNull);
+        assertThat(schema1.getName(), is(not(equalTo(schema2.getName()))));
     }
 
     /**
