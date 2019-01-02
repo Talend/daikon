@@ -87,7 +87,7 @@ spec:
       steps {
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-            sh 'mvn deploy -B -s $MAVEN_SETTINGS'
+            sh 'mvn install -B -s $MAVEN_SETTINGS'
           }
         }
       }
@@ -108,7 +108,7 @@ spec:
 
     stage("Release") {
         when {
-            expression { params.release }
+            expression { params.release && env.BRANCH_NAME == 'master'}
         }
         steps {
             withCredentials([gitCredentials]) {
@@ -117,8 +117,8 @@ spec:
                   sh """
                     git config --global push.default current"
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DdevelopmentVersion=${params.next_version} release:prepare
-                    mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -DlocalCheckout=true -Dusername=${GIT_LOGIN} -Dpassword=${GIT_PASSWORD} release:perform
                     git push
+                    mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -DlocalCheckout=true -Dusername=${GIT_LOGIN} -Dpassword=${GIT_PASSWORD} release:perform
                   """
                 }
               }
