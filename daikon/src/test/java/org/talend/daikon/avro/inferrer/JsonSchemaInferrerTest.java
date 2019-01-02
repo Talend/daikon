@@ -14,7 +14,9 @@ package org.talend.daikon.avro.inferrer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 import java.io.IOException;
@@ -514,6 +516,7 @@ public class JsonSchemaInferrerTest {
     public void testInferSchemaOfRealComplexRecord() throws IOException {
 
         Schema schema = jsonSchemaInferrer.inferSchema(realComplexRecord);
+        assertThat(schema.getName(), is(startsWith("outer_record")));
         List<Schema.Field> fieldList = schema.getFields();
         assertThat(fieldList, hasSize(2));
 
@@ -656,8 +659,23 @@ public class JsonSchemaInferrerTest {
         assertThat(fieldPostalCodeTypes.get(1).getName(), is(equalTo("null")));
 
         // Ensure that the inference is deterministic (generates the same schema twice).
+        // This also ensure that for a given schema, the name is deterministic.
         Schema schema2 = jsonSchemaInferrer.inferSchema(realComplexRecord);
         assertThat(schema, equalTo(schema2));
+    }
+
+    /**
+     * Test {@link JsonSchemaInferrer#inferSchema(String)}
+     *
+     * Check if two schemas are named differently
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testInferSchemaUnicity() throws IOException {
+        Schema schema1 = jsonSchemaInferrer.inferSchema(realComplexRecord);
+        Schema schema2 = jsonSchemaInferrer.inferSchema(jsonArrayOfNull);
+        assertThat(schema1.getName(), is(not(equalTo(schema2.getName()))));
     }
 
     /**
