@@ -52,7 +52,7 @@ spec:
 
   environment {
     MAVEN_OPTS = '-Dmaven.artifact.threads=128 -Dorg.slf4j.simpleLogger.showThreadName=true -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss'
-    escaped_branch = env.BRANCH_NAME.toLowerCase()
+    escaped_branch = env.BRANCH_NAME.toLowerCase().replaceAll('/', '_')
   }
 
   options {
