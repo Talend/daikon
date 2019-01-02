@@ -3,6 +3,7 @@ def gitCredentials = usernamePassword(
     credentialsId: 'github-credentials',
     passwordVariable: 'GIT_PASSWORD',
     usernameVariable: 'GIT_LOGIN')
+def escaped_branch = env.BRANCH_NAME.toLowerCase()
 
 pipeline {
 
@@ -79,29 +80,27 @@ spec:
       }
     }
 
-    stage('Configure branch deployment') {
+    stage('Build & deploy master') {
       when {
-        expression { env.BRANCH_NAME != 'master' }
-      }
-      steps {
-        container('maven') {
-          withCredentials([gitCredentials]) {
-            sh "export escaped_branch=\$(echo ${env.BRANCH_NAME} | tr '[:upper:]' '[:lower:]')"
-            sh "sed -i '/<\/settings>/ i <mirrors>\n<mirror>\n<id>talend_nexus_smart_proxy</id>\n<mirrorOf>talend_nexus</mirrorOf>\n<name>branch repos</name>\n<url>https://nexus-smart-branch.datapwn.com/nexus/content/repositories/branch_${escaped_branch}</url>\n</mirror>\n</mirrors>' $MAVEN_SETTINGS"
-            sh "cat $MAVEN_SETTINGS"
-          }
-        }
-      }
-    }
-
-    stage('Build & deploy') {
-      when {
-        expression { false }
+        expression { env.BRANCH_NAME == 'master' }
       }
       steps {
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
             sh 'mvn deploy -B -s $MAVEN_SETTINGS'
+          }
+        }
+      }
+    }
+
+    stage('Build & deploy branch') {
+      when {
+        expression { env.BRANCH_NAME != 'master' }
+      }
+      steps {
+        container('maven') {
+          configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
+            sh 'mvn deploy -B -s $MAVEN_SETTINGS -Dtalend_snapshots=https://nexus-smart-branch.datapwn.com/nexus/content/repositories/branch_${escaped_branch}'
           }
         }
       }
