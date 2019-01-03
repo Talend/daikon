@@ -80,7 +80,7 @@ spec:
       }
     }
 
-    stage('Build master') {
+    stage('Build master release') {
       when {
         expression { params.release && env.BRANCH_NAME == 'master' }
       }
@@ -106,6 +106,21 @@ spec:
       }
     }
 
+    stage('Merge master to branch') {
+      when {
+        expression { env.BRANCH_NAME != 'master' }
+      }
+      steps {
+        container('maven') {
+          configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
+            sh """
+              git merge master
+            """
+          }
+        }
+      }
+    }
+
     stage('Build & deploy branch') {
       when {
         expression { env.BRANCH_NAME != 'master' }
@@ -113,7 +128,9 @@ spec:
       steps {
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-            sh 'mvn deploy -B -s $MAVEN_SETTINGS -Dtalend_snapshots=https://nexus-smart-branch.datapwn.com/nexus/content/repositories/branch_${escaped_branch}'
+            sh """
+              mvn deploy -B -s $MAVEN_SETTINGS -Dtalend_snapshots=https://nexus-smart-branch.datapwn.com/nexus/content/repositories/branch_${escaped_branch}
+            """
           }
         }
       }
