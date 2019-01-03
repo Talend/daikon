@@ -115,6 +115,7 @@ spec:
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
             sh """
               git fetch origin
+              git branch -a
               git checkout master
               git pull
               git checkout -
