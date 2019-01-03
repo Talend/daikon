@@ -114,7 +114,7 @@ spec:
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
             sh """
-              git fetch origin
+              git fetch origin master
               git branch -a
               git checkout master
               git pull
