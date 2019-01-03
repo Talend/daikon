@@ -108,7 +108,7 @@ spec:
 
     stage('Merge master to branch') {
       when {
-        expression { env.BRANCH_NAME != 'master' }
+        expression { false && env.BRANCH_NAME != 'master' }
       }
       steps {
         container('maven') {
