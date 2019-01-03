@@ -21,7 +21,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <talend_snapshots>https://artifacts-zl.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/
         </talend_snapshots>
-        <talend_releases>https://artifacts-zl.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</talend_releases>
+        <talend_releases>https://artifacts-zl.talend.com/nexus/content/repositories/TalendOpenSourceRelease/
+        </talend_releases>
         <pushChanges>false</pushChanges>
         <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
         <jackson.version>2.9.5</jackson.version>

@@ -80,14 +80,27 @@ spec:
       }
     }
 
-    stage('Build & deploy master') {
+    stage('Build master') {
       when {
-        expression { env.BRANCH_NAME == 'master' }
+        expression { params.release && env.BRANCH_NAME == 'master' }
       }
       steps {
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
             sh 'mvn install -B -s $MAVEN_SETTINGS'
+          }
+        }
+      }
+    }
+
+    stage('Build & deploy master') {
+      when {
+        expression { !params.release && env.BRANCH_NAME == 'master' }
+      }
+      steps {
+        container('maven') {
+          configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
+            sh 'mvn deploy -B -s $MAVEN_SETTINGS'
           }
         }
       }
@@ -121,6 +134,13 @@ spec:
                   """
                 }
               }
+            }
+            script {
+              slackSend(
+                color: JobState.SUCCESSFUL.color,
+                channel: 'daikon',
+                message: 'Daikon version ' + params.release_version + ' released. Next version: ' + params.next_version
+              )
             }
         }
     }
