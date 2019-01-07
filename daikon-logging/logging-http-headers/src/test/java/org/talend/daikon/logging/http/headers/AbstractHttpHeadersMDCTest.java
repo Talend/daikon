@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpMethod;
 
 /**

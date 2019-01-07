@@ -82,13 +82,7 @@ public class ZipVerifierTest {
         String keyStorePath = getPathFromWorkingFolder("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
-        Exception exception = null;
-        try {
-            verifer.verify(signedJobPath);
-        } catch (Exception ex) {
-            exception = ex;
-        }
-        assertTrue(exception == null);
+        verifer.verify(signedJobPath);
     }
 
     @Test

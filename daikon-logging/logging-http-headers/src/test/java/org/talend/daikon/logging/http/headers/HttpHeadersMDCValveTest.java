@@ -3,9 +3,10 @@ package org.talend.daikon.logging.http.headers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -27,10 +28,10 @@ public class HttpHeadersMDCValveTest extends AbstractHttpHeadersMDCTest {
     static class TestApp {
 
         @Bean
-        public EmbeddedServletContainerCustomizer tomcatContextCustomizer() {
+        public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> tomcatContextCustomizer() {
             return (x -> {
-                if (x instanceof TomcatEmbeddedServletContainerFactory) {
-                    ((TomcatEmbeddedServletContainerFactory) x).addContextCustomizers(y -> {
+                if (x instanceof TomcatServletWebServerFactory) {
+                    ((TomcatServletWebServerFactory) x).addContextCustomizers(y -> {
                         y.getPipeline().addValve(THE_VALVE);
                     });
                 }

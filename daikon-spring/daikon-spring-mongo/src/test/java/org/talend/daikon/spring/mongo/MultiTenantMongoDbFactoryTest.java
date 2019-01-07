@@ -7,7 +7,7 @@ import static org.talend.daikon.spring.mongo.TestMultiTenantConfiguration.change
 import java.util.List;
 import java.util.Map;
 
-import com.github.fakemongo.Fongo;
+import de.bwaldvogel.mongo.MongoServer;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -28,12 +28,12 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
     private MongoTemplate mongoTemplate;
 
     @Test
-    public void shouldHaveMultiTenantFactory() throws Exception {
+    public void shouldHaveMultiTenantFactory() {
         assertEquals(MultiTenancyMongoDbFactory.class, mongoDbFactory.getClass());
     }
 
     @Test
-    public void shouldHaveMultiTenantFactoryInTemplate() throws Exception {
+    public void shouldHaveMultiTenantFactoryInTemplate() {
         // Given
         final TestData tenant1 = new TestData();
         tenant1.setId("1");
@@ -161,7 +161,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
         testRepository.insert(tenant2);
 
         // Then
-        final Map<String, Fongo> instances = TestMultiTenantConfiguration.getFongoInstances();
+        final Map<String, MongoServer> instances = TestMultiTenantConfiguration.getMongoInstances();
         assertEquals(2, instances.size());
     }
 }

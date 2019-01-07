@@ -69,10 +69,11 @@ public class RequestContextPropagationConfiguration {
                 this.requestAttributesMap.put(SCOPE_REQUEST, key,
                         requestAttributes.getAttribute(key, RequestAttributes.SCOPE_REQUEST));
             }
-            for (String key : requestAttributes.getAttributeNames(RequestAttributes.SCOPE_GLOBAL_SESSION)) {
-                this.requestAttributesMap.put(SCOPE_GLOBAL_SESSION, key,
-                        requestAttributes.getAttribute(key, RequestAttributes.SCOPE_GLOBAL_SESSION));
-            }
+            // FIXME SCOPE_GLOBAL_SESSION removed in spring 5
+            // for (String key : requestAttributes.getAttributeNames(RequestAttributes.SCOPE_GLOBAL_SESSION)) {
+            // this.requestAttributesMap.put(SCOPE_GLOBAL_SESSION, key,
+            // requestAttributes.getAttribute(key, RequestAttributes.SCOPE_GLOBAL_SESSION));
+            // }
             for (String key : requestAttributes.getAttributeNames(RequestAttributes.SCOPE_SESSION)) {
                 this.requestAttributesMap.put(SCOPE_SESSION, key,
                         requestAttributes.getAttribute(key, RequestAttributes.SCOPE_SESSION));

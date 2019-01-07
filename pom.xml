@@ -33,11 +33,18 @@
         <avro.version>1.8.1</avro.version>
         <commons-io.version>1.3.2</commons-io.version>
         <reactor-core.version>3.1.6.RELEASE</reactor-core.version>
-        <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
-        <fongo.version>2.0.12</fongo.version>
+
+        <mongo-java-server.version>1.11.1</mongo-java-server.version>
+
+        <spring.version>5.1.3.RELEASE</spring.version>
+        <spring-aop.version>${spring.version}</spring-aop.version>
+        <spring-boot.version>2.1.1.RELEASE</spring-boot.version>
+        <spring-cloud-aws-context.version>1.1.3.RELEASE</spring-cloud-aws-context.version>
+        <spring-data-mongodb.version>2.1.3.RELEASE</spring-data-mongodb.version>
+        <spring-security-core.version>5.1.2.RELEASE</spring-security-core.version>
+
         <s3mock.version>0.1.6</s3mock.version>
         <aws-java-sdk-s3.version>1.11.18</aws-java-sdk-s3.version>
-        <spring-cloud-aws-context.version>1.1.3.RELEASE</spring-cloud-aws-context.version>
         <junit.version>4.12</junit.version>
         <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
         <openfeign.version>9.3.1</openfeign.version>
@@ -48,19 +55,13 @@
         <enunciate-version>2.8.0</enunciate-version>
         <commons-lang3.version>3.4</commons-lang3.version>
         <slf4j-log4j12.version>1.7.21</slf4j-log4j12.version>
-        <mongodb-driver.version>3.4.2</mongodb-driver.version>
         <guava.version>21</guava.version>
-        <spring-core.version>4.3.20.RELEASE</spring-core.version>
-        <spring-data-mongodb.version>1.8.2.RELEASE</spring-data-mongodb.version>
+        <jackson.version>2.9.5</jackson.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <spring-aop.version>4.3.6.RELEASE</spring-aop.version>
-        <spring-security-core.version>4.2.1.RELEASE</spring-security-core.version>
         <bnd.version>3.0.0</bnd.version>
         <zipkin-sender-kafka11.version>2.1.4</zipkin-sender-kafka11.version>
         <kafka-clients.version>0.10.0.0</kafka-clients.version>
-        <spring-data-mongodb.version>1.8.1.RELEASE</spring-data-mongodb.version>
-        <spring.version>4.3.3.RELEASE</spring.version>
         <jsonassert.version>1.2.3</jsonassert.version>
         <commons-codec.version>1.6</commons-codec.version>
         <javax.inject.version>1</javax.inject.version>
@@ -156,6 +157,17 @@
     </distributionManagement>
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>de.bwaldvogel</groupId>
+                <artifactId>mongo-java-server</artifactId>
+                <version>${mongo-java-server.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito-core.version}</version>
+            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -167,6 +179,11 @@
                 <artifactId>hamcrest-library</artifactId>
                 <version>1.3</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
