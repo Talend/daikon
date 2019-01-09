@@ -24,7 +24,7 @@ import org.talend.daikon.messages.spring.producer.sleuth.SpringSleuthProvidersCo
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import({ SpringSecurityProvidersConfiguration.class, SpringSleuthProvidersConfiguration.class,
-        DefaultProducerProvidersConfiguration.class, MessageHeaderFactoryConfiguration.class, MessageKeysConfiguration.class,
-        MultiTenantProducerProvidersConfiguration.class })
+        MessageHeaderFactoryConfiguration.class, MessageKeysConfiguration.class, MultiTenantProducerProvidersConfiguration.class,
+        DefaultProducerProvidersConfiguration.class, })
 public @interface EnableMessagesProducerAutoConfig {
 }

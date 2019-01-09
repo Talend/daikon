@@ -12,9 +12,12 @@
 // ============================================================================
 package org.talend.daikon.messages.spring.consumer.sleuth;
 
+import brave.Span;
+import brave.Tracer;
+import brave.propagation.TraceContext;
+import brave.propagation.TraceContextOrSamplingFlags;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.talend.daikon.messages.header.consumer.CorrelationIdSetter;
@@ -31,14 +34,14 @@ public class SpringSleuthSettersConfiguration {
             public void setCurrentCorrelationId(String correlationId) {
                 long spanId = 0;
                 String name = "";
-                Span currentSpan = tracer.getCurrentSpan();
+                Span currentSpan = tracer.currentSpan();
                 if (currentSpan != null) {
-                    spanId = currentSpan.getSpanId();
-                    name = currentSpan.getName();
+                    spanId = currentSpan.context().spanId();
+                    // FIXME name = currentSpan.name();
                 }
-                long traceId = Span.hexToId(correlationId, 0);
-                Span span = Span.builder().name(name).traceId(traceId).spanId(spanId).shared(true).build();
-                tracer.continueSpan(span);
+                long traceId = 0;// FIXME Span.hexToId(correlationId, 0);
+                TraceContext traceContext = TraceContext.newBuilder().traceId(traceId).spanId(spanId).shared(true).build();
+                tracer.nextSpan(TraceContextOrSamplingFlags.create(traceContext)).name(name);
             }
         };
     }

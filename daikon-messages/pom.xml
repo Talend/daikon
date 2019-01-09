@@ -10,10 +10,6 @@
     <name>daikon-messages</name>
     <packaging>pom</packaging>
 
-    <properties>
-        <spring.boot.version>1.5.2.RELEASE</spring.boot.version>
-    </properties>
-
     <modules>
         <module>messages-model</module>
         <module>messages-model-spring-support</module>

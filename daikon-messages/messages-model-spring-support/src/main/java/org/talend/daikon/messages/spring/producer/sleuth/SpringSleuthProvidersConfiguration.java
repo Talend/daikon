@@ -12,11 +12,11 @@
 // ============================================================================
 package org.talend.daikon.messages.spring.producer.sleuth;
 
+import brave.Span;
+import brave.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.talend.daikon.messages.header.producer.CorrelationIdProvider;
@@ -34,11 +34,11 @@ public class SpringSleuthProvidersConfiguration {
 
             @Override
             public String getCorrelationId() {
-                Span currentSpan = tracer.getCurrentSpan();
+                Span currentSpan = tracer.currentSpan();
                 if (currentSpan == null) {
-                    currentSpan = tracer.createSpan(defaultSpanName);
+                    currentSpan = tracer.nextSpan().name(defaultSpanName).start();
                 }
-                return Span.idToHex(currentSpan.getSpanId());
+                return currentSpan.context().traceIdString();
             }
         };
     }

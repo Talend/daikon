@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import({ SpringSecuritySettersConfiguration.class, SpringSleuthSettersConfiguration.class,
-        DefaultConsumerSettersConfiguration.class, ExecutionContextUpdaterConfiguration.class,
-        MultiTenantConsumerSettersConfiguration.class })
+        ExecutionContextUpdaterConfiguration.class, MultiTenantConsumerSettersConfiguration.class,
+        DefaultConsumerSettersConfiguration.class, })
 public @interface EnableMessagesConsumerAutoConfig {
 }
