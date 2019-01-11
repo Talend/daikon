@@ -1,10 +1,11 @@
 package org.talend.daikon.annotation;
 
+import org.springframework.cloud.openfeign.FeignClient;
+
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.springframework.cloud.netflix.feign.FeignClient;
 
 /**
  * Annotate an interface to expose it as a Daikon service.
