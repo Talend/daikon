@@ -15,13 +15,9 @@ package org.talend.daikon.messages.demo.listener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.context.annotation.ComponentScan;
-import org.talend.daikon.messages.spring.consumer.EnableMessagesConsumerAutoConfig;
 
 @SpringBootApplication
-@EnableMessagesConsumerAutoConfig
 @EnableBinding(ProductEventsSource.class)
-@ComponentScan(basePackages = { "org.talend.daikon.messages.demo.service2" })
 public class Application {
 
     public static void main(String[] args) {

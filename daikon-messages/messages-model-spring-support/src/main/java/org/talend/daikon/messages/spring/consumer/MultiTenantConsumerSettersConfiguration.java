@@ -17,7 +17,7 @@ import org.talend.daikon.multitenant.provider.DefaultTenant;
 public class MultiTenantConsumerSettersConfiguration {
 
     @Bean
-    public TenantIdSetter tenantIdSetter() {
+    public TenantIdSetter multiTenantIdSetter() {
         return new TenantIdSetter() {
 
             @Override

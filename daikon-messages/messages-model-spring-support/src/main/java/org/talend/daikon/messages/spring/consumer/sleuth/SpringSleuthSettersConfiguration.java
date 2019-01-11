@@ -16,14 +16,17 @@ import brave.Span;
 import brave.Tracer;
 import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.talend.daikon.messages.header.consumer.CorrelationIdSetter;
+import org.talend.daikon.messages.spring.consumer.DefaultConsumerSettersConfiguration;
 
 @Configuration
 @ConditionalOnClass({ Tracer.class })
+@AutoConfigureBefore({ DefaultConsumerSettersConfiguration.class })
 public class SpringSleuthSettersConfiguration {
 
     @Bean

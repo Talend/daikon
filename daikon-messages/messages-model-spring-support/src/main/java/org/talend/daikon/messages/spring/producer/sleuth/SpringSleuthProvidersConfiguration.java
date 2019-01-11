@@ -16,13 +16,16 @@ import brave.Span;
 import brave.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.talend.daikon.messages.header.producer.CorrelationIdProvider;
+import org.talend.daikon.messages.spring.producer.DefaultProducerProvidersConfiguration;
 
 @Configuration
 @ConditionalOnClass({ Tracer.class })
+@AutoConfigureBefore({ DefaultProducerProvidersConfiguration.class })
 public class SpringSleuthProvidersConfiguration {
 
     @Value("${org.talend.daikon.messages.spring.producer.sleuth.defaultSpanName:MESSAGING_DEFAULT_SPAN")

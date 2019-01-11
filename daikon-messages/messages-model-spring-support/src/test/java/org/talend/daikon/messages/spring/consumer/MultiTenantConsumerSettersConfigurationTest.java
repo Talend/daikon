@@ -19,15 +19,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.talend.daikon.messages.header.consumer.TenantIdSetter;
-import org.talend.daikon.messages.spring.consumer.ConsumerApp;
-
-import java.util.Map;
+import org.talend.daikon.messages.spring.test.utils.MessageTestApp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ConsumerApp.class, properties = "iam.accounts.url=aValue")
-public class EnableMessagesConsumerAutoConfigTest {
+@SpringBootTest(classes = MessageTestApp.class, properties = "iam.accounts.url=aValue")
+public class MultiTenantConsumerSettersConfigurationTest {
 
     @Autowired
     private TenantIdSetter tenantIdSetter;
@@ -38,7 +36,8 @@ public class EnableMessagesConsumerAutoConfigTest {
     @Test
     public void noBeanOverriding() {
         assertThat(tenantIdSetter).isNotNull();
-        Map<String, TenantIdSetter> tenantIdSetterBeans = context.getBeansOfType(TenantIdSetter.class);
-        assertThat(tenantIdSetterBeans).hasSize(1);
+        String[] beans = context.getBeanNamesForType(TenantIdSetter.class);
+        assertThat(beans).hasSize(1);
+        assertThat(beans[0]).isEqualTo("multiTenantIdSetter");
     }
 }

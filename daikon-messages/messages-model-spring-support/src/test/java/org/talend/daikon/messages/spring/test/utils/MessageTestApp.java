@@ -1,4 +1,4 @@
-package org.talend.daikon.messages.spring.consumer;
+package org.talend.daikon.messages.spring.test.utils;
 
 // ============================================================================
 //
@@ -17,11 +17,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EnableMessagesConsumerAutoConfig
-public class ConsumerApp {
+public class MessageTestApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(ConsumerApp.class, args);
+        SpringApplication.run(MessageTestApp.class, args);
     }
 
 }

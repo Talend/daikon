@@ -71,7 +71,7 @@ public class DefaultProducerProvidersConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(UserProvider.class)
+    @ConditionalOnMissingBean
     public UserProvider defaultUserProvider() {
         return new UserProvider() {
 

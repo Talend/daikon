@@ -17,6 +17,7 @@ import java.io.IOException;
 import org.apache.avro.AvroRuntimeException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.talend.daikon.messages.envelope.MessageConverter;
@@ -35,6 +36,7 @@ import org.talend.daikon.messages.header.producer.TimestampProvider;
 import org.talend.daikon.messages.header.producer.UserProvider;
 
 @Configuration
+@AutoConfigureBefore({ DefaultProducerProvidersConfiguration.class })
 public class MessageHeaderFactoryConfiguration {
 
     @Autowired
