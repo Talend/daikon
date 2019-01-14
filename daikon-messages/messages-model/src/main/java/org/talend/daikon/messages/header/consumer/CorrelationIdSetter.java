@@ -15,6 +15,6 @@ package org.talend.daikon.messages.header.consumer;
 @FunctionalInterface
 public interface CorrelationIdSetter {
 
-    void setCurrentCorrelationId(String correlationId);
+    void setCurrentCorrelationId(long correlationId);
 
 }

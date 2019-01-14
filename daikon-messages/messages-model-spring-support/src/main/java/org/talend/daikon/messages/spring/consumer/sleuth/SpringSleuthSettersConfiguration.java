@@ -12,17 +12,19 @@
 // ============================================================================
 package org.talend.daikon.messages.spring.consumer.sleuth;
 
-import brave.Span;
-import brave.Tracer;
-import brave.propagation.TraceContext;
-import brave.propagation.TraceContextOrSamplingFlags;
+import static java.util.Optional.ofNullable;
+
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.talend.daikon.messages.header.consumer.CorrelationIdSetter;
 import org.talend.daikon.messages.spring.consumer.DefaultConsumerSettersConfiguration;
+
+import brave.Span;
+import brave.Tracer;
+import brave.propagation.TraceContext;
+import brave.propagation.TraceContextOrSamplingFlags;
 
 @Configuration
 @ConditionalOnClass({ Tracer.class })
@@ -34,17 +36,11 @@ public class SpringSleuthSettersConfiguration {
         return new CorrelationIdSetter() {
 
             @Override
-            public void setCurrentCorrelationId(String correlationId) {
-                long spanId = 0;
-                String name = "";
-                Span currentSpan = tracer.currentSpan();
-                if (currentSpan != null) {
-                    spanId = currentSpan.context().spanId();
-                    // FIXME name = currentSpan.name();
-                }
-                long traceId = 0;// FIXME Span.hexToId(correlationId, 0);
-                TraceContext traceContext = TraceContext.newBuilder().traceId(traceId).spanId(spanId).shared(true).build();
-                tracer.nextSpan(TraceContextOrSamplingFlags.create(traceContext)).name(name);
+            public void setCurrentCorrelationId(long traceId) {
+                final Span currentSpan = ofNullable(tracer.currentSpan()).orElse(tracer.newTrace());
+                final TraceContext context = currentSpan.context().toBuilder().shared(true).build();
+                final TraceContextOrSamplingFlags content = TraceContextOrSamplingFlags.create(context);
+                tracer.nextSpan(content);
             }
         };
     }
