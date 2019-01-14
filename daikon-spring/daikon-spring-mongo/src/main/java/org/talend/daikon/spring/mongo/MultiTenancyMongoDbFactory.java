@@ -71,6 +71,7 @@ class MultiTenancyMongoDbFactory implements MongoDbFactory, DisposableBean {
     @Override
     public DB getLegacyDb() {
         final String databaseName = getDatabaseName();
+        LOGGER.debug("Using '{}' as Mongo database.", databaseName);
         return mongoClientProvider.get(tenantProvider).getDB(databaseName);
     }
 

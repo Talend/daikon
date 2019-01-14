@@ -6,7 +6,6 @@ import static org.junit.Assert.assertSame;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-import com.mongodb.ServerAddress;
 import de.bwaldvogel.mongo.MongoServer;
 import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 import org.junit.AfterClass;
@@ -45,7 +44,7 @@ public class CachedMongoClientProviderTest {
     }
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         server = new MongoServer(new MemoryBackend());
 
         // bind on a random local port
