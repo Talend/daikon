@@ -11,7 +11,7 @@
 
     <properties>
         <avro.version>1.8.1</avro.version>
-        <kafka-client.version>0.10.0.0</kafka-client.version>
+        <kafka-client.version>1.1.1</kafka-client.version>
     </properties>
 
     <build>
