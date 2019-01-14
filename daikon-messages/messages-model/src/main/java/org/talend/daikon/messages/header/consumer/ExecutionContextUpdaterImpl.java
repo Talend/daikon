@@ -39,7 +39,7 @@ public class ExecutionContextUpdaterImpl implements ExecutionContextUpdater {
     public void updateExecutionContext(IndexedRecord indexedRecord) {
         final MessageHeader messageHeader = this.messageHeaderExtractor.extractHeader(indexedRecord);
         if (this.correlationIdSetter != null) {
-            this.correlationIdSetter.setCurrentCorrelationId(messageHeader.getCorrelationId());
+            this.correlationIdSetter.setCurrentCorrelationId(Long.parseLong(messageHeader.getCorrelationId()));
         }
         if (this.tenantIdSetter != null) {
             this.tenantIdSetter.setCurrentTenantId(messageHeader.getTenantId());
