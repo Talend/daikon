@@ -107,7 +107,39 @@
                 <enabled>false</enabled>
             </snapshots>
 		</repository>
+		<!-- TODO remove snapshot repo -->
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<!-- TODO remove milestones repo -->
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+		</repository>
 	</repositories>
+		<pluginRepositories>
+			<!-- TODO remove snapshot repo -->
+			<pluginRepository>
+				<id>spring-snapshots</id>
+				<name>Spring Snapshots</name>
+				<url>https://repo.spring.io/snapshot</url>
+				<snapshots>
+					<enabled>true</enabled>
+				</snapshots>
+			</pluginRepository>
+			<!-- TODO remove milestones repo -->
+			<pluginRepository>
+				<id>spring-milestones</id>
+				<name>Spring Milestones</name>
+				<url>https://repo.spring.io/milestone</url>
+			</pluginRepository>
+		</pluginRepositories>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>talend_nexus_deployment</id>
