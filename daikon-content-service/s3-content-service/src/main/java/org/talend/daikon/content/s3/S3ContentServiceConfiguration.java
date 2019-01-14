@@ -1,5 +1,11 @@
 package org.talend.daikon.content.s3;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,23 +13,18 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.cloud.aws.core.io.s3.PathMatchingSimpleStorageResourcePatternResolver;
-import org.springframework.cloud.aws.core.io.s3.SimpleStorageResourceLoader;
+import org.springframework.cloud.aws.core.io.s3.SimpleStorageProtocolResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.talend.daikon.content.ContentServiceEnabled;
 import org.talend.daikon.content.ResourceResolver;
 import org.talend.daikon.content.s3.provider.AmazonS3Provider;
 import org.talend.daikon.content.s3.provider.S3BucketProvider;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper;
-import com.amazonaws.internal.StaticCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 @Configuration
 @SuppressWarnings("InsufficientBranchCoverage")
@@ -48,7 +49,7 @@ public class S3ContentServiceConfiguration implements ContentServiceEnabled {
         final String key = environment.getProperty("content-service.store.s3.accessKey");
         final String secret = environment.getProperty("content-service.store.s3.secretKey");
         AWSCredentials awsCredentials = new BasicAWSCredentials(key, secret);
-        return builder.withCredentials(new StaticCredentialsProvider(awsCredentials));
+        return builder.withCredentials(new AWSStaticCredentialsProvider(awsCredentials));
     }
 
     private static boolean isMultiTenancyEnabled(Environment environment) {
@@ -117,15 +118,21 @@ public class S3ContentServiceConfiguration implements ContentServiceEnabled {
     }
 
     @Bean
-    public PathMatchingSimpleStorageResourcePatternResolver getPathMatchingResourcePatternResolver(AmazonS3 amazonS3, //
-            SimpleStorageResourceLoader resourceLoader, //
-            ResourcePatternResolver resolver) {
-        return new PathMatchingSimpleStorageResourcePatternResolver(amazonS3, resourceLoader, resolver);
+    public PathMatchingSimpleStorageResourcePatternResolver getPathMatchingResourcePatternResolver(AmazonS3 amazonS3) {
+        return new PathMatchingSimpleStorageResourcePatternResolver(amazonS3, simpleStorageResourceLoader(amazonS3));
     }
 
-    @Bean
-    public SimpleStorageResourceLoader simpleStorageResourceLoader(AmazonS3 amazonS3) {
-        return new SimpleStorageResourceLoader(amazonS3);
+    /**
+     * TODO this methode must be changed when https://github.com/spring-cloud/spring-cloud-aws/issues/348 is resolved
+     * @param amazonS3
+     * @return
+     */
+   private PathMatchingResourcePatternResolver simpleStorageResourceLoader(AmazonS3 amazonS3) {
+       DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+       SimpleStorageProtocolResolver resolver = new SimpleStorageProtocolResolver(amazonS3);
+       resolver.afterPropertiesSet();
+       resourceLoader.addProtocolResolver(resolver);
+       return new PathMatchingResourcePatternResolver(resourceLoader);
     }
 
     @Bean

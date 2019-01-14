@@ -51,7 +51,6 @@ public class TestMultiTenantConfiguration {
         // Applications are expected to have one MongoDbFactory available
         MongoServer server = new MongoServer(new MemoryBackend());
 
-        System.out.println("Bind");
         // bind on a random local port
         server.bind();
 
@@ -103,9 +102,7 @@ public class TestMultiTenantConfiguration {
             public MongoClient get(TenantInformationProvider provider) {
                 final String name = provider.getDatabaseURI().getURI();
                 if (!mongoInstances.containsKey(name)) {
-                    System.out.println("Create server " + name);
                     mongoInstances.put(name, initNewServer());
-                    System.out.println("Created server " + mongoInstances.get(name).getLocalAddress());
                 }
                 return new MongoClient(new ServerAddress(mongoInstances.get(name).getLocalAddress()));
             }

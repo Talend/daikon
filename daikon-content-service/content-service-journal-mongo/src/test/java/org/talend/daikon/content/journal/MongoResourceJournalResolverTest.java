@@ -1,7 +1,5 @@
 package org.talend.daikon.content.journal;
 
-import com.github.fakemongo.Fongo;
-import com.mongodb.MongoClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,9 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,8 +25,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -40,6 +36,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataMongoTest
 @ContextConfiguration
+@ComponentScan("org.talend.daikon.content.journal")
 public class MongoResourceJournalResolverTest {
 
     @Autowired
@@ -72,6 +69,7 @@ public class MongoResourceJournalResolverTest {
     @Before
     public void initData() {
         mongoTemplate.remove(new Query(), ResourceJournalEntry.class, collectionName);
+        resolver.add("notlocation1.1");
         resolver.add("location1.1");
         resolver.add("location1.2");
         resolver.add("location1.3");
@@ -108,7 +106,7 @@ public class MongoResourceJournalResolverTest {
     }
 
     @Test
-    public void testMatches() throws IOException {
+    public void testMatches() {
         // When
         List<String> listLocation = resolver.matches("/location1*").collect(Collectors.toList());
 
@@ -234,7 +232,7 @@ public class MongoResourceJournalResolverTest {
     }
 
     @Test
-    public void shouldSyncWithResourceResolver() throws IOException, InterruptedException {
+    public void shouldSyncWithResourceResolver() throws IOException {
         // Given
         final ResourceResolver resourceResolver = mock(ResourceResolver.class);
         final DeletableResource resource1 = mock(DeletableResource.class);
@@ -252,7 +250,7 @@ public class MongoResourceJournalResolverTest {
     }
 
     @Test
-    public void shouldNotMarkAsReadyWhenSyncFails() throws IOException, InterruptedException {
+    public void shouldNotMarkAsReadyWhenSyncFails() throws IOException {
         // Given
         final ResourceResolver resourceResolver = mock(ResourceResolver.class);
         when(resourceResolver.getResources(any())).thenThrow(new IOException("Unchecked on purpose"));
@@ -270,7 +268,7 @@ public class MongoResourceJournalResolverTest {
     }
 
     @Test
-    public void shouldIgnoreIfAlreadyMarkedAsReady() throws IOException, InterruptedException {
+    public void shouldIgnoreIfAlreadyMarkedAsReady() throws IOException {
         // Given
         final ResourceResolver resourceResolver = mock(ResourceResolver.class);
         when(resourceResolver.getResources(any())).thenThrow(new IOException("Unchecked on purpose"));
@@ -299,17 +297,6 @@ public class MongoResourceJournalResolverTest {
 
         // Then
         assertEquals(0, matches.count());
-    }
-
-    @Configuration
-    @ComponentScan("org.talend.daikon.content.journal")
-    public static class SpringConfig {
-
-        @Bean
-        public MongoClient fongo() {
-            return new Fongo("resourceJournal").getMongo();
-        }
-
     }
 
     private long countRecord() {
