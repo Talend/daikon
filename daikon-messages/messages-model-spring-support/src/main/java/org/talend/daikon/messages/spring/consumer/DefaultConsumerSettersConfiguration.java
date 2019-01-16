@@ -25,7 +25,7 @@ public class DefaultConsumerSettersConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CorrelationIdSetter.class)
-    public CorrelationIdSetter noopCrrelationIdSetter() {
+    public CorrelationIdSetter noopCorrelationIdSetter() {
         return correlationId -> {
             // mocked bean: do nothing
         };
