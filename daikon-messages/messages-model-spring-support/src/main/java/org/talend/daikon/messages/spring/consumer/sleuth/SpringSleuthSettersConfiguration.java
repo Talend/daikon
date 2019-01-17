@@ -43,7 +43,7 @@ public class SpringSleuthSettersConfiguration {
     }
 
     // Copied from previous Sleuth version
-    private static long hexToId(String hexString) {
+    private long hexToId(String hexString) {
         Assert.hasText(hexString, "Can't convert empty hex string to long");
         int length = hexString.length();
         if (length >= 1 && length <= 32) {
@@ -55,9 +55,9 @@ public class SpringSleuthSettersConfiguration {
     }
 
     // Copied from previous Sleuth version
-    private static long hexToId(String lowerHex, int index) {
+    private long hexToId(String lowerHex, int beginIndex) {
         long result = 0L;
-
+        int index = beginIndex;
         for (int endIndex = Math.min(index + 16, lowerHex.length()); index < endIndex; ++index) {
             char c = lowerHex.charAt(index);
             result <<= 4;

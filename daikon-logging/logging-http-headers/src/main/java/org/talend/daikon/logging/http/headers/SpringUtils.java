@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.async.CallableProcessingInterceptorAdapter;
+import org.springframework.web.context.request.async.CallableProcessingInterceptor;
 import org.springframework.web.context.request.async.WebAsyncManager;
 import org.springframework.web.context.request.async.WebAsyncUtils;
 
@@ -27,7 +27,7 @@ class SpringUtils {
         }
     }
 
-    private static class HttpHeadersMDCInterceptor extends CallableProcessingInterceptorAdapter {
+    private static class HttpHeadersMDCInterceptor implements CallableProcessingInterceptor {
 
         private final boolean replaceRemoteAddrWithForwardedFor;
 
