@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-scala</artifactId>
-        <version>0.31.0</version>
+        <version>0.31.1-SNAPSHOT</version>
     </parent>
     <artifactId>scala-play2-dependencies</artifactId>
     <name>scala-play2-dependencies</name>

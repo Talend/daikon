@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.talend.daikon</groupId>
         <artifactId>daikon-content-service</artifactId>
-        <version>0.31.0</version>
+        <version>0.31.1-SNAPSHOT</version>
     </parent>
     
     <artifactId>s3-content-service</artifactId>

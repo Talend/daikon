@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-service</artifactId>
-        <version>0.31.0</version>
+        <version>0.31.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>service-parent</artifactId>
@@ -125,7 +125,7 @@
                         <dependency>
                             <groupId>org.talend.daikon</groupId>
                             <artifactId>service-docs</artifactId>
-                            <version>0.31.0</version>
+                            <version>0.31.1-SNAPSHOT</version>
                         </dependency>
                     </dependencies>
                 </plugin>
