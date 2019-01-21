@@ -4,9 +4,13 @@ public enum CharPatternToRegexConstants {
 
     DIGIT("([\\x{30}-\\x{39}])", "([\\u0030-\\u0039])"),
 
-    LOWER_LATIN("([\\x{61}-\\x{7a}]|[\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}])", "([\\u0061-\\u007a\\u00DF-\\u00F6\\u00F8-\\u00FF])"),
+    LOWER_LATIN("([\\x{61}-\\x{7a}])", "([\\u0061-\\u007a])"),
 
-    UPPER_LATIN("([\\x{41}-\\x{5A}]|[\\x{C0}-\\x{D6}]|[\\x{D8}-\\x{DE}])", "([\\u0041-\\u005A\\u00C0-\\u00D6\\u00D8-\\u00DE])"),
+    LOWER_LATIN_RARE("([\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}])", "([\\u00DF-\\u00F6\\u00F8-\\u00FF])"),
+
+    UPPER_LATIN("([\\x{41}-\\x{5A}])", "([\\u0041-\\u005A])"),
+
+    UPPER_LATIN_RARE("([\\x{C0}-\\x{D6}]|[\\x{D8}-\\x{DE}])", "([\\u00C0-\\u00D6\\u00D8-\\u00DE])"),
 
     FULLWIDTH_DIGIT("([\\x{FF10}-\\x{FF19}])", "([\\uFF10-\\uFF19])"),
 
