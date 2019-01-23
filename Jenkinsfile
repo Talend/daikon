@@ -52,7 +52,7 @@ spec:
 
   environment {
     MAVEN_OPTS = '-Dmaven.artifact.threads=128 -Dorg.slf4j.simpleLogger.showThreadName=true -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss'
-    escaped_branch = env.BRANCH_NAME.toLowerCase().replaceAll('/', '_')
+    escaped_branch = env.CHANGE_BRANCH.toLowerCase().replaceAll('/', '_')
   }
 
   options {
@@ -134,7 +134,7 @@ spec:
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
             sh """
-              mvn deploy -B -s $MAVEN_SETTINGS -Dtalend_snapshots=https://nexus-smart-branch.datapwn.com/nexus/content/repositories/branch_${escaped_branch}
+              mvn deploy -B -s $MAVEN_SETTINGS -Dtalend_snapshots=https://nexus-smart-branch.datapwn.com/nexus/content/repositories/dev_branch_snapshots/branch_${escaped_branch}
             """
           }
         }
