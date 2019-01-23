@@ -52,7 +52,6 @@ spec:
 
   environment {
     MAVEN_OPTS = '-Dmaven.artifact.threads=128 -Dorg.slf4j.simpleLogger.showThreadName=true -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss'
-    escaped_branch = env.CHANGE_BRANCH.toLowerCase().replaceAll('/', '_')
   }
 
   options {
@@ -129,6 +128,9 @@ spec:
     stage('Build & deploy branch') {
       when {
         expression { env.BRANCH_NAME != 'master' }
+      }
+      environment {
+        escaped_branch = env.CHANGE_BRANCH.toLowerCase().replaceAll('/', '_')
       }
       steps {
         container('maven') {
