@@ -30,7 +30,7 @@ kind: Pod
 spec:
   containers:
     - name: maven
-      image: jenkinsxio/builder-maven:0.0.319
+      image: jenkinsxio/builder-maven:0.1.211
       command:
       - cat
       tty: true
