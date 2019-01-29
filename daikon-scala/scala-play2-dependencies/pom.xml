@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.talend.daikon</groupId>
@@ -12,6 +13,7 @@
 
     <properties>
         <play2-version>2.6.6</play2-version>
+        <silhouette-version>5.0.0</silhouette-version>
         <akka-version>2.5.12</akka-version>
         <slick-version>3.0.0</slick-version>
     </properties>
@@ -38,6 +40,18 @@
             </dependency>
 
             <dependency>
+                <groupId>com.typesafe.play</groupId>
+                <artifactId>play-guice_${scala-binary-version}</artifactId>
+                <version>${play2-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.mohiva</groupId>
+                <artifactId>play-silhouette_${scala-binary-version}</artifactId>
+                <version>${silhouette-version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.typesafe.akka</groupId>
                 <artifactId>akka-persistence_${scala-binary-version}</artifactId>
                 <version>${akka-version}</version>
@@ -54,6 +68,7 @@
                 <artifactId>play-slick_${scala-binary-version}</artifactId>
                 <version>${slick-version}</version>
             </dependency>
+
 
             <!-- test dependencies -->
 

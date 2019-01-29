@@ -8,89 +8,23 @@
         <relativePath>../scala-parent/pom.xml</relativePath>
     </parent>
     <artifactId>dynamic-log</artifactId>
-    <name>dynamic-log</name>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
+    <name>Daikon Dynamic Log</name>
+    <url>https://github.com/Talend/daikon</url>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    <modules>
+        <module>dynamic-log-core</module>
+        <module>dynamic-log-web-play</module>
+    </modules>
 
     <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>scala-play2-dependencies</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
+
     </dependencyManagement>
-
-
-    <dependencies>
-
-        <dependency>
-            <groupId>com.typesafe.play</groupId>
-            <artifactId>play_${scala-binary-version}</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.typesafe.play</groupId>
-            <artifactId>play-ahc-ws_${scala-binary-version}</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.typesafe.play</groupId>
-            <artifactId>play-cache_${scala-binary-version}</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-persistence_${scala-binary-version}</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-cluster-sharding_${scala-binary-version}</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.typesafe.play</groupId>
-            <artifactId>play-slick_${scala-binary-version}</artifactId>
-        </dependency>
-
-        <!-- test dependencies -->
-
-        <dependency>
-            <groupId>com.typesafe.play</groupId>
-            <artifactId>play-specs2_${scala-binary-version}</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-testkit_${scala-binary-version}</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_${scala-binary-version}</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
-    </dependencies>
 
 
 </project>

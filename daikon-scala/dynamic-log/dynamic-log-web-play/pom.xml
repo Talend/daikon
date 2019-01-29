@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.talend.daikon</groupId>
+        <artifactId>dynamic-log</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>dynamic-log-web-play_2.11</artifactId>
+    <name>dynamic-log-web-play</name>
+    <packaging>jar</packaging>
+
+
+    <repositories>
+        <repository>
+            <id>central nexus</id>
+            <name>central-nexus</name>
+            <url>https://artifacts-zl.talend.com/nexus/content/repositories/central/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+         <repository>
+            <id>atlassian</id>
+            <name>atlassian-nexus</name>
+            <url>https://maven.atlassian.com/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <properties>
+        <play2-maven-plugin.version>1.0.0-rc4</play2-maven-plugin.version>
+        <sbt-compiler.plugin.version>1.0.0</sbt-compiler.plugin.version>
+    </properties>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>scala-play2-dependencies</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.talend.daikon</groupId>
+            <artifactId>dynamic-log-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-guice_${scala-binary-version}</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.codingwell</groupId>
+            <artifactId>scala-guice_${scala-binary-version}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play_${scala-binary-version}</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-guice_${scala-binary-version}</artifactId>
+        </dependency>
+
+
+
+    </dependencies>
+
+
+    <build>
+        <sourceDirectory>app</sourceDirectory>
+        <testSourceDirectory>test</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>conf</directory>
+            </resource>
+
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <skipMain>true</skipMain> <!-- skip compile -->
+                    <skip>true</skip> <!-- skip testCompile -->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.code.sbt-compiler-maven-plugin</groupId>
+                <artifactId>sbt-compiler-maven-plugin</artifactId>
+                <version>${sbt-compiler.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.code.play2-maven-plugin</groupId>
+                <artifactId>play2-maven-plugin</artifactId>
+                <configuration>
+                    <routesAdditionalImports>org.talend.daikon.dynamiclog.logging.common.LoggerLevelBindables._</routesAdditionalImports>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>routes-compile</goal>
+                            <goal>template-compile</goal>
+                            <goal>enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
