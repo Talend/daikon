@@ -13,7 +13,11 @@ public enum CharPattern {
 
     LOWER_LATIN('a', CharPatternToRegexConstants.LOWER_LATIN),
 
+    LOWER_LATIN_RARE('a', CharPatternToRegexConstants.LOWER_LATIN_RARE),
+
     UPPER_LATIN('A', CharPatternToRegexConstants.UPPER_LATIN),
+
+    UPPER_LATIN_RARE('A', CharPatternToRegexConstants.UPPER_LATIN_RARE),
 
     FULLWIDTH_DIGIT('9', CharPatternToRegexConstants.FULLWIDTH_DIGIT),
 
