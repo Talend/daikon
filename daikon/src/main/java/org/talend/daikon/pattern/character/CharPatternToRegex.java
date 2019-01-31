@@ -45,12 +45,16 @@ public class CharPatternToRegex {
                 buildString(stringBuilder, getRegex(CharPatternToRegexConstants.HANGUL, isForJavaScript), consecutiveValues);
                 break;
             case 'a':
-                String regexa = buildRegex(getRegex(CharPatternToRegexConstants.LOWER_LATIN, isForJavaScript),
+                String regexLatin = buildRegex(getRegex(CharPatternToRegexConstants.LOWER_LATIN, isForJavaScript),
+                        getRegex(CharPatternToRegexConstants.LOWER_LATIN_RARE, isForJavaScript));
+                String regexa = buildRegex(regexLatin,
                         getRegex(CharPatternToRegexConstants.FULLWIDTH_LOWER_LATIN, isForJavaScript));
                 buildString(stringBuilder, regexa, consecutiveValues);
                 break;
             case 'A':
-                String regexA = buildRegex(getRegex(CharPatternToRegexConstants.UPPER_LATIN, isForJavaScript),
+                String regexLatinA = buildRegex(getRegex(CharPatternToRegexConstants.UPPER_LATIN, isForJavaScript),
+                        getRegex(CharPatternToRegexConstants.UPPER_LATIN_RARE, isForJavaScript));
+                String regexA = buildRegex(regexLatinA,
                         getRegex(CharPatternToRegexConstants.FULLWIDTH_UPPER_LATIN, isForJavaScript));
                 buildString(stringBuilder, regexA, consecutiveValues);
                 break;
