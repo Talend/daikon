@@ -80,13 +80,6 @@
             <artifactId>play_${scala-binary-version}</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.typesafe.play</groupId>
-            <artifactId>play-guice_${scala-binary-version}</artifactId>
-        </dependency>
-
-
-
     </dependencies>
 
 
