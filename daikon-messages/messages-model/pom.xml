@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-messages</artifactId>
-        <version>0.28.1</version>
+        <version>0.28.2-SNAPSHOT</version>
     </parent>
     <artifactId>messages-model</artifactId>
     <name>messages-model</name>
