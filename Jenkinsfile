@@ -62,6 +62,9 @@ spec:
 
   stages {
     stage('Check git connectivity') {
+      when {
+        expression { params.release }
+      }
       steps {
         container('maven') {
           withCredentials([gitCredentials]) {
@@ -141,7 +144,10 @@ spec:
 
     stage("Release") {
         when {
-            expression { params.release && env.BRANCH_NAME == 'master'}
+            expression { params.release }
+        }
+        environment {
+          escaped_branch = env.CHANGE_BRANCH.toLowerCase().replaceAll('/', '_')
         }
         steps {
             withCredentials([gitCredentials]) {
@@ -149,7 +155,7 @@ spec:
                 configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
                   sh """
                     git config --global push.default current
-                    git checkout master
+                    git checkout ${escaped_branch}
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DdevelopmentVersion=${params.next_version} release:prepare
                     git log -5
                     git push
