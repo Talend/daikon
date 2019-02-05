@@ -3,7 +3,7 @@
     <parent>
         <artifactId>daikon-content-service</artifactId>
         <groupId>org.talend.daikon</groupId>
-        <version>0.30.0-SNAPSHOT</version>
+        <version>0.29.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -25,13 +25,13 @@
         <dependency>
             <groupId>org.talend.daikon</groupId>
             <artifactId>local-content-service</artifactId>
-            <version>0.30.0-SNAPSHOT</version>
+            <version>0.29.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.talend.daikon</groupId>
             <artifactId>s3-content-service</artifactId>
-            <version>0.30.0-SNAPSHOT</version>
+            <version>0.29.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

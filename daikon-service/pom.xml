@@ -11,7 +11,7 @@
 
 	<groupId>org.talend.daikon</groupId>
 	<artifactId>daikon-service</artifactId>
-	<version>0.30.0-SNAPSHOT</version>
+	<version>0.29.1-SNAPSHOT</version>
 	<modules>
 		<module>service-common</module>
 		<module>service-docs</module>
@@ -25,7 +25,7 @@
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<daikon.version>0.30.0-SNAPSHOT</daikon.version>
+		<daikon.version>0.29.1-SNAPSHOT</daikon.version>
 		<enunciate-version>2.8.0</enunciate-version>
 		<servlet-version>3.1.0</servlet-version>
 		<talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
