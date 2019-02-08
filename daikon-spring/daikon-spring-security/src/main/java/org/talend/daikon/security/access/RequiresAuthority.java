@@ -12,14 +12,13 @@
 
 package org.talend.daikon.security.access;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.security.core.GrantedAuthority;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * A helper annotation to indicate what authorities are needed to execute method.
@@ -32,7 +31,8 @@ import java.lang.annotation.Target;
 public @interface RequiresAuthority {
 
     /**
-     * @return The authority list (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method. Value is
+     * @return The authority list (as returned by {@link GrantedAuthority#getAuthority()} needed to execute method.
+     * Value is
      * ignored if {@link #authority()} is defined.
      */
     String[] value() default {};
