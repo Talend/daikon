@@ -6,14 +6,15 @@ import static junit.framework.TestCase.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.core.Authentication;
 
 public class TokenAuthenticationTest {
 
-    private TokenAuthentication authentication;
+    private Authentication authentication;
 
     @Before
     public void setUp() {
-        authentication = new TokenAuthentication();
+        authentication = TokenAuthentication.INSTANCE;
     }
 
     @Test

@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.talend.daikon.security.access.RequiresAuthorityAspect,\
+org.talend.daikon.security.token.TokenSecurityConfiguration

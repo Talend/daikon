@@ -70,12 +70,10 @@ public class RequiresAuthorityAspect {
         }
 
         final String[] authorityArray = annotation.authority();
-        final Supplier<Stream<String>> authorityStreamSupplier =
-                () -> Stream.of(authorityArray).filter(StringUtils::isNotBlank);
+        final Supplier<Stream<String>> authorityStreamSupplier = () -> Stream.of(authorityArray).filter(StringUtils::isNotBlank);
 
         final String[] valueArray = annotation.value();
-        final Supplier<Stream<String>> valueStreamSupplier =
-                () -> Stream.of(valueArray).filter(StringUtils::isNotBlank);
+        final Supplier<Stream<String>> valueStreamSupplier = () -> Stream.of(valueArray).filter(StringUtils::isNotBlank);
 
         Supplier<Stream<String>> streamSupplier = null;
 
@@ -116,10 +114,7 @@ public class RequiresAuthorityAspect {
         final Authentication authentication = getContext().getAuthentication();
         if (authentication != null) {
             // sonar is not able to understand that RestrictedAction implements GrantedAuthority
-            if (authentication
-                    .getAuthorities()
-                    .stream()
-                    .noneMatch(a -> StringUtils.equals(a.getAuthority(), authority))) {
+            if (authentication.getAuthorities().stream().noneMatch(a -> StringUtils.equals(a.getAuthority(), authority))) {
                 LOGGER.debug("User has not been allowed to use: {}", authority);
                 return false;
             } else {

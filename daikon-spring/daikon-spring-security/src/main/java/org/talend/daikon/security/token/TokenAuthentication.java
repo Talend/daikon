@@ -16,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
  * <p>
  * Implementation is immutable and a singleton.
  * </p>
+ * 
  * @see TokenAuthentication#INSTANCE
  */
 class TokenAuthentication implements Authentication {
@@ -29,8 +30,7 @@ class TokenAuthentication implements Authentication {
     private final List<? extends GrantedAuthority> authorities;
 
     private TokenAuthentication() {
-        this.authorities = Stream
-                .of("ROLE_" + ROLE) //
+        this.authorities = Stream.of("ROLE_" + ROLE) //
                 .map(s -> (GrantedAuthority) s::trim) //
                 .collect(Collectors.toList());
     }

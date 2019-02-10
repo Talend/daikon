@@ -32,8 +32,7 @@ class NoConfiguredTokenFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         final boolean matches = protectedPaths.matches((HttpServletRequest) req);
         if (matches) {
             ((HttpServletResponse) res).setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);

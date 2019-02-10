@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -27,17 +29,18 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * @see TokenAuthenticationFilter When configuration's token value is present.
  */
 @Configuration
+@EnableWebSecurity
+@Order(1)
 public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenSecurityConfiguration.class);
 
-    private static final String[] ADDITIONAL_PROTECTED_PATHS = { "/info" };
+    private static final String[] ADDITIONAL_PROTECTED_PATHS = { "/info", "/actuator/**" };
 
     private final Filter tokenAuthenticationFilter;
 
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token) {
-        final AntPathRequestMatcher[] matchers = Stream
-                .of(ADDITIONAL_PROTECTED_PATHS) //
+        final AntPathRequestMatcher[] matchers = Stream.of(ADDITIONAL_PROTECTED_PATHS) //
                 .map(AntPathRequestMatcher::new) //
                 .toArray(AntPathRequestMatcher[]::new);
         final RequestMatcher protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
@@ -51,13 +54,11 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     public void configure(HttpSecurity http) throws Exception {
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry =
-                http.authorizeRequests();
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.authorizeRequests();
         registry = registry.requestMatchers(toAnyEndpoint()).hasRole(TokenAuthentication.ROLE);
         for (String protectedPath : ADDITIONAL_PROTECTED_PATHS) {
             registry = registry.antMatchers(protectedPath).hasRole(TokenAuthentication.ROLE);
         }
         registry.and().addFilterAfter(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
     }
-
 }
