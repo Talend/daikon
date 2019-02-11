@@ -13,10 +13,14 @@ public class IncorrectS3ConfigurationAnalyzer implements FailureAnalyzer {
     public FailureAnalysis analyze(Throwable failure) {
         final Throwable[] throwables = ExceptionUtils.getThrowables(failure);
         for (Throwable throwable : throwables) {
-            if (throwable instanceof S3ContentServiceConfiguration.InvalidConfiguration) {
-                final S3ContentServiceConfiguration.InvalidConfiguration issue = (S3ContentServiceConfiguration.InvalidConfiguration) throwable;
+            if (throwable instanceof S3ContentServiceConfiguration.InvalidConfigurationMissingBean) {
+                final S3ContentServiceConfiguration.InvalidConfigurationMissingBean issue = (S3ContentServiceConfiguration.InvalidConfigurationMissingBean) throwable;
                 return new FailureAnalysis("Incorrect S3 configuration: " + issue.getMessage(), //
                         "Add a bean of class " + issue.getMissingBeanClass().getName(), //
+                        failure);
+            } else if (throwable instanceof S3ContentServiceConfiguration.InvalidConfiguration) {
+                return new FailureAnalysis("Incorrect S3 configuration: " + throwable.getMessage(), //
+                        "Fix missing or incorrect configuration values", //
                         failure);
             }
         }

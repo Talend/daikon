@@ -55,17 +55,17 @@ public class S3DeletableResourceTest extends DeletableResourceTest {
     }
 
     @Override
-    public void getFilename() throws Exception {
+    public void getFilename() {
         assertEquals("app1/" + LOCATION, resource.getFilename());
     }
 
     @Test
-    public void shouldGetDescription() throws Exception {
+    public void shouldGetDescription() {
         assertEquals("Amazon s3 resource [bucket='s3-content-service1' and object='app1/file.txt']", resource.getDescription());
     }
 
     @Test
-    public void shouldGetDescriptionInMultiTenant() throws Exception {
+    public void shouldGetDescriptionInMultiTenant() {
         // Given
         TestConfiguration.clientNumber.set(0);
         final Resource resource1 = resolver.getResource(LOCATION);

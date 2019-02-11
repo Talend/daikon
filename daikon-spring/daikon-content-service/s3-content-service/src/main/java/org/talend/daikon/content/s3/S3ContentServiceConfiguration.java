@@ -23,7 +23,6 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper;
 import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -42,6 +41,8 @@ public class S3ContentServiceConfiguration {
     private static final String CUSTOM_AUTHENTICATION = "CUSTOM";
 
     private static final String MINIO_AUTHENTICATION = "MINIO";
+
+    static final String S3_ENDPOINT_URL = "content-service.store.s3.endpoint_url";
 
     private static AmazonS3ClientBuilder configureEC2Authentication(AmazonS3ClientBuilder builder) {
         LOGGER.info("Using EC2 authentication");
@@ -75,12 +76,18 @@ public class S3ContentServiceConfiguration {
             builder = configureTokenAuthentication(environment, builder);
             break;
         case MINIO_AUTHENTICATION:
+            // Nothing to do to standard builder, but check "content-service.store.s3.endpoint_url" is set.
+            if (!environment.containsProperty(S3_ENDPOINT_URL)) {
+                throw new InvalidConfiguration("Missing '" + S3_ENDPOINT_URL + "' configuration");
+            }
+            builder = AmazonS3ClientBuilder.standard();
+            break;
         case CUSTOM_AUTHENTICATION:
             try {
                 final AmazonS3Provider amazonS3Provider = applicationContext.getBean(AmazonS3Provider.class);
                 return amazonS3Provider.getAmazonS3Client();
             } catch (NoSuchBeanDefinitionException e) {
-                throw new InvalidConfiguration("No S3 client provider in context", AmazonS3Provider.class, e);
+                throw new InvalidConfigurationMissingBean("No S3 client provider in context", AmazonS3Provider.class, e);
             }
         default:
             throw new IllegalArgumentException("Authentication '" + authentication + "' is not supported.");
@@ -93,7 +100,7 @@ public class S3ContentServiceConfiguration {
         }
 
         // Configure endpoint url (optional)
-        final String endpointUrl = environment.getProperty("content-service.store.s3.endpoint_url");
+        final String endpointUrl = environment.getProperty(S3_ENDPOINT_URL);
         if (StringUtils.isNotBlank(endpointUrl)) {
             builder =
                     builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, region));
@@ -111,7 +118,7 @@ public class S3ContentServiceConfiguration {
                 final S3BucketProvider s3BucketProvider = applicationContext.getBean(S3BucketProvider.class);
                 return new S3ResourceResolver(resolver, amazonS3, s3BucketProvider);
             } catch (NoSuchBeanDefinitionException e) {
-                throw new InvalidConfiguration("No S3 bucket name provider in context", S3BucketProvider.class, e);
+                throw new InvalidConfigurationMissingBean("No S3 bucket name provider in context", S3BucketProvider.class, e);
             }
         } else {
             final String staticBucketName = environment.getProperty("content-service.store.s3.bucket", String.class);
@@ -136,11 +143,8 @@ public class S3ContentServiceConfiguration {
         return new PathMatchingSimpleStorageResourcePatternResolver(amazonS3, simpleStorageResourceLoader(amazonS3));
     }
 
-    /**
-     * TODO this methode must be changed when https://github.com/spring-cloud/spring-cloud-aws/issues/348 is resolved
-     *
-     * @param amazonS3
-     * @return
+    /*
+     * TODO this method must be changed when https://github.com/spring-cloud/spring-cloud-aws/issues/348 is fixed.
      */
     private PathMatchingResourcePatternResolver simpleStorageResourceLoader(AmazonS3 amazonS3) {
         DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -155,11 +159,11 @@ public class S3ContentServiceConfiguration {
         return new IncorrectS3ConfigurationAnalyzer();
     }
 
-    class InvalidConfiguration extends RuntimeException {
+    class InvalidConfigurationMissingBean extends RuntimeException {
 
         private final Class missingBeanClass;
 
-        InvalidConfiguration(String message, Class missingBeanClass, Throwable cause) {
+        InvalidConfigurationMissingBean(String message, Class missingBeanClass, Throwable cause) {
             super(message, cause);
             this.missingBeanClass = missingBeanClass;
         }
@@ -167,6 +171,14 @@ public class S3ContentServiceConfiguration {
         Class getMissingBeanClass() {
             return missingBeanClass;
         }
+    }
+
+    class InvalidConfiguration extends RuntimeException {
+
+        InvalidConfiguration(String message) {
+            super(message);
+        }
+
     }
 
 }
