@@ -37,7 +37,8 @@ public class CachedMongoClientProvider implements MongoClientProvider {
      * @param duration The time after which a cache entry is removed if cache entry wasn't accessed for this time. For
      * example, 10 minutes means any cached mongo client not used within the last 10 minutes will be removed.
      * @param unit The time unit for <code>duration</code>.
-     * @param concurrencyLevel Max number of concurrent access to a cached mongo client (see {@link CacheBuilder#concurrencyLevel}).
+     * @param concurrencyLevel Max number of concurrent access to a cached mongo client (see
+     * {@link CacheBuilder#concurrencyLevel}).
      * @param maximumSize Max size for the cache (see {@link CacheBuilder#maximumSize}).
      */
     public CachedMongoClientProvider(int duration, TimeUnit unit, int concurrencyLevel, int maximumSize) {

@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.daikon.messages.spring.consumer;
 
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.talend.daikon.messages.header.consumer.CorrelationIdSetter;
@@ -22,6 +23,7 @@ import org.talend.daikon.messages.header.consumer.TenantIdSetter;
 import org.talend.daikon.messages.header.consumer.UserIdSetter;
 
 @Configuration
+@AutoConfigureBefore({ DefaultConsumerSettersConfiguration.class })
 public class ExecutionContextUpdaterConfiguration {
 
     @Bean

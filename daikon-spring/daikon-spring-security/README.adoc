@@ -1,0 +1,116 @@
+= Daikon extensions for Spring Security
+:toc:
+
+This module contains Spring Security enhancements for Talend products.
+
+== Securing Actuator endpoints
+
+This module provides a configuration that secure access points to both:
+
+- link:https://spring.io/guides/gs/actuator-service/[Actuator]
+- link:https://github.com/Talend/policies/pull/35[Version information]
+
+When this module is added to application classpath, all the endpoints calls to above must include a token in the HTTP request header. The expected value of the token is defined in configuration:
+
+```
+talend.security.token.value=SeCr3tT0keNVa1ue
+```
+
+All HTTP requests to Actuator or Version must then include the HTTP `Authorization` *and* ensure the value follows the format `Talend <token>`, such as:
+
+```
+Authorization: Talend SeCr3tT0keNVa1ue
+```
+
+Token validation for each request in performed in `org.talend.daikon.security.token.TokenAuthenticationFilter`. Please note comparison is performed against an hashed version of the access token (only value in configuration has the actual token value).
+
+=== Missing token configuration
+
+In case token is not defined (or set to empty string), all the secured endpoints will respond HTTP 503. This scenario applies when configuration is:
+
+```
+talend.security.token.value=                        # <- Empty value
+#talend.security.token.value=SeCr3tT0keNVa1ue       # <- Undefined/Commented out key
+```
+
+== Method access control with `@RequiresAuthority`
+
+The `@RequiresAuthority` annotation allows to mark methods that requires the current user has the permission (*authority*) to execute the method. 
+
+This annotation can be used on all methods in a `@Component` (`@RequestMapping` annotated methods **but** not only).
+ 
+=== Usages
+
+==== Simple example
+Let's start with a simple example:
+
+```java
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.access.RequiresAuthority;
+
+@Component
+public class MyRestrictedAccessClass {
+    
+    public String getMySecret() {
+        return "something very secret";
+    }
+}
+```
+
+To add permission checks, you only need to add the `@RequiresAuthority` annotation:
+
+```java
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.access.RequiresAuthority;
+
+@Component
+public class MyRestrictedAccessClass {
+
+    @RequiresAuthority("SECRET_ACCESS")
+    public String getMySecret() {
+        return "something very secret";
+    }
+}
+```
+
+The user that call the `getMySecret` method is required to at least have the `SECRET_ACCESS` authority.
+If this requirement is not met, a `org.springframework.security.access.AccessDeniedException` is thrown.
+
+==== Check several permissions
+To add several permissions check, you can pass an array in the `@RequiresAuthority` annotation:
+
+```java
+@Component
+public class MyRestrictedAccessClass {
+
+    @RequiresAuthority({ "SECRET_ACCESS", "OR_ANOTHER_SECRET_ACCESS" })
+    public String getMySecret() {
+        return "something very secret";
+    }
+}
+```
+
+The user that call the `getMySecret` method is required to at least have the `SECRET_ACCESS` or "OR_ANOTHER_SECRET_ACCESS" authority.
+Again, if this requirement is not met, a `org.springframework.security.access.AccessDeniedException` is thrown.
+
+==== Customize behavior in case of access denial
+
+By default, `@RequiresAuthority` throws an exception in case of access denial. 
+
+```java
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.access.RequiresAuthority;
+import org.talend.dataprep.access.AccessDeniedDefaults;
+
+@Component
+public class MyRestrictedAccessClass {
+
+    @RequiresAuthority(authority = "SECRET_ACCESS", 
+                       onDeny = AccessDeniedDefaults.EmptyString.class)
+    public String getMySecret() {
+        return "something very secret";
+    }
+}
+```
+
+Now, with the `onDeny` parameter, in case of access denial, the user will get an empty string instead of a `AccessDeniedException`.

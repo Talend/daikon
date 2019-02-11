@@ -1,11 +1,29 @@
 package org.talend.tql.api;
 
-import org.talend.tql.excp.TqlException;
-import org.talend.tql.model.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.talend.tql.excp.TqlException;
+import org.talend.tql.model.AndExpression;
+import org.talend.tql.model.Atom;
+import org.talend.tql.model.BooleanValue;
+import org.talend.tql.model.ComparisonExpression;
+import org.talend.tql.model.ComparisonOperator;
+import org.talend.tql.model.Expression;
+import org.talend.tql.model.FieldBetweenExpression;
+import org.talend.tql.model.FieldCompliesPattern;
+import org.talend.tql.model.FieldContainsExpression;
+import org.talend.tql.model.FieldInExpression;
+import org.talend.tql.model.FieldIsEmptyExpression;
+import org.talend.tql.model.FieldIsInvalidExpression;
+import org.talend.tql.model.FieldIsValidExpression;
+import org.talend.tql.model.FieldMatchesRegex;
+import org.talend.tql.model.FieldReference;
+import org.talend.tql.model.FieldWordCompliesPattern;
+import org.talend.tql.model.LiteralValue;
+import org.talend.tql.model.NotExpression;
+import org.talend.tql.model.OrExpression;
 
 /**
  * Class providing a simple functional API to build TQL expressions
@@ -22,7 +40,7 @@ public class TqlBuilder {
      * Build a "equal" TQL expression with a field and a String value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression eq(String fieldname, String value) {
@@ -33,7 +51,7 @@ public class TqlBuilder {
      * Build a "equal" TQL expression with a field and a boolean value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression eq(String fieldname, boolean value) {
@@ -44,7 +62,7 @@ public class TqlBuilder {
      * Build a "equal" TQL expression with a field and a int value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression eq(String fieldname, int value) {
@@ -55,7 +73,7 @@ public class TqlBuilder {
      * Build a "equal" TQL expression with a field and a double value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression eq(String fieldname, double value) {
@@ -77,7 +95,7 @@ public class TqlBuilder {
      * Build a "not equal" TQL expression with a field and a String value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression neq(String fieldname, String value) {
@@ -88,7 +106,7 @@ public class TqlBuilder {
      * Build a "not equal" TQL expression with a field and a boolean value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression neq(String fieldname, boolean value) {
@@ -99,7 +117,7 @@ public class TqlBuilder {
      * Build a "not equal" TQL expression with a field and a int value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression neq(String fieldname, int value) {
@@ -110,7 +128,7 @@ public class TqlBuilder {
      * Build a "not equal" TQL expression with a field and a double value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression neq(String fieldname, double value) {
@@ -132,7 +150,7 @@ public class TqlBuilder {
      * Build a "less than" TQL expression with a field and a int value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression lt(String fieldname, int value) {
@@ -143,7 +161,7 @@ public class TqlBuilder {
      * Build a "less than" TQL expression with a field and a double value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression lt(String fieldname, double value) {
@@ -165,7 +183,7 @@ public class TqlBuilder {
      * Build a "greater than" TQL expression with a field and a int value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression gt(String fieldname, int value) {
@@ -176,7 +194,7 @@ public class TqlBuilder {
      * Build a "greater than" TQL expression with a field and a double value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression gt(String fieldname, double value) {
@@ -198,7 +216,7 @@ public class TqlBuilder {
      * Build a "less or equal than" TQL expression with a field and a int value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression lte(String fieldname, int value) {
@@ -209,7 +227,7 @@ public class TqlBuilder {
      * Build a "less or equal than" TQL expression with a field and a double value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression lte(String fieldname, double value) {
@@ -231,7 +249,7 @@ public class TqlBuilder {
      * Build a "greater or equal than" TQL expression with a field and a int value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression gte(String fieldname, int value) {
@@ -242,7 +260,7 @@ public class TqlBuilder {
      * Build a "greater or equal than" TQL expression with a field and a double value
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression gte(String fieldname, double value) {
@@ -264,8 +282,8 @@ public class TqlBuilder {
      * Build a "between" TQL expression with int values
      *
      * @param fieldname field
-     * @param value1    field
-     * @param value2    field
+     * @param value1 field
+     * @param value2 field
      * @return TQL Expression
      */
     public static Expression between(String fieldname, int value1, int value2) {
@@ -276,8 +294,8 @@ public class TqlBuilder {
      * Build a "between" TQL expression with double values
      *
      * @param fieldname field
-     * @param value1    field
-     * @param value2    field
+     * @param value1 field
+     * @param value2 field
      * @return TQL Expression
      */
     public static Expression between(String fieldname, double value1, double value2) {
@@ -288,8 +306,8 @@ public class TqlBuilder {
      * Build a "between" TQL expression with String values
      *
      * @param fieldname field
-     * @param value1    field
-     * @param value2    field
+     * @param value1 field
+     * @param value2 field
      * @return TQL Expression
      */
     public static Expression between(String fieldname, String value1, String value2) {
@@ -300,7 +318,7 @@ public class TqlBuilder {
      * Build a "contains" TQL expression
      *
      * @param fieldname field
-     * @param value     value
+     * @param value value
      * @return TQL Expression
      */
     public static Expression contains(String fieldname, String value) {
@@ -332,7 +350,7 @@ public class TqlBuilder {
      * Build a "complies" TQL expression
      *
      * @param fieldname field
-     * @param pattern   pattern
+     * @param pattern pattern
      * @return TQL Expression
      */
     public static Expression complies(String fieldname, String pattern) {
@@ -351,7 +369,7 @@ public class TqlBuilder {
      * Build a "wordComplies" TQL expression
      *
      * @param fieldname field
-     * @param pattern   pattern
+     * @param pattern pattern
      * @return TQL Expression
      */
     public static Expression wordComplies(String fieldname, String pattern) {
@@ -370,7 +388,7 @@ public class TqlBuilder {
      * Build a "match" TQL expression with a regexp
      *
      * @param fieldname field
-     * @param regexp    regexp
+     * @param regexp regexp
      * @return TQL Expression
      */
     public static Expression match(String fieldname, String regexp) {
@@ -443,7 +461,7 @@ public class TqlBuilder {
      * Build a "in" TQL expression with String values
      *
      * @param fieldname field
-     * @param values    values
+     * @param values values
      * @return TQL Expression
      */
     public static Expression in(String fieldname, String... values) {
@@ -460,7 +478,7 @@ public class TqlBuilder {
      * Build a "in" TQL expression with Integer values
      *
      * @param fieldname field
-     * @param values    values
+     * @param values values
      * @return TQL Expression
      */
     public static Expression in(String fieldname, int... values) {
@@ -476,7 +494,7 @@ public class TqlBuilder {
      * Build a "in" TQL expression with Double values
      *
      * @param fieldname field
-     * @param values    values
+     * @param values values
      * @return TQL Expression
      */
     public static Expression in(String fieldname, double... values) {
@@ -492,7 +510,7 @@ public class TqlBuilder {
      * Build a "in" TQL expression with Boolean values
      *
      * @param fieldname field
-     * @param values    values
+     * @param values values
      * @return TQL Expression
      */
     public static Expression in(String fieldname, Boolean... values) {
@@ -525,7 +543,7 @@ public class TqlBuilder {
     /**
      * Sub method used to build "In" TQL Expressions
      *
-     * @param fieldname     field
+     * @param fieldname field
      * @param literalValues values
      * @return TQL Expression
      */
@@ -716,8 +734,8 @@ public class TqlBuilder {
      * Build a comparison TQL expression with a field and a string value
      *
      * @param fieldname fieldname
-     * @param value     value
-     * @param operator  operator
+     * @param value value
+     * @param operator operator
      * @return TQL Expression
      */
     private static Expression comparisonOperationString(String fieldname, String value, ComparisonOperator operator) {
@@ -738,8 +756,8 @@ public class TqlBuilder {
      * Build a comparison TQL expression with a field and a int value
      *
      * @param fieldname fieldname
-     * @param value     value
-     * @param operator  operator
+     * @param value value
+     * @param operator operator
      * @return TQL Expression
      */
     private static Expression comparisonOperationInt(String fieldname, int value, ComparisonOperator operator) {
@@ -760,8 +778,8 @@ public class TqlBuilder {
      * Build a comparison TQL expression with a field and a double value
      *
      * @param fieldname fieldname
-     * @param value     value
-     * @param operator  operator
+     * @param value value
+     * @param operator operator
      * @return TQL Expression
      */
     private static Expression comparisonOperationDouble(String fieldname, double value, ComparisonOperator operator) {
@@ -783,7 +801,7 @@ public class TqlBuilder {
      *
      * @param fieldname1 fieldname1
      * @param fieldname2 fieldname2
-     * @param operator   operator
+     * @param operator operator
      * @return TQL Expression
      */
     private static Expression comparisonOperationField(String fieldname1, String fieldname2, ComparisonOperator operator) {
@@ -804,8 +822,8 @@ public class TqlBuilder {
      * Build a "comparison" TQL expression with a field and a boolean value
      *
      * @param fieldname fieldname1
-     * @param value     value
-     * @param operator  operator
+     * @param value value
+     * @param operator operator
      * @return TQL Expression
      */
     private static Expression comparisonOperationBoolean(String fieldname, boolean value, ComparisonOperator operator) {
@@ -824,9 +842,9 @@ public class TqlBuilder {
     /**
      * Build a "between" TQL expression with a field and 2 String values
      *
-     * @param fieldname    fieldname
-     * @param value1       value1
-     * @param value2       value2
+     * @param fieldname fieldname
+     * @param value1 value1
+     * @param value2 value2
      * @param litteralType type
      * @return TQL Expression
      */

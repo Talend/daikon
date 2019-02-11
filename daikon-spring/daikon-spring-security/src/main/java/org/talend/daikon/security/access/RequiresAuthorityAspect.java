@@ -12,7 +12,15 @@
 
 package org.talend.daikon.security.access;
 
-import org.apache.commons.lang.StringUtils;
+import static java.util.Optional.ofNullable;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -25,14 +33,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import static java.util.Optional.ofNullable;
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 /**
  * The aspect configuration that takes care of {@link RequiresAuthority} annotations.
@@ -54,7 +54,7 @@ public class RequiresAuthorityAspect {
      * @param pjp The method invocation.
      * @return The object
      * @throws Throwable Throws {@link org.springframework.security.access.AccessDeniedException} in case of denied
-     *                   access to the invoked method.
+     * access to the invoked method.
      */
     @Around("@annotation(org.talend.daikon.security.access.RequiresAuthority)")
     public Object requires(ProceedingJoinPoint pjp) throws Throwable {

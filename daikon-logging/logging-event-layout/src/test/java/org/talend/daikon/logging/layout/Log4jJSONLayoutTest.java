@@ -8,8 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LocationInfo;
@@ -18,6 +16,9 @@ import org.apache.log4j.spi.ThrowableInformation;
 import org.junit.Test;
 import org.talend.daikon.logging.event.field.LayoutFields;
 import org.talend.daikon.logging.event.layout.Log4jJSONLayout;
+
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
 
 public class Log4jJSONLayoutTest extends AbstractLayoutTest {
 
@@ -73,7 +74,8 @@ public class Log4jJSONLayoutTest extends AbstractLayoutTest {
                 logDetails.getMethodName(), String.valueOf(logDetails.getLineNumber()));
         Logger logger = Logger.getLogger(logDetails.getClassName());
         ThrowableInformation throwableInformation = logDetails.getException() != null
-                ? new ThrowableInformation(logDetails.getException()) : null;
+                ? new ThrowableInformation(logDetails.getException())
+                : null;
         Properties mdc = new Properties();
         logDetails.getMdc().entrySet().stream().forEach(it -> mdc.put(it.getKey(), it.getValue()));
         LoggingEvent event = new LoggingEvent(logDetails.getClassName(), logger, logDetails.getTimeMillis(),

@@ -17,15 +17,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.schema.avro.AvroSchemaMessageConverter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.util.MimeType;
-import org.talend.daikon.messages.spring.producer.EnableMessagesProducerAutoConfig;
 
 @SpringBootApplication
 @EnableBinding(ProductEventsSink.class)
-@EnableMessagesProducerAutoConfig
-@ComponentScan(basePackages = { "org.talend.daikon.messages.demo.service1" })
 public class Application {
 
     public static void main(String[] args) {

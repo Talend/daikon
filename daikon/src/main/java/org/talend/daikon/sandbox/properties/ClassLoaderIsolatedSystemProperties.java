@@ -79,7 +79,7 @@ public class ClassLoaderIsolatedSystemProperties extends Properties {
      *
      * @param classloader A {@link ClassLoader} used as an isolation key.
      * @param classLoaderProperties Default properties for the <code>classLoader</code>. Please note registered ClassLoader will
-     *            work on <b>a copy</b> of the <code>theClassLoaderProperties</code> parameter.
+     * work on <b>a copy</b> of the <code>theClassLoaderProperties</code> parameter.
      */
     public void startIsolateClassLoader(ClassLoader classloader, Properties theClassLoaderProperties) {
         synchronized (classLoaderProperties) {

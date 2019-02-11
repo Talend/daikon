@@ -9,6 +9,7 @@ import net.minidev.json.JSONObject;
 
 /**
  * Json Layout Utils
+ * 
  * @author sdiallo
  *
  */
@@ -70,9 +71,10 @@ public final class LayoutUtils {
     }
 
     /**
-     *  Check if this field name added by Spring Cloud Sleuth
+     * Check if this field name added by Spring Cloud Sleuth
+     * 
      * @param fieldName
-     * @return true if the fieldName represent added by Spring Cloud Sleuth 
+     * @return true if the fieldName represent added by Spring Cloud Sleuth
      */
     public static boolean isSleuthField(String fieldName) {
         return "service".equals(fieldName) || "X-B3-SpanId".equals(fieldName) || "X-B3-TraceId".equals(fieldName)

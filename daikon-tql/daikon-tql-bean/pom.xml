@@ -3,7 +3,7 @@
     <parent>
         <artifactId>daikon-tql</artifactId>
         <groupId>org.talend.daikon</groupId>
-        <version>0.29.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>daikon-tql-bean</artifactId>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <version>${commons-lang.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

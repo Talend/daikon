@@ -54,8 +54,11 @@ public class LoggingContextTest {
         sampleRequestHandler.verifier = () -> {
             assertEquals(userId, MDC.get(MdcKeys.USER_ID));
         };
-        String result = given().auth().basic(userId, LoggingApplication.PASSWORD).get("/").then().statusCode(200).extract()
-                .asString();
+        String result = given().auth() //
+                .basic(userId, LoggingApplication.PASSWORD) //
+                .get("/") //
+                .then().statusCode(200) //
+                .extract().asString();
         assertEquals(LoggingApplication.MESSAGE, result);
     }
 

@@ -72,7 +72,8 @@
     {
       "name" : "securityToken",
       "doc" : "User's security token",
-      "type" : ["null", "string"]
+      "type" : ["null", "string"],
+      "secured": true
     }
   ]
 }

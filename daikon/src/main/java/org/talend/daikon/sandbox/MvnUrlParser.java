@@ -34,8 +34,8 @@ import java.net.MalformedURLException;
 public class MvnUrlParser {
 
     /**
-    * Default version if none present in the url.
-    */
+     * Default version if none present in the url.
+     */
     public static final String VERSION_LATEST = "LATEST";
 
     /**
@@ -174,7 +174,7 @@ public class MvnUrlParser {
         if (m_artifact.trim().length() == 0) {
             throw new MalformedURLException("Invalid artifactId. Syntax " + SYNTAX);
         }
-        // version is optional but we have a default value 
+        // version is optional but we have a default value
         m_version = VERSION_LATEST;
         if (segments.length >= 3 && segments[2].trim().length() > 0) {
             m_version = segments[2];
@@ -263,8 +263,8 @@ public class MvnUrlParser {
     /**
      * Returns the version for an artifact for a snapshot version.
      *
-     * @param version     The version of the snapshot.
-     * @param timestamp   The timestamp of the snapshot.
+     * @param version The version of the snapshot.
+     * @param timestamp The timestamp of the snapshot.
      * @param buildnumber The buildnumber of the snapshot.
      *
      * @return artifact path
@@ -276,8 +276,8 @@ public class MvnUrlParser {
     /**
      * Returns the complete path to artifact for a snapshot file.
      *
-     * @param version     The version of the snapshot.
-     * @param timestamp   The timestamp of the snapshot.
+     * @param version The version of the snapshot.
+     * @param timestamp The timestamp of the snapshot.
      * @param buildnumber The buildnumber of the snapshot.
      *
      * @return artifact path

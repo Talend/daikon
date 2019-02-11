@@ -12,19 +12,22 @@
 // ============================================================================
 package org.talend.daikon.logging.spring;
 
+import java.util.concurrent.Callable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.concurrent.Callable;
 
 @SpringBootApplication
 public class LoggingApplication {
@@ -35,21 +38,29 @@ public class LoggingApplication {
 
     public static final String PASSWORD = "password";
 
-    public static void main(String[] args) { //NOSONAR
-        SpringApplication.run(LoggingApplication.class, args); //NOSONAR
+    public static void main(String[] args) { // NOSONAR
+        SpringApplication.run(LoggingApplication.class, args); // NOSONAR
     }
 
     @Configuration
     @EnableWebSecurity
     public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
+
         @Autowired
         public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-            auth.inMemoryAuthentication().withUser(USER_ID).password(PASSWORD).authorities("ROLE_USER");
+            String password = passwordEncoder().encode(PASSWORD);
+            auth.inMemoryAuthentication() //
+                    .passwordEncoder(passwordEncoder()) //
+                    .withUser(USER_ID).password(password).authorities("ROLE_USER");
         }
 
         @Override
-        public void configure(WebSecurity web) throws Exception {
+        public void configure(WebSecurity web) {
             web.ignoring().antMatchers("/public/**");
         }
 

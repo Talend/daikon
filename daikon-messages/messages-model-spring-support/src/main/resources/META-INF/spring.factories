@@ -1,0 +1,12 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.talend.daikon.messages.spring.consumer.DefaultConsumerSettersConfiguration,\
+org.talend.daikon.messages.spring.consumer.ExecutionContextUpdaterConfiguration,\
+org.talend.daikon.messages.spring.consumer.MultiTenantConsumerSettersConfiguration,\
+org.talend.daikon.messages.spring.consumer.security.SpringSecuritySettersConfiguration,\
+org.talend.daikon.messages.spring.consumer.sleuth.SpringSleuthSettersConfiguration,\
+org.talend.daikon.messages.spring.producer.DefaultProducerProvidersConfiguration,\
+org.talend.daikon.messages.spring.producer.MessageHeaderFactoryConfiguration,\
+org.talend.daikon.messages.spring.producer.MessageKeysConfiguration,\
+org.talend.daikon.messages.spring.producer.MultiTenantProducerProvidersConfiguration,\
+org.talend.daikon.messages.spring.producer.security.SpringSecurityProvidersConfiguration,\
+org.talend.daikon.messages.spring.producer.sleuth.SpringSleuthProvidersConfiguration

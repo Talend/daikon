@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 
@@ -32,6 +32,7 @@ public class AccessDeniedDefaults {
 
     /**
      * Throw a {@link TalendRuntimeException} on denied access with a HTTP 403.
+     * 
      * @see CommonErrorCodes#INSUFFICIENT_AUTHORITY
      */
     public static class ThrowException implements AccessDenied<Object> { // NOSONAR

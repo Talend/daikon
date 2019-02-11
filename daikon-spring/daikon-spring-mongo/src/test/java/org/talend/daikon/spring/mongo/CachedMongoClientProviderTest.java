@@ -3,13 +3,15 @@ package org.talend.daikon.spring.mongo;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+import de.bwaldvogel.mongo.MongoServer;
+import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.fakemongo.Fongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
@@ -19,9 +21,11 @@ public class CachedMongoClientProviderTest {
 
     private static final TenantInformationProvider TENANT2 = getTenantInformationProvider("Tenant2");
 
+    private static MongoServer server;
+
     private final CachedMongoClientProvider cachedMongoClientProvider = new CachedMongoClientProvider(1, TimeUnit.SECONDS);
 
-    private static Fongo fongo;
+    private static InetSocketAddress serverAddress;
 
     private static TenantInformationProvider getTenantInformationProvider(final String tenant) {
         return new TenantInformationProvider() {
@@ -33,23 +37,27 @@ public class CachedMongoClientProviderTest {
 
             @Override
             public MongoClientURI getDatabaseURI() {
-                return new MongoClientURI("mongodb://fake_host:27017/" + tenant);
+                return new MongoClientURI(
+                        "mongodb://" + serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant);
             }
         };
     }
 
     @BeforeClass
-    public static void setUp() throws Exception {
-        fongo = new Fongo("CachedMongoClientProviderTest");
+    public static void setUp() {
+        server = new MongoServer(new MemoryBackend());
+
+        // bind on a random local port
+        serverAddress = server.bind();
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
-        fongo.getMongo().close();
+    public static void tearDown() {
+        server.shutdown();
     }
 
     @Test
-    public void shouldNotEvictInstanceBeforeTimeout() throws Exception {
+    public void shouldNotEvictInstanceBeforeTimeout() {
         // When
         final MongoClient client1 = cachedMongoClientProvider.get(TENANT1);
         final MongoClient client2 = cachedMongoClientProvider.get(TENANT1);
@@ -70,7 +78,7 @@ public class CachedMongoClientProviderTest {
     }
 
     @Test
-    public void shouldCreateClientForTenants() throws Exception {
+    public void shouldCreateClientForTenants() {
         // When
         final MongoClient client1 = cachedMongoClientProvider.get(TENANT1);
         final MongoClient client2 = cachedMongoClientProvider.get(TENANT2);

@@ -18,6 +18,7 @@ import net.minidev.json.JSONObject;
 
 /**
  * Log4j JSON Layout
+ * 
  * @author sdiallo
  *
  */
@@ -122,7 +123,7 @@ public class Log4jJSONLayout extends Layout {
 
     @Override
     public void activateOptions() {
-        //Not used
+        // Not used
     }
 
     private JSONObject createLogSourceEvent(LoggingEvent loggingEvent, HostData host) {

@@ -14,6 +14,7 @@ package org.talend.daikon.multitenant.async;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.Async;
@@ -24,6 +25,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -46,13 +49,19 @@ public class MultiTenantApplication {
     @EnableWebSecurity
     public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
+
         @Autowired
         public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-            auth.inMemoryAuthentication().withUser("user").password("password").authorities("ROLE_USER");
+            String password = passwordEncoder().encode("password");
+            auth.inMemoryAuthentication().withUser("user").password(password).authorities("ROLE_USER");
         }
 
         @Override
-        public void configure(WebSecurity web) throws Exception {
+        public void configure(WebSecurity web) {
             web.ignoring().antMatchers("/public/**");
         }
 
@@ -112,7 +121,7 @@ public class MultiTenantApplication {
         @Autowired
         private MessagePublicationHandler handler;
 
-        @Async
+        @Async("contextAwarePoolExecutor")
         public void publish(String content) {
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
             String priority = null;

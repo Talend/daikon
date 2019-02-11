@@ -1,12 +1,13 @@
 package org.talend.tqlmongo.criteria;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
 
-import java.util.List;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 public class TestMongoCriteria_WordComply extends TestMongoCriteria_Abstract {
 

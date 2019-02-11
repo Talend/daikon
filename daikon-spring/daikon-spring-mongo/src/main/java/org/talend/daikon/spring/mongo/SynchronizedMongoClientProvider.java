@@ -53,7 +53,8 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
                 concurrentOpens.remove(databaseURI);
             }
         } else {
-            LOGGER.trace("Not closing mongo clients ({} remain in use for database '{}')", openCount, databaseURI == null ? "N/A" : databaseURI);
+            LOGGER.trace("Not closing mongo clients ({} remain in use for database '{}')", openCount,
+                    databaseURI == null ? "N/A" : databaseURI);
         }
     }
 

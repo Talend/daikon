@@ -24,6 +24,7 @@ public interface TraversalPathPrinter {
 
     /**
      * Appends a path element
+     * 
      * @param name name of the element
      * @param position position of the element
      */
@@ -31,12 +32,14 @@ public interface TraversalPathPrinter {
 
     /**
      * Appends an array item
+     * 
      * @param index index of the element
      */
     void arrayIndex(int index);
 
     /**
      * Appends a map entry
+     * 
      * @param key key of the entry
      */
     void mapEntry(String key);

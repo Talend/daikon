@@ -34,6 +34,20 @@ public class TestMessageHeaderExtractor {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
+    public void testHiddenSecuredField() {
+        MessageHeader messageHeader = MessageHeader.newBuilder().setId("My id") //
+                .setCorrelationId("Correlation id") //
+                .setTimestamp(123L) //
+                .setIssuer(MessageIssuer.newBuilder().setApplication("Application1").setService("Service1").setVersion("ABC")
+                        .build()) //
+                .setType(MessageTypes.COMMAND).setName("name").setTenantId("tenantId").setUserId("userId") //
+                .setSecurityToken("securityToken").build();
+
+        Assert.assertNotNull(messageHeader.toString());
+        Assert.assertTrue(messageHeader.toString().contains("\"securityToken\": <hidden>"));
+    }
+
+    @Test
     public void testExtractMessageHeaderWithSpecificRecord() throws Exception {
         Schema headerSchema = loadMessageHeaderSchema();
         Schema messageSchema = SchemaBuilder.record("message").fields().name("header").type(headerSchema).noDefault()

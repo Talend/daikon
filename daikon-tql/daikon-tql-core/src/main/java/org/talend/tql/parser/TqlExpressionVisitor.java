@@ -13,7 +13,26 @@ import org.talend.tql.TqlLexer;
 import org.talend.tql.TqlParser;
 import org.talend.tql.TqlParserVisitor;
 import org.talend.tql.excp.TqlException;
-import org.talend.tql.model.*;
+import org.talend.tql.model.AllFields;
+import org.talend.tql.model.AndExpression;
+import org.talend.tql.model.BooleanValue;
+import org.talend.tql.model.ComparisonExpression;
+import org.talend.tql.model.ComparisonOperator;
+import org.talend.tql.model.Expression;
+import org.talend.tql.model.FieldBetweenExpression;
+import org.talend.tql.model.FieldCompliesPattern;
+import org.talend.tql.model.FieldContainsExpression;
+import org.talend.tql.model.FieldInExpression;
+import org.talend.tql.model.FieldIsEmptyExpression;
+import org.talend.tql.model.FieldIsInvalidExpression;
+import org.talend.tql.model.FieldIsValidExpression;
+import org.talend.tql.model.FieldMatchesRegex;
+import org.talend.tql.model.FieldReference;
+import org.talend.tql.model.FieldWordCompliesPattern;
+import org.talend.tql.model.LiteralValue;
+import org.talend.tql.model.NotExpression;
+import org.talend.tql.model.OrExpression;
+import org.talend.tql.model.TqlElement;
 
 /**
  * Visitor for building the AST Tql tree.

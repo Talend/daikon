@@ -42,7 +42,7 @@ public class CharPatternToRegexTest {
     @Test
     public void checkJavaScriptRegexes() {
         assertEquals("^([\\u0030-\\u0039]|[\\uFF10-\\uFF19]){4}$", CharPatternToRegex.toJavaScriptRegex("9999"));
-        assertEquals("^([\\u0041-\\u005A\\u00C0-\\u00D6\\u00D8-\\u00DE]|[\\uFF21-\\uFF3A]){2}$",
+        assertEquals("^([\\u0041-\\u005A]|[\\u00C0-\\u00D6\\u00D8-\\u00DE]|[\\uFF21-\\uFF3A]){2}$",
                 CharPatternToRegex.toJavaScriptRegex("AA"));
         assertEquals("^h$", CharPatternToRegex.toJavaScriptRegex("h"));
         assertEquals("^([\\u3041-\\u3096]|\\u309D|\\u309E|\\u30FC){3}$", CharPatternToRegex.toJavaScriptRegex("HHH"));
@@ -53,7 +53,7 @@ public class CharPatternToRegexTest {
                 CharPatternToRegex.toJavaScriptRegex("C"));
         assertEquals("^([\\uAC00-\\uD7AF])$", CharPatternToRegex.toJavaScriptRegex("G"));
         assertEquals(
-                "^([\\u0061-\\u007a\\u00DF-\\u00F6\\u00F8-\\u00FF]|[\\uFF41-\\uFF5A]){4}@([\\u0061-\\u007a\\u00DF-\\u00F6\\u00F8-\\u00FF]|[\\uFF41-\\uFF5A]){5}\\.([\\u0061-\\u007a\\u00DF-\\u00F6\\u00F8-\\u00FF]|[\\uFF41-\\uFF5A]){3}$",
+                "^([\\u0061-\\u007a]|[\\u00DF-\\u00F6\\u00F8-\\u00FF]|[\\uFF41-\\uFF5A]){4}@([\\u0061-\\u007a]|[\\u00DF-\\u00F6\\u00F8-\\u00FF]|[\\uFF41-\\uFF5A]){5}\\.([\\u0061-\\u007a]|[\\u00DF-\\u00F6\\u00F8-\\u00FF]|[\\uFF41-\\uFF5A]){3}$",
                 CharPatternToRegex.toJavaScriptRegex("aaaa@aaaaa.aaa"));
     }
 
@@ -64,16 +64,20 @@ public class CharPatternToRegexTest {
         String regex = CharPatternToRegex.toRegex(pattern);
         assertMatches("a", regex);
         assertMatches("b", regex);
+        assertMatches("é", regex);
         assertNoMatches("こ", regex);
         assertNoMatches("0", regex);
+        assertNoMatches("È", regex);
         assertNoMatches("袁", regex);
         assertNoMatches("a b", regex);
 
         String jsRegex = CharPatternToRegex.toJavaScriptRegex(pattern);
         assertJavaScriptMatches("a", jsRegex);
         assertJavaScriptMatches("b", jsRegex);
+        assertJavaScriptMatches("é", jsRegex);
         assertJavaScriptNoMatches("こ", jsRegex);
         assertJavaScriptNoMatches("0", jsRegex);
+        assertJavaScriptNoMatches("È", jsRegex);
         assertJavaScriptNoMatches("袁", jsRegex);
         assertJavaScriptNoMatches("a b", jsRegex);
     }
@@ -84,15 +88,19 @@ public class CharPatternToRegexTest {
         String regex = CharPatternToRegex.toRegex(pattern);
         assertMatches("A", regex);
         assertMatches("B", regex);
+        assertMatches("È", regex);
         assertNoMatches("b", regex);
         assertNoMatches("0", regex);
+        assertNoMatches("à", regex);
         assertNoMatches("A B", regex);
 
         String jsRegexegex = CharPatternToRegex.toJavaScriptRegex(pattern);
         assertJavaScriptMatches("A", jsRegexegex);
         assertJavaScriptMatches("B", jsRegexegex);
+        assertJavaScriptMatches("È", jsRegexegex);
         assertJavaScriptNoMatches("b", jsRegexegex);
         assertJavaScriptNoMatches("0", jsRegexegex);
+        assertJavaScriptNoMatches("à", jsRegexegex);
         assertJavaScriptNoMatches("A B", jsRegexegex);
     }
 

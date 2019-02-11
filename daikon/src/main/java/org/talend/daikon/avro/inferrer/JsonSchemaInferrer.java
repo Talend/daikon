@@ -83,7 +83,11 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
     public Schema inferSchema(String json) {
         try {
             final JsonNode jsonNode = mapper.readTree(json);
-            return Schema.createRecord("outer_record", null, "org.talend", false, getFields(jsonNode));
+            // Create a nameless temporary record to get a fingerprint from.
+            Schema record = Schema.createRecord(getFields(jsonNode));
+            long fingerprint = SchemaNormalization.parsingFingerprint64(record);
+            return Schema.createRecord(("outer_record" + fingerprint).replace('-', '_'), null, "org.talend", false,
+                    getFields(jsonNode));
         } catch (IOException | TalendRuntimeException e) {
             throw TalendRuntimeException.createUnexpectedException(e.getCause());
         }
@@ -203,7 +207,7 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
         Schema record = Schema.createRecord(getFields(node));
         long fingerprint = SchemaNormalization.parsingFingerprint64(record);
 
-        // Use the fingerprint in the record name.  Note that we have to traverse the node twice.
+        // Use the fingerprint in the record name. Note that we have to traverse the node twice.
         return Schema.createRecord(("subrecord" + fingerprint).replace('-', '_'), null, null, false, getFields(node));
     }
 }

@@ -1,13 +1,14 @@
 package org.talend.daikon.spring.mongo;
 
+import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.ServerAddress;
+import de.bwaldvogel.mongo.MongoServer;
+import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
-
-import com.github.fakemongo.Fongo;
-import com.mongodb.MongoClient;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class TestMultiTenantConfiguration {
 
     private static final ThreadLocal<String> hostName = ThreadLocal.withInitial(() -> "local");
 
-    private static final Map<String, Fongo> fongoInstances = new HashMap<>();
+    private static final Map<String, MongoServer> mongoInstances = new HashMap<>();
 
     public static void changeTenant(String tenant) {
         dataBaseName.set(tenant);
@@ -30,14 +31,30 @@ public class TestMultiTenantConfiguration {
         hostName.set(host);
     }
 
-    public static Map<String, Fongo> getFongoInstances() {
-        return fongoInstances;
+    public static Map<String, MongoServer> getMongoInstances() {
+        return mongoInstances;
     }
 
     @Bean
     public MongoDbFactory defaultMongoDbFactory() {
+        MongoServer server = mongoServer();
+
+        return new SimpleMongoDbFactory(new MongoClient(new ServerAddress(server.getLocalAddress())), "standard");
+    }
+
+    @Bean
+    public MongoServer mongoServer() {
+        return initNewServer();
+    }
+
+    private MongoServer initNewServer() {
         // Applications are expected to have one MongoDbFactory available
-        return new SimpleMongoDbFactory(new Fongo("Standard Mongo").getMongo(), "standard");
+        MongoServer server = new MongoServer(new MemoryBackend());
+
+        // bind on a random local port
+        server.bind();
+
+        return server;
     }
 
     @Bean
@@ -46,21 +63,16 @@ public class TestMultiTenantConfiguration {
         return new MongoTemplate(factory);
     }
 
-    // A fake mongo for tests
-    @Bean
-    public Fongo fongo() {
-        return new Fongo("MongoDB");
-    }
-
     /**
      * @return A {@link TenantInformationProvider} that gets the database name from {@link #dataBaseName}.
      */
     @Bean
     public TenantInformationProvider tenantProvider() {
         return new TenantInformationProvider() {
+
             @Override
             public String getDatabaseName() {
-                if("failure".equals(dataBaseName.get())) {
+                if ("failure".equals(dataBaseName.get())) {
                     throw new RuntimeException("On purpose thrown exception.");
                 }
                 return dataBaseName.get();
@@ -80,27 +92,29 @@ public class TestMultiTenantConfiguration {
 
             @Override
             public void close() {
-                for (Map.Entry<String, Fongo> entry : fongoInstances.entrySet()) {
-                    entry.getValue().getMongo().close();
+                for (Map.Entry<String, MongoServer> entry : mongoInstances.entrySet()) {
+                    entry.getValue().shutdown();
                 }
-                fongoInstances.clear();
+                mongoInstances.clear();
             }
 
             @Override
             public MongoClient get(TenantInformationProvider provider) {
                 final String name = provider.getDatabaseURI().getURI();
-                fongoInstances.computeIfAbsent(name, Fongo::new);
-                return fongoInstances.get(name).getMongo();
+                if (!mongoInstances.containsKey(name)) {
+                    mongoInstances.put(name, initNewServer());
+                }
+                return new MongoClient(new ServerAddress(mongoInstances.get(name).getLocalAddress()));
             }
 
             @Override
             public void close(TenantInformationProvider provider) {
                 final String uri = provider.getDatabaseURI().getURI();
-                final Fongo fongo = fongoInstances.get(uri);
-                if (fongo != null) {
-                    fongo.getMongo().close();
+                final MongoServer server = mongoInstances.get(uri);
+                if (server != null) {
+                    server.shutdown();
                 }
-                fongoInstances.remove(uri);
+                mongoInstances.remove(uri);
             }
         };
     }

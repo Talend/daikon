@@ -4,9 +4,13 @@ public enum CharPatternToRegexConstants {
 
     DIGIT("([\\x{30}-\\x{39}])", "([\\u0030-\\u0039])"),
 
-    LOWER_LATIN("([\\x{61}-\\x{7a}]|[\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}])", "([\\u0061-\\u007a\\u00DF-\\u00F6\\u00F8-\\u00FF])"),
+    LOWER_LATIN("([\\x{61}-\\x{7a}])", "([\\u0061-\\u007a])"),
 
-    UPPER_LATIN("([\\x{41}-\\x{5A}]|[\\x{C0}-\\x{D6}]|[\\x{D8}-\\x{DE}])", "([\\u0041-\\u005A\\u00C0-\\u00D6\\u00D8-\\u00DE])"),
+    LOWER_LATIN_RARE("([\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}])", "([\\u00DF-\\u00F6\\u00F8-\\u00FF])"),
+
+    UPPER_LATIN("([\\x{41}-\\x{5A}])", "([\\u0041-\\u005A])"),
+
+    UPPER_LATIN_RARE("([\\x{C0}-\\x{D6}]|[\\x{D8}-\\x{DE}])", "([\\u00C0-\\u00D6\\u00D8-\\u00DE])"),
 
     FULLWIDTH_DIGIT("([\\x{FF10}-\\x{FF19}])", "([\\uFF10-\\uFF19])"),
 
@@ -29,22 +33,23 @@ public enum CharPatternToRegexConstants {
             "([\\u30A1-\\u30FA\\u31F0-\\u31FF]|\\u30FC\\u30FD\\u30FE)"),
 
     KANJI(
-            "([\\x{4E00}-\\x{9FEF}]" + "|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}])", // Symbol and punctuation added for TDQ-11343
-            "([\\u4E00-\\u9FEF]" + "|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B])"), // Symbol and punctuation added for TDQ-11343
+            "([\\x{4E00}-\\x{9FEF}]" + "|\\x{3005}|\\x{3007}|[\\x{3021}-\\x{3029}]|[\\x{3038}-\\x{303B}])", // Symbol and
+                                                                                                            // punctuation added
+                                                                                                            // for TDQ-11343
+            "([\\u4E00-\\u9FEF]" + "|\\u3005|\\u3007|[\\u3021-\\u3029]|[\\u3038-\\u303B])"), // Symbol and punctuation added for
+                                                                                             // TDQ-11343
 
-    KANJI_RARE(
-            "([\\x{3400}-\\x{4DB5}]" + // Extension A
-                    "|[\\x{20000}-\\x{2A6D6}]" + // Extension B
-                    "|[\\x{2A700}-\\x{2B734}]" + // Extension C
-                    "|[\\x{2B740}-\\x{2B81D}]" + // Extension D
-                    "|[\\x{2B820}-\\x{2CEA1}]" + // Extension E
-                    "|[\\x{2CEB0}-\\x{2EBE0}]" + // Extension F
-                    "|[\\x{F900}-\\x{FA6D}]|[\\x{FA70}-\\x{FAD9}]" + // Compatibility Ideograph
-                    "|[\\x{2F800}-\\x{2FA1D}]" + // Compatibility Ideograph Supplement
-                    "|[\\x{2F00}-\\x{2FD5}]" + // KangXi Radicals
-                    "|[\\x{2E80}-\\x{2E99}]|[\\x{2E9B}-\\x{2EF3}])" // Radical Supplement
-            ,
-            "([\\u3400-\\u4DB5]" + // Extension A
+    KANJI_RARE("([\\x{3400}-\\x{4DB5}]" + // Extension A
+            "|[\\x{20000}-\\x{2A6D6}]" + // Extension B
+            "|[\\x{2A700}-\\x{2B734}]" + // Extension C
+            "|[\\x{2B740}-\\x{2B81D}]" + // Extension D
+            "|[\\x{2B820}-\\x{2CEA1}]" + // Extension E
+            "|[\\x{2CEB0}-\\x{2EBE0}]" + // Extension F
+            "|[\\x{F900}-\\x{FA6D}]|[\\x{FA70}-\\x{FAD9}]" + // Compatibility Ideograph
+            "|[\\x{2F800}-\\x{2FA1D}]" + // Compatibility Ideograph Supplement
+            "|[\\x{2F00}-\\x{2FD5}]" + // KangXi Radicals
+            "|[\\x{2E80}-\\x{2E99}]|[\\x{2E9B}-\\x{2EF3}])" // Radical Supplement
+            , "([\\u3400-\\u4DB5]" + // Extension A
                     "|[\\ud840-\\ud868][\\udc00-\\udfff]|\\ud869[\\udc00-\\uded6]" + // Extension B
                     "|[\\ud86a-\\ud86c][\\udc00-\\udfff]|\\ud869[\\udf00-\\udfff]|\\ud86d[\\udc00-\\udf34]" + // Extension C
                     "|\\ud86d[\\udf40-\\udfff]|\\ud86e[\\udc00-\\udc1d]" + // Extension D

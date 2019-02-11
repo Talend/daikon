@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.talend.daikon</groupId>
+        <artifactId>scala-parent</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+        <relativePath>../scala-parent/pom.xml</relativePath>
+    </parent>
+    <artifactId>dynamic-log</artifactId>
+    <packaging>pom</packaging>
+    <name>Daikon Dynamic Log</name>
+    <url>https://github.com/Talend/daikon</url>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    <modules>
+        <module>dynamic-log-core</module>
+        <module>dynamic-log-web-play</module>
+    </modules>
+
+    <dependencyManagement>
+
+    </dependencyManagement>
+
+
+</project>
