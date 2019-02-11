@@ -42,14 +42,17 @@
  * <ol>
  * <li>Add - No special handling is required. Older software versions will be able to read newer objects without problems. The
  * deserialization mechanism will make sure that unknown fields are ignored.
- * <li>Remove - The {@link org.talend.daikon.serialize.migration.DeserializeDeletedFieldHandler} interface is implemented by the class to
+ * <li>Remove - The {@link org.talend.daikon.serialize.migration.DeserializeDeletedFieldHandler} interface is implemented by the
+ * class to
  * provide a method to handle the value associated with the deleted field. This method is called automatically by the JSON
  * deserializer.
  * <li>Other Changes - A means of providing a version number associated with the serialized object is provided using the
- * {@link org.talend.daikon.serialize.migration.SerializeSetVersion} interface. This can be used for example if the meaning of a field, and
+ * {@link org.talend.daikon.serialize.migration.SerializeSetVersion} interface. This can be used for example if the meaning of a
+ * field, and
  * therefore its content, has been changed. When the change is made, a higher version number is provided with the changed
  * implementation. The code for handling doing the actual changes is provided using the
- * {@link org.talend.daikon.serialize.migration.PostDeserializeHandler} which is called after the object has been completely materialized,
+ * {@link org.talend.daikon.serialize.migration.PostDeserializeHandler} which is called after the object has been completely
+ * materialized,
  * and the version number of the serialized object is provided.
  * </ol>
  */

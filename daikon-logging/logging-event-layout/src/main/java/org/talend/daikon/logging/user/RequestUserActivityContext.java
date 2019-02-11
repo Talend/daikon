@@ -2,6 +2,7 @@ package org.talend.daikon.logging.user;
 
 /**
  * Tracks the atcivity Id for the current request.
+ * 
  * @author sdiallo
  */
 public final class RequestUserActivityContext {

@@ -31,16 +31,16 @@ public class TalendKafkaProducerInterceptor implements ProducerInterceptor<Objec
 
     @Override
     public void configure(Map<String, ?> arg0) {
-        //TODO
+        // TODO
     }
 
     @Override
     public void close() {
-        //TODO
+        // TODO
     }
 
     @Override
     public void onAcknowledgement(RecordMetadata arg0, Exception arg1) {
-        //TODO
+        // TODO
     }
 }

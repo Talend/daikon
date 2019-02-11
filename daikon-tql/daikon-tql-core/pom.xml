@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-tql</artifactId>
-        <version>0.30.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>daikon-tql-core</artifactId>
     <name>Daikon TQL core libraries.</name>
 
     <properties>
-        <antlr.version>4.5.3</antlr.version>
+        <antlr.version>4.7</antlr.version>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyyMMddHHmmssSSS</maven.build.timestamp.format>
     </properties>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <version>${commons-lang.version}</version>
         </dependency>
     </dependencies>
 

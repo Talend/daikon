@@ -12,15 +12,18 @@
 // ============================================================================
 package org.talend.daikon.messages.spring.producer.security;
 
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.talend.daikon.messages.header.producer.SecurityTokenProvider;
 import org.talend.daikon.messages.header.producer.UserProvider;
+import org.talend.daikon.messages.spring.producer.DefaultProducerProvidersConfiguration;
 
 @Configuration
 @ConditionalOnClass({ SecurityContextHolder.class })
+@AutoConfigureBefore({ DefaultProducerProvidersConfiguration.class })
 public class SpringSecurityProvidersConfiguration {
 
     @Bean

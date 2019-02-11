@@ -29,6 +29,7 @@ public interface PropertiesService<T extends Properties> extends Repository<T> {
      *
      * This is intended for local use only. When using this with the REST service, the values can simply be reset in the JSON
      * version of the {@link Form} object, so the cancel operation can be implemented entirely by the client.
+     * 
      * @param properties the {@link Properties} object associated with the {@code Form}.
      * @param formName the name of the form
      * @return the {@link Properties} object specified as modified by this service.
@@ -41,6 +42,7 @@ public interface PropertiesService<T extends Properties> extends Repository<T> {
      *
      * This is intended for local use only. When using this with the REST service, the values can simply be reset in the JSON
      * version of the {@link Form} object, so the cancel operation can be implemented entirely by the client.
+     * 
      * @param properties the {@link Properties} object associated with the {@code Form}.
      * @param formName the name of the form
      * @return the {@link Properties} object specified as modified by this service.

@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.async.CallableProcessingInterceptor;
 import org.springframework.web.context.request.async.CallableProcessingInterceptorAdapter;
 import org.springframework.web.context.request.async.WebAsyncManager;
 import org.springframework.web.context.request.async.WebAsyncUtils;
@@ -60,7 +61,7 @@ class UserIdLoggingFilter extends OncePerRequestFilter {
 
     }
 
-    private static class UserIdCallableProcessingInterceptorAdapter extends CallableProcessingInterceptorAdapter {
+    private static class UserIdCallableProcessingInterceptorAdapter implements CallableProcessingInterceptor {
 
         @Override
         public <T> void preProcess(NativeWebRequest request, Callable<T> task) throws Exception {

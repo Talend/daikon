@@ -32,6 +32,7 @@ public class AccessDeniedDefaults {
 
     /**
      * Throw a {@link TalendRuntimeException} on denied access with a HTTP 403.
+     * 
      * @see CommonErrorCodes#INSUFFICIENT_AUTHORITY
      */
     public static class ThrowException implements AccessDenied<Object> { // NOSONAR

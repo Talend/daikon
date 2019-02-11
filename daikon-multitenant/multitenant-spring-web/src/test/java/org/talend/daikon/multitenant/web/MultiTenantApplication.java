@@ -12,6 +12,14 @@
 // ============================================================================
 package org.talend.daikon.multitenant.web;
 
+import java.io.IOException;
+import java.util.concurrent.Callable;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Assert;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +42,6 @@ import org.talend.daikon.multitenant.context.TenancyContextHolder;
 import org.talend.daikon.multitenant.provider.DefaultTenantProvider;
 import org.talend.daikon.multitenant.provider.TenantProvider;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.concurrent.Callable;
-
 @SpringBootApplication
 @Import({ MultiTenantApplication.TenancyConfiguration.class,
         MultiTenantApplication.CleanContextCheckerFilterConfiguration.class })
@@ -50,8 +51,8 @@ public class MultiTenantApplication {
 
     public static final String MESSAGE = "Hello, World!";
 
-    public static void main(String[] args) { //NOSONAR
-        SpringApplication.run(MultiTenantApplication.class, args); //NOSONAR
+    public static void main(String[] args) { // NOSONAR
+        SpringApplication.run(MultiTenantApplication.class, args); // NOSONAR
     }
 
     @Configuration

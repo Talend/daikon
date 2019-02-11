@@ -1,0 +1,12 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Logger level
+PUT     /logger-level                       org.talend.daikon.dynamiclog.logging.controllers.LoggerLevelController.updateRootLoggerLevel(level: org.talend.daikon.dynamiclog.logging.actors.LoggerLevel ?= org.talend.daikon.dynamiclog.logging.actors.LoggerLevel("info"))
+
+#
+PUT     /logger-level/:name                 org.talend.daikon.dynamiclog.logging.controllers.LoggerLevelController.updateLoggerLevel(name: org.talend.daikon.dynamiclog.logging.actors.LoggerName, level: org.talend.daikon.dynamiclog.logging.actors.LoggerLevel ?= org.talend.daikon.dynamiclog.logging.actors.LoggerLevel("info"))
+
+#
+GET     /logger-level/:name                  org.talend.daikon.dynamiclog.logging.controllers.LoggerLevelController.getLoggerLevel(name: org.talend.daikon.dynamiclog.logging.actors.LoggerName)

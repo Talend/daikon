@@ -1,6 +1,9 @@
 package org.talend.tql.api;
 
-import static org.talend.tql.api.TqlBuilder.*;
+import static org.talend.tql.api.TqlBuilder.and;
+import static org.talend.tql.api.TqlBuilder.between;
+import static org.talend.tql.api.TqlBuilder.eqFields;
+import static org.talend.tql.api.TqlBuilder.or;
 
 import org.junit.Assert;
 import org.junit.Test;

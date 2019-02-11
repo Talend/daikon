@@ -2,7 +2,11 @@ package org.talend.daikon.logging.event.layout;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.talend.daikon.logging.event.field.HostData;
 import org.talend.daikon.logging.event.field.LayoutFields;
@@ -14,6 +18,7 @@ import net.minidev.json.JSONObject;
 
 /**
  * Logback JSON Layout
+ * 
  * @author sdiallo
  *
  */
@@ -49,7 +54,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         JSONObject userFieldsEvent = new JSONObject();
         HostData host = new HostData();
 
-        //Extract and add fields from log4j config, if defined
+        // Extract and add fields from log4j config, if defined
         if (getUserFields() != null) {
             String userFlds = getUserFields();
             LayoutUtils.addUserFields(userFlds, userFieldsEvent);
@@ -57,7 +62,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
 
         Map<String, String> mdc = LayoutUtils.processMDCMetaFields(loggingEvent.getMDCPropertyMap(), logstashEvent, metaFields);
 
-        //Now we start injecting our own stuff.
+        // Now we start injecting our own stuff.
         if (addEventUuid) {
             logstashEvent.put(LayoutFields.EVENT_UUID, UUID.randomUUID().toString());
         }

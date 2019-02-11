@@ -3,12 +3,12 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-spring</artifactId>
-        <version>0.30.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>daikon-spring-tenancy</artifactId>
-    <version>0.30.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>1.5.1.RELEASE</version>
+            <version>${spring-boot.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,6 +1,8 @@
 package org.talend.daikon.spring.mongo;
 
-import com.github.fakemongo.Fongo;
+import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
+import de.bwaldvogel.mongo.MongoServer;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.talend.daikon.spring.mongo.TestMultiTenantConfiguration.changeTenant;
 
@@ -21,7 +22,7 @@ import static org.talend.daikon.spring.mongo.TestMultiTenantConfiguration.change
 public abstract class AbstractMultiTenantMongoDbTest {
 
     @Autowired
-    private Fongo fongo;
+    private MongoServer mongoServer;
 
     @Autowired
     private MongoClientProvider mongoClientProvider;
@@ -32,9 +33,9 @@ public abstract class AbstractMultiTenantMongoDbTest {
     @Before
     public void tearDown() throws IOException {
         // Drop all created databases during test
-        final List<String> databases = fongo.getDatabaseNames();
-        for (String database : databases) {
-            fongo.dropDatabase(database);
+        MongoClient client = new MongoClient(new ServerAddress(mongoServer.getLocalAddress()));
+        for (String database : client.listDatabaseNames()) {
+            client.dropDatabase(database);
         }
         // Switch back to default tenant
         changeTenant("default");

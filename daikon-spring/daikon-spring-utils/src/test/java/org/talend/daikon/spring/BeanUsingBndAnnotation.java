@@ -15,7 +15,7 @@ package org.talend.daikon.spring;
 import aQute.bnd.annotation.component.Component;
 
 /**
- * bean using BND annotation to be recognized as spring componet
+ * bean using BND annotation to be recognized as spring component
  */
 @Component(name = "MyBean")
 public class BeanUsingBndAnnotation {

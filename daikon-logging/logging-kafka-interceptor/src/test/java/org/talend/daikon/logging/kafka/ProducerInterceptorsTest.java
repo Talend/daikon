@@ -1,8 +1,11 @@
 package org.talend.daikon.logging.kafka;
 
+import static org.junit.Assert.assertEquals;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.kafka.clients.producer.ProducerInterceptor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.internals.ProducerInterceptors;
@@ -13,8 +16,6 @@ import org.talend.daikon.messages.MessageKey;
 import org.talend.daikon.messages.header.producer.TenantIdProvider;
 import org.talend.daikon.messages.keys.MessageKeyFactory;
 import org.talend.daikon.messages.keys.MessageKeyFactoryImpl;
-
-import static org.junit.Assert.assertEquals;
 
 public class ProducerInterceptorsTest {
 
@@ -41,7 +42,7 @@ public class ProducerInterceptorsTest {
 
         // verify that onSend() mutates the record as expected
         ProducerRecord<Object, Object> interceptedRecord = interceptors.onSend(producerRecord);
-        //assertEquals(2, onSendCount);
+        // assertEquals(2, onSendCount);
         assertEquals(producerRecord.topic(), interceptedRecord.topic());
         assertEquals(producerRecord.partition(), interceptedRecord.partition());
         assertEquals(producerRecord.key(), interceptedRecord.key());

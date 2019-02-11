@@ -19,6 +19,7 @@ import zipkin2.reporter.kafka11.KafkaSender;
 
 /**
  * Configures the zipkin kafka sender for another kafka broker than the functional broker.
+ * 
  * @see ZipkinKafkaProperties
  * @see KafkaSender
  */

@@ -12,13 +12,13 @@
 // ============================================================================
 package org.talend.daikon.avro.visitor.path;
 
-import org.apache.avro.AvroRuntimeException;
-import org.apache.avro.Schema;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import org.apache.avro.AvroRuntimeException;
+import org.apache.avro.Schema;
 
 /**
  * Defines a traversal path in a hierarchical record.
@@ -237,6 +237,7 @@ public class TraversalPath implements Iterable<TraversalPath.TraversalPathElemen
 
         /**
          * Creates a new element
+         * 
          * @param name its name
          * @param position its position in its parent's schema
          * @param schema its schema
@@ -270,6 +271,7 @@ public class TraversalPath implements Iterable<TraversalPath.TraversalPathElemen
 
         /**
          * Prints this element in a {@link TraversalPathPrinter}
+         * 
          * @param printer the printer to use
          */
         public void print(TraversalPathPrinter printer) {
@@ -288,6 +290,7 @@ public class TraversalPath implements Iterable<TraversalPath.TraversalPathElemen
 
         /**
          * Creates a root element, given its schema
+         * 
          * @param schema the schema of the root element
          */
         public RootPathElement(Schema schema) {
@@ -310,6 +313,7 @@ public class TraversalPath implements Iterable<TraversalPath.TraversalPathElemen
 
         /**
          * Creates a path item referencing an item of an array
+         * 
          * @param arrayPath the path element for the array (the container)
          * @param index the index of this particular item
          */
@@ -343,6 +347,7 @@ public class TraversalPath implements Iterable<TraversalPath.TraversalPathElemen
 
         /**
          * Creates a path element referencing an entry in a map
+         * 
          * @param mapPath the path element for the map
          * @param key the key of this entry
          */

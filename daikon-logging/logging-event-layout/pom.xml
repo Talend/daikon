@@ -4,25 +4,20 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-logging</artifactId>
-        <version>0.30.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
 	<artifactId>logging-event-layout</artifactId>
 	<name>logging-event-layout</name>
-	<properties>
-        <ch.qos.logback.version>1.1.7</ch.qos.logback.version> 
-        <log4j2.version>2.7</log4j2.version>
-        <commons.lang.version>2.6</commons.lang.version>
-    </properties>
-    <dependencies>
+	<dependencies>
 		<dependency>
 	    	<groupId>net.minidev</groupId>
 	      	<artifactId>json-smart</artifactId>
-	      	<version>2.2.1</version>
+	      	<version>${json-smart.version}</version>
 	    </dependency>
 	    <dependency>
 	      	<groupId>log4j</groupId>
 	      	<artifactId>log4j</artifactId>
-	      	<version>1.2.17</version>
+	      	<version>${log4j.version}</version>
 	      	<optional>true</optional>
 	    </dependency>
 	    <dependency>
@@ -46,12 +41,12 @@
 	    <dependency>
 	      	<groupId>commons-lang</groupId>
 	      	<artifactId>commons-lang</artifactId>
-	      	<version>${commons.lang.version}</version>
+	      	<version>${commons-lang.version}</version>
 	    </dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
+			<version>${javax.servlet-api.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Tests -->
@@ -63,25 +58,25 @@
 	    <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>1.10.19</version>
+            <version>${mockito-core.version}</version>
             <scope>test</scope>
 		</dependency>
 	    <dependency>
     		<groupId>org.hamcrest</groupId>
     		<artifactId>hamcrest-all</artifactId>
-    		<version>1.3</version>
+    		<version>${hamcrest-all.version}</version>
     		<scope>test</scope>
 		</dependency>
 		<dependency>
     		<groupId>uk.co.datumedge</groupId>
     		<artifactId>hamcrest-json</artifactId>
-    		<version>0.2</version>
+    		<version>${hamcrest-json.version}</version>
     		<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path-assert</artifactId>
-			<version>2.2.0</version>
+			<version>${json-path-assert.version}</version>
 			<scope>test</scope>
 		</dependency>
     </dependencies>

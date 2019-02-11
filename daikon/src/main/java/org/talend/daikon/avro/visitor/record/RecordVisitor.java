@@ -102,48 +102,56 @@ public interface RecordVisitor {
 
     /**
      * visits a long field
+     * 
      * @param field the field to visit
      */
     void visit(VisitableLong field);
 
     /**
      * visits a string field
+     * 
      * @param field the field to visit
      */
     void visit(VisitableString field);
 
     /**
      * visits a boolean field
+     * 
      * @param field the field to visit
      */
     void visit(VisitableBoolean field);
 
     /**
      * visits a float field
+     * 
      * @param field the field to visit
      */
     void visit(VisitableFloat field);
 
     /**
      * visits a double field
+     * 
      * @param field the field to visit
      */
     void visit(VisitableDouble field);
 
     /**
      * visits a null field
+     * 
      * @param field the field to visit
      */
     void visit(VisitableNull field);
 
     /**
      * visits a fixed field
+     * 
      * @param field the field to visit
      */
     void visit(VisitableFixed field);
 
     /**
      * visits a bytes field
+     * 
      * @param field the field to visit
      */
     void visit(VisitableBytes field);

@@ -14,6 +14,7 @@ public class TqlMongoException extends TqlException {
 
     /**
      * Constructs a <code>TqlMongoException</code> with the specified detail message.
+     * 
      * @param message Exception message
      */
     public TqlMongoException(String message) {
@@ -23,6 +24,7 @@ public class TqlMongoException extends TqlException {
     /**
      * Constructs a <code>TqlMongoException</code> with the specified detail message
      * and the specified cause.
+     * 
      * @param message Exception message
      * @param cause Exception cause
      */

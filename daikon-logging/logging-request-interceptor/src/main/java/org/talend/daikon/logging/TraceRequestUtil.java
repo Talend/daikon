@@ -1,14 +1,14 @@
 package org.talend.daikon.logging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TraceRequestUtil {
 
     private TraceRequestUtil() {
-        //Do not instantiate
+        // Do not instantiate
     }
 
     public static String getRequestBody(byte[] body) throws UnsupportedEncodingException {

@@ -207,7 +207,7 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
         Schema record = Schema.createRecord(getFields(node));
         long fingerprint = SchemaNormalization.parsingFingerprint64(record);
 
-        // Use the fingerprint in the record name.  Note that we have to traverse the node twice.
+        // Use the fingerprint in the record name. Note that we have to traverse the node twice.
         return Schema.createRecord(("subrecord" + fingerprint).replace('-', '_'), null, null, false, getFields(node));
     }
 }

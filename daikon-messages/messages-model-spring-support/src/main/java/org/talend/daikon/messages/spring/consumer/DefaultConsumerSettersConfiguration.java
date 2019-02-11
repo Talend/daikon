@@ -25,7 +25,7 @@ public class DefaultConsumerSettersConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CorrelationIdSetter.class)
-    public CorrelationIdSetter correlationIdSetter() {
+    public CorrelationIdSetter noopCorrelationIdSetter() {
         return correlationId -> {
             // mocked bean: do nothing
         };
@@ -33,7 +33,7 @@ public class DefaultConsumerSettersConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TenantIdSetter.class)
-    public TenantIdSetter tenantIdSetter() {
+    public TenantIdSetter noopTenantIdSetter() {
         return tenantId -> {
             // mocked bean: do nothing
         };
@@ -41,7 +41,7 @@ public class DefaultConsumerSettersConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(UserIdSetter.class)
-    public UserIdSetter userIdSetter() {
+    public UserIdSetter noopUserIdSetter() {
         return userId -> {
             // mocked bean: do nothing
         };
@@ -49,7 +49,7 @@ public class DefaultConsumerSettersConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SecurityTokenSetter.class)
-    public SecurityTokenSetter securityTokenSetter() {
+    public SecurityTokenSetter noopSecurityTokenSetter() {
         return securityToken -> {
             // mocked bean: do nothing
         };

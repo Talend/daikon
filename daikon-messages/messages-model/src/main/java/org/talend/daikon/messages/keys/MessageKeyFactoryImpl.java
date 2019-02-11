@@ -12,12 +12,12 @@
 // ============================================================================
 package org.talend.daikon.messages.keys;
 
-import org.talend.daikon.messages.MessageKey;
-import org.talend.daikon.messages.header.producer.TenantIdProvider;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import org.talend.daikon.messages.MessageKey;
+import org.talend.daikon.messages.header.producer.TenantIdProvider;
 
 /**
  * Default {@link MessageKeyFactory} implementation.
@@ -47,6 +47,7 @@ public class MessageKeyFactoryImpl implements MessageKeyFactory {
     /**
      * Creates a new message key factory that will use the provided {@link TenantIdProvider} and {@link RandomGenerator}
      * to create message keys
+     * 
      * @param tenantIdProvider how to access current tenant id
      * @param randomGenerator how to generate random values
      */

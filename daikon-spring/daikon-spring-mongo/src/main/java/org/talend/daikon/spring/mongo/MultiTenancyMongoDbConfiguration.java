@@ -56,6 +56,7 @@ public class MultiTenancyMongoDbConfiguration {
 
     /**
      * A condition that enable multi tenancy if {@link #ACTIVE_MONGODB_MULTI_TENANCY} is set to "true" in configuration.
+     * 
      * @see Environment#getProperty(String)
      */
     public static class MultiTenancyMongoDbCondition implements Condition {
