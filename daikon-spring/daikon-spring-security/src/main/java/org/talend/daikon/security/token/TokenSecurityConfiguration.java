@@ -27,6 +27,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @see NoConfiguredTokenFilter When configuration's token value is empty or missing.
  * @see TokenAuthenticationFilter When configuration's token value is present.
+ * @see #ADDITIONAL_PROTECTED_PATHS for list of protected paths.
  */
 @Configuration
 @EnableWebSecurity
@@ -35,12 +36,17 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenSecurityConfiguration.class);
 
-    private static final String[] ADDITIONAL_PROTECTED_PATHS = { "/info", "/actuator/**" };
+    /*
+     * Use this field to indicate paths that should be secured by token. It is not a configuration setting at the moment
+     * to ensure all applications share same secured endpoints.
+     */
+    private static final String[] ADDITIONAL_PROTECTED_PATHS = { "/info", "/actuator/**", "/version" };
 
     private final Filter tokenAuthenticationFilter;
 
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token) {
-        final AntPathRequestMatcher[] matchers = Stream.of(ADDITIONAL_PROTECTED_PATHS) //
+        final AntPathRequestMatcher[] matchers = Stream
+                .of(ADDITIONAL_PROTECTED_PATHS) //
                 .map(AntPathRequestMatcher::new) //
                 .toArray(AntPathRequestMatcher[]::new);
         final RequestMatcher protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
@@ -54,7 +60,8 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     public void configure(HttpSecurity http) throws Exception {
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.authorizeRequests();
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry =
+                http.authorizeRequests();
         registry = registry.requestMatchers(toAnyEndpoint()).hasRole(TokenAuthentication.ROLE);
         for (String protectedPath : ADDITIONAL_PROTECTED_PATHS) {
             registry = registry.antMatchers(protectedPath).hasRole(TokenAuthentication.ROLE);
