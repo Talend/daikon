@@ -12,6 +12,10 @@
 
 package org.talend.daikon.security.access;
 
+import static java.util.Collections.singleton;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,10 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.talend.daikon.exception.TalendRuntimeException;
-
-import static java.util.Collections.singleton;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = RequiresAuthorityConfiguration.class)
