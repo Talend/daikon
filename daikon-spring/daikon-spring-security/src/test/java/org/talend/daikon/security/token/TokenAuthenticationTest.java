@@ -32,6 +32,7 @@ public class TokenAuthenticationTest {
 
     @Test
     public void shouldAllowAuthenticatedEnable() {
+        // Where setAuthenticated(false) is *not* possible, setAuthenticated(true) is still allowed.
         authentication.setAuthenticated(true);
     }
 }
