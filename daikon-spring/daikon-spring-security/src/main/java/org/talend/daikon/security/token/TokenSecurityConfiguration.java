@@ -45,8 +45,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final Filter tokenAuthenticationFilter;
 
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token) {
-        final AntPathRequestMatcher[] matchers = Stream
-                .of(ADDITIONAL_PROTECTED_PATHS) //
+        final AntPathRequestMatcher[] matchers = Stream.of(ADDITIONAL_PROTECTED_PATHS) //
                 .map(AntPathRequestMatcher::new) //
                 .toArray(AntPathRequestMatcher[]::new);
         final RequestMatcher protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
@@ -60,8 +59,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     public void configure(HttpSecurity http) throws Exception {
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry =
-                http.authorizeRequests();
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.authorizeRequests();
         registry = registry.requestMatchers(toAnyEndpoint()).hasRole(TokenAuthentication.ROLE);
         for (String protectedPath : ADDITIONAL_PROTECTED_PATHS) {
             registry = registry.antMatchers(protectedPath).hasRole(TokenAuthentication.ROLE);
