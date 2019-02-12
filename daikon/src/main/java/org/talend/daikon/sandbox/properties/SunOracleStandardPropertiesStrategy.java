@@ -51,7 +51,8 @@ class SunOracleStandardPropertiesStrategy implements StandardPropertiesStrategy 
                             } else if ("java.endorsed.dirs".equals(line)) { //$NON-NLS-1$
                                 // Skip it!
                             } else if (JAVA_CLASS_PATH.equals(line)) {
-                                StringBuilder filteredValue = filterJBoss(System.getProperty(SUN_BOOT_CLASS_PATH));
+                                StringBuilder filteredValue = filterJBoss(
+                                    System.getProperty(SUN_BOOT_CLASS_PATH, System.getProperty(JAVA_CLASS_PATH)));
                                 properties.put(line, filteredValue.toString());
                             } else {
                                 properties.put(line, systemProperty);
