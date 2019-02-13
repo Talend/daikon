@@ -1,0 +1,81 @@
+= Daikon Spring Metrics - Example application
+:toc:
+:imagesdir: assets/images
+
+== Get started
+
+=== Start Zipkin
+
+The easiest way to have Zipkin running locally is to use `openzipkin/zipkin` Docker image.
+
+```
+$ docker run -d -p 9411:9411 openzipkin/zipkin
+```
+
+=== Start application
+
+To start application, simply launch the `run` goal of the `spring-boot` maven plugin.
+
+```
+$ mvn spring-boot:run
+```
+
+Default configuration provides:
+
+- A HTTP server started on port 8080.
+- Connection to Zipkin on localhost:9411 (see <Start Zipkin>).
+- A Prometheus-compatible endpoint in Actuator.
+
+== See @Timed in action
+
+=== Single method call
+
+To demonstrate single method call, execute the following command:
+
+```
+$ curl -X GET "http://localhost:8080/invoke/sub"
+```
+
+Now, access Prometheus endpoint at `http://localhost:8080/actuator/prometheus` and search for metrics named `org_talend_demo_SubWorker_work_*`. You can see:
+
+- Method own time (in milliseconds)
+- Method invocation count
+
+```
+org_talend_demo_SubWorker_work_total{type="count",} 1.0
+org_talend_demo_SubWorker_work_total{type="sum",} 3006.0
+```
+
+
+Open Zipkin UI at `http://localhost:9411`, you should see a trace that corresponds to the REST call and a span dedicated to method own time.
+
+=== Nested method calls
+
+To demonstrate nested method call, execute the following command:
+
+```
+$ curl -X GET "http://localhost:8080/invoke"
+```
+
+Similarly to <Single method call>, you can see all metrics that got updated with new values.
+
+Please take a moment to look how trace look like in Zipkin:
+
+image::nested_method_calls.png[Nested method calls]
+
+== See @VolumeMetered in action
+
+To demonstrate data exchange monitoring, execute the following command:
+
+```
+$ curl -X POST -d "Some content" "http://localhost:8080/post"
+```
+Now, access Prometheus endpoint at `http://localhost:8080/actuator/prometheus` and search for metrics named `org_talend_demo_MetricsDemoController_post_total{type="volume",}`. You can see:
+
+- Input stream size (that corresponds to "Some content" size).
+- Output stream size (that corresponds to "Some answer", which is the response sent by server).
+
+```
+org_talend_demo_MetricsDemoController_post_total{type="in",} 24.0
+org_talend_demo_MetricsDemoController_post_total{type="out",} 22.0
+```

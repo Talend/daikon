@@ -11,6 +11,25 @@
     <name>Daikon spring related modules.</name>
     <url>https://github.com/Talend/daikon</url>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <modules>
         <module>daikon-spring-utils</module>
         <module>daikon-spring-mongo</module>
@@ -19,5 +38,6 @@
         <module>daikon-spring-zipkin</module>
         <module>daikon-content-service</module>
         <module>daikon-spring-examples</module>
+        <module>daikon-spring-metrics</module>
     </modules>
 </project>

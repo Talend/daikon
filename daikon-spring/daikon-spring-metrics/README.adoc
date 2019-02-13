@@ -1,0 +1,35 @@
+= Daikon Spring Metrics
+
+:toc:
+
+== Introduction
+
+This module provides ways to monitor Spring code with time and data exchange monitoring. It also has an optional dependency on Zipkin to automatically create spans as well as adding metrics to Spring Actuator.
+
+== @Timed
+
+The Micrometer @Timed annotation provides method execution time metrics:
+
+```
+@Timed
+public void method() {
+    // code here
+}
+```
+
+With Spring Actuator, this code already provides time monitoring for this method. I automatically creates a time metric in the registry. If you also add `micrometer-registry-prometheus` to the classpath, you automatically get Prometheus-compatible metric with just usage of `@Timed` annotation.
+
+Daikon Spring Metrics also adds automatic creation of Zipkin spans when a method is annotated with `@Timed`. In this case, having `@Timed` is equivalent to using `@NewSpan`, but with only one annotation instead of two.
+
+== @VolumeMetered
+
+This Daikon Spring Metrics annotation provides a way to measure data exchanged in `InputStream` and `OutputStream` with no application code needed:
+
+```
+@VolumeMetered
+public OutputStream method(InputStream in) {
+    // code here
+}
+```
+
+This code creates 2 metrics: one for the `OutputStream` and one other for the `InputStream`. When data is fully read/written *and* `close()` method is called, Daikon Spring Metrics publishes the number of bytes that went through the I/O streams.
