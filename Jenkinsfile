@@ -159,6 +159,11 @@ spec:
                     git config --global push.default current
                     git checkout ${currentBranch}
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DdevelopmentVersion=${params.next_version} release:prepare
+                    cd releases/
+                    mvn install -Duser=${JIRA_LOGIN} -Dpassword=${JIRA_PASSWORD} -Dversion=${params.release_version} -Doutput=.
+                    git add -A .
+                    git commit -m "Add ${params.release_version} release notes"
+                    cat ${params.release_version}.adoc
                     git push
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -DlocalCheckout=true -Dusername=${GIT_LOGIN} -Dpassword=${GIT_PASSWORD} release:perform
                   """
@@ -168,32 +173,8 @@ spec:
             slackSend(
               color: "GREEN",
               channel: "daikon",
-              message: "Daikon version ${params.release_version} released. Next version: ${params.next_version}"
+              message: "Daikon version ${params.release_version} released (next version: ${params.next_version}) <https://github.com/Talend/daikon/releases/${params.release_version}.adoc|${params.release_version} release notes>"
             )
-        }
-    }
-
-    stage("Release notes") {
-        when {
-            expression { params.release }
-        }
-        steps {
-            withCredentials([jiraCredentials]) {
-              container('maven') {
-                configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-                  sh """
-                    git config --global push.default current
-                    git checkout ${currentBranch}
-                    cd releases/
-                    mvn install -Duser=${JIRA_LOGIN} -Dpassword=${JIRA_PASSWORD} -Dversion=${params.release_version} -Doutput=.
-                    git add -A .
-                    git commit -m "Add ${params.release_version} release notes"
-                    cat ${params.release_version}.adoc
-                    git push
-                  """
-                }
-              }
-            }
         }
     }
   }
