@@ -18,5 +18,6 @@
         <module>daikon-spring-tenancy</module>
         <module>daikon-spring-zipkin</module>
         <module>daikon-content-service</module>
+        <module>daikon-spring-examples</module>
     </modules>
 </project>

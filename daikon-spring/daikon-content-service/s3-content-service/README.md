@@ -13,7 +13,7 @@ This module contains the source files for a local file system support.
 <dependency>
    <groupId>org.talend.daikon</groupId>
    <artifactId>s3-content-service</artifactId>
-   <version>0.16.0-SNAPSHOT</version>
+   <version>latest</version>
 </dependency>
 ```
 Doing so will bring all needed dependencies.
@@ -78,3 +78,23 @@ multi-tenancy.s3.active=true
 In this case you are required to provide an implementation of `org.talend.daikon.content.s3.provider.S3BucketProvider` that provide the current bucket name.
 
 `S3BucketProvider` needs to implement two methods: one returns the S3 bucket name, the other the root directory for the tenant (might be empty string if all data is to be stored at root level of the S3 bucket).
+
+### Minio support
+
+This module provides support for [Minio](https://www.minio.io). To activate it, simply add:
+
+```properties
+content-service.store.s3.authentication=MINIO
+content-service.store.s3.endpoint_url=<minio url>
+```
+
+Please note in this configuration, the property `content-service.store.s3.endpoint_url` becomes mandatory. In case this property is missing, application context will fail to load with a message asking to provide a value for `content-service.store.s3.endpoint_url`.
+
+### Custom endpoint support
+
+You may customize S3 endpoint URL. To activate it, simply add:
+
+```properties
+content-service.store.s3.authentication=CUSTOM
+content-service.store.s3.endpoint_url=<endpoint url>
+```

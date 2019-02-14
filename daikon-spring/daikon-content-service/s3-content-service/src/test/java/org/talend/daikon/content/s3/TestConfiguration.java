@@ -19,7 +19,7 @@ import io.findify.s3mock.S3Mock;
 @Configuration
 public class TestConfiguration implements InitializingBean, DisposableBean {
 
-    public final static AtomicInteger clientNumber = new AtomicInteger(0);
+    final static AtomicInteger clientNumber = new AtomicInteger(0);
 
     private S3Mock s3Mock;
 
@@ -65,14 +65,14 @@ public class TestConfiguration implements InitializingBean, DisposableBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         s3MockPort = SocketUtils.findAvailableTcpPort();
         s3Mock = S3Mock.create(s3MockPort, new File(".").getAbsolutePath() + "/target/s3");
         s3Mock.start();
     }
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         s3Mock.stop();
     }
 }

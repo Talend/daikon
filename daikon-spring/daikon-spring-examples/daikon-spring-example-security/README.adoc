@@ -1,0 +1,43 @@
+= Daikon Spring Security Example
+
+== Run the examples
+
+=== Token protected endpoints
+
+Simply run:
+
+```
+$ mvn spring-boot:run -Dspring-boot.run.profiles=token
+```
+
+This command will start a Spring Boot application on port 8080. In this setup, all Actuator endpoints are protected by a HTTP authorization token as configured in `application.properties`:
+
+```
+talend.security.token.value=token1234
+```
+
+To call Actuator endpoints, it means the following HTTP header needs to be set to call `GET http://localhost:8080/actuator/prometheus`:
+
+```
+Authorization: Talend token1234
+```
+
+Otherwise you will get a HTTP 403 (Forbidden).
+
+=== No token configured
+
+Simply run:
+
+```
+$ mvn spring-boot:run -Dspring-boot.run.profiles=notoken
+```
+
+This command will start a Spring Boot application on port 8080. In this setup, all Actuator endpoints are protected but no token is configured.
+
+When calling `GET http://localhost:8080/actuator/prometheus`, response will always be HTTP 503 (Service unavailable).
+
+During application startup, you may see this message to indicate a missing configuration:
+
+```
+2019-02-11 11:36:54.436  INFO 26506 --- [           main] o.t.d.s.t.TokenSecurityConfiguration     : No token configured, protected endpoints are unavailable.
+```
