@@ -3,6 +3,11 @@ def gitCredentials = usernamePassword(
     credentialsId: 'github-credentials',
     passwordVariable: 'GIT_PASSWORD',
     usernameVariable: 'GIT_LOGIN')
+def jiraCredentials = usernamePassword(
+    credentialsId: 'jira-credentials',
+    passwordVariable: 'JIRA_PASSWORD',
+    usernameVariable: 'JIRA_LOGIN')
+def currentBranch = env.CHANGE_BRANCH == null ? env.BRANCH_NAME : env.CHANGE_BRANCH
 
 pipeline {
 
@@ -106,7 +111,7 @@ spec:
 
     stage('Merge master to branch') {
       when {
-        expression { false && env.BRANCH_NAME != 'master' }
+        expression { false && currentBranch != 'master' }
       }
       steps {
         container('maven') {
@@ -129,7 +134,7 @@ spec:
         expression { env.BRANCH_NAME != 'master' }
       }
       environment {
-        escaped_branch = env.CHANGE_BRANCH.toLowerCase().replaceAll('/', '_')
+        escaped_branch = currentBranch.toLowerCase().replaceAll('/', '_')
       }
       steps {
         container('maven') {
@@ -146,18 +151,19 @@ spec:
         when {
             expression { params.release }
         }
-        environment {
-          escaped_branch = env.CHANGE_BRANCH.toLowerCase().replaceAll('/', '_')
-        }
         steps {
             withCredentials([gitCredentials]) {
               container('maven') {
                 configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
                   sh """
                     git config --global push.default current
-                    git checkout ${escaped_branch}
+                    git checkout ${currentBranch}
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DdevelopmentVersion=${params.next_version} release:prepare
-                    git log -5
+                    cd releases/
+                    mvn install -Duser=${JIRA_LOGIN} -Dpassword=${JIRA_PASSWORD} -Dversion=${params.release_version} -Doutput=.
+                    git add -A .
+                    git commit -m "Add ${params.release_version} release notes"
+                    cat ${params.release_version}.adoc
                     git push
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -DlocalCheckout=true -Dusername=${GIT_LOGIN} -Dpassword=${GIT_PASSWORD} release:perform
                   """
@@ -167,7 +173,7 @@ spec:
             slackSend(
               color: "GREEN",
               channel: "daikon",
-              message: "Daikon version ${params.release_version} released. Next version: ${params.next_version}"
+              message: "Daikon version ${params.release_version} released (next version: ${params.next_version}) <https://github.com/Talend/daikon/releases/${params.release_version}.adoc|${params.release_version} release notes>"
             )
         }
     }
