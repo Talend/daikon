@@ -253,9 +253,9 @@ If you enable Spring Cloud Sleuth in your application, you will have these addit
 | Field             | Description
 |-------------------|------------
 | `service`         |  The name of the application that logged the span
-| `spanId`          |  The id of a specific operation that took place
-| `traceId`         |  The id of the latency graph that contains the span
-| `exportable`      |  Whether the log should be exported to Zipkin or not. When would you like the span not to be exportable? In the case in which you want to wrap some operation in a Span and have it written to the logs only.
+| `X-B3-SpanId`     |  The id of a specific operation that took place
+| `X-B3-TraceId`    |  The id of the latency graph that contains the span
+| `X-Span-Export`   |  Whether the log should be exported to Zipkin or not. When would you like the span not to be exportable? In the case in which you want to wrap some operation in a Span and have it written to the logs only.
 
 <a name="including_spring_cloud_sleuth"/></a>
 #### Including Spring Cloud Sleuth in your project
@@ -365,17 +365,19 @@ To enable tracking user activity ids in the logs you have to :
 	  "method.name":"publishLogs",
 	  "process.id":"860"
    },
-   "service":"The name of the application that logged the span",
-   "spanId":"The id of a specific operation that took place",
-   "traceId":"The id of the latency graph that contains the span",
-   "exportable":"Whether the log should be exported to Zipkin or not",
+   "service":"From MDC: The name of the application that logged the span",
+   "X-B3-SpanId":"From MDC: The id of a specific operation that took place",
+   "X-B3-TraceId":"From MDC: The id of the latency graph that contains the span",
+   "X-Span-Export":"From MDC: Whether the log should be exported to Zipkin or not",
    "logTimestamp":"2016-12-13T13:33:39.934Z",
    "serverTimestamp":"2016-12-13T13:33:40.934Z",
    "accountId":"tenantId",
    "audit":"false",
    "customInfo":{
 	  "my.custom.data":"my custom test data",
-	  "executionId":"9454554dfc-1024585-410c0-d464124
+  	  "executionId":"9454554dfc-1024585-410c0-d464124,
+	  "service":"dataset",
+	  "application":"tdp"
     }
 }
 ```
