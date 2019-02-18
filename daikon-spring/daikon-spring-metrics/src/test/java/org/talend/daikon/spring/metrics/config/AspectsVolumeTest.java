@@ -30,8 +30,6 @@ public class AspectsVolumeTest {
 
     private Aspects aspects;
 
-    private MethodSignature methodSignature;
-
     private Counter counter;
 
     private ProceedingJoinPoint point;
@@ -45,7 +43,7 @@ public class AspectsVolumeTest {
         aspects = new Aspects(null, meterRegistry);
 
         point = mock(ProceedingJoinPoint.class);
-        methodSignature = mock(MethodSignature.class);
+        MethodSignature methodSignature = mock(MethodSignature.class);
         final Method testMethod = this.getClass().getMethod("testMethod", OutputStream.class, InputStream.class, Part.class);
         when(methodSignature.getDeclaringType()).thenReturn(this.getClass());
         when(methodSignature.getMethod()).thenReturn(testMethod);

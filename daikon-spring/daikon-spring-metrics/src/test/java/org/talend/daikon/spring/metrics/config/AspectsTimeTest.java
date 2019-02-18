@@ -93,5 +93,6 @@ public class AspectsTimeTest {
     }
 
     public void testMethod() {
+        // Intentionally left empty (here to get a Method object using introspection).
     }
 }

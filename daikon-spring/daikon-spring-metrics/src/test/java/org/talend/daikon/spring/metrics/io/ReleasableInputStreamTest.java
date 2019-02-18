@@ -37,7 +37,7 @@ public class ReleasableInputStreamTest {
 
             @Override
             public synchronized void mark(int readlimit) {
-                throw new RuntimeException("Oops");
+                throw new IllegalArgumentException("Oops");
             }
         }, () -> wasCalled.set(true));
     }
