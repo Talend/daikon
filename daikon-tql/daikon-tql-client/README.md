@@ -19,7 +19,7 @@ npm install @talend/daikon-tql-client --save
 
 ## Usage
 
-The package exposes a `Query` class used to create an instance on which you can chain [operators](#operatorusage) and [compositors](#compositorusage) in the wanted order before [serialize](#serializationusage) it.
+The package exposes a [`Query` class](#queryusage) used to create an instance on which you can chain [operators](#operatorusage) and [compositors](#compositorusage) in the wanted order before [serialize](#serializationusage) it.
 
 Basic example :
 
@@ -37,9 +37,10 @@ query.serialize(); // Produce => '(f1 = 76) or (f2 > 77)'
 ```
 
 
-### Query
+### <a id="queryusage"></a>Query
 
-A Query is a serializable set of operators :
+A Query is a serializable set of operators.\
+It lets you stack operators and compositors one after an other by constantly returning the query reference.
 
 ```javascript
 const query = new Query();
@@ -52,15 +53,17 @@ query
 	.equal('f2', 777);
 
 ```
+_Hint: All the operators are accessible via the instance in lower camel case._
 
+----------
 
-Queries can be nested thanks to the `nest()` method :
+Queries can be nested thanks to the `nest()` method without depth limit :
 
 ```javascript
 const query = new Query();
-const query2 = new Query();
+const subQuery = new Query();
 
-query2
+subQuery
 	.equal('q2f1', 76)
 	.or()
 	.equal('q2f2', 77);
@@ -68,12 +71,46 @@ query2
 query
 	.greaterThan('f2', 42)
 	.and()
-	.nest(query2) // <- !
+	.nest(subQuery) // <- !
 	.and()
 	.lessThan('f2', 666);
 ```
 
-There is no depth limit.
+----------
+
+Queries can hold the negation of other queries or operators with the help of the `not()` method :
+
+```javascript
+// query negation
+const query = new Query();
+const subQuery = new Query();
+
+subQuery
+	.equal('q2f1', 76)
+	.or()
+	.equal('q2f2', 77);
+
+query
+	.greaterThan('f2', 42)
+	.and()
+	.not(subQuery) // <- !
+	.and()
+	.lessThan('f2', 666);
+
+query.serialize(); // Produce => '(f2 > 42) and not((q2f1 = 76) or (q2f2 = 77)) and (f2 < 666)'
+```
+
+```javascript
+// operator negation
+const query = new Query();
+
+query
+	.equal('f1', 666)
+	.or()
+	.not(new Equal('f2', 777));
+
+query.serialize(); // Produce => '(f1 = 666) or not((f2 = 777))'
+```
 
 
 ### <a id="operatorusage"></a>Operator
@@ -109,22 +146,6 @@ They can be used as the same way as an operator in a query :
 
 ```javascript
 query.equal('f1', 666).or().equal('f2', 777);
-```
-
-
-### Modifier
-
-A Modifier changes the meaning of an operator or a query.
-
-The following modifiers are supported :
-
-- `not`
-
-They can be part of a query :
-
-
-```javascript
-query.equal('f1', 666).or().not(new Equal('f2', 777));
 ```
 
 
