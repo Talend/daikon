@@ -43,6 +43,8 @@ A Query is a serializable set of operators.\
 It lets you stack operators and compositors one after an other by constantly returning the query reference.
 
 ```javascript
+import { Query } from '@talend/daikon-tql-client';
+
 const query = new Query();
 
 query
@@ -51,7 +53,6 @@ query
 	.lessThan('f2', 76)
 	.or()
 	.equal('f2', 777);
-
 ```
 _Hint: All the operators are accessible via the instance in lower camel case._
 
@@ -60,6 +61,8 @@ _Hint: All the operators are accessible via the instance in lower camel case._
 Queries can be nested thanks to the `nest()` method without depth limit :
 
 ```javascript
+import { Query } from '@talend/daikon-tql-client';
+
 const query = new Query();
 const subQuery = new Query();
 
@@ -82,6 +85,8 @@ Queries can hold the negation of other queries or operators with the help of the
 
 ```javascript
 // query negation
+import { Query } from '@talend/daikon-tql-client';
+
 const query = new Query();
 const subQuery = new Query();
 
@@ -102,12 +107,14 @@ query.serialize(); // Produce => '(f2 > 42) and not((q2f1 = 76) or (q2f2 = 77)) 
 
 ```javascript
 // operator negation
+import { Query, Operators } from '@talend/daikon-tql-client';
+
 const query = new Query();
 
 query
 	.equal('f1', 666)
 	.or()
-	.not(new Equal('f2', 777));
+	.not(new Operators.Equal('f2', 777));
 
 query.serialize(); // Produce => '(f1 = 666) or not((f2 = 777))'
 ```
@@ -152,7 +159,12 @@ The following compositors are supported :
 They can be used in the same way as an operator in a query :
 
 ```javascript
-query.equal('f1', 666).or().equal('f2', 777);
+import { Query } from '@talend/daikon-tql-client';
+
+query
+	.equal('f1', 666)
+	.or()
+	.equal('f2', 777);
 ```
 
 
@@ -161,7 +173,9 @@ query.equal('f1', 666).or().equal('f2', 777);
 Operators can be serialized to TQL expressions :
 
 ```javascript
-const operator = new GreaterThan('col1', 42);
+import { Operators } from '@talend/daikon-tql-client';
+
+const operator = new Operators.GreaterThan('col1', 42);
 
 operator.serialize(); // -> 'col1 > 42'
 ```
@@ -169,6 +183,8 @@ operator.serialize(); // -> 'col1 > 42'
 And queries too :
 
 ```javascript
+import { Query } from '@talend/daikon-tql-client';
+
 const query = new Query();
 
 query
@@ -184,6 +200,8 @@ query.serialize(); // -> '(f2 > 42) and (f2 < 76)  or  (f2 = 777)'
 Obviously, priority is conserved on nested queries :
 
 ```javascript
+import { Query } from '@talend/daikon-tql-client';
+
 const query1 = new Query();
 const query2 = new Query();
 const query3 = new Query();
@@ -249,7 +267,6 @@ export {
 	// ...,
 	Toto,
 };
-
 ```
 
 Don't forget the associated tests ;)
@@ -257,6 +274,8 @@ Don't forget the associated tests ;)
 Your new `toto` operator will be automatically available under `Query` :
 
 ```javascript
+import { Query } from '@talend/daikon-tql-client';
+
 const query = new Query();
 
 query
@@ -273,6 +292,8 @@ query.serialize(); // -> '(f1 > 42) and (f2 is toto)'
 The `Parser` class helps to transform a Javascript-style filters tree to a serializable query :
 
 ```javascript
+import { Parser } from '@talend/daikon-tql-client';
+
 const query = Parser.parse(myTree);
 query.serialize();
 ```
