@@ -36,6 +36,46 @@ query
 query.serialize(); // Produce => '(f1 = 76) or (f2 > 77)'
 ```
 
+
+### Query
+
+A Query is a serializable set of operators :
+
+```javascript
+const query = new Query();
+
+query
+	.greaterThan('f2', 42)
+	.and()
+	.lessThan('f2', 76)
+	.or()
+	.equal('f2', 777);
+
+```
+
+
+Queries can be nested thanks to the `nest()` method :
+
+```javascript
+const query = new Query();
+const query2 = new Query();
+
+query2
+	.equal('q2f1', 76)
+	.or()
+	.equal('q2f2', 77);
+
+query
+	.greaterThan('f2', 42)
+	.and()
+	.nest(query2) // <- !
+	.and()
+	.lessThan('f2', 666);
+```
+
+There is no depth limit.
+
+
 ### <a id="operatorusage"></a>Operator
 
 An Operator inherits from the `Operator` class (which implements the `ISerializable` interface). All operators are simple Javascript classes which has the `Value` and `HasOperand` properties exported.
@@ -86,45 +126,6 @@ They can be part of a query :
 ```javascript
 query.equal('f1', 666).or().not(new Equal('f2', 777));
 ```
-
-
-### Query
-
-A Query is a serializable set of operators :
-
-```javascript
-const query = new Query();
-
-query
-	.greaterThan('f2', 42)
-	.and()
-	.lessThan('f2', 76)
-	.or()
-	.equal('f2', 777);
-
-```
-
-
-Queries can be nested thanks to the `nest()` method :
-
-```javascript
-const query = new Query();
-const query2 = new Query();
-
-query2
-	.equal('q2f1', 76)
-	.or()
-	.equal('q2f2', 77);
-
-query
-	.greaterThan('f2', 42)
-	.and()
-	.nest(query2) // <- !
-	.and()
-	.lessThan('f2', 666);
-```
-
-There is no depth limit.
 
 
 ### <a id="serializationusage"></a>Serialization
