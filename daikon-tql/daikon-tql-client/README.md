@@ -140,7 +140,7 @@ The following compositors are supported :
 - `and`
 - `or`
 
-They can be used as the same way as an operator in a query :
+They can be used in the same way as an operator in a query :
 
 ```javascript
 query.equal('f1', 666).or().equal('f2', 777);
