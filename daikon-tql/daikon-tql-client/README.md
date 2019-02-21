@@ -115,8 +115,6 @@ query.serialize(); // Produce => '(f1 = 666) or not((f2 = 777))'
 
 ### <a id="operatorusage"></a>Operator
 
-An Operator inherits from the `Operator` class (which implements the `ISerializable` interface). All operators are simple Javascript classes which has the `Value` and `HasOperand` properties exported.
-
 The following operators are supported :
 
 - `contains`
@@ -216,6 +214,8 @@ Will produce :
 ```
 
 ## How to create an operator ?
+
+An Operator inherits from the `Operator` class (which "implements" the `ISerializable` interface). All operators are simple Javascript classes which have the `Value` and `HasOperand` properties exported.
 
 To add your own operator, you just have to create a new class under `src/converter/operators/`.
 
