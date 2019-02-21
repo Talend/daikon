@@ -19,7 +19,7 @@ npm install @talend/daikon-tql-client --save
 
 ## Usage
 
-The package exposes a [`Query` class](#queryusage) used to create an instance on which you can chain [operators](#operatorusage) and [compositors](#compositorusage) in the wanted order before [serialize](#serializationusage) it.
+The package exposes a [`Query` class](#queryusage) used to create an instance on which you can chain [operators](#operatorusage) and [compositors](#compositorusage) in the wanted order before serialize it.
 
 Basic example :
 
@@ -54,7 +54,7 @@ query
 	.or()
 	.equal('f2', 777);
 ```
-_Hint: All the operators are accessible via the instance in lower camel case._
+_Hint: All the [operators](#operatorusage) are accessible via the query instance in lower camel case._
 
 ----------
 
@@ -64,20 +64,44 @@ Queries can be nested thanks to the `nest()` method without depth limit :
 import { Query } from '@talend/daikon-tql-client';
 
 const query = new Query();
-const subQuery = new Query();
+const subQuery1 = new Query();
+const subQuery2 = new Query();
 
-subQuery
+subQuery1
 	.equal('q2f1', 76)
 	.or()
 	.equal('q2f2', 77);
 
+subQuery2
+	.equal('q3f1', 78)
+	.and()
+	.equal('q3f2', 79);
+
 query
 	.greaterThan('f2', 42)
 	.and()
-	.nest(subQuery) // <- !
+	.nest(subQuery1) // <- !
 	.and()
-	.lessThan('f2', 666);
+	.lessThan('f2', 666)
+	.or()
+	.nest(subQuery2) // <- !
+	.or()
+	.equal('f2', 777);
+
+query.serialize();
 ```
+
+Will produce :
+
+```sql
+(f2 > 42)  and (
+	(q2f1 = 76)  or  (q2f2 = 77)
+) and (f2 < 666)  or  (
+	(q3f1 = 78) and (q3f2 = 79)
+)  or  (f2 = 777)
+```
+_Hint: Obviously, priority is conserved on nested queries_
+
 
 ----------
 
@@ -139,13 +163,16 @@ TQL symbol               |Client class
 `>`                      |`GreaterThan`
 `<`                      |`LessThan`
 
-They are accessible via the `Operators` named export or directly in a [query instance](#queryusage).
+They are accessible via the `Operators` named export and can be serialized to TQL expressions :
 
 ```javascript
 import { Operators } from '@talend/daikon-tql-client';
 
-const operator = new Operators.Equal('f2', 777);
+const operator = new Operators.GreaterThan('col1', 42);
+
+operator.serialize(); // -> 'col1 > 42'
 ```
+
 
 ### <a id="compositorusage"></a>Compositor
 
@@ -167,78 +194,6 @@ query
 	.equal('f2', 777);
 ```
 
-
-### <a id="serializationusage"></a>Serialization
-
-Operators can be serialized to TQL expressions :
-
-```javascript
-import { Operators } from '@talend/daikon-tql-client';
-
-const operator = new Operators.GreaterThan('col1', 42);
-
-operator.serialize(); // -> 'col1 > 42'
-```
-
-And queries too :
-
-```javascript
-import { Query } from '@talend/daikon-tql-client';
-
-const query = new Query();
-
-query
-	.greaterThan('f2', 42)
-	.and()
-	.lessThan('f2', 76)
-	.or()
-	.equal('f2', 777);
-
-query.serialize(); // -> '(f2 > 42) and (f2 < 76)  or  (f2 = 777)'
-```
-
-Obviously, priority is conserved on nested queries :
-
-```javascript
-import { Query } from '@talend/daikon-tql-client';
-
-const query1 = new Query();
-const query2 = new Query();
-const query3 = new Query();
-
-query2
-	.equal('q2f1', 76)
-	.or()
-	.equal('q2f2', 77);
-
-query3
-	.equal('q3f1', 78)
-	.and()
-	.equal('q3f2', 79);
-
-query1
-	.greaterThan('f2', 42)
-	.and()
-	.nest(query2)
-	.and()
-	.lessThan('f2', 666)
-	.or()
-	.nest(query3)
-	.or()
-	.equal('f2', 777);
-
-query1.serialize();
-```
-
-Will produce :
-
-```sql
-(f2 > 42)  and (
-	(q2f1 = 76)  or  (q2f2 = 77)
-) and (f2 < 666)  or  (
-	(q3f1 = 78) and (q3f2 = 79)
-)  or  (f2 = 777)
-```
 
 ## How to create an operator ?
 
