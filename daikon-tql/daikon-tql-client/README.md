@@ -19,8 +19,24 @@ npm install @talend/daikon-tql-client --save
 
 ## Usage
 
+The package exposes a `Query` class used to create an instance on which you can chain [operators](#operatorusage) and [compositors](#compositorusage) in the wanted order before [serialize](#serializationusage) it.
 
-### Operator
+Basic example :
+
+```javascript
+import { Query } from '@talend/daikon-tql-client';
+
+const query = new Query();
+
+query
+	.equal('f1', 76)
+	.or()
+	.greaterThan('f2', 77);
+
+query.serialize(); // Produce => '(f1 = 76) or (f2 > 77)'
+```
+
+### <a id="operatorusage"></a>Operator
 
 An Operator inherits from the `Operator` class (which implements the `ISerializable` interface). All operators are simple Javascript classes which has the `Value` and `HasOperand` properties exported.
 
@@ -40,7 +56,7 @@ The following operators are supported :
 - `<`
 
 
-### Compositor
+### <a id="compositorusage"></a>Compositor
 
 A Compositor is the only way to join operators in a query.
 
@@ -111,7 +127,7 @@ query
 There is no depth limit.
 
 
-### Serialization
+### <a id="serializationusage"></a>Serialization
 
 Operators can be serialized to TQL expressions :
 
