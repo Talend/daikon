@@ -117,19 +117,28 @@ query.serialize(); // Produce => '(f1 = 666) or not((f2 = 777))'
 
 The following operators are supported :
 
-- `contains`
-- `containsIgnoreCase`
-- `complies`
-- `wordComplies`
-- `is empty`
-- `is invalid`
-- `is valid`
-- `between`
-- `quality`
-- `=`
-- `>`
-- `<`
+TQL symbol               |Client class
+-------------------------|------------------
+`contains`               |`Contains`
+`containsIgnoreCase`     |`ContainsIgnoreCase`
+`complies`               |`Complies`
+`wordComplies`           |`WordComplies`
+`is empty`               |`Empty`
+`is invalid`             |`Invalid`
+`is valid`               |`Valid`
+`between`                |`Between`
+`quality`                |`Quality`
+`=`                      |`Equal`
+`>`                      |`GreaterThan`
+`<`                      |`LessThan`
 
+They are accessible via the `Operators` named export or directly in a [query instance](#queryusage).
+
+```javascript
+import { Operators } from '@talend/daikon-tql-client';
+
+const operator = new Operators.Equal('f2', 777);
+```
 
 ### <a id="compositorusage"></a>Compositor
 
