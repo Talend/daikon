@@ -17,9 +17,10 @@ or
 npm install @talend/daikon-tql-client --save
 ```
 
+## Usage
 
-Operator
-----------
+
+### Operator
 
 An Operator inherits from the `Operator` class (which implements the `ISerializable` interface). All operators are simple Javascript classes which has the `Value` and `HasOperand` properties exported.
 
@@ -39,8 +40,7 @@ The following operators are supported :
 - `<`
 
 
-Compositor
--------
+### Compositor
 
 A Compositor is the only way to join operators in a query.
 
@@ -56,8 +56,7 @@ query.equal('f1', 666).or().equal('f2', 777);
 ```
 
 
-Modifier
--------
+### Modifier
 
 A Modifier changes the meaning of an operator or a query.
 
@@ -73,8 +72,7 @@ query.equal('f1', 666).or().not(new Equal('f2', 777));
 ```
 
 
-Query
--------
+### Query
 
 A Query is a serializable set of operators :
 
@@ -113,9 +111,7 @@ query
 There is no depth limit.
 
 
-Serialization
----------------
-
+### Serialization
 
 Operators can be serialized to TQL expressions :
 
@@ -181,8 +177,7 @@ Will produce :
 )  or  (f2 = 777)
 ```
 
-How to create an operator ?
----------------------------
+## How to create an operator ?
 
 To add your own operator, you just have to create a new class under `src/converter/operators/`.
 
@@ -226,8 +221,7 @@ query.serialize(); // -> '(f1 > 42) and (f2 is toto)'
 ```
 
 
-Parser
------
+## Parser
 
 The `Parser` class helps to transform a Javascript-style filters tree to a serializable query :
 
