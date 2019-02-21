@@ -2,6 +2,21 @@
 
 The goal of this library is to provide a NPM package that helps to convert javascript-style filters to TQL queries.
 
+## Installation
+
+
+```bash
+# yarn
+yarn add @talend/daikon-tql-client
+```
+
+or
+
+```bash
+# npm
+npm install @talend/daikon-tql-client --save
+```
+
 
 Operator
 ----------
