@@ -33,7 +33,7 @@ query
 	.or()
 	.greaterThan('f2', 77);
 
-query.serialize(); // Produce => '(f1 = 76) or (f2 > 77)'
+query.serialize(); // -> '(f1 = 76) or (f2 > 77)'
 ```
 
 
@@ -53,6 +53,8 @@ query
 	.lessThan('f2', 76)
 	.or()
 	.equal('f2', 777);
+
+query.serialize(); // -> '(f2 > 42) and (f2 < 76) or (f2 = 777)'
 ```
 _Hint: All the [operators](#operatorusage) are accessible via the query instance in lower camel case._
 
@@ -126,7 +128,7 @@ query
 	.and()
 	.lessThan('f2', 666);
 
-query.serialize(); // Produce => '(f2 > 42) and not((q2f1 = 76) or (q2f2 = 77)) and (f2 < 666)'
+query.serialize(); // -> '(f2 > 42) and not((q2f1 = 76) or (q2f2 = 77)) and (f2 < 666)'
 ```
 
 ```javascript
@@ -140,7 +142,7 @@ query
 	.or()
 	.not(new Operators.Equal('f2', 777));
 
-query.serialize(); // Produce => '(f1 = 666) or not((f2 = 777))'
+query.serialize(); // -> '(f1 = 666) or not((f2 = 777))'
 ```
 
 
@@ -192,6 +194,8 @@ query
 	.equal('f1', 666)
 	.or()
 	.equal('f2', 777);
+
+query.serialize(); // -> '(f1 = 666) or (f2 = 777)'
 ```
 
 
