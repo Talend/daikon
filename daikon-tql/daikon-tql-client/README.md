@@ -199,6 +199,20 @@ query.serialize(); // -> '(f1 = 666) or (f2 = 777)'
 ```
 
 
+### Parser
+
+The `Parser` class helps to transform a legacy Javascript-style filters tree to a serializable query :
+
+```javascript
+import { Parser } from '@talend/daikon-tql-client';
+
+const query = Parser.parse(myTree);
+query.serialize();
+```
+
+An example of tree can be found in the [tests](./src/converter/__tests__/parser.spec.js).
+
+
 ## How to create an operator ?
 
 An Operator inherits from the `Operator` class (which "implements" the `ISerializable` interface). All operators are simple Javascript classes which have the `Value` and `HasOperand` properties exported.
@@ -243,16 +257,4 @@ query
 	.toto('f2');
 
 query.serialize(); // -> '(f1 > 42) and (f2 is toto)'
-```
-
-
-## Parser
-
-The `Parser` class helps to transform a Javascript-style filters tree to a serializable query :
-
-```javascript
-import { Parser } from '@talend/daikon-tql-client';
-
-const query = Parser.parse(myTree);
-query.serialize();
 ```
