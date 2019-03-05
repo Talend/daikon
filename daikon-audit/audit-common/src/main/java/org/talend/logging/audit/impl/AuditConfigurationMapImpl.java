@@ -26,7 +26,7 @@ public class AuditConfigurationMapImpl extends EnumMap<AuditConfiguration, Objec
             return null;
         }
 
-        final int nameStart = appenderPrefix.length() + 1;
+        final int nameStart = appenderPrefix.length();
         final int nameEnd = configName.indexOf('_', nameStart);
 
         if (nameEnd == -1) {
@@ -94,7 +94,7 @@ public class AuditConfigurationMapImpl extends EnumMap<AuditConfiguration, Objec
         }
         Object value = getValue(config);
         if (value == null && !config.canBeNull()) {
-            throw new IllegalStateException("Value for property " + toString() + " is not set and it has no default value");
+            throw new IllegalStateException("Value for property " + config.toString() + " is not set and it has no default value");
         }
         return clz.cast(value);
     }
@@ -105,7 +105,7 @@ public class AuditConfigurationMapImpl extends EnumMap<AuditConfiguration, Objec
         }
 
         if (containsKey(config)) {
-            throw new IllegalStateException("Parameter " + toString() + " cannot be set twice");
+            throw new IllegalStateException("Parameter " + config.toString() + " cannot be set twice");
         }
 
         put(config, value);
