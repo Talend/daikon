@@ -49,8 +49,7 @@ public class S3ContentServiceConfiguration {
         return builder.withCredentials(new EC2ContainerCredentialsProviderWrapper());
     }
 
-    private static AmazonS3ClientBuilder configureTokenAuthentication(Environment environment,
-            AmazonS3ClientBuilder builder) {
+    private static AmazonS3ClientBuilder configureTokenAuthentication(Environment environment, AmazonS3ClientBuilder builder) {
         LOGGER.info("Using Token authentication");
         final String key = environment.getProperty("content-service.store.s3.accessKey");
         final String secret = environment.getProperty("content-service.store.s3.secretKey");
@@ -65,8 +64,8 @@ public class S3ContentServiceConfiguration {
     @Bean
     public AmazonS3 amazonS3(Environment environment, ApplicationContext applicationContext) {
         // Configure authentication
-        final String authentication =
-                environment.getProperty("content-service.store.s3.authentication", EC2_AUTHENTICATION).toUpperCase();
+        final String authentication = environment.getProperty("content-service.store.s3.authentication", EC2_AUTHENTICATION)
+                .toUpperCase();
         AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
         switch (authentication) {
         case EC2_AUTHENTICATION:
@@ -102,8 +101,7 @@ public class S3ContentServiceConfiguration {
         // Configure endpoint url (optional)
         final String endpointUrl = environment.getProperty(S3_ENDPOINT_URL);
         if (StringUtils.isNotBlank(endpointUrl)) {
-            builder =
-                    builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, region));
+            builder = builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, region));
         }
 
         // All set
@@ -111,8 +109,8 @@ public class S3ContentServiceConfiguration {
     }
 
     @Bean
-    public ResourceResolver s3PathResolver(AmazonS3 amazonS3, Environment environment,
-            ApplicationContext applicationContext, PathMatchingSimpleStorageResourcePatternResolver resolver) {
+    public ResourceResolver s3PathResolver(AmazonS3 amazonS3, Environment environment, ApplicationContext applicationContext,
+            PathMatchingSimpleStorageResourcePatternResolver resolver) {
         if (isMultiTenancyEnabled(environment)) {
             try {
                 final S3BucketProvider s3BucketProvider = applicationContext.getBean(S3BucketProvider.class);
