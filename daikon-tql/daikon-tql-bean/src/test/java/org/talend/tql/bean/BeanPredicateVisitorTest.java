@@ -18,7 +18,7 @@ public class BeanPredicateVisitorTest {
     private final Bean bean = new Bean();
 
     @Test
-    public void equalsShouldNotMatchBeanWithInvalidType() throws Exception {
+    public void equalsShouldNotMatchBeanWithInvalidType() {
         // given
         final Expression query = Tql.parse("int > 'obviously not an integer'");
 
@@ -30,7 +30,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void betweenShouldMatchBean() throws Exception {
+    public void betweenShouldMatchBean() {
         // given
         final Expression query = Tql.parse("int between [0,10]");
 
@@ -42,7 +42,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void betweenShouldMatchBeanLowerOpen() throws Exception {
+    public void betweenShouldMatchBeanLowerOpen() {
         // given
         final Expression query = Tql.parse("int between ]0,10]");
 
@@ -54,7 +54,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void betweenShouldNotMatchBeanUpperOpen() throws Exception {
+    public void betweenShouldNotMatchBeanUpperOpen() {
         // given
         final Expression query = Tql.parse("int between [0,10[");
 
@@ -66,7 +66,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void betweenShouldNotMatchBeanBothOpen() throws Exception {
+    public void betweenShouldNotMatchBeanBothOpen() {
         // given
         final Expression query = Tql.parse("int between ]0,10[");
 
@@ -78,7 +78,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void notShouldNotMatchBean() throws Exception {
+    public void notShouldNotMatchBean() {
         // given
         final Expression query = Tql.parse("not(int > 0)");
 
@@ -90,7 +90,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void containsShouldMatchBean() throws Exception {
+    public void containsShouldMatchBean() {
         // given
         final Expression query = Tql.parse("value contains 'alu'");
 
@@ -102,7 +102,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void containsShouldNotMatchBean() throws Exception {
+    public void containsShouldNotMatchBean() {
         // given
         final Expression query = Tql.parse("value contains 'ALU'");
 
@@ -114,7 +114,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void containsIgnoreCaseShouldMatchBean() throws Exception {
+    public void containsIgnoreCaseShouldMatchBean() {
         // given
         final Expression query = Tql.parse("value containsIgnoreCase 'ALu'");
 
@@ -126,7 +126,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void compliesShouldMatchBean() throws Exception {
+    public void compliesShouldMatchBean() {
         // given
         final Expression query = Tql.parse("value complies 'aaaaa'");
 
@@ -138,7 +138,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void compliesShouldNotMatchBean() throws Exception {
+    public void compliesShouldNotMatchBean() {
         // given
         final Expression query = Tql.parse("value complies '99999'");
 
@@ -150,7 +150,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void matchesShouldMatchBean() throws Exception {
+    public void matchesShouldMatchBean() {
         // given
         final Expression query = Tql.parse("value ~ '\\w*'");
 
@@ -162,7 +162,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void inShouldMatchBean() throws Exception {
+    public void inShouldMatchBean() {
         // given
         final Expression query = Tql.parse("int in [10, 20]");
 
@@ -174,7 +174,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void emptyShouldNotMatchBean() throws Exception {
+    public void emptyShouldNotMatchBean() {
         // given
         final Expression query = Tql.parse("value is empty");
 
@@ -186,7 +186,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void classShouldMatchBean() throws Exception {
+    public void classShouldMatchBean() {
         // given
         final Expression query = Tql.parse("value._class = 'java.lang.String'");
 
@@ -198,7 +198,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void andShouldMatchBean() throws Exception {
+    public void andShouldMatchBean() {
         // given
         final Expression query = Tql.parse("int > 0 and int < 11");
 
@@ -210,7 +210,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void orShouldMatchBean() throws Exception {
+    public void orShouldMatchBean() {
         // given
         final Expression query = Tql.parse("int > 0 or int > 1");
 
@@ -222,7 +222,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void gteShouldMatchBean() throws Exception {
+    public void gteShouldMatchBean() {
         // given
         final Expression query = Tql.parse("int >= 10");
 
@@ -234,7 +234,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void gteShouldNotMatchBean() throws Exception {
+    public void gteShouldNotMatchBean() {
         // given
         final Expression query = Tql.parse("int >= 11");
 
@@ -246,7 +246,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void gtShouldMatchBean() throws Exception {
+    public void gtShouldMatchBean() {
         // given
         final Expression query = Tql.parse("int > 0");
 
@@ -258,7 +258,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void gtShouldNotMatchBean() throws Exception {
+    public void gtShouldNotMatchBean() {
         // given
         final Expression query = Tql.parse("int > 20");
 
@@ -270,7 +270,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void lteShouldMatchBean() throws Exception {
+    public void lteShouldMatchBean() {
         // given
         final Expression query = Tql.parse("int <= 10");
 
@@ -282,7 +282,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void lteShouldNotMatchBean() throws Exception {
+    public void lteShouldNotMatchBean() {
         // given
         final Expression query = Tql.parse("int <= 9");
 
@@ -294,7 +294,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void ltShouldMatchBean() throws Exception {
+    public void ltShouldMatchBean() {
         // given
         final Expression query = Tql.parse("int < 20");
 
@@ -306,7 +306,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void ltShouldNotMatchBean() throws Exception {
+    public void ltShouldNotMatchBean() {
         // given
         final Expression query = Tql.parse("int < 5");
 
@@ -318,7 +318,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void notEqualsShouldMatchBean() throws Exception {
+    public void notEqualsShouldMatchBean() {
         // given
         final Expression query = Tql.parse("value != 'not a value'");
 
@@ -330,7 +330,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void equalsShouldMatchBean() throws Exception {
+    public void equalsShouldMatchBean() {
         // given
         final Expression query = Tql.parse("value = 'value'");
 
@@ -342,7 +342,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void equalsShouldMatchBeanOnList() throws Exception {
+    public void equalsShouldMatchBeanOnList() {
         // given
         final Expression query = Tql.parse("nestedBeans.nestedValue = 'nested'");
 
@@ -354,7 +354,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void equalsShouldMatchBeanOnNested() throws Exception {
+    public void equalsShouldMatchBeanOnNested() {
         // given
         final Expression query = Tql.parse("nested.nestedValue = 'nested'");
 
@@ -366,7 +366,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void equalsOnAllFields() throws Exception {
+    public void equalsOnAllFields() {
         // given
         final Expression query = Tql.parse("* = 10");
 
@@ -378,7 +378,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
-    public void equalsShouldNotMatchBeanOnValue() throws Exception {
+    public void equalsShouldNotMatchBeanOnValue() {
         // given
         final Expression query = Tql.parse("value = 'non match'");
 
@@ -390,7 +390,7 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void shouldNotMatchBeanOnMissingField() throws Exception {
+    public void shouldNotMatchBeanOnMissingField() {
         // given
         final Expression query = Tql.parse("wrongField = 'value'");
 

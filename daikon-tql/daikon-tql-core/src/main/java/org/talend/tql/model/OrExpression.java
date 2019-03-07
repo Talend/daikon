@@ -16,8 +16,8 @@ public class OrExpression implements Expression {
 
     private final Expression[] expressions;
 
-    public OrExpression(Expression... andExpressions) {
-        this.expressions = andExpressions;
+    public OrExpression(Expression... orExpressions) {
+        this.expressions = orExpressions;
     }
 
     public Expression[] getExpressions() {
