@@ -20,7 +20,6 @@ import static java.util.stream.Stream.concat;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.talend.tql.bean.MethodAccessorFactory.build;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -122,12 +121,10 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     }
 
     // Utility method to drain all queue and return a stream to iterate over drained items.
-    private static <T> Stream<T> drainAll(final Queue<T> queue, final Class<T> type) {
-        final T[] dest = (T[]) Array.newInstance(type, 0);
-        final T[] drain = queue.toArray(dest);
-        final Stream<T> stream = Stream.of(drain);
+    private static <T> Stream<T> drainAll(final Queue<T> queue) {
+        final List<T> dest = new ArrayList<>(queue);
         queue.clear();
-        return stream;
+        return dest.stream();
     }
 
     @Override
@@ -244,7 +241,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         final Object value = literals.pop();
         comparisonExpression.getField().accept(this);
 
-        return drainAll(currentMethods, MethodAccessor[].class) //
+        return drainAll(currentMethods) //
                 .map(m -> getComparisonPredicate(m, comparisonExpression, value)) //
                 .reduce(Predicate::or) //
                 .orElseGet(() -> o -> true);
