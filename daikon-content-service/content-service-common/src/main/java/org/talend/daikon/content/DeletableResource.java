@@ -1,8 +1,8 @@
 package org.talend.daikon.content;
 
-import org.springframework.core.io.WritableResource;
-
 import java.io.IOException;
+
+import org.springframework.core.io.WritableResource;
 
 /**
  * An extension of Spring's {@link WritableResource} with {@link #delete()} capabilities.
@@ -16,6 +16,7 @@ public interface DeletableResource extends WritableResource {
 
     /**
      * Move given resource to the <code>location</code> given as parameter.
+     * 
      * @param location The new location for the resource
      */
     void move(String location) throws IOException;
