@@ -43,7 +43,7 @@ public class LocalContentServiceConfiguration implements ContentServiceEnabled {
         final String localPath = environment.getProperty("content-service.store.local.path", StringUtils.EMPTY);
         LOGGER.info("Files stored to '{}'", localPath);
 
-        return new LocalResourceResolver(new ContextualPatternResolver(delegate, localPath));
+        return new LocalResourceResolver(new ContextualPatternResolver(delegate, localPath), localPath);
     }
 
     /**

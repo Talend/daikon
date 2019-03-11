@@ -44,6 +44,11 @@ public class JournalizedResourceResolver implements ResourceResolver {
     }
 
     @Override
+    public String getLocationPrefix() {
+        return delegate.getLocationPrefix();
+    }
+
+    @Override
     public void clear(String location) throws IOException {
         Stream.of(getResources(location)).forEach(deletableResource -> {
             try {

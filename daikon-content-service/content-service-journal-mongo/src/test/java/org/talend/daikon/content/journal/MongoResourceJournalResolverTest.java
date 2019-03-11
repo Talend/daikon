@@ -240,15 +240,71 @@ public class MongoResourceJournalResolverTest {
         final DeletableResource resource1 = mock(DeletableResource.class);
         final DeletableResource resource2 = mock(DeletableResource.class);
         when(resourceResolver.getResources(any())).thenReturn(new DeletableResource[] { resource1, resource2 });
+        when(resourceResolver.getLocationPrefix()).thenReturn("");
+
+        when(resource1.getAbsolutePath()).thenReturn("resource1");
+        when(resource2.getAbsolutePath()).thenReturn("resource2");
 
         // When
         resolver.sync(resourceResolver);
 
         // Then
         verify(resourceResolver, times(1)).getResources(eq("/**"));
-        verify(resource1, times(1)).getFilename();
-        verify(resource2, times(1)).getFilename();
+        verify(resource1, times(1)).getAbsolutePath();
+        verify(resource2, times(1)).getAbsolutePath();
         assertTrue(repository.exists(MongoResourceJournalResolver.JOURNAL_READY_MARKER));
+    }
+
+    @Test
+    public void shouldSyncWithResourceResolverAndPrefix1() throws IOException, InterruptedException {
+        // Given
+        final ResourceResolver resourceResolver = mock(ResourceResolver.class);
+        final DeletableResource resource1 = mock(DeletableResource.class);
+        final DeletableResource resource2 = mock(DeletableResource.class);
+        final DeletableResource resource3 = mock(DeletableResource.class);
+        final DeletableResource resource4 = mock(DeletableResource.class);
+        when(resourceResolver.getResources(any())).thenReturn(new DeletableResource[] { resource1, resource2, resource3, resource4 });
+        when(resourceResolver.getLocationPrefix()).thenReturn("prefix");
+
+        when(resource1.getAbsolutePath()).thenReturn("/prefix/resource1");
+        when(resource2.getAbsolutePath()).thenReturn("prefix/resource2");
+        when(resource3.getAbsolutePath()).thenReturn("/unprefix/resource3");
+        when(resource4.getAbsolutePath()).thenReturn("unprefix/resource4");
+
+        // When
+        resolver.sync(resourceResolver);
+
+        // Then
+        assertTrue(resolver.exist("/resource1"));
+        assertTrue(resolver.exist("/resource2"));
+        assertTrue(resolver.exist("/unprefix/resource3"));
+        assertTrue(resolver.exist("/unprefix/resource4"));
+    }
+
+    @Test
+    public void shouldSyncWithResourceResolverAndPrefix2() throws IOException, InterruptedException {
+        // Given
+        final ResourceResolver resourceResolver = mock(ResourceResolver.class);
+        final DeletableResource resource1 = mock(DeletableResource.class);
+        final DeletableResource resource2 = mock(DeletableResource.class);
+        final DeletableResource resource3 = mock(DeletableResource.class);
+        final DeletableResource resource4 = mock(DeletableResource.class);
+        when(resourceResolver.getResources(any())).thenReturn(new DeletableResource[] { resource1, resource2, resource3, resource4 });
+        when(resourceResolver.getLocationPrefix()).thenReturn("/prefix");
+
+        when(resource1.getAbsolutePath()).thenReturn("/prefix/resource1");
+        when(resource2.getAbsolutePath()).thenReturn("prefix/resource2");
+        when(resource3.getAbsolutePath()).thenReturn("/unprefix/resource3");
+        when(resource4.getAbsolutePath()).thenReturn("unprefix/resource4");
+
+        // When
+        resolver.sync(resourceResolver);
+
+        // Then
+        assertTrue(resolver.exist("/resource1"));
+        assertTrue(resolver.exist("/resource2"));
+        assertTrue(resolver.exist("/unprefix/resource3"));
+        assertTrue(resolver.exist("/unprefix/resource4"));
     }
 
     @Test

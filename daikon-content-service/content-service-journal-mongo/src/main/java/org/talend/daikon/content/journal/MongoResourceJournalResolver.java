@@ -1,8 +1,5 @@
 package org.talend.daikon.content.journal;
 
-import java.io.IOException;
-import java.util.stream.Stream;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +11,9 @@ import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
+
+import java.io.IOException;
+import java.util.stream.Stream;
 
 /**
  * An implementation of {@link ResourceJournal} that uses a MongoDB database as backend.
@@ -43,7 +43,15 @@ public class MongoResourceJournalResolver implements ResourceJournal {
             LOGGER.info("Running initial sync...");
             final DeletableResource[] resources = resourceResolver.getResources("/**");
             for (int i = 0; i < resources.length; i++) {
-                add(resources[i].getFilename());
+                // removing prefix from absolute path
+                String resourceName = resources[i].getAbsolutePath();
+                String locationPrefix = formattingLocationPrefix(resourceResolver.getLocationPrefix(), resourceName);
+
+                if (resourceName.startsWith(locationPrefix)) {
+                    resourceName = resourceName.replaceFirst(locationPrefix, "");
+                }
+
+                add(resourceName);
                 if (i % 500 == 0) {
                     LOGGER.info("Sync in progress ({}/{})", i, resources.length);
                 }
@@ -54,6 +62,24 @@ public class MongoResourceJournalResolver implements ResourceJournal {
             invalidate();
             throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
+    }
+
+    /**
+     * Formatting prefix according to resourceName.
+     *  if resourceName is starting by / be sure that locationPrefix is also starting by /
+     *  if locationPrefix is starting by / and resourceName not remove it
+     *
+     * @param locationPrefix current location prefix
+     * @param resourceName current resource name
+     * @return
+     */
+    private String formattingLocationPrefix(String locationPrefix, String resourceName) {
+        if (resourceName.startsWith("/") && !locationPrefix.startsWith("/")) {
+            locationPrefix = "/" + locationPrefix;
+        } else if (!resourceName.startsWith("/") && locationPrefix.startsWith("/")) {
+            locationPrefix = locationPrefix.substring(1);
+        }
+        return locationPrefix;
     }
 
     @Override

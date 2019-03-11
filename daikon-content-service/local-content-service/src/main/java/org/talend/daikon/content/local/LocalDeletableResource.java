@@ -1,7 +1,12 @@
 package org.talend.daikon.content.local;
 
-import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.WritableResource;
+import org.talend.daikon.content.DeletableResource;
+import org.talend.daikon.content.ResourceResolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,13 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.WritableResource;
-import org.talend.daikon.content.ResourceResolver;
-import org.talend.daikon.content.DeletableResource;
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 class LocalDeletableResource implements DeletableResource {
 
@@ -131,4 +131,5 @@ class LocalDeletableResource implements DeletableResource {
             Files.move(source, target, REPLACE_EXISTING);
         }
     }
+
 }

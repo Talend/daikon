@@ -1,10 +1,6 @@
 package org.talend.daikon.content.s3;
 
-import static org.talend.daikon.content.s3.LocationUtils.toS3Location;
-import static org.talend.daikon.content.s3.LocationUtils.S3PathBuilder.builder;
-
-import java.io.IOException;
-
+import com.amazonaws.services.s3.AmazonS3;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.WritableResource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -12,7 +8,10 @@ import org.talend.daikon.content.AbstractResourceResolver;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.s3.provider.S3BucketProvider;
 
-import com.amazonaws.services.s3.AmazonS3;
+import java.io.IOException;
+
+import static org.talend.daikon.content.s3.LocationUtils.S3PathBuilder.builder;
+import static org.talend.daikon.content.s3.LocationUtils.toS3Location;
 
 class S3ResourceResolver extends AbstractResourceResolver {
 
@@ -50,6 +49,13 @@ class S3ResourceResolver extends AbstractResourceResolver {
                 .append(toS3Location(location)) //
                 .build();
         return super.getResource("s3://" + s3Location);
+    }
+
+    @Override
+    public String getLocationPrefix() {
+        return builder(bucket.getBucketName()) //
+                .append(bucket.getRoot()) //
+                .build();
     }
 
     @Override

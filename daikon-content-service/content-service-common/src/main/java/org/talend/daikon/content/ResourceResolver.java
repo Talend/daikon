@@ -19,6 +19,8 @@ public interface ResourceResolver extends ResourcePatternResolver {
     @Override
     DeletableResource getResource(String location);
 
+    String getLocationPrefix();
+
     default void clear(String location) throws IOException {
         Resource[] files = getResources(location);
         for (Resource resource : files) {
