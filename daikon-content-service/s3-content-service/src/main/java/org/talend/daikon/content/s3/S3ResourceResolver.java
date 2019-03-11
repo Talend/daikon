@@ -1,6 +1,10 @@
 package org.talend.daikon.content.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
+import static org.talend.daikon.content.s3.LocationUtils.toS3Location;
+import static org.talend.daikon.content.s3.LocationUtils.S3PathBuilder.builder;
+
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.WritableResource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -8,10 +12,7 @@ import org.talend.daikon.content.AbstractResourceResolver;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.s3.provider.S3BucketProvider;
 
-import java.io.IOException;
-
-import static org.talend.daikon.content.s3.LocationUtils.S3PathBuilder.builder;
-import static org.talend.daikon.content.s3.LocationUtils.toS3Location;
+import com.amazonaws.services.s3.AmazonS3;
 
 class S3ResourceResolver extends AbstractResourceResolver {
 
@@ -60,7 +61,7 @@ class S3ResourceResolver extends AbstractResourceResolver {
 
     @Override
     protected DeletableResource convert(WritableResource writableResource) {
-        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(), bucket.getBucketName(),
-                bucket.getRoot());
+        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(),
+                bucket.getBucketName(), bucket.getRoot());
     }
 }

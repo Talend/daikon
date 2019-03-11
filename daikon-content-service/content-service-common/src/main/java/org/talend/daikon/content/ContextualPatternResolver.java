@@ -7,7 +7,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
- * A helper for {@link ResourcePatternResolver} in case you want to prefix all locations with the same path. For example, in case
+ * A helper for {@link ResourcePatternResolver} in case you want to prefix all locations with the same path. For
+ * example, in case
  * you want "/file.txt" to be automatically converted to "/path/to/storage/file.txt".
  */
 public class ContextualPatternResolver implements ResourcePatternResolver {

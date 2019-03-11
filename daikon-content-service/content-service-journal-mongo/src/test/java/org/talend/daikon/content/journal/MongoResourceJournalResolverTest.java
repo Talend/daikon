@@ -1,7 +1,23 @@
 package org.talend.daikon.content.journal;
 
-import com.github.fakemongo.Fongo;
-import com.mongodb.MongoClient;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,23 +35,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
+import com.github.fakemongo.Fongo;
+import com.mongodb.MongoClient;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataMongoTest
@@ -263,7 +264,8 @@ public class MongoResourceJournalResolverTest {
         final DeletableResource resource2 = mock(DeletableResource.class);
         final DeletableResource resource3 = mock(DeletableResource.class);
         final DeletableResource resource4 = mock(DeletableResource.class);
-        when(resourceResolver.getResources(any())).thenReturn(new DeletableResource[] { resource1, resource2, resource3, resource4 });
+        when(resourceResolver.getResources(any()))
+                .thenReturn(new DeletableResource[] { resource1, resource2, resource3, resource4 });
         when(resourceResolver.getLocationPrefix()).thenReturn("prefix");
 
         when(resource1.getAbsolutePath()).thenReturn("/prefix/resource1");
@@ -289,7 +291,8 @@ public class MongoResourceJournalResolverTest {
         final DeletableResource resource2 = mock(DeletableResource.class);
         final DeletableResource resource3 = mock(DeletableResource.class);
         final DeletableResource resource4 = mock(DeletableResource.class);
-        when(resourceResolver.getResources(any())).thenReturn(new DeletableResource[] { resource1, resource2, resource3, resource4 });
+        when(resourceResolver.getResources(any()))
+                .thenReturn(new DeletableResource[] { resource1, resource2, resource3, resource4 });
         when(resourceResolver.getLocationPrefix()).thenReturn("/prefix");
 
         when(resource1.getAbsolutePath()).thenReturn("/prefix/resource1");

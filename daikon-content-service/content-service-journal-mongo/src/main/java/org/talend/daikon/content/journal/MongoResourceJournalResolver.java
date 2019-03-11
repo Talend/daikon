@@ -1,5 +1,8 @@
 package org.talend.daikon.content.journal;
 
+import java.io.IOException;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +14,6 @@ import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
-
-import java.io.IOException;
-import java.util.stream.Stream;
 
 /**
  * An implementation of {@link ResourceJournal} that uses a MongoDB database as backend.
@@ -66,8 +66,8 @@ public class MongoResourceJournalResolver implements ResourceJournal {
 
     /**
      * Formatting prefix according to resourceName.
-     *  if resourceName is starting by / be sure that locationPrefix is also starting by /
-     *  if locationPrefix is starting by / and resourceName not remove it
+     * if resourceName is starting by / be sure that locationPrefix is also starting by /
+     * if locationPrefix is starting by / and resourceName not remove it
      *
      * @param locationPrefix current location prefix
      * @param resourceName current resource name
