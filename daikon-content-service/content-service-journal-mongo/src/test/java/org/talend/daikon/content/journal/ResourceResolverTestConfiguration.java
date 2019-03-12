@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.talend.daikon.content.ResourceResolver;
 
-@Profile("test")
+@Profile("mock")
 @Configuration
 public class ResourceResolverTestConfiguration {
 

@@ -40,7 +40,7 @@ import org.talend.daikon.content.ResourceResolver;
 import com.github.fakemongo.Fongo;
 import com.mongodb.MongoClient;
 
-@ActiveProfiles("test")
+@ActiveProfiles("mock")
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataMongoTest
 @ContextConfiguration
