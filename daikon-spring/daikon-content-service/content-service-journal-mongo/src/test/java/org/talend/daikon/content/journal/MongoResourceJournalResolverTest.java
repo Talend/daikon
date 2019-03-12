@@ -265,10 +265,6 @@ public class MongoResourceJournalResolverTest {
     }
 
     @Test
-<<<<<<< HEAD:daikon-spring/daikon-content-service/content-service-journal-mongo/src/test/java/org/talend/daikon/content/journal/MongoResourceJournalResolverTest.java
-    public void shouldNotMarkAsReadyWhenSyncFails() throws IOException {
-=======
-
     public void shouldSyncWithResourceResolverAndPrefix1() throws IOException, InterruptedException {
         // Given
         final DeletableResource resource1 = mock(DeletableResource.class);
@@ -322,7 +318,6 @@ public class MongoResourceJournalResolverTest {
 
     @Test
     public void shouldNotMarkAsReadyWhenSyncFails() throws IOException, InterruptedException {
->>>>>>> ab2df097... wi(TDKN-224): adding getAbsolutePath method and removing location pre… (#469):daikon-content-service/content-service-journal-mongo/src/test/java/org/talend/daikon/content/journal/MongoResourceJournalResolverTest.java
         // Given
         when(resourceResolver.getResources(any())).thenThrow(new IOException("Unchecked on purpose"));
 

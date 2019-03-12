@@ -89,7 +89,7 @@ public class MongoResourceJournalResolver implements ResourceJournal {
      */
     private String formattingPrefixAccordingToResourceName(String resourceName) {
         String locationPrefix = resourceResolver.getLocationPrefix();
-        if(StringUtils.isEmpty(locationPrefix)){
+        if (StringUtils.isEmpty(locationPrefix)) {
             return "";
         }
         if (resourceName.startsWith("/") && !locationPrefix.startsWith("/")) {
@@ -142,8 +142,8 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         String sourceWithoutPrefix = removePrefixFromResourceName(source);
         String targetWithoutPrefix = removePrefixFromResourceName(target);
 
-        ResourceJournalEntry dbResourceJournalEntry =
-                repository.findOne(Example.of(new ResourceJournalEntry(sourceWithoutPrefix)));
+        ResourceJournalEntry dbResourceJournalEntry = repository
+                .findOne(Example.of(new ResourceJournalEntry(sourceWithoutPrefix)));
         if (dbResourceJournalEntry != null) {
             dbResourceJournalEntry.setName(targetWithoutPrefix);
             repository.save(dbResourceJournalEntry);
