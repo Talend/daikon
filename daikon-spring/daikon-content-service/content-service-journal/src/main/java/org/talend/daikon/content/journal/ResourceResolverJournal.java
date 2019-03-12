@@ -17,7 +17,7 @@ class ResourceResolverJournal implements ResourceJournal {
     }
 
     @Override
-    public void sync(ResourceResolver resourceResolver) {
+    public void sync() {
         // Nothing to do
     }
 

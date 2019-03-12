@@ -19,8 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.talend.daikon.content.ResourceResolver;
 import org.talend.daikon.content.DeletableResource;
+import org.talend.daikon.content.ResourceResolver;
 
 class LocalDeletableResource implements DeletableResource {
 
@@ -131,4 +131,5 @@ class LocalDeletableResource implements DeletableResource {
             Files.move(source, target, REPLACE_EXISTING);
         }
     }
+
 }

@@ -53,8 +53,15 @@ class S3ResourceResolver extends AbstractResourceResolver {
     }
 
     @Override
+    public String getLocationPrefix() {
+        return builder(bucket.getBucketName()) //
+                .append(bucket.getRoot()) //
+                .build();
+    }
+
+    @Override
     protected DeletableResource convert(WritableResource writableResource) {
-        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(), bucket.getBucketName(),
-                bucket.getRoot());
+        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(),
+                bucket.getBucketName(), bucket.getRoot());
     }
 }

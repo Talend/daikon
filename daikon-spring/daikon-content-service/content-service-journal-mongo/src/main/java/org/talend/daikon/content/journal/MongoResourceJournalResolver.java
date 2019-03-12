@@ -32,8 +32,14 @@ public class MongoResourceJournalResolver implements ResourceJournal {
     @Autowired
     private MongoResourceJournalRepository repository;
 
+    /**
+     * Resource resolver use to get the resource
+     */
+    @Autowired
+    private ResourceResolver resourceResolver;
+
     @Override
-    public void sync(ResourceResolver resourceResolver) {
+    public void sync() {
         if (ready()) {
             LOGGER.warn("Journal is flagged 'ready', consider calling invalidate() first.");
             return;
@@ -43,7 +49,8 @@ public class MongoResourceJournalResolver implements ResourceJournal {
             LOGGER.info("Running initial sync...");
             final DeletableResource[] resources = resourceResolver.getResources("/**");
             for (int i = 0; i < resources.length; i++) {
-                add(resources[i].getFilename());
+                // removing prefix from absolute path
+                add(resources[i].getAbsolutePath());
                 if (i % 500 == 0) {
                     LOGGER.info("Sync in progress ({}/{})", i, resources.length);
                 }
@@ -56,6 +63,44 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         }
     }
 
+    /**
+     * Removing prefix from resourceName
+     *
+     * @param resourceName current resource name
+     * @return the resourceName without the prefix
+     */
+    private String removePrefixFromResourceName(String resourceName) {
+        String locationPrefix = formattingPrefixAccordingToResourceName(resourceName);
+
+        if (resourceName.startsWith(locationPrefix)) {
+            resourceName = resourceName.replaceFirst(locationPrefix, "");
+        }
+
+        return resourceName;
+    }
+
+    /**
+     * Formatting prefix according to resourceName.
+     * if resourceName is starting by / be sure that locationPrefix is also starting by /
+     * if locationPrefix is starting by / and resourceName not remove it
+     *
+     * @param resourceName current resource name
+     * @return the location prefix formatted according to the resourceName
+     */
+    private String formattingPrefixAccordingToResourceName(String resourceName) {
+        String locationPrefix = resourceResolver.getLocationPrefix();
+        if(StringUtils.isEmpty(locationPrefix)){
+            return "";
+        }
+        if (resourceName.startsWith("/") && !locationPrefix.startsWith("/")) {
+            return "/" + locationPrefix;
+        } else if (!resourceName.startsWith("/") && locationPrefix.startsWith("/")) {
+            return locationPrefix.substring(1);
+        }
+
+        return locationPrefix;
+    }
+
     @Override
     public Stream<String> matches(String pattern) {
         LOGGER.debug("Match locations using pattern '{}'", pattern);
@@ -63,13 +108,13 @@ public class MongoResourceJournalResolver implements ResourceJournal {
             return Stream.empty();
         }
 
-        String patternForMatch = formattingStringToMongoPattern(pattern);
+        String patternForMatch = formattingStringToMongoPattern(removePrefixFromResourceName(pattern));
         return repository.findByNameStartsWith(patternForMatch).stream().map(ResourceJournalEntry::getName);
     }
 
     @Override
     public void clear(String pattern) {
-        String patternForClear = formattingStringToMongoPattern(pattern);
+        String patternForClear = formattingStringToMongoPattern(removePrefixFromResourceName(pattern));
         repository.deleteByNameStartsWith(patternForClear);
         LOGGER.debug("Cleared location '{}'.", patternForClear);
     }
@@ -79,7 +124,7 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         if (StringUtils.isEmpty(location)) {
             return;
         }
-        String savedLocation = updateLocationToAbsolutePath(location);
+        String savedLocation = updateLocationToAbsolutePath(removePrefixFromResourceName(location));
         if (!exist(savedLocation)) {
             repository.save(new ResourceJournalEntry(savedLocation));
         }
@@ -88,26 +133,30 @@ public class MongoResourceJournalResolver implements ResourceJournal {
 
     @Override
     public void remove(String location) {
-        repository.deleteByName(location);
+        repository.deleteByName(removePrefixFromResourceName(location));
         LOGGER.debug("Location '{}' removed from journal.", location);
     }
 
     @Override
     public void move(String source, String target) {
-        ResourceJournalEntry dbResourceJournalEntry = repository.findOne(Example.of(new ResourceJournalEntry(source)));
+        String sourceWithoutPrefix = removePrefixFromResourceName(source);
+        String targetWithoutPrefix = removePrefixFromResourceName(target);
+
+        ResourceJournalEntry dbResourceJournalEntry =
+                repository.findOne(Example.of(new ResourceJournalEntry(sourceWithoutPrefix)));
         if (dbResourceJournalEntry != null) {
-            dbResourceJournalEntry.setName(target);
+            dbResourceJournalEntry.setName(targetWithoutPrefix);
             repository.save(dbResourceJournalEntry);
-            repository.deleteByName(source);
-            LOGGER.debug("Move from '{}' to '{}' recorded in journal.", source, target);
+            repository.deleteByName(sourceWithoutPrefix);
+            LOGGER.debug("Move from '{}' to '{}' recorded in journal.", sourceWithoutPrefix, targetWithoutPrefix);
         } else {
-            LOGGER.warn("Unable to move '{}' to '{}' (not found in journal)", source, target);
+            LOGGER.warn("Unable to move '{}' to '{}' (not found in journal)", sourceWithoutPrefix, targetWithoutPrefix);
         }
     }
 
     @Override
     public boolean exist(String location) {
-        String savedLocation = updateLocationToAbsolutePath(location);
+        String savedLocation = updateLocationToAbsolutePath(removePrefixFromResourceName(location));
         final boolean exist = repository.countByName(savedLocation) > 0L;
         LOGGER.debug("Location check on '{}': {}", location, exist);
         return exist;

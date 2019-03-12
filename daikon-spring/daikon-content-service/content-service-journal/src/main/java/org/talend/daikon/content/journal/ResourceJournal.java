@@ -1,19 +1,13 @@
 package org.talend.daikon.content.journal;
 
-import org.talend.daikon.content.ResourceResolver;
-
 import java.util.stream.Stream;
 
 public interface ResourceJournal {
 
     /**
-     * <p>
-     * Synchronize the content of this journal with the {@link ResourceResolver} passed as parameter.
-     * </p>
-     * 
-     * @param resourceResolver The {@link ResourceResolver} to use for synchronization.
+     * Synchronize the content of this journal
      */
-    void sync(ResourceResolver resourceResolver);
+    void sync();
 
     Stream<String> matches(String pattern);
 
