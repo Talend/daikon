@@ -69,4 +69,9 @@ class ResourceResolverJournal implements ResourceJournal {
     public void invalidate() {
         // Nothing to do
     }
+
+    @Override
+    public void setResourceResolver(ResourceResolver resourceResolver) {
+        // Nothing to do
+    }
 }
