@@ -35,7 +35,6 @@ public class MongoResourceJournalResolver implements ResourceJournal {
     /**
      * Resource resolver use to get the resource
      */
-    @Autowired
     private ResourceResolver resourceResolver;
 
     @Override
@@ -180,6 +179,11 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         repository.deleteByName(JOURNAL_READY_MARKER);
     }
 
+    @Override
+    public void setResourceResolver(ResourceResolver resourceResolver) {
+        this.resourceResolver = resourceResolver;
+    }
+
     private String updateLocationToAbsolutePath(String location) {
         String savedLocation = location;
         if (location.charAt(0) != '/') {
@@ -187,6 +191,8 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         }
         return savedLocation;
     }
+
+
 
     private String formattingStringToMongoPattern(String pattern) {
         return StringUtils.remove(pattern, "*");

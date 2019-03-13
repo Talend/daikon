@@ -78,6 +78,8 @@ public class MongoResourceJournalResolverTest {
 
     @Before
     public void initData() {
+        resolver.setResourceResolver(resourceResolver);
+
         mongoTemplate.remove(new Query(), ResourceJournalEntry.class, collectionName);
         resolver.add("notlocation1.1");
         resolver.add("location1.1");
