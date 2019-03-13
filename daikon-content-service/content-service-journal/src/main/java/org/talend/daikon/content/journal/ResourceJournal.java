@@ -1,5 +1,7 @@
 package org.talend.daikon.content.journal;
 
+import org.talend.daikon.content.ResourceResolver;
+
 import java.util.stream.Stream;
 
 public interface ResourceJournal {
@@ -42,4 +44,12 @@ public interface ResourceJournal {
      * @see #validate()
      */
     void invalidate();
+
+    /**
+     * Set the resource resolver to use to get the resource
+     * @param resourceResolver
+     */
+    default void setResourceResolver(ResourceResolver resourceResolver){
+        // do nothing
+    };
 }

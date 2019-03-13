@@ -81,6 +81,8 @@ public class MongoResourceJournalResolverTest {
 
     @Before
     public void initData() {
+        resolver.setResourceResolver(resourceResolver);
+
         mongoTemplate.remove(new Query(), ResourceJournalEntry.class, collectionName);
         resolver.add("location1.1");
         resolver.add("location1.2");
