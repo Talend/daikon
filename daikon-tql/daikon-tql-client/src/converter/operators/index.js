@@ -7,6 +7,7 @@ import WordComplies from './wordComplies';
 import GreaterThan from './greater-than';
 import GreaterThanOrEqual from './greater-than-or-equal';
 import LessThan from './less-than';
+import LessThanOrEqual from './less-than-or-equal';
 import Valid from './valid';
 import Invalid from './invalid';
 import Between from './between';
@@ -22,6 +23,7 @@ export {
 	GreaterThan,
 	GreaterThanOrEqual,
 	LessThan,
+	LessThanOrEqual,
 	Valid,
 	Invalid,
 	Between,

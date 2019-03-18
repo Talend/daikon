@@ -165,6 +165,7 @@ TQL symbol               |Client class
 `>`                      |`GreaterThan`
 `>=`                     |`GreaterThanOrEqual`
 `<`                      |`LessThan`
+`<=`                     |`LessThanOrEqual`
 
 They are accessible via the `Operators` named export and can be serialized to TQL expressions :
 
