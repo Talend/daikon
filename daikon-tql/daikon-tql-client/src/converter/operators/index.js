@@ -1,5 +1,6 @@
 import Empty from './empty';
 import Equal from './equal';
+import Unequal from './unequal';
 import Contains from './contains';
 import ContainsIgnoreCase from './containsIgnoreCase';
 import Complies from './complies';
@@ -16,6 +17,7 @@ import Quality from './quality';
 export {
 	Empty,
 	Equal,
+	Unequal,
 	Contains,
 	ContainsIgnoreCase,
 	Complies,

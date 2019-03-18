@@ -162,6 +162,7 @@ TQL symbol               |Client class
 `between`                |`Between`
 `quality`                |`Quality`
 `=`                      |`Equal`
+`!=`                     |`Unequal`
 `>`                      |`GreaterThan`
 `>=`                     |`GreaterThanOrEqual`
 `<`                      |`LessThan`
