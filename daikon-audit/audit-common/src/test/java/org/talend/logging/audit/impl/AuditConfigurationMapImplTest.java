@@ -53,7 +53,7 @@ public class AuditConfigurationMapImplTest {
 
     private void setProperty(AuditConfiguration config, String value) {
         String key = toProperty(config);
-        if ( value == null ) {
+        if (value == null) {
             properties.remove(key);
         } else {
             properties.setProperty(key, value);

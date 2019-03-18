@@ -7,13 +7,9 @@ import java.util.stream.Stream;
 public interface ResourceJournal {
 
     /**
-     * <p>
-     * Synchronize the content of this journal with the {@link ResourceResolver} passed as parameter.
-     * </p>
-     * 
-     * @param resourceResolver The {@link ResourceResolver} to use for synchronization.
+     * Synchronize the content of this journal
      */
-    void sync(ResourceResolver resourceResolver);
+    void sync();
 
     Stream<String> matches(String pattern);
 
@@ -48,4 +44,10 @@ public interface ResourceJournal {
      * @see #validate()
      */
     void invalidate();
+
+    /**
+     * Set the resource resolver to use to get the resource
+     * @param resourceResolver
+     */
+    void setResourceResolver(ResourceResolver resourceResolver);
 }

@@ -33,6 +33,7 @@ public class JournalizedConfiguration implements ApplicationContextAware {
                     final ResourceJournal journal;
                     try {
                         journal = applicationContext.getBean(ResourceJournal.class);
+                        journal.setResourceResolver((ResourceResolver) bean);
                     } catch (BeansException e) {
                         throw new MissingJournalBean(e);
                     }

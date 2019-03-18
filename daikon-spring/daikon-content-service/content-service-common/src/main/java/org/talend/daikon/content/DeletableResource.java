@@ -20,4 +20,13 @@ public interface DeletableResource extends WritableResource {
      * @param location The new location for the resource
      */
     void move(String location) throws IOException;
+
+    /**
+     * Get the full absolute path for the resource
+     *
+     * @return the full absolute path of the resource
+     */
+    default String getAbsolutePath() throws IOException {
+        return getURI().getPath();
+    }
 }

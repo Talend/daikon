@@ -17,7 +17,7 @@ class ResourceResolverJournal implements ResourceJournal {
     }
 
     @Override
-    public void sync(ResourceResolver resourceResolver) {
+    public void sync() {
         // Nothing to do
     }
 
@@ -67,6 +67,11 @@ class ResourceResolverJournal implements ResourceJournal {
 
     @Override
     public void invalidate() {
+        // Nothing to do
+    }
+
+    @Override
+    public void setResourceResolver(ResourceResolver resourceResolver) {
         // Nothing to do
     }
 }

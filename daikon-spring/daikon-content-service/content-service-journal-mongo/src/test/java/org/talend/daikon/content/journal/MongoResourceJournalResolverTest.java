@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -29,16 +30,24 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 
+@ActiveProfiles("mock")
 @RunWith(SpringRunner.class)
 @DataMongoTest
 @ContextConfiguration
 @ComponentScan("org.talend.daikon.content.journal")
 public class MongoResourceJournalResolverTest {
+
+    /**
+     * Resource resolver use to get the resource
+     */
+    @Autowired
+    private ResourceResolver resourceResolver;
 
     @Autowired
     private MongoResourceJournalResolver resolver;
@@ -69,6 +78,8 @@ public class MongoResourceJournalResolverTest {
 
     @Before
     public void initData() {
+        resolver.setResourceResolver(resourceResolver);
+
         mongoTemplate.remove(new Query(), ResourceJournalEntry.class, collectionName);
         resolver.add("notlocation1.1");
         resolver.add("location1.1");
@@ -76,6 +87,8 @@ public class MongoResourceJournalResolverTest {
         resolver.add("location1.3");
         resolver.add("location2.1");
         resolver.add("location2.2");
+
+        Mockito.reset(resourceResolver);
     }
 
     @After
@@ -235,30 +248,84 @@ public class MongoResourceJournalResolverTest {
     @Test
     public void shouldSyncWithResourceResolver() throws IOException {
         // Given
-        final ResourceResolver resourceResolver = mock(ResourceResolver.class);
         final DeletableResource resource1 = mock(DeletableResource.class);
         final DeletableResource resource2 = mock(DeletableResource.class);
         when(resourceResolver.getResources(any())).thenReturn(new DeletableResource[] { resource1, resource2 });
+        when(resourceResolver.getLocationPrefix()).thenReturn("");
+
+        when(resource1.getAbsolutePath()).thenReturn("resource1");
+        when(resource2.getAbsolutePath()).thenReturn("resource2");
 
         // When
-        resolver.sync(resourceResolver);
+        resolver.sync();
 
         // Then
         verify(resourceResolver, times(1)).getResources(eq("/**"));
-        verify(resource1, times(1)).getFilename();
-        verify(resource2, times(1)).getFilename();
+        verify(resource1, times(1)).getAbsolutePath();
+        verify(resource2, times(1)).getAbsolutePath();
         assertTrue(repository.exists(MongoResourceJournalResolver.JOURNAL_READY_MARKER));
     }
 
     @Test
-    public void shouldNotMarkAsReadyWhenSyncFails() throws IOException {
+    public void shouldSyncWithResourceResolverAndPrefix1() throws IOException, InterruptedException {
         // Given
-        final ResourceResolver resourceResolver = mock(ResourceResolver.class);
+        final DeletableResource resource1 = mock(DeletableResource.class);
+        final DeletableResource resource2 = mock(DeletableResource.class);
+        final DeletableResource resource3 = mock(DeletableResource.class);
+        final DeletableResource resource4 = mock(DeletableResource.class);
+        when(resourceResolver.getResources(any()))
+                .thenReturn(new DeletableResource[] { resource1, resource2, resource3, resource4 });
+        when(resourceResolver.getLocationPrefix()).thenReturn("prefix");
+
+        when(resource1.getAbsolutePath()).thenReturn("/prefix/resource1");
+        when(resource2.getAbsolutePath()).thenReturn("prefix/resource2");
+        when(resource3.getAbsolutePath()).thenReturn("/unprefix/resource3");
+        when(resource4.getAbsolutePath()).thenReturn("unprefix/resource4");
+
+        // When
+        resolver.sync();
+
+        // Then
+        assertTrue(resolver.exist("/resource1"));
+        assertTrue(resolver.exist("/resource2"));
+        assertTrue(resolver.exist("/unprefix/resource3"));
+        assertTrue(resolver.exist("/unprefix/resource4"));
+    }
+
+    @Test
+    public void shouldSyncWithResourceResolverAndPrefix2() throws IOException, InterruptedException {
+        // Given
+        final DeletableResource resource1 = mock(DeletableResource.class);
+        final DeletableResource resource2 = mock(DeletableResource.class);
+        final DeletableResource resource3 = mock(DeletableResource.class);
+        final DeletableResource resource4 = mock(DeletableResource.class);
+        when(resourceResolver.getResources(any()))
+                .thenReturn(new DeletableResource[] { resource1, resource2, resource3, resource4 });
+        when(resourceResolver.getLocationPrefix()).thenReturn("/prefix");
+
+        when(resource1.getAbsolutePath()).thenReturn("/prefix/resource1");
+        when(resource2.getAbsolutePath()).thenReturn("prefix/resource2");
+        when(resource3.getAbsolutePath()).thenReturn("/unprefix/resource3");
+        when(resource4.getAbsolutePath()).thenReturn("unprefix/resource4");
+
+        // When
+        resolver.sync();
+
+        // Then
+        assertTrue(resolver.exist("/resource1"));
+        assertTrue(resolver.exist("/resource2"));
+        assertTrue(resolver.exist("/unprefix/resource3"));
+        assertTrue(resolver.exist("/unprefix/resource4"));
+    }
+
+    @Test
+    public void shouldNotMarkAsReadyWhenSyncFails() throws IOException, InterruptedException {
+        // Given
         when(resourceResolver.getResources(any())).thenThrow(new IOException("Unchecked on purpose"));
 
         // When
         try {
-            resolver.sync(resourceResolver);
+            resolver.sync();
             fail("Expected an exception.");
         } catch (Exception e) {
             // Expected
@@ -271,12 +338,11 @@ public class MongoResourceJournalResolverTest {
     @Test
     public void shouldIgnoreIfAlreadyMarkedAsReady() throws IOException {
         // Given
-        final ResourceResolver resourceResolver = mock(ResourceResolver.class);
         when(resourceResolver.getResources(any())).thenThrow(new IOException("Unchecked on purpose"));
 
         // When
         resolver.validate();
-        resolver.sync(resourceResolver);
+        resolver.sync();
 
         // Then
         verify(resourceResolver, never()).getResources(eq("/**"));
