@@ -163,6 +163,7 @@ TQL symbol               |Client class
 `quality`                |`Quality`
 `=`                      |`Equal`
 `>`                      |`GreaterThan`
+`>=`                     |`GreaterThanOrEqual`
 `<`                      |`LessThan`
 
 They are accessible via the `Operators` named export and can be serialized to TQL expressions :

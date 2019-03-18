@@ -5,6 +5,7 @@ import ContainsIgnoreCase from './containsIgnoreCase';
 import Complies from './complies';
 import WordComplies from './wordComplies';
 import GreaterThan from './greater-than';
+import GreaterThanOrEqual from './greater-than-or-equal';
 import LessThan from './less-than';
 import Valid from './valid';
 import Invalid from './invalid';
@@ -19,6 +20,7 @@ export {
 	Complies,
 	WordComplies,
 	GreaterThan,
+	GreaterThanOrEqual,
 	LessThan,
 	Valid,
 	Invalid,
