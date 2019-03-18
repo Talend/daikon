@@ -13,6 +13,7 @@ import Valid from './valid';
 import Invalid from './invalid';
 import Between from './between';
 import Quality from './quality';
+import In from './in';
 
 export {
 	Empty,
@@ -30,4 +31,5 @@ export {
 	Invalid,
 	Between,
 	Quality,
+	In,
 };
