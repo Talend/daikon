@@ -7,7 +7,7 @@ import Operator, {
  * Class representing the In operator.
  * Will be serialized as follows : (field1 in [42, 76])
  */
-export default class Between extends Operator {
+export default class In extends Operator {
 	static value = 'in';
 	static hasOperand = true;
 
