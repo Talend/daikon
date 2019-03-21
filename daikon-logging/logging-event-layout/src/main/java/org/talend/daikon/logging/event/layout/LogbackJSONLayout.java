@@ -208,7 +208,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
     private String mergeUserFields(String... fields) {
         String merged = Stream.of(fields).filter(Objects::nonNull).filter(StringUtils::isNotEmpty)
                 .collect(Collectors.joining(","));
-        return merged.isEmpty() ? null : merged;
+        return (merged != null && merged.isEmpty()) ? null : merged;
     }
 
     private String dateFormat(long timestamp) {
