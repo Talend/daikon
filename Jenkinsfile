@@ -43,7 +43,7 @@ spec:
       - name: docker
         mountPath: /var/run/docker.sock
       - name: m2
-        mountPath: /root/.m2/repository
+        mountPath: /root/daikon/.m2/repository
   volumes:
   - name: docker
     hostPath:
