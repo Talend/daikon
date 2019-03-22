@@ -144,7 +144,7 @@ spec:
                     git add -A .
                     git commit -m "Add ${params.release_version} release notes"
                     cat ${params.release_version}.adoc
-                    git push
+                    git push --tags
                     cd ..
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -DlocalCheckout=true -Dusername=${GIT_LOGIN} -Dpassword=${GIT_PASSWORD} release:perform
                   """
@@ -154,7 +154,7 @@ spec:
             slackSend(
               color: "GREEN",
               channel: "daikon",
-              message: "Daikon version ${params.release_version} released (next version: ${params.next_version}) <https://github.com/Talend/daikon/releases/${params.release_version}.adoc|${params.release_version} release notes>"
+              message: "Daikon version ${params.release_version} released (next version: ${params.next_version}) <https://github.com/Talend/daikon/blob/master/releases/${params.release_version}.adoc|${params.release_version} release notes>"
             )
         }
     }
