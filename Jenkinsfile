@@ -132,7 +132,7 @@ spec:
             expression { params.release }
         }
         steps {
-            withCredentials([gitCredentials]) {
+            withCredentials([gitCredentials, jiraCredentials]) {
               container('maven') {
                 configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
                   sh """
