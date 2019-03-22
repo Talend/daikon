@@ -192,8 +192,6 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         return savedLocation;
     }
 
-
-
     private String formattingStringToMongoPattern(String pattern) {
         return StringUtils.remove(pattern, "*");
     }
