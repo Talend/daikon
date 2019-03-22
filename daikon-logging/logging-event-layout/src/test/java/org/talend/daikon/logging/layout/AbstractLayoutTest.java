@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Marker;
 import org.talend.daikon.logging.event.field.LayoutFields;
 import org.talend.daikon.logging.event.layout.LayoutUtils;
 
@@ -178,6 +179,8 @@ public abstract class AbstractLayoutTest {
 
         private Map<String, String> mdc = new HashMap<>();
 
+        private Marker marker;
+
         public LogDetails(Class clazz) {
             this.className = clazz.getName();
             this.methodName = "newEvent";
@@ -271,6 +274,14 @@ public abstract class AbstractLayoutTest {
 
         public void setMdc(Map<String, String> mdc) {
             this.mdc = mdc;
+        }
+
+        public Marker getMarker() {
+            return marker;
+        }
+
+        public void setMarker(Marker marker) {
+            this.marker = marker;
         }
     }
 

@@ -2,12 +2,15 @@ package org.talend.daikon.logging.event.layout;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.net.SyslogOutputStream;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Marker;
 import org.talend.daikon.logging.event.field.HostData;
 import org.talend.daikon.logging.event.field.LayoutFields;
 
@@ -55,10 +58,10 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         HostData host = new HostData();
 
         // Extract and add fields from log4j config, if defined
-        if (getUserFields() != null) {
-            String userFlds = getUserFields();
-            LayoutUtils.addUserFields(userFlds, userFieldsEvent);
-        }
+        String userFldsFromParam = getUserFields();
+        // Extract and add fields from markers, if defined
+        String userFldsFromMarker = getUserFieldsFromMarker(loggingEvent);
+        LayoutUtils.addUserFields(mergeUserFields(userFldsFromParam, userFldsFromMarker), userFieldsEvent);
 
         Map<String, String> mdc = LayoutUtils.processMDCMetaFields(loggingEvent.getMDCPropertyMap(), logstashEvent, metaFields);
 
@@ -166,6 +169,46 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
             return null;
         }
         return ste[0];
+    }
+
+    /**
+     * Iterate over the logging event marker children, and concatenate them in a single string.
+     *
+     * @param event the logging event
+     * @return a string that contains the marker children, separated by 'commas'
+     */
+    private String getUserFieldsFromMarker(final ILoggingEvent event) {
+        Marker customFieldsMarker = LayoutUtils.findCustomFieldsMarker(event.getMarker(), new HashSet<>());
+        if (customFieldsMarker != null) {
+            Spliterator<Marker> markers = Spliterators.spliteratorUnknownSize(customFieldsMarker.iterator(), Spliterator.NONNULL);
+            return StreamSupport.stream(markers, false).map(Marker::getName).collect(Collectors.joining(","));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Merges a list of user fields into a single one.
+     *
+     * {{{
+     * field1: prop11:value11,prop12:value12
+     * field2: prop21:value21,prop22:value22
+     * }}}
+     *
+     * will result in:
+     *
+     * {{{
+     * prop11:value11,prop12:value12,prop21:value21,prop22:value22
+     * }}}
+     *
+     *
+     * @param fields the list of user fields
+     * @return a single user fields property, in which fields are separated by a comma.
+     */
+    private String mergeUserFields(String... fields) {
+        String merged = Stream.of(fields).filter(Objects::nonNull).filter(StringUtils::isNotEmpty)
+                .collect(Collectors.joining(","));
+        return (merged != null && merged.isEmpty()) ? null : merged;
     }
 
     private String dateFormat(long timestamp) {

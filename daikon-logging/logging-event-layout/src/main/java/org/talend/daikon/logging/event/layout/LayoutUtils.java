@@ -1,22 +1,21 @@
 package org.talend.daikon.logging.event.layout;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
+import org.slf4j.Marker;
 import org.talend.daikon.logging.event.field.LayoutFields;
 
 import net.minidev.json.JSONObject;
+import org.talend.daikon.logging.event.field.MdcKeys;
 
 /**
  * Json Layout Utils
- * 
- * @author sdiallo
  *
+ * @author sdiallo
  */
 public final class LayoutUtils {
 
     /**
-     * 
      * @param mdc
      * @param userFieldsEvent
      * @param logstashEvent
@@ -32,7 +31,6 @@ public final class LayoutUtils {
     }
 
     /**
-     * 
      * @param timestamp
      * @return
      */
@@ -41,7 +39,6 @@ public final class LayoutUtils {
     }
 
     /**
-     * 
      * @param data
      * @param userFieldsEvent
      */
@@ -50,7 +47,7 @@ public final class LayoutUtils {
             String[] pairs = data.split(",");
             for (String pair : pairs) {
                 String[] userField = pair.split(":", 2);
-                if (userField[0] != null) {
+                if (userField.length == 2 && userField[0] != null) {
                     String key = userField[0];
                     String val = userField[1];
                     userFieldsEvent.put(key, val);
@@ -60,7 +57,6 @@ public final class LayoutUtils {
     }
 
     /**
-     * 
      * @param additionalLogAttributes
      * @param userFieldsEvent
      */
@@ -72,7 +68,7 @@ public final class LayoutUtils {
 
     /**
      * Check if this field name added by Spring Cloud Sleuth
-     * 
+     *
      * @param fieldName
      * @return true if the fieldName represent added by Spring Cloud Sleuth
      */
@@ -105,6 +101,33 @@ public final class LayoutUtils {
         }
 
         return mdc;
+    }
+
+    /**
+     * Find the marker that has the 'LayoutFields.CUSTOM_INFO' name in a marker tree.
+     *
+     * @param marker the root marker of the tree, or subtree
+     * @param visited a collection of already visited markers, used to avoid an infinite loop
+     * @return the marker if found, otherwise `null`
+     */
+    public static Marker findCustomFieldsMarker(Marker marker, Set<Marker> visited) {
+        if (marker == null || visited.contains(marker)) {
+            // The already visited marker case is there to secure a potential infinite loop. A marker M1 might reference
+            // another marker M2, which would reference M1. It's in theory because, at the time of writing, the markers
+            // API already prevents that case.
+            return null;
+        } else if (LayoutFields.CUSTOM_INFO.equals(marker.getName())) {
+            return marker;
+        } else {
+            visited.add(marker);
+            Iterator<Marker> children = marker.iterator();
+            while (children.hasNext()) {
+                Marker foundMarker = findCustomFieldsMarker(children.next(), visited);
+                if (foundMarker != null)
+                    return foundMarker;
+            }
+        }
+        return null;
     }
 
     private LayoutUtils() {
