@@ -1,0 +1,18 @@
+= Daikon Release Notes (1.1.0)
+
+== New Feature
+- link:https://jira.talendforge.org/browse/TDKN-219[TDKN-219]: Add daikon-spring-metrics to Daikon Spring modules
+- link:https://jira.talendforge.org/browse/TDKN-217[TDKN-217]: Add HTTP header token authentication for identified admin endpoints
+- link:https://jira.talendforge.org/browse/TDKN-208[TDKN-208]: Add support for Minio as storage for content-service
+
+== Bug
+- link:https://jira.talendforge.org/browse/TDKN-222[TDKN-222]: Audit validateConfiguration parsing error
+- link:https://jira.talendforge.org/browse/TDKN-198[TDKN-198]: TQL to Predicate conversion fails if at least a method returns an Iterable
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-225[TDKN-225]: Align Spring Cloud version with Talend Service Base Images
+- link:https://jira.talendforge.org/browse/TDKN-224[TDKN-224]: Add a method to return the absolute file path in DeletableResource
+- link:https://jira.talendforge.org/browse/TDKN-220[TDKN-220]: Make audit context immutable
+- link:https://jira.talendforge.org/browse/TDKN-218[TDKN-218]: Support missing SUN_BOOT_CLASS_PATH system property
+- link:https://jira.talendforge.org/browse/TDKN-211[TDKN-211]: Automate release note creation during automated release process
+- link:https://jira.talendforge.org/browse/TDKN-67[TDKN-67]: PropertyService.makeFormCancelable() and cancelFormValues() should go away

@@ -47,6 +47,7 @@ public interface ResourceJournal {
 
     /**
      * Set the resource resolver to use to get the resource
+     * 
      * @param resourceResolver
      */
     void setResourceResolver(ResourceResolver resourceResolver);

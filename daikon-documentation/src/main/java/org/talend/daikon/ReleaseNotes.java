@@ -63,7 +63,7 @@ public class ReleaseNotes extends AbstractMojo {
             final JiraRestClient client = factory.createWithBasicHttpAuthentication(jiraServerUri, user, password);
             final Promise<SearchResult> results = client //
                     .getSearchClient() //
-                    .searchJql("project = '" + project + "' and fixVersion='" + jiraVersion + "'");
+                    .searchJql("project = '" + project + "' and fixVersion='" + jiraVersion + "' and status in (Closed, Done)");
 
             // Prepare output resources
             output.mkdirs();
@@ -84,6 +84,7 @@ public class ReleaseNotes extends AbstractMojo {
                         .sorted(Comparator.comparingInt(i -> i.getIssueType().hashCode())) //
                         .forEach(i -> {
                             if (previousIssueType.get() == null || !previousIssueType.get().equals(i.getIssueType())) {
+                                writer.println();
                                 writer.println("== " + i.getIssueType().getName());
                                 previousIssueType.set(i.getIssueType());
                             }
