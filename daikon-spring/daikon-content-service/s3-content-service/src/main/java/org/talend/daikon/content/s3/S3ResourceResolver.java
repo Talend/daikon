@@ -5,7 +5,7 @@ import static org.talend.daikon.content.s3.LocationUtils.S3PathBuilder.builder;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.WritableResource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.talend.daikon.content.AbstractResourceResolver;

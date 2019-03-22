@@ -9,7 +9,7 @@ import java.util.stream.StreamSupport;
 
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.net.SyslogOutputStream;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Marker;
 import org.talend.daikon.logging.event.field.HostData;
 import org.talend.daikon.logging.event.field.LayoutFields;

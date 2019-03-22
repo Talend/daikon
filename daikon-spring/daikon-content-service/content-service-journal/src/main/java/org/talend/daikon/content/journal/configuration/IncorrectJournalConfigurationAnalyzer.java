@@ -1,6 +1,6 @@
 package org.talend.daikon.content.journal.configuration;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.talend.daikon.content.journal.ResourceJournal;
