@@ -162,8 +162,12 @@ TQL symbol               |Client class
 `between`                |`Between`
 `quality`                |`Quality`
 `=`                      |`Equal`
+`!=`                     |`Unequal`
 `>`                      |`GreaterThan`
+`>=`                     |`GreaterThanOrEqual`
 `<`                      |`LessThan`
+`<=`                     |`LessThanOrEqual`
+`in`                     |`In`
 
 They are accessible via the `Operators` named export and can be serialized to TQL expressions :
 
