@@ -60,7 +60,6 @@
         <slf4j-log4j12.version>1.7.21</slf4j-log4j12.version>
         <guava.version>21.0</guava.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
-        <commons-lang.version>2.6</commons-lang.version>
         <bnd.version>3.0.0</bnd.version>
         <zipkin-sender-kafka11.version>2.1.4</zipkin-sender-kafka11.version>
         <kafka-clients.version>0.10.0.0</kafka-clients.version>
