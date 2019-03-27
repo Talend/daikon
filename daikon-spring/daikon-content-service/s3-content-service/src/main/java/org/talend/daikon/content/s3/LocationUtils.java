@@ -1,6 +1,6 @@
 package org.talend.daikon.content.s3;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Utility class for processing location in order to align them with S3's internals.

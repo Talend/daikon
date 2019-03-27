@@ -19,6 +19,19 @@ public interface ResourceResolver extends ResourcePatternResolver {
     @Override
     DeletableResource getResource(String location);
 
+    /**
+     * Returning the location prefix of the resource
+     * 
+     * @return the location prefix of the resource
+     */
+    String getLocationPrefix();
+
+    /**
+     * Clear all resource according to a location
+     * 
+     * @param location the location
+     * @throws IOException e
+     */
     default void clear(String location) throws IOException {
         Resource[] files = getResources(location);
         for (Resource resource : files) {

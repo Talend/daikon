@@ -17,7 +17,7 @@ import static java.lang.String.valueOf;
 import static java.util.Collections.singleton;
 import static java.util.Optional.of;
 import static java.util.stream.Stream.concat;
-import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.talend.tql.bean.MethodAccessorFactory.build;
 
 import java.lang.reflect.Method;
@@ -35,9 +35,9 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.pattern.character.CharPatternToRegex;

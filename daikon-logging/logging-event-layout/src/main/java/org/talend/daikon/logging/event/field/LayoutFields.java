@@ -2,7 +2,7 @@ package org.talend.daikon.logging.event.field;
 
 import java.util.TimeZone;
 
-import org.apache.commons.lang.time.FastDateFormat;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * Fields name present in each log entry

@@ -7,11 +7,11 @@ function isString(value) {
 	return typeof value === 'string';
 }
 
-function wrap(value) {
+export function wrap(value) {
 	return isString(value) ? `'${value}'` : value;
 }
 
-function isDefined(value) {
+export function isDefined(value) {
 	return value != null && value !== '';
 }
 

@@ -94,7 +94,8 @@ public class AuditConfigurationMapImpl extends EnumMap<AuditConfiguration, Objec
         }
         Object value = getValue(config);
         if (value == null && !config.canBeNull()) {
-            throw new IllegalStateException("Value for property " + config.toString() + " is not set and it has no default value");
+            throw new IllegalStateException(
+                    "Value for property " + config.toString() + " is not set and it has no default value");
         }
         return clz.cast(value);
     }
