@@ -31,7 +31,7 @@ public class TokenGenerator {
      * </ul>
      * Should any of the 3 steps above fails, code falls back for a random UUID.
      *
-     * @param cryptoFunction A non-null {@link CryptoHelper helper} used to encrypt generated machine token.
+     * @param cryptoFunction A non-null {@link Function function} used to encrypt generated machine token.
      * @return A non-empty, non-null and encrypted token computed based on information of the running machine.
      * @see InetAddress#getLocalHost()
      * @see UUID#randomUUID()
