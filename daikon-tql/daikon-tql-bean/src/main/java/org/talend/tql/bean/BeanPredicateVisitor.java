@@ -12,29 +12,7 @@
 
 package org.talend.tql.bean;
 
-import static java.lang.Double.parseDouble;
-import static java.lang.String.valueOf;
-import static java.util.Collections.singleton;
-import static java.util.Optional.of;
-import static java.util.stream.Stream.concat;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
-import static org.talend.tql.bean.MethodAccessorFactory.build;
-
-import java.lang.reflect.Method;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -63,7 +41,27 @@ import org.talend.tql.model.OrExpression;
 import org.talend.tql.model.TqlElement;
 import org.talend.tql.visitor.IASTVisitor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.lang.reflect.Method;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import static java.lang.Double.parseDouble;
+import static java.util.Collections.singleton;
+import static java.util.Optional.of;
+import static java.util.stream.Stream.concat;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.talend.tql.bean.MethodAccessorFactory.build;
 
 /**
  * A {@link IASTVisitor} implementation that generates a {@link Predicate predicate} that allows matching on a
@@ -154,7 +152,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         return getMethods(fieldReference.getPath());
     }
 
-    private MethodAccessor[] getMethods(String field) {
+    protected MethodAccessor[] getMethods(String field) {
         StringTokenizer tokenizer = new StringTokenizer(field, ".");
         List<String> methodNames = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
@@ -291,6 +289,10 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
 
     private Predicate<T> eq(Object value, MethodAccessor[] accessors) {
         return anyMatch(accessors, o -> equalsIgnoreCase(valueOf(o), valueOf(value)));
+    }
+
+    protected String valueOf(Object value) {
+        return String.valueOf(value);
     }
 
     @Override

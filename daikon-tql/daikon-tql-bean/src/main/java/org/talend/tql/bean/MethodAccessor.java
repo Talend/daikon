@@ -8,7 +8,7 @@ import java.util.Set;
  *
  * @see MethodAccessorFactory
  */
-interface MethodAccessor {
+public interface MethodAccessor {
 
     /**
      * Apply the method on <b>all</b> input values and return all the values returned by method invocations on
