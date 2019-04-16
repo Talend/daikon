@@ -27,6 +27,9 @@ import org.apache.commons.codec.binary.Base64;
 
 /**
  * Encrypt and decrypt strings, encapsulating the cryptography algorithm and configured by a passphrase.
+ *
+ * @deprecated This class uses and encourages constant passphrases usage that makes encryption <b>highly unsecure</b>.
+ * Users of this class are encouraged to migrate to crypto-utils module (in Doikon).
  */
 public class CryptoHelper implements Function<String, String> {
 
