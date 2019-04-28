@@ -14,6 +14,15 @@ $> mvn install
 
 ## Usage
 
+This library offers utilities for both digest and encryption.
+
+## Digest
+
+
+
+
+### Encryption
+
 The main entry point for this module is the class `Encryption`. It needs as input:
 
 * A `KeySource`: the key that will be used to initialize the encryption algorithm. This is a critical piece of configuration: it cannot be a constant but it must be a value application must be able to find again (in case of an application restart, for example).
