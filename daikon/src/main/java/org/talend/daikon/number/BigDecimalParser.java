@@ -28,7 +28,7 @@ public class BigDecimalParser {
 
     private static final Pattern TWO_DIFFERENT_SEPARATORS_PATTERN = Pattern.compile(".*\\d+([.\\h'])\\d+([,.])\\d+[)]?");
 
-    private static final Pattern CONTAINS_AT_LEAST_ONE_WHITESPACE = Pattern.compile("^[(-]?\\d+(\\h\\d{3})+[)]?");
+    private static final Pattern CONTAINS_AT_LEAST_ONE_WHITESPACE = Pattern.compile("^[(-]?\\d+( \\d{3})+[)]?");
 
     public static final DecimalFormat US_DECIMAL_PATTERN = new DecimalFormat("#,##0.##",
             DecimalFormatSymbols.getInstance(Locale.US));
