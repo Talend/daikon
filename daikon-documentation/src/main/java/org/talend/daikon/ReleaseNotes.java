@@ -50,6 +50,9 @@ public class ReleaseNotes extends AbstractMojo {
     @Parameter(defaultValue = "https://jira.talendforge.org", property = "server")
     private String server;
 
+    @Parameter(defaultValue = "Daikon", property = "name", required = false)
+    private String name;
+
     public void execute() throws MojoExecutionException {
         try {
             final URI jiraServerUri = new URI(server);
@@ -73,7 +76,7 @@ public class ReleaseNotes extends AbstractMojo {
 
             // Create Ascii doc output
             try (PrintWriter writer = new PrintWriter(file)) {
-                writer.println("= Daikon Release Notes (" + jiraVersion + ")");
+                writer.println("= " + name + " Release Notes (" + jiraVersion + ")");
 
                 ThreadLocal<BasicIssueType> previousIssueType = new ThreadLocal<>();
                 StreamSupport.stream(results.claim().getIssues().spliterator(), false) //
