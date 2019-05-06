@@ -54,7 +54,7 @@ public class TalendRuntimeException extends RuntimeException {
      * @param context the context of the error when it occurred (used to detail the user error message in frontend).
      */
     public TalendRuntimeException(ErrorCode code, Throwable cause, ExceptionContext context) {
-        super(getExceptionMessage(code, context), cause); //$NON-NLS-1$ //$NON-NLS-2$
+        super(getExceptionMessage(code, context), cause); // $NON-NLS-1$ //$NON-NLS-2$
         if (code == null) {
             // Validate code but keep the possible underlying cause
             throw new IllegalArgumentException("A Talend exception needs a non-null code.", cause);
@@ -151,7 +151,8 @@ public class TalendRuntimeException extends RuntimeException {
 
         Collection<String> expectedContextEntries = code.getExpectedContextEntries();
         if (expectedContextEntries == null) {
-            LOGGER.debug("Code {} was logged but returned null to getExpectedContextEntries(). Should be empty list if no expected entries.",
+            LOGGER.debug(
+                    "Code {} was logged but returned null to getExpectedContextEntries(). Should be empty list if no expected entries.",
                     code);
         } else {
             List<String> missingEntries = new ArrayList<>();
