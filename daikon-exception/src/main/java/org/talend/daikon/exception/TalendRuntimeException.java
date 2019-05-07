@@ -148,7 +148,6 @@ public class TalendRuntimeException extends RuntimeException {
      * missing, only a warning log is issued.
      */
     private void checkContext() {
-
         Collection<String> expectedContextEntries = code.getExpectedContextEntries();
         if (expectedContextEntries == null) {
             LOGGER.debug(

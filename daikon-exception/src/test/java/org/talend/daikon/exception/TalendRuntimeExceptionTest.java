@@ -17,6 +17,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,10 +26,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.talend.daikon.exception.error.CommonErrorCodes;
+import org.talend.daikon.exception.error.ErrorCode;
 
 public class TalendRuntimeExceptionTest {
 
@@ -176,6 +180,27 @@ public class TalendRuntimeExceptionTest {
             // fine we have caught it
             assertEquals(CommonErrorCodes.UNEXPECTED_ARGUMENT, e.getCode());
             assertNull(e.getCause());
+        }
+    }
+
+    @SuppressWarnings("ThrowableNotThrown")
+    @Test
+    public void build_shouldNotThrowNpeOnNullErrorCodeExpectedContextEntries() {
+        ErrorCode code = mock(ErrorCode.class);
+        when(code.getExpectedContextEntries()).thenReturn(null);
+
+        new TalendRuntimeException(code);
+    }
+
+    @Test
+    @SuppressWarnings("ThrowableNotThrown")
+    public void build_shouldThrowIaeOnNullErrorCode() {
+        Throwable mockCause = mock(Throwable.class);
+        try {
+            new TalendRuntimeException(null, mockCause);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals(mockCause, e.getCause());
         }
     }
 
