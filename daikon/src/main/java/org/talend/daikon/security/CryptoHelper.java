@@ -130,4 +130,7 @@ public class CryptoHelper {
         }
     }
 
+    public static final CryptoHelper getDefault() {
+        return new CryptoHelper(PASSPHRASE);
+    }
 }
