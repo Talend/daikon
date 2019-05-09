@@ -79,10 +79,14 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
         }
         // Configure actuator
         final PathMappedEndpoint prometheus = actuatorEndpoints.getEndpoint(EndpointId.of("prometheus"));
+        final PathMappedEndpoint health = actuatorEndpoints.getEndpoint(EndpointId.of("health"));
         for (PathMappedEndpoint actuatorEndpoint : actuatorEndpoints) {
             final String rootPath = actuatorEndpoint.getRootPath();
             final boolean enforceTokenUsage;
-            if (allowPrometheusUnauthenticatedAccess && actuatorEndpoint.equals(prometheus)) {
+
+            if (actuatorEndpoint.equals(health)) {
+                enforceTokenUsage = false;
+            } else if (allowPrometheusUnauthenticatedAccess && actuatorEndpoint.equals(prometheus)) {
                 enforceTokenUsage = false;
                 LOGGER.info("======= ALLOW UNAUTHENTICATED ACCESS TO PROMETHEUS (DEV MODE ONLY!) =======");
             } else {
