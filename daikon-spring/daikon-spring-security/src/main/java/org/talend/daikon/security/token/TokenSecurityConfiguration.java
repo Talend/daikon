@@ -12,11 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusProperties;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -80,17 +78,19 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
             registry = registry.antMatchers(protectedPath).hasRole(TokenAuthentication.ROLE);
         }
         // Configure actuator
+        final PathMappedEndpoint prometheus = actuatorEndpoints.getEndpoint(EndpointId.of("prometheus"));
         for (PathMappedEndpoint actuatorEndpoint : actuatorEndpoints) {
             final String rootPath = actuatorEndpoint.getRootPath();
             final boolean enforceTokenUsage;
-            if (allowPrometheusUnauthenticatedAccess && "prometheus".equals(rootPath)) {
+            if (allowPrometheusUnauthenticatedAccess && actuatorEndpoint.equals(prometheus)) {
                 enforceTokenUsage = false;
                 LOGGER.info("======= ALLOW UNAUTHENTICATED ACCESS TO PROMETHEUS (DEV MODE ONLY!) =======");
             } else {
                 enforceTokenUsage = true;
             }
 
-            final ExpressionUrlAuthorizationConfigurer<HttpSecurity>.AuthorizedUrl matcher = registry.antMatchers(webEndpointProperties.getBasePath() + "/" + rootPath + "**");
+            final ExpressionUrlAuthorizationConfigurer<HttpSecurity>.AuthorizedUrl matcher = registry
+                    .antMatchers(webEndpointProperties.getBasePath() + "/" + rootPath + "**");
             if (enforceTokenUsage) {
                 registry = matcher.hasRole(TokenAuthentication.ROLE);
             } else {
