@@ -1,9 +1,8 @@
 package org.talend.daikon.crypto.digest;
 
-
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.crypto.KeySource;
+import org.talend.daikon.crypto.KeySources;
 
 public class Digester {
 
@@ -13,14 +12,26 @@ public class Digester {
 
     private final String delimiter;
 
-    public Digester(KeySource keySource, String delimiter) {
+    public Digester(DigestSource digestSource) {
+        this(KeySources.random(8), "", digestSource);
+    }
+
+    public Digester(KeySource keySource) {
+        this(keySource, "", DigestSources.sha256());
+    }
+
+    public Digester(KeySource keySource, DigestSource digestSource) {
+        this(keySource, "", digestSource);
+    }
+
+    public Digester(KeySource keySource, String delimiter, DigestSource digestSource) {
         this.keySource = keySource;
         this.delimiter = delimiter;
-        this.digestSource = DigestUtils::sha256Hex;
+        this.digestSource = digestSource;
     }
 
     private String saltValue(String value, String salt) {
-        return salt + delimiter + digestSource.digest(value);
+        return digestSource.digest(salt) + delimiter + digestSource.digest(value);
     }
 
     public String digest(String value) throws Exception {
@@ -29,7 +40,6 @@ public class Digester {
 
     public boolean validate(String value, String digest) {
         String salt = StringUtils.substringBefore(digest, delimiter);
-        return saltValue(value, salt).equals(digest);
+        return (salt + delimiter + digestSource.digest(value)).equals(digest);
     }
 }
-

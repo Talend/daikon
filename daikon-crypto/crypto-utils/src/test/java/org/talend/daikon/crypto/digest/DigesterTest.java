@@ -14,7 +14,7 @@ public class DigesterTest {
         String value = "myPassword";
 
         // when
-        Digester digester = new Digester(KeySources.random(8), "-");
+        Digester digester = new Digester(KeySources.random(8), "-", DigestSources.sha256());
         final String digest = digester.digest(value);
 
         // then
@@ -27,7 +27,7 @@ public class DigesterTest {
         String value = "myPassword";
 
         // when
-        Digester digester = new Digester(KeySources.random(8), "-");
+        Digester digester = new Digester(KeySources.random(8), "-", DigestSources.sha256());
         final String digest = digester.digest(value);
 
         // then
@@ -41,8 +41,8 @@ public class DigesterTest {
         String value = "myPassword";
 
         // when
-        Digester digester1 = new Digester(KeySources.random(8), "-");
-        Digester digester2 = new Digester(KeySources.random(8), "-");
+        Digester digester1 = new Digester(KeySources.random(8), "-", DigestSources.sha256());
+        Digester digester2 = new Digester(KeySources.random(8), "-", DigestSources.sha256());
         final String digest = digester1.digest(value);
 
         // then
