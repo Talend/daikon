@@ -15,7 +15,7 @@ public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
     public void testParseFieldMatchesRegex1() {
         Criteria criteria = doTest("name ~ '^[A-Z][a-z]*$'");
         Criteria expectedCriteria = Criteria.where("name").regex("^[A-Z][a-z]*$");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(2, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit")).count());
@@ -26,7 +26,7 @@ public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
     public void testParseFieldMatchesRegex2() {
         Criteria criteria = doTest("name ~ '^[A-Z|a-z]*$'");
         Criteria expectedCriteria = Criteria.where("name").regex("^[A-Z|a-z]*$");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(3, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit")).count());
@@ -38,7 +38,7 @@ public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
     public void testParseFieldMatchesRegex3() {
         Criteria criteria = doTest("name ~ '^[A-Z]'");
         Criteria expectedCriteria = Criteria.where("name").regex("^[A-Z]");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(3, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit")).count());
@@ -50,7 +50,7 @@ public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
     public void testParseFieldMatchesRegex4() {
         Criteria criteria = doTest("name ~ '\\d'"); // contains any digit
         Criteria expectedCriteria = Criteria.where("name").regex("\\d");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit 2eme")).count());
@@ -60,7 +60,7 @@ public class TestMongoCriteria_Match extends TestMongoCriteria_Abstract {
     public void testParseFieldMatchesRegex5() {
         Criteria criteria = doTest("name ~ ''"); // contains any digit
         Criteria expectedCriteria = Criteria.where("name").is("");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());
     }

@@ -1,16 +1,21 @@
 package org.talend.tqlmongo.criteria;
 
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,11 +27,15 @@ import org.talend.tql.model.TqlElement;
 import org.talend.tql.parser.TqlExpressionVisitor;
 import org.talend.tqlmongo.ASTVisitor;
 
-import com.github.fakemongo.Fongo;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
-import com.mongodb.FongoDB;
+import com.mongodb.MongoClient;
+
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
 
 /**
  * Created by gmzoughi on 06/07/16.
@@ -43,26 +52,61 @@ public abstract class TestMongoCriteria_Abstract {
                     new AbstractMap.SimpleEntry<>("+?'n$", 28.8d))
             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
 
-    private static MongoTemplate mongoTemplate;
-
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    private static MongoTemplate mongoTemplate;
+
+    private static MongodExecutable mongodExecutable;
+
+    @BeforeClass
+    public static void setUpClass() throws IOException {
+        MongodStarter starter = MongodStarter.getDefaultInstance();
+
+        String bindIp = "localhost";
+        int port = 12345;
+        IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.V3_4)
+                .net(new Net(bindIp, port, Network.localhostIsIPv6())).build();
+        mongodExecutable = starter.prepare(mongodConfig);
+        mongodExecutable.start();
+
+        MongoClient mongo = new MongoClient(bindIp, port);
+        mongoTemplate = new MongoTemplate(mongo, DB_NAME);
+    }
+
     @Before
     public void setup() {
-        DB db = new Fongo(DB_NAME).getDB(DB_NAME);
-        mongoTemplate = new MongoTemplate(db.getMongo(), DB_NAME);
         insertData();
+    }
+
+    @Before
+    public void cleanDB() {
+        Set<String> collectionsName = mongoTemplate.getCollectionNames();
+        for (String collectionName : collectionsName) {
+            mongoTemplate.remove(new Query(), collectionName);
+
+            if (!collectionName.contains("system.indexes"))
+                mongoTemplate.remove(new Query(), collectionName);
+        }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        mongodExecutable.stop();
     }
 
     private void insertData() {
         RECORDS.forEach((name, age) -> {
-            BasicDBObject document = new BasicDBObject();
+            Document document = new Document();
             document.put("name", name);
             document.put("age", age);
             document.put("isGoodBoy", age % 2 == 0);
             mongoTemplate.insert(document, COLLECTION_NAME);
         });
+    }
+
+    protected void assertCriteriaEquals(Criteria criteria, Criteria expectedCriteria) {
+        Assert.assertEquals(expectedCriteria.getCriteriaObject().toJson(), criteria.getCriteriaObject().toJson());
     }
 
     protected Criteria doTest(String query) {
@@ -76,30 +120,9 @@ public abstract class TestMongoCriteria_Abstract {
     }
 
     List<Record> getRecords(Criteria criteria) {
-        Query q = new Query();
-        if (mongoTemplate.getDb() instanceof FongoDB) {
-            q.addCriteria(new Criteria() {
-
-                @Override
-                public DBObject getCriteriaObject() {
-                    return replaceRegexRecursively(criteria.getCriteriaObject());
-                }
-            });
-        } else
-            q.addCriteria(criteria);
-        return mongoTemplate.find(q, Record.class);
-    }
-
-    private DBObject replaceRegexRecursively(DBObject criteriaObject) {
-        for (String key : criteriaObject.keySet()) {
-            if (StringUtils.equals(key, "$regex")) {
-                String newRegex = ((String) criteriaObject.get(key)).replaceAll("Han", "script=Han");
-                criteriaObject.put(key, newRegex);
-            } else if (criteriaObject.get(key) instanceof DBObject) {
-                criteriaObject.put(key, replaceRegexRecursively((DBObject) criteriaObject.get(key)));
-            }
-        }
-        return criteriaObject;
+        Query query = new Query();
+        query.addCriteria(criteria);
+        return mongoTemplate.find(query, Record.class);
     }
 
     public class Record {

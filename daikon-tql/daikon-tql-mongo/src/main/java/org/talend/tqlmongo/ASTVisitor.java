@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.bson.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.util.StringUtils;
 import org.talend.daikon.pattern.character.CharPatternToRegex;
@@ -30,9 +31,6 @@ import org.talend.tql.model.OrExpression;
 import org.talend.tql.model.TqlElement;
 import org.talend.tql.visitor.IASTVisitor;
 import org.talend.tqlmongo.excp.TqlMongoException;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 /**
  * Created by gmzoughi on 30/06/16.
@@ -241,11 +239,11 @@ public class ASTVisitor implements IASTVisitor<Object> {
         return new Criteria() {
 
             @Override
-            public DBObject getCriteriaObject() {
-                DBObject regexObject = new BasicDBObject("$regex", regex.replaceAll("script=Han", "Han"));
+            public Document getCriteriaObject() {
+                Document regexObject = new Document("$regex", regex.replaceAll("script=Han", "Han"));
                 if (!isWithNegation)
-                    return new BasicDBObject(fieldName, regexObject);
-                return new BasicDBObject(fieldName, new BasicDBObject("$not", regexObject));
+                    return new Document(fieldName, regexObject);
+                return new Document(fieldName, new Document("$not", regexObject));
             }
         };
     }

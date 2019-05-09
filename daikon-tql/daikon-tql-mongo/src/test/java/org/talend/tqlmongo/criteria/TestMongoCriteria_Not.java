@@ -13,14 +13,14 @@ public class TestMongoCriteria_Not extends TestMongoCriteria_Abstract {
     public void testParseNotExpression() {
         Criteria criteria = doTest("not (field1='value1')");
         Criteria expectedCriteria = Criteria.where("field1").ne("value1");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
     public void testParseNotExpression2() {
         Criteria criteria = doTest("not(not (field1='value1'))");
         Criteria expectedCriteria = Criteria.where("field1").is("value1");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -30,7 +30,7 @@ public class TestMongoCriteria_Not extends TestMongoCriteria_Abstract {
                 new Criteria().orOperator(Criteria.where("field1").ne("value1"), Criteria.where("field1").not().regex(
                         "^([\\x{61}-\\x{7a}]|[\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}]|[\\x{FF41}-\\x{FF5A}]){3}([\\x{30}-\\x{39}]|[\\x{FF10}-\\x{FF19}])$")),
                 Criteria.where("field1").lte(999L));
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -40,7 +40,7 @@ public class TestMongoCriteria_Not extends TestMongoCriteria_Abstract {
                 new Criteria().orOperator(Criteria.where("field1").not().regex(
                         "^([\\x{61}-\\x{7a}]|[\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}]|[\\x{FF41}-\\x{FF5A}]){3}([\\x{30}-\\x{39}]|[\\x{FF10}-\\x{FF19}])$"),
                         Criteria.where("field1").lte(999L)));
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class TestMongoCriteria_Not extends TestMongoCriteria_Abstract {
                 new Criteria().orOperator(Criteria.where("field1").not().regex(
                         "^([\\x{61}-\\x{7a}]|[\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}]|[\\x{FF41}-\\x{FF5A}]){3}([\\x{30}-\\x{39}]|[\\x{FF10}-\\x{FF19}])$"),
                         Criteria.where("field1").gt(999L)));
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class TestMongoCriteria_Not extends TestMongoCriteria_Abstract {
                 new Criteria().orOperator(Criteria.where("field1").not().regex(
                         "^([\\x{61}-\\x{7a}]|[\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}]|[\\x{FF41}-\\x{FF5A}]){3}([\\x{30}-\\x{39}]|[\\x{FF10}-\\x{FF19}])$"),
                         Criteria.where("field1").gt(999L)));
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -72,6 +72,6 @@ public class TestMongoCriteria_Not extends TestMongoCriteria_Abstract {
                 new Criteria().andOperator(Criteria.where("field1").regex(
                         "^([\\x{61}-\\x{7a}]|[\\x{DF}-\\x{F6}]|[\\x{F8}-\\x{FF}]|[\\x{FF41}-\\x{FF5A}]){3}([\\x{30}-\\x{39}]|[\\x{FF10}-\\x{FF19}])$"),
                         Criteria.where("field1").gt(999L)));
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 }
