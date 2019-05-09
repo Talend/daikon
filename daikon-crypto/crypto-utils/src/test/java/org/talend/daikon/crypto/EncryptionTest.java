@@ -59,5 +59,4 @@ public class EncryptionTest {
         assertEquals(DECRYPTED_URI, decrypted);
     }
 
-
 }

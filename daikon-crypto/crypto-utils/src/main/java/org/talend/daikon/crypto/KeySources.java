@@ -96,8 +96,7 @@ public class KeySources {
      * @see System#getProperty(String)
      */
     public static KeySource systemProperty(String systemProperty) {
-        return () -> Optional
-                .ofNullable(System.getProperty(systemProperty)) //
+        return () -> Optional.ofNullable(System.getProperty(systemProperty)) //
                 .orElseThrow(() -> new IllegalArgumentException("System property '" + systemProperty + "' not found")) //
                 .getBytes();
     }

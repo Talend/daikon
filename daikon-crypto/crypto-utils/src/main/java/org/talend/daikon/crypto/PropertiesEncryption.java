@@ -76,8 +76,7 @@ public class PropertiesEncryption {
                     result.computeIfPresent(key, (k, v) -> this.castAndDecryptIfNot(v));
                 }
                 return result;
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LOGGER.error("Failed to load input {} {}", input, e);
                 throw TalendRuntimeException.createUnexpectedException(e);
             }
@@ -100,13 +99,12 @@ public class PropertiesEncryption {
                 Parameters params = new Parameters();
                 FileBasedConfigurationBuilder<PropertiesConfiguration> builder = //
                         new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class) //
-                                .configure(params
-                                        .fileBased() //
+                                .configure(params.fileBased() //
                                         .setFile(inputFilePath.toFile())); //
                 PropertiesConfiguration config = builder.getConfiguration();
                 for (String key : mustBeModified) {
                     String value = config.getString(key);
-                    if(value != null) {
+                    if (value != null) {
                         config.setProperty(key, function.apply(config.getString(key)));
                     }
                 }

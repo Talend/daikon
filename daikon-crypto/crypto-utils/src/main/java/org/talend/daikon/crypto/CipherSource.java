@@ -13,6 +13,7 @@ public interface CipherSource {
 
     /**
      * Encrypt provided <code>data</code> using {@link KeySource source} for encryption algorithm initialization.
+     * 
      * @param source The {@link KeySource} that provides the key to initialize encryption algorithm.
      * @param data The raw data to encrypt.
      * @return An encrypted version of the data.

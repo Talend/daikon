@@ -137,6 +137,7 @@ public class CryptoHelper implements Function<String, String> {
     public static final CryptoHelper getDefault() {
         return new CryptoHelper(PASSPHRASE);
     }
+
     @Override
     public String apply(String s) {
         return encrypt(s);
