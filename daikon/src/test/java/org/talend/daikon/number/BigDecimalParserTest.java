@@ -181,7 +181,7 @@ public class BigDecimalParserTest {
     @Test
     public void testGuessSeparatorsManyGroupSep() {
         assertGuessSeparators("2.051.045", ',', '.');
-        assertGuessSeparators("2 051 045", '.', ' ');
+        assertGuessSeparators("2 051 045", ',', ' ');
         assertGuessSeparators("2" + ((char) 160) + "051" + ((char) 160) + "045", '.', ((char) 160)); // char(160) is
                                                                                                      // non-breaking space
         assertGuessSeparators("2,051,045", '.', ',');
@@ -214,6 +214,13 @@ public class BigDecimalParserTest {
     public void testGuessSeparatorsTDP5153() {
         assertGuessSeparators("5 555,555", ',', ' ');
         assertGuessSeparators("5.555,555", ',', '.');
+    }
+
+    @Test
+    public void testGuessSeparatorsTDKN233() {
+        assertGuessSeparators("3 000.0", '.', ' ');
+        assertGuessSeparators("3 000", ',', ' ');
+        assertGuessSeparators("111 111 111", ',', ' ');
     }
 
     @Test

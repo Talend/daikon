@@ -28,6 +28,8 @@ public class BigDecimalParser {
 
     private static final Pattern TWO_DIFFERENT_SEPARATORS_PATTERN = Pattern.compile(".*\\d+([.\\h'])\\d+([,.])\\d+[)]?");
 
+    private static final Pattern CONTAINS_AT_LEAST_ONE_WHITESPACE = Pattern.compile("^[(-]?\\d+( \\d{3})+[)]?");
+
     public static final DecimalFormat US_DECIMAL_PATTERN = new DecimalFormat("#,##0.##",
             DecimalFormatSymbols.getInstance(Locale.US));
 
@@ -168,6 +170,20 @@ public class BigDecimalParser {
             toReturn.setDecimalSeparator(inferDecimalSeparator(groupingSeparator));
         }
 
+        /*
+         * This part checks cases where a whitespace separator is present. In this case, it's probably a
+         * grouping separator.
+         *
+         * Like in 3 254
+         */
+        matcher = CONTAINS_AT_LEAST_ONE_WHITESPACE.matcher(from);
+        if (matcher.matches()) {
+            String firstMatchingGroup = matcher.group(1);
+            final char groupingSeparator = firstMatchingGroup.charAt(0);
+            toReturn.setGroupingSeparator(groupingSeparator);
+            toReturn.setDecimalSeparator(inferDecimalSeparator(groupingSeparator));
+        }
+
         return toReturn;
     }
 
@@ -183,6 +199,7 @@ public class BigDecimalParser {
     private static char inferDecimalSeparator(char groupingSeparator) {
         switch (groupingSeparator) {
         case '.':
+        case ' ':
             return ',';
         default:
             return '.';
