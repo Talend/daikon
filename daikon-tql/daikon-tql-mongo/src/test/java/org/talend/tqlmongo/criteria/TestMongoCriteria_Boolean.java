@@ -15,7 +15,7 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
     public void testBooleanEqTrue() {
         Criteria criteria = doTest("isGoodBoy = true");
         Criteria expectedCriteria = Criteria.where("isGoodBoy").is(true);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());
@@ -25,7 +25,7 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
     public void testBooleanNeTrue() {
         Criteria criteria = doTest("isGoodBoy != true");
         Criteria expectedCriteria = Criteria.where("isGoodBoy").ne(true);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(4, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit")).count());
@@ -39,7 +39,7 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
     public void testBooleanEqFalse() {
         Criteria criteria = doTest("isGoodBoy = false");
         Criteria expectedCriteria = Criteria.where("isGoodBoy").is(false);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(4, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit")).count());
@@ -52,7 +52,7 @@ public class TestMongoCriteria_Boolean extends TestMongoCriteria_Abstract {
     public void testBooleanNeFalse() {
         Criteria criteria = doTest("isGoodBoy != false");
         Criteria expectedCriteria = Criteria.where("isGoodBoy").ne(false);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());

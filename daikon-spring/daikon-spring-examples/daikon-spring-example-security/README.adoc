@@ -24,6 +24,28 @@ Authorization: Talend token1234
 
 Otherwise you will get a HTTP 403 (Forbidden).
 
+=== Public Prometheus access
+
+Simply run:
+
+```
+$ mvn spring-boot:run -Dspring-boot.run.profiles=public-prometheus
+```
+
+This command will start a Spring Boot application on port 8080. In this setup, all Actuator endpoints are protected by a HTTP authorization token as configured in `application.properties` *except* Prometheus endpoint:
+
+```
+talend.security.token.value=token1234
+```
+
+To call Actuator endpoints, it means the following HTTP header needs to be set to call `GET http://localhost:8080/version`:
+
+```
+Authorization: Talend token1234
+```
+
+But `GET http://localhost:8080/actuator/prometheus` does not require authentication token.
+
 === No token configured
 
 Simply run:

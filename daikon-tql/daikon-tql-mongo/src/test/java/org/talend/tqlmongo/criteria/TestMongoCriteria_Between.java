@@ -15,7 +15,7 @@ public class TestMongoCriteria_Between extends TestMongoCriteria_Abstract {
     public void testParseFieldBetweenQuoted() {
         Criteria criteria = doTest("name between ['A', 'Z']");
         Criteria expectedCriteria = Criteria.where("name").gte("A").lte("Z");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(3, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit")).count());
@@ -27,7 +27,7 @@ public class TestMongoCriteria_Between extends TestMongoCriteria_Abstract {
     public void testParseFieldBetweenInt() {
         Criteria criteria = doTest("age between [27, 29]");
         Criteria expectedCriteria = Criteria.where("age").gte(27L).lte(29L);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(3, records.size());
         Assert.assertEquals(2, records.stream().filter(r -> r.getAge() == 28.8).count());
@@ -38,7 +38,7 @@ public class TestMongoCriteria_Between extends TestMongoCriteria_Abstract {
     public void testParseFieldBetweenIntOpenLowerBound() {
         Criteria criteria = doTest("age between ]27, 29]");
         Criteria expectedCriteria = Criteria.where("age").gt(27L).lte(29L);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(3, records.size());
         Assert.assertEquals(2, records.stream().filter(r -> r.getAge() == 28.8).count());
@@ -49,7 +49,7 @@ public class TestMongoCriteria_Between extends TestMongoCriteria_Abstract {
     public void testParseFieldBetweenIntOpenUpperBound() {
         Criteria criteria = doTest("age between [27, 29[");
         Criteria expectedCriteria = Criteria.where("age").gte(27L).lt(29L);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(2, records.size());
         Assert.assertEquals(2, records.stream().filter(r -> r.getAge() == 28.8).count());
@@ -59,7 +59,7 @@ public class TestMongoCriteria_Between extends TestMongoCriteria_Abstract {
     public void testParseFieldBetweenIntBothOpenBounds() {
         Criteria criteria = doTest("age between ]27, 29[");
         Criteria expectedCriteria = Criteria.where("age").gt(27L).lt(29L);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(2, records.size());
         Assert.assertEquals(2, records.stream().filter(r -> r.getAge() == 28.8).count());
@@ -69,7 +69,7 @@ public class TestMongoCriteria_Between extends TestMongoCriteria_Abstract {
     public void testParseFieldBetweenDecimal() {
         Criteria criteria = doTest("age between [27.0, 29.0]");
         Criteria expectedCriteria = Criteria.where("age").gte(27.0).lte(29.0);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(3, records.size());
         Assert.assertEquals(2, records.stream().filter(r -> r.getAge() == 28.8).count());
