@@ -33,6 +33,17 @@ talend.security.token.value=                        # <- Empty value
 #talend.security.token.value=SeCr3tT0keNVa1ue       # <- Undefined/Commented out key
 ```
 
+=== Unauthenticated access to Prometheus endpoint
+
+It is possible to exclude Prometheus metric endpoint from token protected URLs. This is useful in following scenario examples:
+
+* For dev purposes, developers may not want to authenticate their requests to Prometheus (for ease of dev).
+* If Kubernetes setup does not allow to provide authentication headers.
+
+To expose Prometheus endpoint, just add `talend.security.allowPublicPrometheusEndpoint=true` to your application configuration.
+
+NOTE: Please note this setting is not meant for production environments.
+
 == Method access control with `@RequiresAuthority`
 
 The `@RequiresAuthority` annotation allows to mark methods that requires the current user has the permission (*authority*) to execute the method. 

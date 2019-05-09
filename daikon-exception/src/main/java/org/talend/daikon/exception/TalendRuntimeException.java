@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -53,12 +54,19 @@ public class TalendRuntimeException extends RuntimeException {
      * @param context the context of the error when it occurred (used to detail the user error message in frontend).
      */
     public TalendRuntimeException(ErrorCode code, Throwable cause, ExceptionContext context) {
-        super(code.getCode() + (context != null ? ":" + context.toString() : ""), cause); //$NON-NLS-1$ //$NON-NLS-2$
+        super(getExceptionMessage(code, context), cause); // $NON-NLS-1$ //$NON-NLS-2$
+        if (code == null) {
+            // Validate code but keep the possible underlying cause
+            throw new IllegalArgumentException("A Talend exception needs a non-null code.", cause);
+        }
         this.code = code;
         this.cause = cause;
         this.context = (context == null ? ExceptionContext.build() : context);
         checkContext();
+    }
 
+    private static String getExceptionMessage(ErrorCode code, ExceptionContext context) {
+        return (code == null ? "" : code.getCode()) + (context == null ? "" : ":" + context.toString());
     }
 
     /**
@@ -140,19 +148,24 @@ public class TalendRuntimeException extends RuntimeException {
      * missing, only a warning log is issued.
      */
     private void checkContext() {
-        List<String> missingEntries = new ArrayList<>();
+        Collection<String> expectedContextEntries = code.getExpectedContextEntries();
+        if (expectedContextEntries == null) {
+            LOGGER.debug(
+                    "Code {} was logged but returned null to getExpectedContextEntries(). Should be empty list if no expected entries.",
+                    code);
+        } else {
+            List<String> missingEntries = new ArrayList<>();
+            for (String expectedEntry : expectedContextEntries) {
+                if (!context.contains(expectedEntry)) {
+                    missingEntries.add(expectedEntry);
+                }
+            }
 
-        for (String expectedEntry : code.getExpectedContextEntries()) {
-            if (!context.contains(expectedEntry)) {
-                missingEntries.add(expectedEntry);
+            if (missingEntries.size() > 0) {
+                LOGGER.warn("TDPException context for {}, is missing the given entry(ies) \n{}. \nStacktrace for info",
+                        code.getCode(), missingEntries, this);
             }
         }
-
-        if (missingEntries.size() > 0) {
-            LOGGER.warn("TDPException context for {}, is missing the given entry(ies) \n{}. \nStacktrace for info",
-                    code.getCode(), missingEntries, this);
-        }
-
     }
 
     /**

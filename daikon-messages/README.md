@@ -239,8 +239,6 @@ Applications should declare AvroSchemaMessageConverter like this:
 ```
 @Configuration
 @EnableBinding(...)
-@EnableMessagesProducerAutoConfig
-@EnableMessagesConsumerAutoConfig
 public class GlobalKafkaConfiguration {
 
     @Bean

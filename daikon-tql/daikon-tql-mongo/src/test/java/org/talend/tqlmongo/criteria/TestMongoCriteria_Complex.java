@@ -19,21 +19,21 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     public void testParseLiteralComparison() {
         Criteria criteria = doTest("field1='value1'");
         Criteria expectedCriteria = Criteria.where("field1").is("value1");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
     public void testParseLiteralComparisonWithParenthesis() {
         Criteria criteria = doTest("(((field1='value1')))");
         Criteria expectedCriteria = Criteria.where("field1").is("value1");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
     public void testParseFieldIsEmpty() {
         Criteria criteria = doTest("field1 is empty");
         Criteria expectedCriteria = new Criteria().orOperator(Criteria.where("field1").is(""), Criteria.where("field1").is(null));
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     public void testParseNotExpression() {
         Criteria criteria = doTest("not (field1='value1')");
         Criteria expectedCriteria = Criteria.where("field1").ne("value1");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
         Criteria c1 = Criteria.where("field1").lte(123L);
         Criteria c2 = Criteria.where("field2").is(456L);
         Criteria expectedCriteria = new Criteria().andOperator(c1, c2);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
         Criteria c2 = Criteria.where("field2").is("value2");
         Criteria c3 = Criteria.where("field3").is("value3");
         Criteria expectedCriteria = new Criteria().andOperator(c1, c2, c3);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
         Criteria c4 = Criteria.where("field3").is("value3");
 
         Criteria expectedCriteria = new Criteria().orOperator(c3, c4);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
         Criteria c4 = Criteria.where("field3").is("value3");
 
         Criteria expectedCriteria = new Criteria().orOperator(c3, c4);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
         Criteria c4 = new Criteria().orOperator(c2, c3);
 
         Criteria expectedCriteria = new Criteria().andOperator(c1, c4);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 
     @Test
@@ -121,6 +121,6 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
         Criteria c4 = new Criteria().andOperator(c2, c3);
 
         Criteria expectedCriteria = new Criteria().orOperator(c1, c4);
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
     }
 }

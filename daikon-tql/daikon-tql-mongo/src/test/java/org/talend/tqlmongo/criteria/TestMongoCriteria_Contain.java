@@ -15,7 +15,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue1() {
         Criteria criteria = doTest("name contains 'ssen'");
         Criteria expectedCriteria = Criteria.where("name").regex("ssen");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(2, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());
@@ -26,7 +26,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue2() {
         Criteria criteria = doTest("name contains 'noi'");
         Criteria expectedCriteria = Criteria.where("name").regex("noi");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(2, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit")).count());
@@ -37,7 +37,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue3() {
         Criteria criteria = doTest("name contains '2'");
         Criteria expectedCriteria = Criteria.where("name").regex("2");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Benoit 2eme")).count());
@@ -47,7 +47,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue4() {
         Criteria criteria = doTest("name contains 'azerty'");
         Criteria expectedCriteria = Criteria.where("name").regex("azerty");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(0, records.size());
     }
@@ -56,7 +56,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue5() {
         Criteria criteria = doTest("name contains ''");
         Criteria expectedCriteria = Criteria.where("name").regex("");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(5, records.size());
     }
@@ -65,7 +65,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue6() {
         Criteria criteria = doTest("name contains 'gha'");
         Criteria expectedCriteria = Criteria.where("name").regex("gha");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("ghassen")).count());
@@ -75,7 +75,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue7() {
         Criteria criteria = doTest("name contains 'Gha'");
         Criteria expectedCriteria = Criteria.where("name").regex("Gha");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("Ghassen")).count());
@@ -85,7 +85,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue8() {
         Criteria criteria = doTest("name contains '+'");
         Criteria expectedCriteria = Criteria.where("name").regex("\\+");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
@@ -95,7 +95,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue9() {
         Criteria criteria = doTest("name contains '?'");
         Criteria expectedCriteria = Criteria.where("name").regex("\\?");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
@@ -105,7 +105,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue10() {
         Criteria criteria = doTest("name contains '$'");
         Criteria expectedCriteria = Criteria.where("name").regex("\\$");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
@@ -115,7 +115,7 @@ public class TestMongoCriteria_Contain extends TestMongoCriteria_Abstract {
     public void testParseFieldContainsValue11() {
         Criteria criteria = doTest("name contains '\\''");
         Criteria expectedCriteria = Criteria.where("name").regex("'");
-        Assert.assertEquals(expectedCriteria, criteria);
+        assertCriteriaEquals(expectedCriteria, criteria);
         List<Record> records = this.getRecords(criteria);
         Assert.assertEquals(1, records.size());
         Assert.assertEquals(1, records.stream().filter(r -> r.getName().equals("+?'n$")).count());
