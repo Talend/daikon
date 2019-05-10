@@ -78,8 +78,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     private final LanguageBinder languageBinder;
 
     public BeanPredicateVisitor(Class<T> targetClass) {
-        this.targetClass = targetClass;
-        this.languageBinder = new DefaultLanguageBinder(targetClass);
+        this(targetClass, new DefaultLanguageBinder(targetClass));
     }
 
     public BeanPredicateVisitor(Class<T> targetClass, LanguageBinder languageBinder) {
@@ -165,8 +164,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     @Override
     public Predicate<T> visit(AndExpression andExpression) {
         final Expression[] expressions = andExpression.getExpressions();
-        return Stream
-                .of(expressions) //
+        return Stream.of(expressions) //
                 .map(e -> e.accept(this)) //
                 .reduce(Predicate::and) //
                 .orElseGet(() -> m -> true);
@@ -175,8 +173,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     @Override
     public Predicate<T> visit(OrExpression orExpression) {
         final Expression[] expressions = orExpression.getExpressions();
-        return Stream
-                .of(expressions) //
+        return Stream.of(expressions) //
                 .map(e -> e.accept(this)) //
                 .reduce(Predicate::or) //
                 .orElseGet(() -> m -> true);
@@ -246,8 +243,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         final MethodAccessor[] methods = currentMethods.pop();
 
         final LiteralValue[] values = fieldInExpression.getValues();
-        return Stream
-                .of(values) //
+        return Stream.of(values) //
                 .map(v -> {
                     v.accept(this);
                     return eq(literals.pop(), methods);
@@ -359,8 +355,8 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         for (Method method : targetClass.getMethods()) {
             if (method.getName().startsWith("get") || method.getName().startsWith("is")) {
                 final MethodAccessor methodAccessor = build(method);
-                final MethodAccessor[] path =
-                        concat(previousMethods.stream(), Stream.of(methodAccessor)).toArray(MethodAccessor[]::new);
+                final MethodAccessor[] path = concat(previousMethods.stream(), Stream.of(methodAccessor))
+                        .toArray(MethodAccessor[]::new);
                 currentMethods.push(path);
 
                 // Recursively get methods to nested classes (and prevent infinite recursions).
