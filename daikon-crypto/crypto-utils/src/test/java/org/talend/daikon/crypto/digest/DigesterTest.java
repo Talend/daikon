@@ -23,7 +23,7 @@ public class DigesterTest {
         // when
         Digester digester = new Digester(KeySources.empty(), Digester.NO_DELIMITER, DigestSources.sha256());
         final String digest = digester.digest(value);
-        final String directDigest = DigestSources.sha256().digest(value);
+        final String directDigest = DigestSources.sha256().digest(value, new byte[0]);
 
         // then
         assertArrayEquals(digest.getBytes(), directDigest.getBytes());
@@ -52,6 +52,7 @@ public class DigesterTest {
         final String digest = digester.digest(value);
 
         // then
+        System.out.println(digest);
         assertTrue(digester.validate("myPassword", digest));
         assertFalse(digester.validate("MyPassword", digest));
     }
@@ -62,9 +63,8 @@ public class DigesterTest {
         String value = "myPassword";
 
         // when
-        final byte[] salt = KeySources.random(16).getKey();
-        Digester digester1 = new Digester(KeySources.random(16), DigestSources.pbkDf2(salt));
-        Digester digester2 = new Digester(KeySources.random(16), DigestSources.pbkDf2(salt));
+        Digester digester1 = new Digester(KeySources.random(16), DigestSources.pbkDf2());
+        Digester digester2 = new Digester(KeySources.random(16), DigestSources.pbkDf2());
         final String digest1 = digester1.digest(value);
         final String digest2 = digester2.digest(value);
 

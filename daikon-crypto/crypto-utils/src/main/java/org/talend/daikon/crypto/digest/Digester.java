@@ -5,9 +5,8 @@ import org.talend.daikon.crypto.EncodingUtils;
 import org.talend.daikon.crypto.KeySource;
 import org.talend.daikon.crypto.KeySources;
 
-import java.util.Arrays;
+import java.io.UnsupportedEncodingException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.lang.String.valueOf;
 import static java.util.Arrays.stream;
@@ -30,7 +29,7 @@ public class Digester {
 
     private final char delimiter;
 
-    private static final int[] FORBIDDEN_DELIMETERS = { '/', '=' };
+    private static final int[] FORBIDDEN_DELIMITERS = { '/', '=' };
 
     /**
      * Creates a Digester using a {@link KeySources#random(int)} and "-" as delimiter for separating salt and digested
@@ -40,7 +39,7 @@ public class Digester {
      * @see DigestSources
      */
     public Digester(DigestSource digestSource) {
-        this(KeySources.empty(), NO_DELIMITER, digestSource);
+        this(KeySources.random(16), '-', digestSource);
     }
 
     /**
@@ -55,8 +54,8 @@ public class Digester {
     }
 
     public Digester(KeySource keySource, char delimiter, DigestSource digestSource) {
-        if (Character.isLetterOrDigit(delimiter) || stream(FORBIDDEN_DELIMETERS).anyMatch(c -> c == delimiter)) {
-            final String forbiddenDelimiters = stream(FORBIDDEN_DELIMETERS) //
+        if (Character.isLetterOrDigit(delimiter) || stream(FORBIDDEN_DELIMITERS).anyMatch(c -> c == delimiter)) {
+            final String forbiddenDelimiters = stream(FORBIDDEN_DELIMITERS) //
                     .mapToObj(i -> valueOf((char) i)) //
                     .collect(Collectors.joining());
             throw new IllegalArgumentException("Delimiter cannot be number, letter or '" + forbiddenDelimiters + "'.");
@@ -66,11 +65,19 @@ public class Digester {
         this.digestSource = digestSource;
     }
 
-    private String saltValue(String value, String salt) {
+    private static byte[] decode(byte[] bytes) {
+        return EncodingUtils.BASE64_DECODER.apply(bytes);
+    }
+
+    private static String encode(byte[] salt) {
+        return EncodingUtils.BASE64_ENCODER.apply(salt);
+    }
+
+    private String saltValue(String value, byte[] salt) {
         if (delimiter == NO_DELIMITER) {
-            return digestSource.digest(value);
+            return digestSource.digest(value, salt);
         } else {
-            return salt + delimiter + digestSource.digest(salt + value);
+            return encode(salt) + delimiter + digestSource.digest(value, salt);
         }
     }
 
@@ -82,7 +89,7 @@ public class Digester {
      * @throws Exception In any digest issue (depends on the implementation of {@link DigestSource} used).
      */
     public String digest(String value) throws Exception {
-        return saltValue(value, EncodingUtils.BASE64_ENCODER.apply(keySource.getKey()));
+        return saltValue(value, keySource.getKey());
     }
 
     /**
@@ -94,9 +101,14 @@ public class Digester {
      */
     public boolean validate(String value, String digest) {
         if (delimiter == NO_DELIMITER) {
-            return (digestSource.digest(value)).equals(digest);
+            return (digestSource.digest(value, new byte[0])).equals(digest);
         }
-        String salt = StringUtils.substringBefore(digest, valueOf(delimiter));
-        return (salt + delimiter + digestSource.digest(salt + value)).equals(digest);
+        try {
+            final String saltBase64 = StringUtils.substringBefore(digest, valueOf(delimiter));
+            byte[] salt = decode(saltBase64.getBytes(EncodingUtils.ENCODING));
+            return (encode(salt) + delimiter + digestSource.digest(value, salt)).equals(digest);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

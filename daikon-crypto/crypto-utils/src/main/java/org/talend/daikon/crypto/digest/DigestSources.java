@@ -1,6 +1,5 @@
 package org.talend.daikon.crypto.digest;
 
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -19,10 +18,10 @@ import org.talend.daikon.crypto.EncodingUtils;
 public class DigestSources {
 
     /**
-     * @return A simple SHA256 digest for simplistic use cases (not recommended, see {@link #pbkDf2(byte[])}).
+     * @return A simple SHA256 digest for simplistic use cases (not recommended, see {@link #pbkDf2()}).
      */
     public static DigestSource sha256() {
-        return DigestUtils::sha256Hex;
+        return (data, salt) -> DigestUtils.sha256Hex(data);
     }
 
     /**
@@ -34,11 +33,10 @@ public class DigestSources {
      * As recommendation, you may initialize a salt using {@link org.talend.daikon.crypto.KeySources#random(int)}.
      * </p>
      *
-     * @param salt The salt to be used to digest value.
      * @return A {@link DigestSource} implementation using PBKDF2 and provided <code>salt</code>
      */
-    public static DigestSource pbkDf2(byte[] salt) {
-        return value -> {
+    public static DigestSource pbkDf2() {
+        return (value, salt) -> {
             try {
                 KeySpec spec = new PBEKeySpec(value.toCharArray(), salt, 65536, 256);
                 SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");

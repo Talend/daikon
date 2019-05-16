@@ -20,8 +20,7 @@ This library offers utilities for both digest and encryption.
 
 ```java
 public static void main(String[] args) throws Exception {
-    byte[] salt = KeySources.random(16).getKey();
-    Digester digester = new Digester(KeySources.random(16), '-', DigestSources.pbkDf2(salt));
+    Digester digester = new Digester(KeySources.random(16), '-', DigestSources.pbkDf2());
     
     final String digest = digester.digest("tiger");
     System.out.println("digest = " + digest);
@@ -34,7 +33,7 @@ public static void main(String[] args) throws Exception {
 The code above produces this example (the randomized KeySource at the beginning make digest change at each execution).
 
 ```text
-digest = tpiu/qUhFXnpWqyk/QEGEg==-7pk720Mhv2ginUnIwX7vhMYRyzrQNH7hK1/aznsIYsY=
+digest = n/c7e9vGq2v10jlSyHT6Fw==-JVe5Q3cCfDcme16IeRlSwXR6NjbEfXPH4TNP/2Xlid0=
 Validate 'tiger': true
 Validate 'password': false
 ```
