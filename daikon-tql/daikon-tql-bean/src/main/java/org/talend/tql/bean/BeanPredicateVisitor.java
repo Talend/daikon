@@ -13,7 +13,6 @@
 package org.talend.tql.bean;
 
 import static java.lang.Double.parseDouble;
-import static java.lang.String.valueOf;
 import static java.util.Collections.singleton;
 import static java.util.Optional.of;
 import static java.util.stream.Stream.concat;
@@ -26,18 +25,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.pattern.character.CharPatternToRegex;
@@ -63,8 +59,6 @@ import org.talend.tql.model.OrExpression;
 import org.talend.tql.model.TqlElement;
 import org.talend.tql.visitor.IASTVisitor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * A {@link IASTVisitor} implementation that generates a {@link Predicate predicate} that allows matching on a
  * <code>T</code> instance.
@@ -81,8 +75,15 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
 
     private final Deque<MethodAccessor[]> currentMethods = new ArrayDeque<>();
 
+    private final LanguageBinder languageBinder;
+
     public BeanPredicateVisitor(Class<T> targetClass) {
+        this(targetClass, new DefaultLanguageBinder(targetClass));
+    }
+
+    public BeanPredicateVisitor(Class<T> targetClass, LanguageBinder languageBinder) {
         this.targetClass = targetClass;
+        this.languageBinder = languageBinder;
     }
 
     private static Stream<Object> invoke(Object o, MethodAccessor[] methods) {
@@ -151,64 +152,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     }
 
     private MethodAccessor[] getMethods(FieldReference fieldReference) {
-        return getMethods(fieldReference.getPath());
-    }
-
-    private MethodAccessor[] getMethods(String field) {
-        StringTokenizer tokenizer = new StringTokenizer(field, ".");
-        List<String> methodNames = new ArrayList<>();
-        while (tokenizer.hasMoreTokens()) {
-            methodNames.add(tokenizer.nextToken());
-        }
-
-        Class currentClass = targetClass;
-        LinkedList<MethodAccessor> methods = new LinkedList<>();
-        for (String methodName : methodNames) {
-            if ("_class".equals(methodName)) {
-                try {
-                    methods.add(build(Class.class.getMethod("getClass")));
-                    methods.add(build(Class.class.getMethod("getName")));
-                } catch (NoSuchMethodException e) {
-                    throw new IllegalArgumentException("Unable to get methods for class' name.", e);
-                }
-            } else {
-                String[] getterCandidates = new String[] { "get" + WordUtils.capitalize(methodName), //
-                        methodName, //
-                        "is" + WordUtils.capitalize(methodName) };
-
-                final int beforeFind = methods.size();
-                for (String getterCandidate : getterCandidates) {
-                    try {
-                        methods.add(build(currentClass.getMethod(getterCandidate)));
-                        break;
-                    } catch (Exception e) {
-                        LOGGER.debug("Can't find getter '{}'.", field, e);
-                    }
-                }
-
-                // No method found, try using @JsonProperty
-                if (beforeFind == methods.size()) {
-                    LOGGER.debug("Unable to find method, try using @JsonProperty for '{}'.", methodName);
-                    final Method[] currentClassMethods = currentClass.getMethods();
-                    for (Method currentClassMethod : currentClassMethods) {
-                        final JsonProperty jsonProperty = currentClassMethod.getAnnotation(JsonProperty.class);
-                        if (jsonProperty != null && methodName.equals(jsonProperty.value())
-                                && !void.class.equals(currentClassMethod.getReturnType())) {
-                            LOGGER.debug("Found method '{}' using @JsonProperty.", currentClassMethod);
-                            methods.add(build(currentClassMethod));
-                        }
-                    }
-                }
-
-                // Check before continue
-                if (beforeFind == methods.size()) {
-                    throw new UnsupportedOperationException("Can't find getter '" + field + "'.");
-                } else {
-                    currentClass = methods.getLast().getReturnType();
-                }
-            }
-        }
-        return methods.toArray(new MethodAccessor[0]);
+        return languageBinder.getMethods(fieldReference.getPath());
     }
 
     @Override
@@ -400,6 +344,10 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         visitClassMethods(targetClass, initialClasses);
 
         return null;
+    }
+
+    private String valueOf(Object value) {
+        return languageBinder.valueOf(value);
     }
 
     private void visitClassMethods(Class targetClass, Set<Class> visitedClasses, MethodAccessor... previous) {

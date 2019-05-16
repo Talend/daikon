@@ -40,6 +40,20 @@ public class CipherSourcesTest {
         assertEquals(encrypt1, encrypt2);
     }
 
+    @Test
+    public void shouldRoundtripWithBlowfish() throws Exception {
+        assertRoundTrip(CipherSources.blowfish());
+    }
+
+    @Test
+    public void shouldGenerateSameValuesWithBlowfish() throws Exception {
+        final CipherSource source = CipherSources.blowfish();
+        final String encrypt1 = source.encrypt(KeySources.machineUID(16), "String");
+        final String encrypt2 = source.encrypt(KeySources.machineUID(16), "String");
+
+        assertEquals(encrypt1, encrypt2);
+    }
+
     private void assertRoundTrip(CipherSource cipherSource) throws Exception {
         final Encryption encryption = new Encryption(KeySources.machineUID(16), cipherSource);
 

@@ -1,0 +1,16 @@
+= Daikon Release Notes (1.2.0)
+
+== New Feature
+- link:https://jira.talendforge.org/browse/TDKN-229[TDKN-229]: Add some client TQL operators
+
+== Bug
+- link:https://jira.talendforge.org/browse/TDKN-234[TDKN-234]: TalendRuntimeException.checkContext may throw NPE thus masking source error
+- link:https://jira.talendforge.org/browse/TDKN-233[TDKN-233]: guessSeparators in BigDecimalParser don't manage all use cases
+- link:https://jira.talendforge.org/browse/TDKN-232[TDKN-232]: daikon-messages doc references deleted classes
+- link:https://jira.talendforge.org/browse/TDKN-206[TDKN-206]: Replace AESEncryption class
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-230[TDKN-230]: Move crypto-utils from Daikon EE to Daikon OSS
+- link:https://jira.talendforge.org/browse/TDKN-228[TDKN-228]: Upgrade Guava to 25.1-JRE
+- link:https://jira.talendforge.org/browse/TDKN-227[TDKN-227]: [Java 11 support] Need an update of commons-lang3 version
+- link:https://jira.talendforge.org/browse/TDKN-218[TDKN-218]: Support missing SUN_BOOT_CLASS_PATH system property

@@ -28,27 +28,7 @@ public class CipherSources {
      * @return A {@link CipherSource} using AES encryption.
      */
     public static CipherSource aes() {
-        return new CipherSource() {
-
-            private Cipher get(KeySource source, int mode) throws Exception {
-                final Cipher c = Cipher.getInstance("AES");
-                final Key keySpec = new SecretKeySpec(source.getKey(), "AES");
-                c.init(mode, keySpec);
-                return c;
-            }
-
-            @Override
-            public String encrypt(KeySource source, String data) throws Exception {
-                final byte[] encryptedBytes = get(source, Cipher.ENCRYPT_MODE).doFinal(data.getBytes(EncodingUtils.ENCODING));
-                return EncodingUtils.BASE64_ENCODER.apply(encryptedBytes);
-            }
-
-            @Override
-            public String decrypt(KeySource source, String data) throws Exception {
-                final byte[] bytes = EncodingUtils.BASE64_DECODER.apply(data.getBytes());
-                return new String(get(source, Cipher.DECRYPT_MODE).doFinal(bytes), EncodingUtils.ENCODING);
-            }
-        };
+        return initEncryptTransformation("AES");
     }
 
     /**
@@ -94,6 +74,37 @@ public class CipherSources {
 
                 final Cipher cipher = get(source, Cipher.DECRYPT_MODE, iv);
                 return new String(cipher.doFinal(encryptedBytes, ivLength, encryptedBytes.length - ivLength), EncodingUtils.ENCODING);
+            }
+        };
+    }
+
+    /**
+     * @return A {@link CipherSource} using Blowfish encryption.
+     */
+    public static CipherSource blowfish() {
+        return initEncryptTransformation("Blowfish");
+    }
+
+    private static CipherSource initEncryptTransformation(String transformation) {
+        return new CipherSource() {
+
+            private Cipher get(KeySource source, int mode) throws Exception {
+                final Cipher c = Cipher.getInstance(transformation);
+                final Key keySpec = new SecretKeySpec(source.getKey(), transformation);
+                c.init(mode, keySpec);
+                return c;
+            }
+
+            @Override
+            public String encrypt(KeySource source, String data) throws Exception {
+                final byte[] encryptedBytes = get(source, Cipher.ENCRYPT_MODE).doFinal(data.getBytes(EncodingUtils.ENCODING));
+                return EncodingUtils.BASE64_ENCODER.apply(encryptedBytes);
+            }
+
+            @Override
+            public String decrypt(KeySource source, String data) throws Exception {
+                final byte[] bytes = EncodingUtils.BASE64_DECODER.apply(data.getBytes());
+                return new String(get(source, Cipher.DECRYPT_MODE).doFinal(bytes), EncodingUtils.ENCODING);
             }
         };
     }
