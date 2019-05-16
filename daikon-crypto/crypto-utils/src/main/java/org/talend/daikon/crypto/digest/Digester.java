@@ -5,6 +5,14 @@ import org.talend.daikon.crypto.EncodingUtils;
 import org.talend.daikon.crypto.KeySource;
 import org.talend.daikon.crypto.KeySources;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.lang.String.valueOf;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+
 /**
  * This class provides a helper class to:
  * <ul>
@@ -21,6 +29,8 @@ public class Digester {
     private final KeySource keySource;
 
     private final char delimiter;
+
+    private static final int[] FORBIDDEN_DELIMETERS = { '/', '=' };
 
     /**
      * Creates a Digester using a {@link KeySources#random(int)} and "-" as delimiter for separating salt and digested
@@ -45,8 +55,11 @@ public class Digester {
     }
 
     public Digester(KeySource keySource, char delimiter, DigestSource digestSource) {
-        if (Character.isLetterOrDigit(delimiter) || delimiter == '=') {
-            throw new IllegalArgumentException("Delimiter cannot be number, letter or '='.");
+        if (Character.isLetterOrDigit(delimiter) || stream(FORBIDDEN_DELIMETERS).anyMatch(c -> c == delimiter)) {
+            final String forbiddenDelimiters = stream(FORBIDDEN_DELIMETERS) //
+                    .mapToObj(i -> valueOf((char) i)) //
+                    .collect(Collectors.joining());
+            throw new IllegalArgumentException("Delimiter cannot be number, letter or '" + forbiddenDelimiters + "'.");
         }
         this.keySource = keySource;
         this.delimiter = delimiter;
@@ -83,7 +96,7 @@ public class Digester {
         if (delimiter == NO_DELIMITER) {
             return (digestSource.digest(value)).equals(digest);
         }
-        String salt = StringUtils.substringBefore(digest, String.valueOf(delimiter));
+        String salt = StringUtils.substringBefore(digest, valueOf(delimiter));
         return (salt + delimiter + digestSource.digest(salt + value)).equals(digest);
     }
 }
