@@ -1,8 +1,6 @@
 package org.talend.daikon.crypto;
 
 import java.security.Key;
-import java.util.Base64;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.crypto.Cipher;
@@ -13,12 +11,6 @@ import javax.crypto.spec.SecretKeySpec;
  * A helper class to provide common {@link CipherSource} implementations.
  */
 public class CipherSources {
-
-    private static final Function<byte[], String> BASE64_ENCODER = bytes -> Base64.getEncoder().encodeToString(bytes);
-
-    private static final Function<byte[], byte[]> BASE64_DECODER = bytes -> Base64.getDecoder().decode(bytes);
-
-    private static final String ENCODING = "UTF-8";
 
     // Here to ensure helper-style access to methods
     private CipherSources() {
@@ -47,14 +39,14 @@ public class CipherSources {
 
             @Override
             public String encrypt(KeySource source, String data) throws Exception {
-                final byte[] encryptedBytes = get(source, Cipher.ENCRYPT_MODE).doFinal(data.getBytes(ENCODING));
-                return BASE64_ENCODER.apply(encryptedBytes);
+                final byte[] encryptedBytes = get(source, Cipher.ENCRYPT_MODE).doFinal(data.getBytes(EncodingUtils.ENCODING));
+                return EncodingUtils.BASE64_ENCODER.apply(encryptedBytes);
             }
 
             @Override
             public String decrypt(KeySource source, String data) throws Exception {
-                final byte[] bytes = BASE64_DECODER.apply(data.getBytes());
-                return new String(get(source, Cipher.DECRYPT_MODE).doFinal(bytes), ENCODING);
+                final byte[] bytes = EncodingUtils.BASE64_DECODER.apply(data.getBytes());
+                return new String(get(source, Cipher.DECRYPT_MODE).doFinal(bytes), EncodingUtils.ENCODING);
             }
         };
     }
@@ -80,7 +72,7 @@ public class CipherSources {
 
             @Override
             public String encrypt(KeySource source, String data) throws Exception {
-                final byte[] dataBytes = data.getBytes(ENCODING);
+                final byte[] dataBytes = data.getBytes(EncodingUtils.ENCODING);
                 final byte[] iv = KeySources.random(ivLength).getKey();
 
                 final Cipher cipher = get(source, Cipher.ENCRYPT_MODE, iv);
@@ -90,18 +82,18 @@ public class CipherSources {
                 System.arraycopy(iv, 0, encryptedBytes, 0, ivLength);
                 System.arraycopy(encryptedData, 0, encryptedBytes, ivLength, encryptedData.length);
 
-                return BASE64_ENCODER.apply(encryptedBytes);
+                return EncodingUtils.BASE64_ENCODER.apply(encryptedBytes);
             }
 
             @Override
             public String decrypt(KeySource source, String data) throws Exception {
-                final byte[] encryptedBytes = BASE64_DECODER.apply(data.getBytes(ENCODING));
+                final byte[] encryptedBytes = EncodingUtils.BASE64_DECODER.apply(data.getBytes(EncodingUtils.ENCODING));
 
                 final byte[] iv = new byte[ivLength];
                 System.arraycopy(encryptedBytes, 0, iv, 0, ivLength);
 
                 final Cipher cipher = get(source, Cipher.DECRYPT_MODE, iv);
-                return new String(cipher.doFinal(encryptedBytes, ivLength, encryptedBytes.length - ivLength), ENCODING);
+                return new String(cipher.doFinal(encryptedBytes, ivLength, encryptedBytes.length - ivLength), EncodingUtils.ENCODING);
             }
         };
     }

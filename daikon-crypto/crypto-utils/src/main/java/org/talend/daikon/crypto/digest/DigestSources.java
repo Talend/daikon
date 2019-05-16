@@ -9,6 +9,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.talend.daikon.crypto.EncodingUtils;
 
 /**
  * A collection of {@link DigestSource} helpers to ease use of {@link Digester}.
@@ -30,7 +31,7 @@ public class DigestSources {
      * having multiple {@link Digester} in your code.
      * </p>
      * <p>
-     * As recommandation, you may initialize a salt using {@link org.talend.daikon.crypto.KeySources#random(int)}.
+     * As recommendation, you may initialize a salt using {@link org.talend.daikon.crypto.KeySources#random(int)}.
      * </p>
      *
      * @param salt The salt to be used to digest value.
@@ -41,7 +42,8 @@ public class DigestSources {
             try {
                 KeySpec spec = new PBEKeySpec(value.toCharArray(), salt, 65536, 256);
                 SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-                return new String(factory.generateSecret(spec).getEncoded(), StandardCharsets.UTF_8);
+                final byte[] bytes = factory.generateSecret(spec).getEncoded();
+                return EncodingUtils.BASE64_ENCODER.apply(bytes);
             } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                 throw new IllegalStateException("Unable digest value.", e);
             }
