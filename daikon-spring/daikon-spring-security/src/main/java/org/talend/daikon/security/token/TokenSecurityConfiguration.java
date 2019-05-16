@@ -73,7 +73,9 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     public void configure(HttpSecurity http) throws Exception {
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.authorizeRequests();
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http
+                .csrf().disable()
+                .authorizeRequests();
         for (String protectedPath : PROTECTED_PATHS) {
             registry = registry.antMatchers(protectedPath).hasRole(TokenAuthentication.ROLE);
         }
