@@ -28,7 +28,7 @@ public class DigestSources {
                 return EncodingUtils.BASE64_ENCODER.apply(dataDigest);
             } else {
                 byte[] result = new byte[salt.length + dataDigest.length];
-                System.arraycopy(salt, 0, result, 0, salt.length);
+                System.arraycopy(DigestUtils.sha256(salt), 0, result, 0, salt.length);
                 System.arraycopy(dataDigest, 0, result, salt.length, dataDigest.length);
                 return EncodingUtils.BASE64_ENCODER.apply(result);
             }
