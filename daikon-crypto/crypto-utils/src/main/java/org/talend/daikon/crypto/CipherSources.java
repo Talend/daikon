@@ -73,7 +73,8 @@ public class CipherSources {
                 System.arraycopy(encryptedBytes, 0, iv, 0, ivLength);
 
                 final Cipher cipher = get(source, Cipher.DECRYPT_MODE, iv);
-                return new String(cipher.doFinal(encryptedBytes, ivLength, encryptedBytes.length - ivLength), EncodingUtils.ENCODING);
+                return new String(cipher.doFinal(encryptedBytes, ivLength, encryptedBytes.length - ivLength),
+                        EncodingUtils.ENCODING);
             }
         };
     }
