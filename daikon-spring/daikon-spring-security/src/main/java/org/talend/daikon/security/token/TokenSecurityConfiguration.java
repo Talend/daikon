@@ -54,7 +54,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
      * Use this field to indicate paths that should be secured by token. It is not a configuration setting at the moment
      * to ensure all applications share same secured endpoints.
      */
-    private static final String[] PROTECTED_PATHS = { "/info", "/version" };
+    private static final String[] PROTECTED_PATHS = { "/version" };
 
     private final Filter tokenAuthenticationFilter;
 
@@ -73,7 +73,8 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     public void configure(HttpSecurity http) throws Exception {
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.authorizeRequests();
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.csrf().disable()
+                .authorizeRequests();
         for (String protectedPath : PROTECTED_PATHS) {
             registry = registry.antMatchers(protectedPath).hasRole(TokenAuthentication.ROLE);
         }
@@ -94,7 +95,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
             }
 
             final ExpressionUrlAuthorizationConfigurer<HttpSecurity>.AuthorizedUrl matcher = registry
-                    .antMatchers(webEndpointProperties.getBasePath() + "/" + rootPath + "**");
+                    .antMatchers(webEndpointProperties.getBasePath() + "/" + rootPath + "/**");
             if (enforceTokenUsage) {
                 registry = matcher.hasRole(TokenAuthentication.ROLE);
             } else {
