@@ -105,8 +105,8 @@ public class Digester {
         }
         try {
             final String saltBase64 = StringUtils.substringBefore(digest, valueOf(delimiter));
-            byte[] salt = decode(saltBase64.getBytes(EncodingUtils.ENCODING));
-            return (encode(salt) + delimiter + digestSource.digest(value, salt)).equals(digest);
+            final byte[] salt = decode(saltBase64.getBytes(EncodingUtils.ENCODING));
+            return (saltBase64 + delimiter + digestSource.digest(value, salt)).equals(digest);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

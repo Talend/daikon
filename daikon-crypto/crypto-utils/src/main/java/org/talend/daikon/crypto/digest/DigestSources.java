@@ -3,6 +3,7 @@ package org.talend.daikon.crypto.digest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -21,7 +22,17 @@ public class DigestSources {
      * @return A simple SHA256 digest for simplistic use cases (not recommended, see {@link #pbkDf2()}).
      */
     public static DigestSource sha256() {
-        return (data, salt) -> DigestUtils.sha256Hex(data);
+        return (data, salt) -> {
+            final byte[] dataDigest = DigestUtils.sha256(data);
+            if (salt == null || salt.length == 0) {
+                return EncodingUtils.BASE64_ENCODER.apply(dataDigest);
+            } else {
+                byte[] result = new byte[salt.length + dataDigest.length];
+                System.arraycopy(salt, 0, result, 0, salt.length);
+                System.arraycopy(dataDigest, 0, result, salt.length, dataDigest.length);
+                return EncodingUtils.BASE64_ENCODER.apply(result);
+            }
+        };
     }
 
     /**
