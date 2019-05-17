@@ -3,7 +3,6 @@ package org.talend.daikon.crypto.digest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -27,8 +26,9 @@ public class DigestSources {
             if (salt == null || salt.length == 0) {
                 return EncodingUtils.BASE64_ENCODER.apply(dataDigest);
             } else {
-                byte[] result = new byte[salt.length + dataDigest.length];
-                System.arraycopy(DigestUtils.sha256(salt), 0, result, 0, salt.length);
+                final byte[] digestedSalt = DigestUtils.sha256(salt);
+                final byte[] result = new byte[digestedSalt.length + dataDigest.length];
+                System.arraycopy(digestedSalt, 0, result, 0, digestedSalt.length);
                 System.arraycopy(dataDigest, 0, result, salt.length, dataDigest.length);
                 return EncodingUtils.BASE64_ENCODER.apply(result);
             }

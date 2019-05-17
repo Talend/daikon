@@ -1,11 +1,14 @@
 package org.talend.daikon.crypto.digest;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.talend.daikon.crypto.EncodingUtils;
 import org.talend.daikon.crypto.KeySources;
 
 public class DigesterTest {
@@ -33,13 +36,17 @@ public class DigesterTest {
     public void shouldDigestValue() throws Exception {
         // given
         final String value = "myPassword";
+        final int keyLength = 16;
 
         // when
-        Digester digester = new Digester(KeySources.random(16), DigestSources.sha256());
+        Digester digester = new Digester(KeySources.random(keyLength), DigestSources.sha256());
         final String digest = digester.digest(value);
 
         // then
         assertTrue(digest.contains("-"));
+        final String encodedSalt = StringUtils.substringBefore(digest, "-");
+        final byte[] decodedSalt = EncodingUtils.BASE64_DECODER.apply(encodedSalt.getBytes(EncodingUtils.ENCODING));
+        assertEquals(keyLength, decodedSalt.length);
     }
 
     @Test
@@ -72,5 +79,69 @@ public class DigesterTest {
         assertTrue(digester2.validate("myPassword", digest1));
         assertFalse(digester2.validate("MyPassword", digest1));
         assertNotEquals(digest1, digest2);
+    }
+
+    @Test
+    public void shouldFailValidateWithSaltTampering() throws Exception {
+        // given
+        final String value = "myPassword";
+        final char delimiter = '-';
+
+        // when
+        Digester digester = new Digester(KeySources.random(16), delimiter, DigestSources.pbkDf2());
+        final String digest = digester.digest(value);
+
+        // Modify the 'salt' part
+        final byte[] tamperedSalt = StringUtils.substringBefore(digest, String.valueOf(delimiter)).getBytes(EncodingUtils.ENCODING);
+        for (int i = 0; i < tamperedSalt.length; i++) {
+            tamperedSalt[i]++;
+        }
+        final String tampered = EncodingUtils.BASE64_ENCODER.apply(tamperedSalt) //
+                + delimiter //
+                + StringUtils.substringAfter(digest, String.valueOf(delimiter));
+
+        // then
+        assertTrue(digester.validate(value, digest));
+        assertFalse(digester.validate(value, tampered));
+    }
+
+    @Test
+    public void shouldFailValidateWithDigestTampering() throws Exception {
+        // given
+        final String value = "myPassword";
+        final char delimiter = '-';
+
+        // when
+        Digester digester = new Digester(KeySources.random(16), delimiter, DigestSources.pbkDf2());
+        final String digest = digester.digest(value);
+
+        // Modify the 'salted digest' part
+        final byte[] tamperedDigest = StringUtils.substringAfter(digest, String.valueOf(delimiter)).getBytes(EncodingUtils.ENCODING);
+        for (int i = 0; i < tamperedDigest.length; i++) {
+            tamperedDigest[i]++;
+        }
+        final String tampered = StringUtils.substringBefore(digest, String.valueOf(delimiter)) //
+                + delimiter //
+                + EncodingUtils.BASE64_ENCODER.apply(tamperedDigest);
+
+        // then
+        assertTrue(digester.validate(value, digest));
+        assertFalse(digester.validate(value, tampered));
+    }
+
+    @Test
+    public void shouldFailValidateWithSaltRemoval() throws Exception {
+        // given
+        final String value = "myPassword";
+        final char delimiter = '-';
+
+        // when
+        Digester digester = new Digester(KeySources.random(16), delimiter, DigestSources.pbkDf2());
+        final String digest = digester.digest(value);
+        final String tampered = StringUtils.substringAfter(digest, String.valueOf(delimiter));
+
+        // then
+        assertTrue(digester.validate(value, digest));
+        assertFalse(digester.validate(value, tampered));
     }
 }
