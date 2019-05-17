@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.valueOf;
 import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
 
 /**
  * This class provides a helper class to:
@@ -32,8 +31,8 @@ public class Digester {
     private static final int[] FORBIDDEN_DELIMITERS = { '/', '=' };
 
     /**
-     * Creates a Digester using a {@link KeySources#random(int)} and "-" as delimiter for separating salt and digested
-     * value.
+     * Creates a Digester using a 16 byte length random key (see {@link KeySources#random(int)}) and "-" as delimiter
+     * for separating salt and digested value.
      * 
      * @param digestSource The {@link DigestSource} implementation to digest values.
      * @see DigestSources
@@ -104,6 +103,11 @@ public class Digester {
             return (digestSource.digest(value, new byte[0])).equals(digest);
         }
         try {
+            if (digest.indexOf(delimiter) < 0) {
+                // Digest is expected to have delimiter in it: don't return what the expected delimiter is in the
+                // exception message to prevent giving information about expected delimiter to caller.
+                throw new IllegalArgumentException("No delimiter found in digest.");
+            }
             final String saltBase64 = StringUtils.substringBefore(digest, valueOf(delimiter));
             final byte[] salt = decode(saltBase64.getBytes(EncodingUtils.ENCODING));
             return (saltBase64 + delimiter + digestSource.digest(value, salt)).equals(digest);

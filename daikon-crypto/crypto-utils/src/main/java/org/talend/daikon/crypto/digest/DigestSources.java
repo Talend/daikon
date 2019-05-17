@@ -57,7 +57,7 @@ public class DigestSources {
                 final byte[] bytes = factory.generateSecret(spec).getEncoded();
                 return EncodingUtils.BASE64_ENCODER.apply(bytes);
             } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                throw new IllegalStateException("Unable digest value.", e);
+                throw new IllegalStateException("Unable to digest value.", e);
             }
         };
     }

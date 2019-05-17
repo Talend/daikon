@@ -138,12 +138,19 @@ public class DigesterTest {
         final char delimiter = '-';
 
         // when
-        Digester digester = new Digester(KeySources.random(16), delimiter, DigestSources.pbkDf2());
+        Digester digester = new Digester(KeySources.random(16), delimiter, DigestSources.sha256());
         final String digest = digester.digest(value);
-        final String tampered = StringUtils.substringAfter(digest, String.valueOf(delimiter));
+        final String tampered = delimiter + StringUtils.substringAfter(digest, String.valueOf(delimiter));
 
         // then
         assertTrue(digester.validate(value, digest));
         assertFalse(digester.validate(value, tampered));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldCheckDelimiterInDigestOnValidate() {
+        // when
+        Digester digester = new Digester(KeySources.fixedKey("abcd1234"), '-', DigestSources.sha256());
+        digester.validate("myPassword", "digest that do not contain delimiter");
     }
 }
