@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.util.StringUtils;
 import org.talend.daikon.pattern.character.CharPatternToRegex;
 import org.talend.daikon.pattern.word.WordPatternToRegex;
 import org.talend.tql.model.AllFields;
