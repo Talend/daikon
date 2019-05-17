@@ -48,6 +48,9 @@ public class DigestSources {
      */
     public static DigestSource pbkDf2() {
         return (value, salt) -> {
+            if (salt == null || salt.length == 0) {
+                throw new IllegalArgumentException("Cannot use pbkDf2 with empty or null salt.");
+            }
             try {
                 KeySpec spec = new PBEKeySpec(value.toCharArray(), salt, 65536, 256);
                 SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
