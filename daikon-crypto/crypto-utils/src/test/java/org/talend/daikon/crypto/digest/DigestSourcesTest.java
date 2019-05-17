@@ -16,7 +16,7 @@ public class DigestSourcesTest {
         final String digest = DigestSources.sha256().digest(data, KeySources.fixedKey("abcd1234").getKey());
 
         // Then
-        assertEquals("6c7nGrky/ejIG36TBiw+3zjgPRtgPlyVMhJAo7BDDZ6176QavT7/Eg==", digest);
+        assertEquals("6c7nGrky/ehjM40Ivk3p3+OeoEm9r7NCzmWexUULaa7IG36TBiw+3zjgPRtgPlyVMhJAo7BDDZ6176QavT7/Eg==", digest);
     }
 
     @Test

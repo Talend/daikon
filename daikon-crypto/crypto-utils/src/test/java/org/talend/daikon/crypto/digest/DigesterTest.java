@@ -92,7 +92,8 @@ public class DigesterTest {
         final String digest = digester.digest(value);
 
         // Modify the 'salt' part
-        final byte[] tamperedSalt = StringUtils.substringBefore(digest, String.valueOf(delimiter)).getBytes(EncodingUtils.ENCODING);
+        final byte[] tamperedSalt = StringUtils.substringBefore(digest, String.valueOf(delimiter))
+                .getBytes(EncodingUtils.ENCODING);
         for (int i = 0; i < tamperedSalt.length; i++) {
             tamperedSalt[i]++;
         }
@@ -116,7 +117,8 @@ public class DigesterTest {
         final String digest = digester.digest(value);
 
         // Modify the 'salted digest' part
-        final byte[] tamperedDigest = StringUtils.substringAfter(digest, String.valueOf(delimiter)).getBytes(EncodingUtils.ENCODING);
+        final byte[] tamperedDigest = StringUtils.substringAfter(digest, String.valueOf(delimiter))
+                .getBytes(EncodingUtils.ENCODING);
         for (int i = 0; i < tamperedDigest.length; i++) {
             tamperedDigest[i]++;
         }

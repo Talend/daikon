@@ -29,7 +29,7 @@ public class DigestSources {
                 final byte[] digestedSalt = DigestUtils.sha256(salt);
                 final byte[] result = new byte[digestedSalt.length + dataDigest.length];
                 System.arraycopy(digestedSalt, 0, result, 0, digestedSalt.length);
-                System.arraycopy(dataDigest, 0, result, salt.length, dataDigest.length);
+                System.arraycopy(dataDigest, 0, result, digestedSalt.length, dataDigest.length);
                 return EncodingUtils.BASE64_ENCODER.apply(result);
             }
         };
