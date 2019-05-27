@@ -3,6 +3,7 @@ package org.talend.daikon.crypto;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import javax.crypto.AEADBadTagException;
 import javax.crypto.BadPaddingException;
 
 import org.junit.Test;
@@ -61,7 +62,6 @@ public class CipherSourcesTest {
         final Encryption encryptionBlowfish = new Encryption(KeySources.machineUID(16), CipherSources.blowfish());
 
         final String decryptedString = encryptionBlowfish.decrypt(encryptedAESString);
-        assertNotEquals(decryptedString, aWonderfulString);
     }
 
     @Test
@@ -70,37 +70,55 @@ public class CipherSourcesTest {
     }
 
     @Test
-    public void changeIVEncryptionString() throws Exception {
-        String expectedString = "aWonderfulString";
-        final Encryption encryption = new Encryption(KeySources.machineUID(16), CipherSources.blowfish());
+    public void changeIVEncryptionStringBlowfish() throws Exception {
+        String expectedString = "aStringWithBlowfish";
+        String badEncryptedString = changeIVEncryptionString(expectedString, CipherSources.blowfish());
+        assertNotEquals(expectedString, badEncryptedString);
+    }
+
+    @Test(expected = AEADBadTagException.class)
+    public void changeIVEncryptionStringAESGCM() throws Exception {
+        changeIVEncryptionString("aWonderfulString", CipherSources.aesGcm(16));
+    }
+
+    private String changeIVEncryptionString(String expectedString, CipherSource cipherSource) throws Exception {
+        final Encryption encryption = new Encryption(KeySources.machineUID(16), cipherSource);
 
         String encryptedResult = encryption.encrypt(expectedString);
 
-        //modify encrypted String
+        // modify encrypted String
         char[] encryptedChar = encryptedResult.toCharArray();
-        encryptedChar[0] = (char) (encryptedChar[0]+1);
+        encryptedChar[0] = (char) (encryptedChar[0] + 1);
         encryptedResult = String.valueOf(encryptedChar);
 
-        //check that decryption
-        assertNotEquals(expectedString, encryption.decrypt(encryptedResult));
-
+        // check that decryption
+        return encryption.decrypt(encryptedResult);
     }
 
     @Test
-    public void changeEncryptedPayloadString() throws Exception {
-        String expectedString = "aWonderfulString";
-        final Encryption encryption = new Encryption(KeySources.machineUID(16), CipherSources.blowfish());
+    public void changeEncryptedPayloadStringBlowfish() throws Exception {
+        String expectedString = "changePayloadStringWithBlowfish";
+        String badEncryptedResult = changeEncryptedPayloadString(expectedString, CipherSources.blowfish());
+        assertNotEquals(expectedString, badEncryptedResult);
+    }
+
+    @Test(expected = AEADBadTagException.class)
+    public void changeEncryptedPayloadStringAESGCM() throws Exception {
+        changeEncryptedPayloadString("changePayloadStringWithAES", CipherSources.aesGcm(16));
+    }
+
+    private String changeEncryptedPayloadString(String expectedString, CipherSource cipherSource) throws Exception {
+        final Encryption encryption = new Encryption(KeySources.machineUID(16), cipherSource);
 
         String encryptedResult = encryption.encrypt(expectedString);
 
-        //modify encrypted String
+        // modify encrypted String
         char[] encryptedChar = encryptedResult.toCharArray();
-        encryptedChar[10] = (char) (encryptedChar[10]+1);
+        encryptedChar[10] = (char) (encryptedChar[10] + 1);
         encryptedResult = String.valueOf(encryptedChar);
 
-        //check that decryption
-        assertNotEquals(expectedString, encryption.decrypt(encryptedResult));
-
+        // check that decryption
+        return encryption.decrypt(encryptedResult);
     }
 
     private void assertRoundTrip(CipherSource cipherSource) throws Exception {
