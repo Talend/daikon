@@ -25,8 +25,8 @@
         </talend_releases>
         <pushChanges>false</pushChanges>
         <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
-        <jackson.version>2.9.8</jackson.version>
-        <jackson.version.annotations>2.9.8</jackson.version.annotations>
+        <jackson.version>2.9.9</jackson.version>
+        <jackson.version.annotations>2.9.9</jackson.version.annotations>
         <slf4j.version>1.7.25</slf4j.version>
         <log4j1.version>1.2.17</log4j1.version>
         <logback.version>1.2.3</logback.version>
