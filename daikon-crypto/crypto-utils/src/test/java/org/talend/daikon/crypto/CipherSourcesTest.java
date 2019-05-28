@@ -1,9 +1,14 @@
 package org.talend.daikon.crypto;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+
+import javax.crypto.AEADBadTagException;
+import javax.crypto.BadPaddingException;
+
+import org.junit.Test;
+
+import java.util.Base64;
 
 public class CipherSourcesTest {
 
@@ -41,17 +46,79 @@ public class CipherSourcesTest {
     }
 
     @Test
+    public void shouldGenerateDifferentValuesWithBlowfish() throws Exception {
+        final CipherSource source = CipherSources.blowfish();
+        final String encrypt1 = source.encrypt(KeySources.machineUID(16), "String");
+        final String encrypt2 = source.encrypt(KeySources.machineUID(16), "String");
+
+        assertNotEquals(encrypt1, encrypt2);
+    }
+
+    @Test(expected = BadPaddingException.class)
+    public void blowfishUnableToDecrypt() throws Exception {
+        String aWonderfulString = "aWonderfulString";
+
+        final Encryption encryptionAES = new Encryption(KeySources.machineUID(16), CipherSources.getDefault());
+        String encryptedAESString = encryptionAES.encrypt(aWonderfulString);
+
+        final Encryption encryptionBlowfish = new Encryption(KeySources.machineUID(16), CipherSources.blowfish());
+
+        encryptionBlowfish.decrypt(encryptedAESString);
+    }
+
+    @Test
     public void shouldRoundtripWithBlowfish() throws Exception {
         assertRoundTrip(CipherSources.blowfish());
     }
 
     @Test
-    public void shouldGenerateSameValuesWithBlowfish() throws Exception {
-        final CipherSource source = CipherSources.blowfish();
-        final String encrypt1 = source.encrypt(KeySources.machineUID(16), "String");
-        final String encrypt2 = source.encrypt(KeySources.machineUID(16), "String");
+    public void changeIVEncryptionStringBlowfish() throws Exception {
+        String expectedString = "aStringWithBlowfish";
+        String badEncryptedString = changeIVEncryptionString(expectedString, CipherSources.blowfish());
+        assertNotEquals(expectedString, badEncryptedString);
+    }
 
-        assertEquals(encrypt1, encrypt2);
+    @Test(expected = AEADBadTagException.class)
+    public void changeIVEncryptionStringAESGCM() throws Exception {
+        changeIVEncryptionString("aWonderfulString", CipherSources.aesGcm(16));
+    }
+
+    private String changeIVEncryptionString(String expectedString, CipherSource cipherSource) throws Exception {
+        final Encryption encryption = new Encryption(KeySources.machineUID(16), cipherSource);
+
+        String encryptedResult = encryption.encrypt(expectedString);
+
+        // modify encrypted String
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedResult.getBytes());
+        encryptedBytes[0] = (byte) ~encryptedBytes[0];
+
+        // check that decryption
+        return encryption.decrypt(Base64.getEncoder().encodeToString(encryptedBytes));
+    }
+
+    @Test
+    public void changeEncryptedPayloadStringBlowfish() throws Exception {
+        String expectedString = "changePayloadStringWithBlowfish";
+        String badEncryptedResult = changeEncryptedPayloadString(expectedString, CipherSources.blowfish());
+        assertNotEquals(expectedString, badEncryptedResult);
+    }
+
+    @Test(expected = AEADBadTagException.class)
+    public void changeEncryptedPayloadStringAESGCM() throws Exception {
+        changeEncryptedPayloadString("changePayloadStringWithAES", CipherSources.aesGcm(16));
+    }
+
+    private String changeEncryptedPayloadString(String expectedString, CipherSource cipherSource) throws Exception {
+        final Encryption encryption = new Encryption(KeySources.machineUID(16), cipherSource);
+
+        String encryptedResult = encryption.encrypt(expectedString);
+
+        // modify encrypted String
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedResult.getBytes());
+        encryptedBytes[10] = (byte) ~encryptedBytes[10];
+
+        // check that decryption
+        return encryption.decrypt(Base64.getEncoder().encodeToString(encryptedBytes));
     }
 
     private void assertRoundTrip(CipherSource cipherSource) throws Exception {
