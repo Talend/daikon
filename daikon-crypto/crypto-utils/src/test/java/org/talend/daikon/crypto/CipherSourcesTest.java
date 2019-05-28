@@ -8,6 +8,8 @@ import javax.crypto.BadPaddingException;
 
 import org.junit.Test;
 
+import java.util.Base64;
+
 public class CipherSourcesTest {
 
     @Test(expected = IllegalArgumentException.class)
@@ -87,12 +89,11 @@ public class CipherSourcesTest {
         String encryptedResult = encryption.encrypt(expectedString);
 
         // modify encrypted String
-        char[] encryptedChar = encryptedResult.toCharArray();
-        encryptedChar[0] = (char) (encryptedChar[0] + 1);
-        encryptedResult = String.valueOf(encryptedChar);
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedResult.getBytes());
+        encryptedBytes[0] = (byte) ~encryptedBytes[0];
 
         // check that decryption
-        return encryption.decrypt(encryptedResult);
+        return encryption.decrypt(Base64.getEncoder().encodeToString(encryptedBytes));
     }
 
     @Test
@@ -113,12 +114,11 @@ public class CipherSourcesTest {
         String encryptedResult = encryption.encrypt(expectedString);
 
         // modify encrypted String
-        char[] encryptedChar = encryptedResult.toCharArray();
-        encryptedChar[10] = (char) (encryptedChar[10] + 1);
-        encryptedResult = String.valueOf(encryptedChar);
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedResult.getBytes());
+        encryptedBytes[10] = (byte) ~encryptedBytes[10];
 
         // check that decryption
-        return encryption.decrypt(encryptedResult);
+        return encryption.decrypt(Base64.getEncoder().encodeToString(encryptedBytes));
     }
 
     private void assertRoundTrip(CipherSource cipherSource) throws Exception {
