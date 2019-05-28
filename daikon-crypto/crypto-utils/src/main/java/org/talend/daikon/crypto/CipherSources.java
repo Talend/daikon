@@ -100,7 +100,7 @@ public class CipherSources {
         };
     }
 
-    abstract static class SymmetricKeyCipherSource implements CipherSource {
+    private abstract static class SymmetricKeyCipherSource implements CipherSource {
 
         private int ivLength;
 

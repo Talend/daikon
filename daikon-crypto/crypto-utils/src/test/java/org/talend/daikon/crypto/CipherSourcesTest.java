@@ -61,7 +61,7 @@ public class CipherSourcesTest {
 
         final Encryption encryptionBlowfish = new Encryption(KeySources.machineUID(16), CipherSources.blowfish());
 
-        final String decryptedString = encryptionBlowfish.decrypt(encryptedAESString);
+        encryptionBlowfish.decrypt(encryptedAESString);
     }
 
     @Test
