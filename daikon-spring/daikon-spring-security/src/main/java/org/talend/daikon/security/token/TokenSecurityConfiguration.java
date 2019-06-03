@@ -2,7 +2,7 @@ package org.talend.daikon.security.token;
 
 import static org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest.toAnyEndpoint;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 import javax.servlet.Filter;
 
@@ -15,6 +15,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,11 +29,11 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * A Spring Security configuration class that ensures the Actuator (as well as paths in
- * {@link #PROTECTED_PATHS}) are protected by a token authentication.
+ * {@link #additionalProtectedEndpoints}) are protected by a token authentication.
  *
  * @see NoConfiguredTokenFilter When configuration's token value is empty or missing.
  * @see TokenAuthenticationFilter When configuration's token value is present.
- * @see #PROTECTED_PATHS for list of protected paths.
+ * @see #additionalProtectedEndpoints for list of protected paths.
  */
 @Configuration
 @EnableWebSecurity
@@ -40,6 +41,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenSecurityConfiguration.class);
+
+    private final Filter tokenAuthenticationFilter;
 
     @Value("${talend.security.allowPublicPrometheusEndpoint:false}")
     private boolean allowPrometheusUnauthenticatedAccess;
@@ -50,16 +53,14 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private WebEndpointProperties webEndpointProperties;
 
-    /*
-     * Use this field to indicate paths that should be secured by token. It is not a configuration setting at the moment
-     * to ensure all applications share same secured endpoints.
-     */
-    private static final String[] PROTECTED_PATHS = { "/version" };
+    private final List<TokenProtectedPath> additionalProtectedEndpoints;
 
-    private final Filter tokenAuthenticationFilter;
-
-    public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token) {
-        final AntPathRequestMatcher[] matchers = Stream.of(PROTECTED_PATHS) //
+    public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token,
+            @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
+        this.additionalProtectedEndpoints = additionalProtectedEndpoints;
+        final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints
+                .stream() //
+                .map(TokenProtectedPath::getProtectedPath) //
                 .map(AntPathRequestMatcher::new) //
                 .toArray(AntPathRequestMatcher[]::new);
         final RequestMatcher protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
@@ -72,11 +73,16 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
         }
     }
 
+    @Bean
+    public TokenProtectedPath versionProtectedEndpoint() {
+        return () -> "/version";
+    }
+
     public void configure(HttpSecurity http) throws Exception {
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.csrf().disable()
-                .authorizeRequests();
-        for (String protectedPath : PROTECTED_PATHS) {
-            registry = registry.antMatchers(protectedPath).hasRole(TokenAuthentication.ROLE);
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry =
+                http.csrf().disable().authorizeRequests();
+        for (TokenProtectedPath protectedPath : additionalProtectedEndpoints) {
+            registry = registry.antMatchers(protectedPath.getProtectedPath()).hasRole(TokenAuthentication.ROLE);
         }
         // Configure actuator
         final PathMappedEndpoint prometheus = actuatorEndpoints.getEndpoint(EndpointId.of("prometheus"));
@@ -94,8 +100,8 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 enforceTokenUsage = true;
             }
 
-            final ExpressionUrlAuthorizationConfigurer<HttpSecurity>.AuthorizedUrl matcher = registry
-                    .antMatchers(webEndpointProperties.getBasePath() + "/" + rootPath + "/**");
+            final ExpressionUrlAuthorizationConfigurer<HttpSecurity>.AuthorizedUrl matcher =
+                    registry.antMatchers(webEndpointProperties.getBasePath() + "/" + rootPath + "/**");
             if (enforceTokenUsage) {
                 registry = matcher.hasRole(TokenAuthentication.ROLE);
             } else {

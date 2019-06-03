@@ -44,6 +44,24 @@ To expose Prometheus endpoint, just add `talend.security.allowPublicPrometheusEn
 
 NOTE: Please note this setting is not meant for production environments.
 
+=== Extend token authentication to other paths
+
+Application may need to also use token based authentication for securing non-Actuator endpoints (for example: an endpoint needs to be added to Swagger documentation / endpoint may now be a internal operation and may become public later).
+
+NOTE: It is important to note declaring custom Actuator endpoint should **always** be preferred to custom endpoint authentication.
+
+To include a protected path in your application, simply add a `@Bean` declaration in any `@Configuration` class:
+
+```java
+    @Bean
+    public TokenProtectedPath versionProtectedPath() {
+        return () -> "/version";
+    }
+```
+
+Please also note path may include or not wildcards.
+
+
 == Method access control with `@RequiresAuthority`
 
 The `@RequiresAuthority` annotation allows to mark methods that requires the current user has the permission (*authority*) to execute the method. 

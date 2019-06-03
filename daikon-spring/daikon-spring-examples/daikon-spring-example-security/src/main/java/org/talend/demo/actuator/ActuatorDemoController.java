@@ -19,4 +19,10 @@ public class ActuatorDemoController {
         counter.increment();
         return "Hi";
     }
+
+    @GetMapping("/say/secure/hi")
+    public String saySecureHi() {
+        counter.increment();
+        return "Secure Hi";
+    }
 }

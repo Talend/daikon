@@ -63,3 +63,16 @@ During application startup, you may see this message to indicate a missing confi
 ```
 2019-02-11 11:36:54.436  INFO 26506 --- [           main] o.t.d.s.t.TokenSecurityConfiguration     : No token configured, protected endpoints are unavailable.
 ```
+
+=== Custom secure endpoint
+
+You can see in `org.talend.demo.actuator.SecurityConfiguration` the endpoint `/say/secure/hi` is protected using token:
+
+```java
+    @Bean
+    public TokenProtectedPath protectedSayHi() {
+        return () -> "/say/secure/hi";
+    }
+```
+
+This means calls to `GET /say/secure/hi` will have the exact same behavior as for Actuator endpoints.

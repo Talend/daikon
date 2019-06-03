@@ -1,8 +1,10 @@
 package org.talend.demo.actuator;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.talend.daikon.security.token.TokenProtectedPath;
 
 /**
  * <p>
@@ -23,5 +25,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         // Expose "/say/hi" path without authentication, to show that application can define its own security rules.
         http.authorizeRequests().antMatchers("/say/hi").permitAll();
+    }
+
+    @Bean
+    public TokenProtectedPath protectedSayHi() {
+        return () -> "/say/secure/hi";
     }
 }
