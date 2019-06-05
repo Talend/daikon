@@ -29,7 +29,7 @@ Supports regular _LoggingEvents_ (logged through a `Logger`).
 Gradle style:
 
 ```
-compile ("org.talend.daikon:logging-event-layout:0.16.0-SNAPSHOT")
+compile ("org.talend.daikon:logging-event-layout:LATEST")
 ```
 
 Maven style:
@@ -38,7 +38,7 @@ Maven style:
 <dependency>
   	<groupId>org.talend.daikon</groupId>
   	<artifactId>logging-event-layout</artifactId>
-  	<version>0.17.0-SNAPSHOT</version>
+  	<version>LATEST</version>
 </dependency>
 ```
 
@@ -165,8 +165,8 @@ The field names listed here are the default field names.
 | `threadName`      | Name of the thread that logged the event
 | `severity`        | String name of the level of the event
 | `stackTrace`      | (Only if a throwable was logged) The stacktrace of the throwable.  Stackframes are separated by line endings.
-| `host.address`    | The host address IP
-| `host.name`       | The host name
+| `host.address`    | The host address IP (if host info is enabled)
+| `host.name`       | The host name (if host info is enabled)
 | `exceptionClass`  | (Only if a throwable was logged) Name of the class that logged the exception
 | `exceptionMessage`| (OOnly if a throwable was logged) The exception message. 
 | `stackTrace`      | (Only if a throwable was logged) The stacktrace of the throwable.  Stackframes are separated by line endings.
@@ -183,6 +183,9 @@ If you set `LocationInfo` property  to `true` in your layout log4j/logback confi
 | `line.number`     | Line number of the file where the event was logged
 | `process.id`      | The id of the jvm process
 
+<a name="HostInfo"/></a>
+If you set `HostInfo` property  to `false` in your layout log4j/logback configuration the host information will **not** be displayed.
+If log layout is used to collect customer information, it is **required** to disable host information in log events.
 
 <a name="loggingevent_mdc"/></a>
 ### MDC fields
@@ -387,4 +390,3 @@ To enable tracking user activity ids in the logs you have to :
 | `category`        | ??
 | `eventType`       | The attribute which allows to group similar types of log events
 | `audit`           | Is a flag, if this log event is needed to be saved for auditing purpose
-

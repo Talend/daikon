@@ -121,6 +121,10 @@ public class Log4jJSONLayout extends Layout {
         this.hostInfo = hostInfo;
     }
 
+    public boolean getHostInfo() {
+        return hostInfo;
+    }
+
     public String getUserFields() {
         return customUserFields;
     }

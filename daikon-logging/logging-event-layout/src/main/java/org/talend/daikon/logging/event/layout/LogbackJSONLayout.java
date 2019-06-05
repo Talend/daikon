@@ -111,6 +111,14 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         this.locationInfo = locationInfo;
     }
 
+    public boolean setHostInfo() {
+        return hostInfo;
+    }
+
+    public void setHostInfo(boolean hostInfo) {
+        this.hostInfo = hostInfo;
+    }
+
     public String getUserFields() {
         return customUserFields;
     }
@@ -139,7 +147,7 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
             }
 
             ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
-            converter.setOptionList(Arrays.asList("full"));
+            converter.setOptionList(Collections.singletonList("full"));
             converter.start();
             String stackTrace = converter.convert(loggingEvent);
             logstashEvent.put(LayoutFields.STACK_TRACE, stackTrace);
@@ -161,8 +169,10 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
             logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
         }
         logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
-        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
-        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        if (hostInfo) {
+            logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
+            logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        }
         return logSourceEvent;
     }
 
