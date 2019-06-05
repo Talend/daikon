@@ -40,10 +40,11 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     private Map<String, String> metaFields = new HashMap<>();
 
-    protected Log4j2JSONLayout(final Boolean locationInfo, final Charset charset,
+    protected Log4j2JSONLayout(final Boolean locationInfo, final Boolean hostInfo, final Charset charset,
             final Map<String, String> additionalLogAttributes) {
         super(charset);
         setLocationInfo(locationInfo);
+        setHostInfo(hostInfo);
         Log4j2JSONLayout.ADDITIONAL_ATTRIBUTES.putAll(additionalLogAttributes);
     }
 
@@ -52,6 +53,8 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
      *
      * @param locationInfo
      * If "true", includes the location information in the generated JSON.
+     * @param hostInfo
+     * If "true", includes the information about the local host name and IP address.
      * @param properties
      * If "true", includes the thread context in the generated JSON.
      * @param complete
@@ -83,7 +86,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
         // Unpacke the pairs list
         final Map<String, String> additionalLogAttributes = unpackPairs(pairs);
-        return new Log4j2JSONLayout(locationInfo, charset, additionalLogAttributes);
+        return new Log4j2JSONLayout(locationInfo, hostInfo, charset, additionalLogAttributes);
 
     }
 
