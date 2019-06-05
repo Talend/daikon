@@ -27,10 +27,11 @@ public class Log4j2JSONLayoutTest extends AbstractLayoutTest {
     protected String log(Object event, LogDetails logDetails) {
 
         AbstractStringLayout layout = Log4j2JSONLayout.createLayout(logDetails.isLocationInfo(), // location
-                true, // properties
-                true, // complete
-                true, // compact
-                false, // eventEol
+                true,
+                true,
+                true,
+                true,
+                false,
                 Charset.defaultCharset(), null);
 
         return layout.toSerializable((LogEvent) event);
@@ -47,7 +48,7 @@ public class Log4j2JSONLayoutTest extends AbstractLayoutTest {
         final StringMap contextData;
         if (!logDetails.getMdc().isEmpty()) {
             contextData = ContextDataFactory.createContextData();
-            logDetails.getMdc().entrySet().forEach(it -> contextData.putValue(it.getKey(), it.getValue()));
+            logDetails.getMdc().forEach(contextData::putValue);
         } else {
             contextData = null;
         }

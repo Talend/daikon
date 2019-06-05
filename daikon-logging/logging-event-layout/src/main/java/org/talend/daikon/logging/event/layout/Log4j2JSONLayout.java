@@ -23,18 +23,18 @@ import net.minidev.json.JSONObject;
 
 /**
  * Log4j2 JSON Layout
- * 
+ *
  * @author sdiallo
  *
  */
 @Plugin(name = "Log4j2JSONLayout", category = "Core", elementType = "layout", printObject = true)
 public class Log4j2JSONLayout extends AbstractStringLayout {
 
-    static final String CONTENT_TYPE = "application/json";
-
-    private static final Map<String, String> ADDITIONNAL_ATTRIBUTES = new HashMap<>();
+    private static final Map<String, String> ADDITIONAL_ATTRIBUTES = new HashMap<>();
 
     private boolean locationInfo;
+
+    private boolean hostInfo;
 
     private String customUserFields;
 
@@ -44,7 +44,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
             final Map<String, String> additionalLogAttributes) {
         super(charset);
         setLocationInfo(locationInfo);
-        Log4j2JSONLayout.ADDITIONNAL_ATTRIBUTES.putAll(additionalLogAttributes);
+        Log4j2JSONLayout.ADDITIONAL_ATTRIBUTES.putAll(additionalLogAttributes);
     }
 
     /**
@@ -70,11 +70,12 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
     @PluginFactory
     public static AbstractStringLayout createLayout(
     // @formatter:off
-            @PluginAttribute(value = "locationInfo", defaultBoolean = false) final boolean locationInfo,
-            @PluginAttribute(value = "properties", defaultBoolean = false) final boolean properties,
-            @PluginAttribute(value = "complete", defaultBoolean = false) final boolean complete,
-            @PluginAttribute(value = "compact", defaultBoolean = false) final boolean compact,
-            @PluginAttribute(value = "eventEol", defaultBoolean = false) final boolean eventEol,
+            @PluginAttribute(value = "locationInfo") final boolean locationInfo,
+            @PluginAttribute(value = "hostInfo", defaultBoolean = true) final boolean hostInfo,
+            @PluginAttribute(value = "properties") final boolean properties,
+            @PluginAttribute(value = "complete") final boolean complete,
+            @PluginAttribute(value = "compact") final boolean compact,
+            @PluginAttribute(value = "eventEol") final boolean eventEol,
             @PluginAttribute(value = "charset", defaultString = "UTF-8") final Charset charset,
             @PluginElement("Pairs") final KeyValuePair[] pairs
             // @formatter:on
@@ -99,7 +100,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         HostData host = new HostData();
 
         // Extract and add fields from log4j2 config, if defined
-        LayoutUtils.addUserFields(ADDITIONNAL_ATTRIBUTES, userFieldsEvent);
+        LayoutUtils.addUserFields(ADDITIONAL_ATTRIBUTES, userFieldsEvent);
 
         Map<String, String> mdc = LayoutUtils.processMDCMetaFields(loggingEvent.getContextData().toMap(), logstashEvent,
                 metaFields);
@@ -144,6 +145,14 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         this.locationInfo = locationInfo;
     }
 
+    public boolean getHostInfo() {
+        return hostInfo;
+    }
+
+    public void setHostInfo(boolean hostInfo) {
+        this.hostInfo = hostInfo;
+    }
+
     public String getUserFields() {
         return customUserFields;
     }
@@ -185,8 +194,10 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
             logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
         }
         logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
-        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
-        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        if (hostInfo) {
+            logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
+            logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        }
         return logSourceEvent;
     }
 

@@ -26,6 +26,8 @@ public class Log4jJSONLayout extends Layout {
 
     private boolean locationInfo;
 
+    private boolean hostInfo;
+
     private String customUserFields;
 
     private boolean ignoreThrowable;
@@ -33,19 +35,21 @@ public class Log4jJSONLayout extends Layout {
     private Map<String, String> metaFields = new HashMap<>();
 
     /**
-     * Print no location info by default.
+     * Print no location info by default, but print host information (for backward compatibility).
      */
     public Log4jJSONLayout() {
-        this(false);
+        this(false, true);
     }
 
     /**
      * Creates a layout that optionally inserts location information into log messages.
      *
      * @param locationInfo whether or not to include location information in the log messages.
+     * @param hostInfo whether or not to include host information (host name and IP address) in the log messages.
      */
-    public Log4jJSONLayout(boolean locationInfo) {
+    public Log4jJSONLayout(boolean locationInfo, boolean hostInfo) {
         this.locationInfo = locationInfo;
+        this.hostInfo = hostInfo;
     }
 
     public void setMetaFields(Map<String, String> metaFields) {
@@ -113,6 +117,10 @@ public class Log4jJSONLayout extends Layout {
         this.locationInfo = locationInfo;
     }
 
+    public void setHostInfo(boolean hostInfo) {
+        this.hostInfo = hostInfo;
+    }
+
     public String getUserFields() {
         return customUserFields;
     }
@@ -139,8 +147,10 @@ public class Log4jJSONLayout extends Layout {
             logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
         }
         logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
-        logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
-        logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        if (hostInfo) {
+            logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
+            logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
+        }
         return logSourceEvent;
     }
 

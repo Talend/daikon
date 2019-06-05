@@ -77,11 +77,10 @@ public class Log4jJSONLayoutTest extends AbstractLayoutTest {
                 ? new ThrowableInformation(logDetails.getException())
                 : null;
         Properties mdc = new Properties();
-        logDetails.getMdc().entrySet().stream().forEach(it -> mdc.put(it.getKey(), it.getValue()));
-        LoggingEvent event = new LoggingEvent(logDetails.getClassName(), logger, logDetails.getTimeMillis(),
+        logDetails.getMdc().forEach(mdc::put);
+        return new LoggingEvent(logDetails.getClassName(), logger, logDetails.getTimeMillis(),
                 Level.toLevel(logDetails.getSeverity()), logDetails.getLogMessage(), logDetails.getThreadName(),
                 throwableInformation, null, locationInfo, mdc);
-        return event;
     }
 
     @Override
