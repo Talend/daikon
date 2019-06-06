@@ -27,6 +27,11 @@ public class KeySourcesTest {
         assertSource(KeySources.fixedKey("DataPrepIsSoCool"));
     }
 
+    @Test
+    public void shouldGenerateFromPBKDF2() throws Exception {
+        assertSource(KeySources.pbkDf2("DataPrepIsSoCool", KeySources.random(16).getKey(), 256));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotGenerateFromMissingSystemProperty() throws Exception {
         assertSource(KeySources.systemProperty("missingSystemProperty"));

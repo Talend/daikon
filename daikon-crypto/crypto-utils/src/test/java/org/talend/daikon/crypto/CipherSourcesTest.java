@@ -23,6 +23,11 @@ public class CipherSourcesTest {
     }
 
     @Test
+    public void shouldRoundtripPBKDF2() throws Exception {
+        assertRoundTrip(CipherSources.getDefault(), KeySources.pbkDf2("DataPrepIsSoCool", KeySources.random(16).getKey(), 256));
+    }
+
+    @Test
     public void shouldGenerateDifferentValuesWithDefault() throws Exception {
         final CipherSource source = CipherSources.getDefault();
         final String encrypt1 = source.encrypt(KeySources.machineUID(16), "String");
@@ -122,6 +127,10 @@ public class CipherSourcesTest {
     }
 
     private void assertRoundTrip(CipherSource cipherSource) throws Exception {
+        assertRoundTrip(cipherSource, KeySources.machineUID(16));
+    }
+
+    private void assertRoundTrip(CipherSource cipherSource, KeySource keySource) throws Exception {
         final Encryption encryption = new Encryption(KeySources.machineUID(16), cipherSource);
 
         // when
