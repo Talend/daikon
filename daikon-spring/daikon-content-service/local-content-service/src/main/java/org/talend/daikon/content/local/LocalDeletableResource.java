@@ -22,7 +22,7 @@ import org.springframework.core.io.WritableResource;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 
-class LocalDeletableResource implements DeletableResource {
+public class LocalDeletableResource implements DeletableResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalDeletableResource.class);
 
@@ -32,7 +32,7 @@ class LocalDeletableResource implements DeletableResource {
 
     private boolean isDeleted;
 
-    LocalDeletableResource(ResourceResolver resolver, WritableResource resource) {
+    public LocalDeletableResource(ResourceResolver resolver, WritableResource resource) {
         this.resolver = resolver;
         this.resource = resource;
     }
