@@ -9,7 +9,7 @@ public class LocalResourceResolver extends AbstractResourceResolver {
 
     private String locationPrefix;
 
-    LocalResourceResolver(ResourcePatternResolver delegate, String locationPrefix) {
+    public LocalResourceResolver(ResourcePatternResolver delegate, String locationPrefix) {
         super(delegate);
         this.locationPrefix = locationPrefix;
     }
