@@ -5,7 +5,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.talend.daikon.content.AbstractResourceResolver;
 import org.talend.daikon.content.DeletableResource;
 
-class LocalResourceResolver extends AbstractResourceResolver {
+public class LocalResourceResolver extends AbstractResourceResolver {
 
     private String locationPrefix;
 
