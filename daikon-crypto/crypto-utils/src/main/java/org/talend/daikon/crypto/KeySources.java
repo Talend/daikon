@@ -1,9 +1,15 @@
 package org.talend.daikon.crypto;
 
 import java.net.NetworkInterface;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.Enumeration;
 import java.util.Optional;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 /**
  * A collection of {@link KeySource} helpers to ease use of {@link Encryption}.
@@ -107,5 +113,31 @@ public class KeySources {
         return () -> Optional.ofNullable(System.getProperty(systemProperty)) //
                 .orElseThrow(() -> new IllegalArgumentException("System property '" + systemProperty + "' not found")) //
                 .getBytes();
+    }
+
+    /**
+     * <p>
+     * Returns a {@link KeySource} using the provided password, salt and keyLength values to generate a SecretKey using
+     * PBKDF2 (with Hmac SHA256) digester.
+     * </p>
+     * <p>
+     * As recommendation, you may initialize a salt using {@link org.talend.daikon.crypto.KeySources#random(int)}.
+     * </p>
+     *
+     * @return A {@link KeySource} implementation using PBKDF2 and provided <code>salt</code>
+     */
+    public static KeySource pbkDf2(String password, byte[] salt, int keyLength) {
+        return () -> {
+            if (salt == null || salt.length == 0) {
+                throw new IllegalArgumentException("Cannot use pbkDf2 with empty or null salt.");
+            }
+            try {
+                KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, keyLength);
+                SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+                return factory.generateSecret(spec).getEncoded();
+            } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                throw new IllegalStateException("Unable to generate key.", e);
+            }
+        };
     }
 }

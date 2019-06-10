@@ -1,14 +1,9 @@
 package org.talend.daikon.crypto.digest;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.talend.daikon.crypto.EncodingUtils;
+import org.talend.daikon.crypto.KeySource;
+import org.talend.daikon.crypto.KeySources;
 
 /**
  * A collection of {@link DigestSource} helpers to ease use of {@link Digester}.
@@ -48,15 +43,12 @@ public class DigestSources {
      */
     public static DigestSource pbkDf2() {
         return (value, salt) -> {
-            if (salt == null || salt.length == 0) {
-                throw new IllegalArgumentException("Cannot use pbkDf2 with empty or null salt.");
-            }
+            KeySource keySource = KeySources.pbkDf2(value, salt, 256);
             try {
-                KeySpec spec = new PBEKeySpec(value.toCharArray(), salt, 65536, 256);
-                SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-                final byte[] bytes = factory.generateSecret(spec).getEncoded();
-                return EncodingUtils.BASE64_ENCODER.apply(bytes);
-            } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                return EncodingUtils.BASE64_ENCODER.apply(keySource.getKey());
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                throw e;
+            } catch (Exception e) {
                 throw new IllegalStateException("Unable to digest value.", e);
             }
         };
