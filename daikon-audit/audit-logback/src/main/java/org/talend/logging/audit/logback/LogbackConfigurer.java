@@ -10,7 +10,6 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
-import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.FileSize;
@@ -185,6 +184,7 @@ public final class LogbackConfigurer {
         LogbackJSONLayout layout = new LogbackJSONLayout();
 
         layout.setLocationInfo(AuditConfiguration.LOCATION.getBoolean(config));
+        layout.setHostInfo(AuditConfiguration.HOST.getBoolean(config));
         layout.setMetaFields(metaFields);
         layout.setAddEventUuid(false);
         layout.setContext(loggerContext);

@@ -22,6 +22,7 @@ public enum AuditConfiguration {
     SERVICE_NAME(String.class, ""),
     INSTANCE_NAME(String.class, ""),
     LOCATION(Boolean.class, Boolean.FALSE),
+    HOST(Boolean.class, Boolean.TRUE),
     LOG_APPENDER(LogAppendersSet.class),
     APPENDER_FILE_PATH(String.class),
     APPENDER_FILE_MAXSIZE(Long.class, 52428800L),

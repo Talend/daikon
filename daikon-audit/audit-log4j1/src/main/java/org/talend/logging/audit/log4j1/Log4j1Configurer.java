@@ -164,6 +164,7 @@ public final class Log4j1Configurer {
         Log4jJSONLayout layout = new Log4jJSONLayout();
 
         layout.setLocationInfo(AuditConfiguration.LOCATION.getBoolean(config));
+        layout.setHostInfo(AuditConfiguration.HOST.getBoolean(config));
         layout.setMetaFields(metaFields);
 
         return layout;

@@ -27,6 +27,7 @@ public class AuditConfigurationTest {
         assertEquals("testLogger", AuditConfiguration.ROOT_LOGGER.getString(config));
 
         assertEquals(Boolean.TRUE, AuditConfiguration.LOCATION.getBoolean(config));
+        assertEquals(Boolean.TRUE, AuditConfiguration.HOST.getBoolean(config));
         assertEquals(PropagateExceptions.ALL,
                 AuditConfiguration.PROPAGATE_APPENDER_EXCEPTIONS.getValue(config, PropagateExceptions.class));
 
