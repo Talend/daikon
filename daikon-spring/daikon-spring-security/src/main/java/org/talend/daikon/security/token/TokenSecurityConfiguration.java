@@ -58,8 +58,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token,
             @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
         this.additionalProtectedEndpoints = additionalProtectedEndpoints;
-        final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints
-                .stream() //
+        final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
                 .map(TokenProtectedPath::getProtectedPath) //
                 .map(AntPathRequestMatcher::new) //
                 .toArray(AntPathRequestMatcher[]::new);
@@ -79,8 +78,8 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     public void configure(HttpSecurity http) throws Exception {
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry =
-                http.csrf().disable().authorizeRequests();
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.csrf().disable()
+                .authorizeRequests();
         for (TokenProtectedPath protectedPath : additionalProtectedEndpoints) {
             registry = registry.antMatchers(protectedPath.getProtectedPath()).hasRole(TokenAuthentication.ROLE);
         }
@@ -100,8 +99,8 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 enforceTokenUsage = true;
             }
 
-            final ExpressionUrlAuthorizationConfigurer<HttpSecurity>.AuthorizedUrl matcher =
-                    registry.antMatchers(webEndpointProperties.getBasePath() + "/" + rootPath + "/**");
+            final ExpressionUrlAuthorizationConfigurer<HttpSecurity>.AuthorizedUrl matcher = registry
+                    .antMatchers(webEndpointProperties.getBasePath() + "/" + rootPath + "/**");
             if (enforceTokenUsage) {
                 registry = matcher.hasRole(TokenAuthentication.ROLE);
             } else {

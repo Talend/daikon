@@ -27,12 +27,7 @@ public class Log4j2JSONLayoutTest extends AbstractLayoutTest {
     protected String log(Object event, LogDetails logDetails) {
 
         AbstractStringLayout layout = Log4j2JSONLayout.createLayout(logDetails.isLocationInfo(), // location
-                true,
-                true,
-                true,
-                true,
-                false,
-                Charset.defaultCharset(), null);
+                true, true, true, true, false, Charset.defaultCharset(), null);
 
         return layout.toSerializable((LogEvent) event);
     }

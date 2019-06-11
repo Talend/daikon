@@ -29,7 +29,7 @@ public class KeySourcesTest {
 
     @Test
     public void shouldGenerateFromPBKDF2() throws Exception {
-        assertSource(KeySources.pbkDf2("DataPrepIsSoCool", KeySources.random(16).getKey(), 256));
+        assertSource(KeySources.pbkDf2("DataPrepIsSoCool", KeySources.random(16).getKey(), 128));
     }
 
     @Test(expected = IllegalArgumentException.class)
