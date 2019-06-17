@@ -8,8 +8,6 @@ import javax.crypto.Cipher;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class provides a helper class to encrypt and decrypt a given string using provided {@link CipherSource} and
@@ -17,7 +15,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Encryption {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Encryption.class);
 
     private final KeySource source;
 
@@ -77,7 +74,6 @@ public class Encryption {
         try {
             return decrypt(src);
         } catch (Exception e) {
-            LOGGER.debug("could not decrypt {}, return it as it is", name);
             return src;
         }
     }
@@ -94,7 +90,6 @@ public class Encryption {
         try {
             uri = new URI(rawUri);
         } catch (URISyntaxException e) {
-            LOGGER.info("Invalid URI {}", rawUri, e);
             return rawUri;
         }
         UserInfo userInfo = extractCredentials(uri);
@@ -103,7 +98,6 @@ public class Encryption {
                 userInfo.password = decrypt(userInfo.password);
                 return setCredentials(uri, userInfo).toString();
             } catch (Exception e) {
-                LOGGER.info("Could not decrypt URI password.");
                 return rawUri;
             }
         } else {
