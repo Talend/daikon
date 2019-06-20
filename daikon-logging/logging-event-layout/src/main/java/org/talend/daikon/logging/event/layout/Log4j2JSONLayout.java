@@ -1,13 +1,7 @@
 
 package org.talend.daikon.logging.event.layout;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
+import net.minidev.json.JSONObject;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
@@ -19,7 +13,12 @@ import org.apache.logging.log4j.core.util.KeyValuePair;
 import org.talend.daikon.logging.event.field.HostData;
 import org.talend.daikon.logging.event.field.LayoutFields;
 
-import net.minidev.json.JSONObject;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.nio.charset.Charset;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Log4j2 JSON Layout
@@ -30,8 +29,6 @@ import net.minidev.json.JSONObject;
 @Plugin(name = "Log4j2JSONLayout", category = "Core", elementType = "layout", printObject = true)
 public class Log4j2JSONLayout extends AbstractStringLayout {
 
-    private static final Map<String, String> ADDITIONAL_ATTRIBUTES = new HashMap<>();
-
     private boolean locationInfo;
 
     private boolean hostInfo;
@@ -39,13 +36,14 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
     private String customUserFields;
 
     private Map<String, String> metaFields = new HashMap<>();
+    private Map<String, String> additionalAttributes = new HashMap<>();
 
     protected Log4j2JSONLayout(final Boolean locationInfo, final Boolean hostInfo, final Charset charset,
             final Map<String, String> additionalLogAttributes) {
         super(charset);
         setLocationInfo(locationInfo);
         setHostInfo(hostInfo);
-        Log4j2JSONLayout.ADDITIONAL_ATTRIBUTES.putAll(additionalLogAttributes);
+        additionalAttributes.putAll(additionalLogAttributes);
     }
 
     /**
@@ -103,7 +101,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         HostData host = new HostData();
 
         // Extract and add fields from log4j2 config, if defined
-        LayoutUtils.addUserFields(ADDITIONAL_ATTRIBUTES, userFieldsEvent);
+        LayoutUtils.addUserFields(additionalAttributes, userFieldsEvent);
 
         Map<String, String> mdc = LayoutUtils.processMDCMetaFields(loggingEvent.getContextData().toMap(), logstashEvent,
                 metaFields);
