@@ -36,6 +36,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
     private String customUserFields;
 
     private Map<String, String> metaFields = new HashMap<>();
+
     private Map<String, String> additionalAttributes = new HashMap<>();
 
     protected Log4j2JSONLayout(final Boolean locationInfo, final Boolean hostInfo, final Charset charset,
@@ -218,7 +219,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
     private void createStackTraceEvent(final JSONObject logstashEvent, final LogEvent loggingEvent) {
         if (loggingEvent.getThrown().getStackTrace() != null) {
             final String[] options = { "full" };
-            final ThrowablePatternConverter converter = ThrowablePatternConverter.newInstance(options);
+            final ThrowablePatternConverter converter = ThrowablePatternConverter.newInstance(configuration, options);
             final StringBuilder sb = new StringBuilder();
             converter.format(loggingEvent, sb);
             final String stackTrace = sb.toString();
