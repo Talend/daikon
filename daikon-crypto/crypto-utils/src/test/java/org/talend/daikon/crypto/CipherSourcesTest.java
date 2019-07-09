@@ -13,8 +13,8 @@ import java.util.Base64;
 public class CipherSourcesTest {
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWithInvalidIVLength() throws Exception {
-        assertRoundTrip(CipherSources.aesGcm(33));
+    public void shouldFailWithInvalidTagLength() throws Exception {
+        assertRoundTrip(CipherSources.aesGcm(12, 4));
     }
 
     @Test
@@ -42,6 +42,11 @@ public class CipherSourcesTest {
     }
 
     @Test
+    public void shouldRoundtripWithAESAndDifferentTagLength() throws Exception {
+        assertRoundTrip(CipherSources.aesGcm(16, 16));
+    }
+
+    @Test
     public void shouldGenerateSameValuesWithAES() throws Exception {
         final CipherSource source = CipherSources.aes();
         final String encrypt1 = source.encrypt(KeySources.machineUID(16), "String");
@@ -63,7 +68,7 @@ public class CipherSourcesTest {
     public void blowfishUnableToDecrypt() throws Exception {
         String aWonderfulString = "aWonderfulString";
 
-        final Encryption encryptionAES = new Encryption(KeySources.machineUID(16), CipherSources.getDefault());
+        final Encryption encryptionAES = new Encryption(KeySources.machineUID(16), CipherSources.aes());
         String encryptedAESString = encryptionAES.encrypt(aWonderfulString);
 
         final Encryption encryptionBlowfish = new Encryption(KeySources.machineUID(16), CipherSources.blowfish());

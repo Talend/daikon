@@ -24,11 +24,12 @@ public class CipherSources {
     }
 
     /**
-     * @return A default {@link CipherSource} implementation
-     * @see #aesGcm(int)
+     * @return A default {@link CipherSource} implementation which uses AES in GCM mode, with a 96 bit IV and a
+     * 128 bit authentication tag
+     * @see #aesGcm(int, int)
      */
     public static CipherSource getDefault() {
-        return aesGcm(16);
+        return aesGcm(12, 16);
     }
 
     /**
@@ -59,11 +60,19 @@ public class CipherSources {
     }
 
     /**
-     * @return A {@link CipherSource} using AES/GCM/NoPadding encryption.
+     * @return A {@link CipherSource} using AES/GCM/NoPadding encryption with a 128 bit authentication tag
      */
     public static CipherSource aesGcm(int ivLength) {
-        if ((ivLength & 7) != 0 && Stream.of(128, 120, 112, 104, 96).noneMatch(i -> i == ivLength)) {
-            throw new IllegalArgumentException("Invalid IV length");
+        return aesGcm(ivLength, 16);
+    }
+
+    /**
+     * @return A {@link CipherSource} using AES/GCM/NoPadding encryption with the given iv Length (in bytes)
+     * and authentication tag length (in bytes)
+     */
+    public static CipherSource aesGcm(int ivLength, int tagLength) {
+        if (Stream.of(16, 15, 14, 13, 12).noneMatch(i -> i == tagLength)) {
+            throw new IllegalArgumentException("Invalid authentication tag length");
         }
 
         return new SymmetricKeyCipherSource(ivLength) {
@@ -73,7 +82,7 @@ public class CipherSources {
                 final Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
                 final byte[] sourceKey = source.getKey();
                 final Key key = new SecretKeySpec(sourceKey, "AES");
-                final GCMParameterSpec spec = new GCMParameterSpec(ivLength * 8, iv);
+                final GCMParameterSpec spec = new GCMParameterSpec(tagLength * 8, iv);
                 c.init(encryptMode, key, spec);
                 return c;
             }
