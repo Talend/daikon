@@ -96,6 +96,29 @@ input {
 
 NOTE: Platform Service team provides LogServer with LogStash which is pre-configured for audit logging.
 
+==== HTTP Configuration
+
+HTTP appenders (logback and log4j1) share the following configuration:
+
+// org.talend.logging.audit.impl.http.HttpEventSender:documentation:start
+
+[opts="header",cols="a,a,a"]
+|====
+| Property | Description | Default Value
+|`connectTimeout`|Optional (but recommended) HTTP connection timeout.|`0`
+|`coreSize`|Number of core threads in async mode (recommended to align it with max value).|`1`
+|`encoding`|Encoding used to create the basic token and content-type header, *it is not used to encode the event*.|`null`
+|`keepAliveMs`|How long to keep idle threads up in ms.|`60000`
+|`maxSize`|Number of max threads in async mode (recommended to align it with max value).|`1`
+|`password`|Optional password (requires an username) for basic authentication.|`null`
+|`queueSize`|Thread pool queue size. If negative it will be infinite, if zero it will be blocking when no thread is available, otherwise it is the number of allowed stacked events.|`-1`
+|`readTimeout`|Optional (but recommended) HTTP read timeout.|`0`
+|`supportsSystemPropertiesOverride`|Should current configuration be overridable with system properties. If `true`, you can use `org.talend.logging.audit.impl.http.HttpEventSender.<property name>` to override a value.|`true`
+|`url`|Target server URL where event are pushed to.|`null`
+|`username`|Optional username (requires a password) for basic authentication.|`null`
+|====
+
+// org.talend.logging.audit.impl.http.HttpEventSender:documentation:end
 
 === Logging a standard audit event
 
