@@ -32,6 +32,7 @@
         <logback.version>1.2.3</logback.version>
         <easymock.version>3.5.1</easymock.version>
         <avro.version>1.8.1</avro.version>
+        <commons-compress.version>1.18</commons-compress.version>
         <commons-io.version>2.6</commons-io.version>
         <reactor-core.version>3.1.6.RELEASE</reactor-core.version>
 
