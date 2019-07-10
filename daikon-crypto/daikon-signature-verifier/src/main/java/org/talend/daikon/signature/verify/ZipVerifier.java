@@ -127,7 +127,7 @@ public class ZipVerifier {
         }
         JarFile jarFile = null;
         try {
-            jarFile = new JarFile(filePath);
+            jarFile = new JarFile(file);
             Manifest mainfest = jarFile.getManifest();
             if (mainfest == null) {
                 throw new UnsignedArchiveException("Unsigned archive, missing entry:" + JarFile.MANIFEST_NAME); //$NON-NLS-1$
