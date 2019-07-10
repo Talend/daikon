@@ -6,10 +6,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  *
@@ -146,7 +146,7 @@ public class HttpEventSender {
 
     private String getAuthorizationHeader() {
         byte[] authData = (username + ':' + password).getBytes(encoding);
-        return "Basic " + DatatypeConverter.printBase64Binary(authData);
+        return "Basic " + Base64.getEncoder().encodeToString(authData);
     }
 
     private class LogSender implements Runnable {
