@@ -4,6 +4,7 @@ import static org.talend.daikon.crypto.EncodingUtils.BASE64_DECODER;
 import static org.talend.daikon.crypto.EncodingUtils.BASE64_ENCODER;
 
 import java.security.Key;
+import java.security.Provider;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.stream.Stream;
 
@@ -29,17 +30,24 @@ public class CipherSources {
      * @see #aesGcm(int, int)
      */
     public static CipherSource getDefault() {
-        return aesGcm(12, 16);
+        return aesGcm(12, 16, null);
     }
 
     /**
      * @return A {@link CipherSource} using AES encryption.
      */
     public static CipherSource aes() {
+        return aes(null);
+    }
+
+    /**
+     * @return A {@link CipherSource} using AES encryption and the given Provider
+     */
+    public static CipherSource aes(Provider p) {
         return new CipherSource() {
 
             private Cipher get(KeySource source, int mode) throws Exception {
-                final Cipher c = Cipher.getInstance("AES");
+                final Cipher c = p != null ? Cipher.getInstance("AES", p) : Cipher.getInstance("AES");
                 final Key keySpec = new SecretKeySpec(source.getKey(), "AES");
                 c.init(mode, keySpec);
                 return c;
@@ -63,14 +71,14 @@ public class CipherSources {
      * @return A {@link CipherSource} using AES/GCM/NoPadding encryption with a 128 bit authentication tag
      */
     public static CipherSource aesGcm(int ivLength) {
-        return aesGcm(ivLength, 16);
+        return aesGcm(ivLength, 16, null);
     }
 
     /**
      * @return A {@link CipherSource} using AES/GCM/NoPadding encryption with the given iv Length (in bytes)
-     * and authentication tag length (in bytes)
+     * and authentication tag length (in bytes) and optional Provider
      */
-    public static CipherSource aesGcm(int ivLength, int tagLength) {
+    public static CipherSource aesGcm(int ivLength, int tagLength, Provider p) {
         if (Stream.of(16, 15, 14, 13, 12).noneMatch(i -> i == tagLength)) {
             throw new IllegalArgumentException("Invalid authentication tag length");
         }
@@ -79,7 +87,7 @@ public class CipherSources {
 
             @Override
             protected Cipher get(KeySource source, int encryptMode, byte[] iv) throws Exception {
-                final Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
+                final Cipher c = p != null ? Cipher.getInstance("AES/GCM/NoPadding", p) : Cipher.getInstance("AES/GCM/NoPadding");
                 final byte[] sourceKey = source.getKey();
                 final Key key = new SecretKeySpec(sourceKey, "AES");
                 final GCMParameterSpec spec = new GCMParameterSpec(tagLength * 8, iv);
@@ -93,13 +101,21 @@ public class CipherSources {
      * @return A {@link CipherSource} using Blowfish encryption.
      */
     public static CipherSource blowfish() throws Exception {
+        return blowfish(null);
+    }
+
+    /**
+     * @return A {@link CipherSource} using Blowfish encryption and the given Provider.
+     */
+    public static CipherSource blowfish(Provider p) throws Exception {
         int ivLength = 8; // blowfish uses 64bits only
 
         return new SymmetricKeyCipherSource(ivLength) {
 
             @Override
             protected Cipher get(KeySource source, int encryptMode, byte[] iv) throws Exception {
-                final Cipher c = Cipher.getInstance("Blowfish/CBC/PKCS5Padding");
+                final Cipher c = p != null ? Cipher.getInstance("Blowfish/CBC/PKCS5Padding", p)
+                        : Cipher.getInstance("Blowfish/CBC/PKCS5Padding");
                 final byte[] sourceKey = source.getKey();
                 final Key key = new SecretKeySpec(sourceKey, "Blowfish");
                 AlgorithmParameterSpec spec = new IvParameterSpec(iv);
