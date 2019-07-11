@@ -66,16 +66,13 @@ public class LogbackConfigurerTest {
         try (final ServerSocket socket = new ServerSocket(0)) {
             System.setProperty("LogbackConfigurerTest_testSocketConfig_port", Integer.toString(socket.getLocalPort()));
             new Thread(() -> {
-                try {
-                    try (final Socket accept = socket.accept();
-                            final ObjectInputStream stream = new ObjectInputStream(accept.getInputStream())) {
-                        synchronized (messages) {
-                            messages.add(LoggingEventVO.class.cast(stream.readObject()).getMessage());
-                        }
-                    } catch (final ClassNotFoundException e) {
-                        fail(e.getMessage());
+                try (final Socket accept = socket.accept();
+                        final ObjectInputStream stream = new ObjectInputStream(accept.getInputStream())) {
+                    final LoggingEventVO eventVO = LoggingEventVO.class.cast(stream.readObject());
+                    synchronized (messages) {
+                        messages.add(eventVO.getMessage() + "/" + eventVO.getMdc().get("application"));
                     }
-                } catch (final IOException e) {
+                } catch (final IOException | ClassNotFoundException e) {
                     fail(e.getMessage());
                 } finally {
                     latch.countDown();
@@ -100,7 +97,7 @@ public class LogbackConfigurerTest {
             latch.await();
             synchronized (messages) {
                 assertEquals(1, messages.size());
-                assertEquals(json, messages.iterator().next());
+                assertEquals(json + "/appName", messages.iterator().next());
                 messages.clear();
             }
         } finally {
