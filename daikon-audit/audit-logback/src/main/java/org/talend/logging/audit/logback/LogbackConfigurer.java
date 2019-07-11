@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.net.SocketAppender;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
@@ -52,7 +53,8 @@ public final class LogbackConfigurer {
                 break;
 
             case SOCKET:
-                throw new AuditLoggingException("Socket appender is not supported with logback");
+                logger.addAppender(socketAppender(config, loggerContext));
+                break;
 
             case CONSOLE:
                 logger.addAppender(consoleAppender(config, loggerContext));
@@ -71,6 +73,16 @@ public final class LogbackConfigurer {
             }
         }
 
+    }
+
+    static Appender<ILoggingEvent> socketAppender(final AuditConfigurationMap config, final LoggerContext loggerContext) {
+        final SocketAppender appender = new SocketAppender();
+        appender.setContext(loggerContext);
+        appender.setName("auditSocketAppender");
+        appender.setRemoteHost(AuditConfiguration.APPENDER_SOCKET_HOST.getString(config));
+        appender.setPort(AuditConfiguration.APPENDER_SOCKET_PORT.getInteger(config));
+        appender.start();
+        return appender;
     }
 
     static Appender<ILoggingEvent> rollingFileAppender(AuditConfigurationMap config, LoggerContext loggerContext) {
