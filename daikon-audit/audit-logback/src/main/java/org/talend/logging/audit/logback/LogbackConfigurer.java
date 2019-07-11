@@ -92,6 +92,12 @@ public final class LogbackConfigurer {
             }
 
             @Override
+            protected void append(final ILoggingEvent event) {
+                event.prepareForDeferredProcessing();
+                super.append(event);
+            }
+
+            @Override
             protected PreSerializationTransformer<ILoggingEvent> getPST() {
                 return e -> {
                     final Map<String, String> mdc = new HashMap<>();
