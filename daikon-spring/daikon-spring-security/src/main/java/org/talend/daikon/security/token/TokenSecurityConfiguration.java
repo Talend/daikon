@@ -58,6 +58,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token,
             @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
         this.additionalProtectedEndpoints = additionalProtectedEndpoints;
+        additionalProtectedEndpoints.add(() -> "/version");
         final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
                 .map(TokenProtectedPath::getProtectedPath) //
                 .map(AntPathRequestMatcher::new) //
@@ -70,11 +71,6 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
             LOGGER.info("Configured token-based access security.");
             tokenAuthenticationFilter = new TokenAuthenticationFilter(token, protectedPaths);
         }
-    }
-
-    @Bean
-    public TokenProtectedPath versionProtectedEndpoint() {
-        return () -> "/version";
     }
 
     public void configure(HttpSecurity http) throws Exception {
