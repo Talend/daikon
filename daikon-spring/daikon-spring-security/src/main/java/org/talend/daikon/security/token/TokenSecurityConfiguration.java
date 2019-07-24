@@ -2,10 +2,6 @@ package org.talend.daikon.security.token;
 
 import static org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest.toAnyEndpoint;
 
-import java.util.List;
-
-import javax.servlet.Filter;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +11,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +21,9 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import javax.servlet.Filter;
+import java.util.List;
 
 /**
  * A Spring Security configuration class that ensures the Actuator (as well as paths in
@@ -56,8 +54,9 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final List<TokenProtectedPath> additionalProtectedEndpoints;
 
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token,
-            @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
+                                      @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
         this.additionalProtectedEndpoints = additionalProtectedEndpoints;
+        additionalProtectedEndpoints.add(() -> "/version");
         final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
                 .map(TokenProtectedPath::getProtectedPath) //
                 .map(AntPathRequestMatcher::new) //
@@ -70,11 +69,6 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
             LOGGER.info("Configured token-based access security.");
             tokenAuthenticationFilter = new TokenAuthenticationFilter(token, protectedPaths);
         }
-    }
-
-    @Bean
-    public TokenProtectedPath versionProtectedEndpoint() {
-        return () -> "/version";
     }
 
     public void configure(HttpSecurity http) throws Exception {
