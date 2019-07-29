@@ -2,6 +2,10 @@ package org.talend.daikon.security.token;
 
 import static org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest.toAnyEndpoint;
 
+import java.util.List;
+
+import javax.servlet.Filter;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +26,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import javax.servlet.Filter;
-import java.util.List;
 
 /**
  * A Spring Security configuration class that ensures the Actuator (as well as paths in
