@@ -11,6 +11,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,6 +37,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @Order(1)
+@ConditionalOnBean(PathMappedEndpoints.class)
 public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenSecurityConfiguration.class);
@@ -54,7 +56,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final List<TokenProtectedPath> additionalProtectedEndpoints;
 
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token,
-                                      @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
+            @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
         this.additionalProtectedEndpoints = additionalProtectedEndpoints;
         additionalProtectedEndpoints.add(() -> "/version");
         final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
