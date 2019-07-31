@@ -43,8 +43,6 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenSecurityConfiguration.class);
 
-    private final Filter tokenAuthenticationFilter;
-
     @Value("${talend.security.allowPublicPrometheusEndpoint:false}")
     private boolean allowPrometheusUnauthenticatedAccess;
 
@@ -56,27 +54,36 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final List<TokenProtectedPath> additionalProtectedEndpoints;
 
-    private final RequestMatcher protectedPaths;
+    private RequestMatcher protectedPaths;
+
+    private Filter tokenAuthenticationFilter;
 
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token,
             @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
         this.additionalProtectedEndpoints = additionalProtectedEndpoints;
-        additionalProtectedEndpoints.add(() -> "/versionTODO");
-        final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
-                .map(TokenProtectedPath::getProtectedPath) //
-                .map(AntPathRequestMatcher::new) //
-                .toArray(AntPathRequestMatcher[]::new);
-        protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
-        if (StringUtils.isBlank(token)) {
-            LOGGER.info("No token configured, protected endpoints are unavailable.");
-            tokenAuthenticationFilter = new NoConfiguredTokenFilter(protectedPaths);
-        } else {
-            LOGGER.info("Configured token-based access security.");
-            tokenAuthenticationFilter = new TokenAuthenticationFilter(token, protectedPaths);
+        if (!additionalProtectedEndpoints.isEmpty()) {
+            // do not add new spring security filter chain if not additional endpoint is configured
+            final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
+                    .map(TokenProtectedPath::getProtectedPath) //
+                    .map(AntPathRequestMatcher::new) //
+                    .toArray(AntPathRequestMatcher[]::new);
+            protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
+            if (StringUtils.isBlank(token)) {
+                LOGGER.info("No token configured, protected endpoints are unavailable.");
+                tokenAuthenticationFilter = new NoConfiguredTokenFilter(protectedPaths);
+            } else {
+                LOGGER.info("Configured token-based access security.");
+                tokenAuthenticationFilter = new TokenAuthenticationFilter(token, protectedPaths);
+            }
         }
     }
 
     public void configure(HttpSecurity http) throws Exception {
+        if (protectedPaths == null || additionalProtectedEndpoints.isEmpty()) {
+            // do not add new spring security filter chain if not additional endpoint is configured
+            return;
+        }
+
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http
                 .requestMatcher(protectedPaths)//
                 .csrf() //
