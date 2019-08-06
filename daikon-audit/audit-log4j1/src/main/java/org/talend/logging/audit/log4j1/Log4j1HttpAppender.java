@@ -24,6 +24,26 @@ public class Log4j1HttpAppender extends AppenderSkeleton {
         this.sender = sender;
     }
 
+    public void setSupportsSystemPropertiesOverride(final boolean supportsSystemPropertiesOverride) {
+        sender.setSupportsSystemPropertiesOverride(supportsSystemPropertiesOverride);
+    }
+
+    public void setQueueSize(final int queueSize) {
+        sender.setQueueSize(queueSize);
+    }
+
+    public void setCoreSize(final int coreSize) {
+        sender.setCoreSize(coreSize);
+    }
+
+    public void setMaxSize(final int maxSize) {
+        sender.setMaxSize(maxSize);
+    }
+
+    public void setKeepAliveMs(final int keepAliveMs) {
+        sender.setKeepAliveMs(keepAliveMs);
+    }
+
     public String getUrl() {
         return sender.getUrl();
     }
@@ -82,6 +102,12 @@ public class Log4j1HttpAppender extends AppenderSkeleton {
 
     public void setPropagateExceptions(boolean propagateExceptions) {
         this.propagateExceptions = propagateExceptions;
+    }
+
+    @Override
+    public void activateOptions() {
+        sender.start();
+        super.activateOptions();
     }
 
     @Override

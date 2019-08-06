@@ -1,7 +1,5 @@
 package org.talend.logging.audit.logback;
 
-import java.nio.charset.Charset;
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
@@ -27,6 +25,26 @@ public class LogbackHttpAppender extends AppenderBase<ILoggingEvent> {
 
     public LogbackHttpAppender(HttpEventSender sender) {
         this.sender = sender;
+    }
+
+    public void setSupportsSystemPropertiesOverride(final boolean supportsSystemPropertiesOverride) {
+        sender.setSupportsSystemPropertiesOverride(supportsSystemPropertiesOverride);
+    }
+
+    public void setQueueSize(final int queueSize) {
+        sender.setQueueSize(queueSize);
+    }
+
+    public void setCoreSize(final int coreSize) {
+        sender.setCoreSize(coreSize);
+    }
+
+    public void setMaxSize(final int maxSize) {
+        sender.setMaxSize(maxSize);
+    }
+
+    public void setKeepAliveMs(final int keepAliveMs) {
+        sender.setKeepAliveMs(keepAliveMs);
     }
 
     public Layout<ILoggingEvent> getLayout() {
@@ -95,6 +113,12 @@ public class LogbackHttpAppender extends AppenderBase<ILoggingEvent> {
 
     public void setPropagateExceptions(boolean propagateExceptions) {
         this.propagateExceptions = propagateExceptions;
+    }
+
+    @Override
+    public void start() {
+        sender.start();
+        super.start();
     }
 
     @Override

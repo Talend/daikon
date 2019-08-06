@@ -29,6 +29,7 @@ public enum AuditConfiguration {
     APPENDER_FILE_MAXBACKUP(Integer.class, 20),
     APPENDER_SOCKET_HOST(String.class, "localhost"),
     APPENDER_SOCKET_PORT(Integer.class, 4560),
+    APPENDER_SOCKET_APPLICATION(String.class, null, true),
     APPENDER_CONSOLE_PATTERN(String.class, "%d{yyyy-MM-dd HH:mm:ss} %-5p %c - %m%n"),
     APPENDER_CONSOLE_TARGET(LogTarget.class, LogTarget.OUTPUT),
     APPENDER_HTTP_URL(String.class),
