@@ -15,9 +15,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,7 +38,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @Configuration
 @EnableWebSecurity
 @Order(1)
-@Conditional(TokenSecurityConfiguration.TokenSecurityCondition.class)
+@ConditionalOnBean(PathMappedEndpoints.class)
 public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenSecurityConfiguration.class);
@@ -63,11 +61,18 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token,
             @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
         this.additionalProtectedEndpoints = additionalProtectedEndpoints;
-        final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
-                .map(TokenProtectedPath::getProtectedPath) //
-                .map(AntPathRequestMatcher::new) //
-                .toArray(AntPathRequestMatcher[]::new);
-        protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
+
+        if (additionalProtectedEndpoints.isEmpty()) {
+            protectedPaths = toAnyEndpoint();
+        } else {
+            // only add OrRequestMatcher on additionalProtectedEndpoints if they are some
+            final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
+                    .map(TokenProtectedPath::getProtectedPath) //
+                    .map(AntPathRequestMatcher::new) //
+                    .toArray(AntPathRequestMatcher[]::new);
+            protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
+        }
+
         if (StringUtils.isBlank(token)) {
             LOGGER.info("No token configured, protected endpoints are unavailable.");
             tokenAuthenticationFilter = new NoConfiguredTokenFilter(protectedPaths);
@@ -111,27 +116,5 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
             }
         }
         registry.and().addFilterAfter(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
-    }
-
-    public static class TokenSecurityCondition extends AllNestedConditions {
-
-        // do not add new spring security filter chain if not additional endpoint is configured
-        public TokenSecurityCondition() {
-            super(ConfigurationPhase.REGISTER_BEAN);
-        }
-
-        public TokenSecurityCondition(ConfigurationPhase configurationPhase) {
-            super(configurationPhase);
-        }
-
-        @ConditionalOnBean(PathMappedEndpoints.class)
-        static class conditionalPathMappedEndpoints {
-
-        }
-
-        @ConditionalOnBean(TokenProtectedPath.class)
-        static class conditionalTokenProtectedPath {
-
-        }
     }
 }
