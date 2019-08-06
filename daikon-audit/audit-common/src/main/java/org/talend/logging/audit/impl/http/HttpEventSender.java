@@ -1,14 +1,10 @@
 package org.talend.logging.audit.impl.http;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,44 +24,64 @@ import java.util.stream.Stream;
 
 public class HttpEventSender {
 
-    @Configuration("Target server URL where event are pushed to.")
+    private final AtomicReference<ExecutorService> executor = new AtomicReference<>();
+
+    /**
+     * Target server URL where event are pushed to.
+     */
     private String url;
 
-    @Configuration("Optional username (requires a password) for basic authentication.")
+    /**
+     * Optional username (requires a password) for basic authentication.
+     */
     private String username;
 
-    @Configuration("Optional password (requires an username) for basic authentication.")
+    /**
+     * Optional password (requires an username) for basic authentication.
+     */
     private String password;
 
-    @Configuration("Optional (but recommended) HTTP connection timeout.")
+    /**
+     * Optional (but recommended) HTTP connection timeout.
+     */
     private int connectTimeout;
 
-    @Configuration("Optional (but recommended) HTTP read timeout.")
+    /**
+     * Optional (but recommended) HTTP read timeout.
+     */
     private int readTimeout;
 
-    @Configuration("Encoding used to create the basic token and content-type header, *it is not used to encode the event*.")
+    /**
+     * Encoding used to create the basic token and content-type header, <b>it is not used to encode the event</b>.
+     */
     private Charset encoding;
 
-    @Configuration("Number of core threads in async mode (recommended to align it with max value).")
+    /**
+     * Number of core threads in async mode (recommended to align it with max value).
+     */
     private int coreSize = 1;
 
-    @Configuration("Number of max threads in async mode (recommended to align it with max value).")
+    /**
+     * Number of max threads in async mode (recommended to align it with max value).
+     */
     private int maxSize = 1;
 
-    @Configuration("Thread pool queue size. If negative it will be infinite, "
-            + "if zero it will be blocking when no thread is available, "
-            + "otherwise it is the number of allowed stacked events.")
+    /**
+     * Thread pool queue size. If negative it will be infinite, if zero it will be blocking when no thread is available,
+     * otherwise it is the number of allowed stacked events.
+     */
     private int queueSize = -1;
 
-    @Configuration("How long to keep idle threads up in ms.")
+    /**
+     * How long to keep idle threads up in ms.
+     */
     private int keepAliveMs = 60000;
 
-    @Configuration(overridable = false, value = "Should current configuration be overridable with system properties. "
-            + "If `true`, you can use `org.talend.logging.audit.impl.http.HttpEventSender.<property name>` "
-            + "to override a value.")
+    /**
+     * Should current configuration be overridable with system properties. If <code>true</code>, you can use
+     * <code>org.talend.logging.audit.impl.http.HttpEventSender.&lt;property name&gt;</code> to override a value.
+     */
     private boolean supportsSystemPropertiesOverride = true;
-
-    private final AtomicReference<ExecutorService> executor = new AtomicReference<>();
 
     private String authorization;
 
@@ -244,7 +260,6 @@ public class HttpEventSender {
 
     private void overrideConfigurationWithSystemProperties() {
         Stream.of(HttpEventSender.class.getDeclaredFields())
-                .filter(it -> it.isAnnotationPresent(Configuration.class) && it.getAnnotation(Configuration.class).overridable())
                 .forEach(field -> ofNullable(System.getProperty(HttpEventSender.class.getName() + "." + field.getName()))
                         .ifPresent(value -> {
                             field.setAccessible(true);
@@ -281,14 +296,5 @@ public class HttpEventSender {
         public void run() {
             sendEvent(eventJson);
         }
-    }
-
-    @Target(FIELD)
-    @Retention(RUNTIME)
-    public @interface Configuration {
-
-        String value();
-
-        boolean overridable() default true;
     }
 }
