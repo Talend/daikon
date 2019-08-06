@@ -1,7 +1,5 @@
 package org.talend.logging.audit.impl.http;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -71,8 +69,8 @@ public class HttpEventSender {
     private int maxSize = 1;
 
     /**
-     * Thread pool queue size. If negative it will be infinite, if zero it will be blocking when no thread is
-     * available, otherwise it is the number of allowed stacked events.
+     * Thread pool queue size. If negative it will be infinite, if zero it will be blocking when no thread is available,
+     * otherwise it is the number of allowed stacked events.
      */
     private int queueSize = -1;
 

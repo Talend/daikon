@@ -1,17 +1,24 @@
 package org.talend.logging.audit.logback;
 
+import static java.util.Objects.requireNonNull;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEventVO;
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
+import ch.qos.logback.core.net.AbstractSocketAppender;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.spi.PreSerializationTransformer;
 import ch.qos.logback.core.util.FileSize;
 import org.talend.daikon.logging.event.layout.LogbackJSONLayout;
 import org.talend.logging.audit.AuditLoggingException;
@@ -52,7 +59,8 @@ public final class LogbackConfigurer {
                 break;
 
             case SOCKET:
-                throw new AuditLoggingException("Socket appender is not supported with logback");
+                logger.addAppender(socketAppender(config, loggerContext));
+                break;
 
             case CONSOLE:
                 logger.addAppender(consoleAppender(config, loggerContext));
@@ -71,6 +79,57 @@ public final class LogbackConfigurer {
             }
         }
 
+    }
+
+    static Appender<ILoggingEvent> socketAppender(final AuditConfigurationMap config, final LoggerContext loggerContext) {
+        final String app = requireNonNull(AuditConfiguration.APPENDER_SOCKET_APPLICATION.getString(config),
+                "application must be set for logback socket appender");
+        final AbstractSocketAppender<ILoggingEvent> appender = new AbstractSocketAppender<ILoggingEvent>() {
+
+            @Override
+            protected void postProcessEvent(final ILoggingEvent event) {
+                // no-op
+            }
+
+            @Override
+            protected void append(final ILoggingEvent event) {
+                event.prepareForDeferredProcessing();
+                super.append(event);
+            }
+
+            @Override
+            protected PreSerializationTransformer<ILoggingEvent> getPST() {
+                return e -> {
+                    final Map<String, String> mdc = new HashMap<>();
+                    mdc.put("application", app);
+                    mdc.putAll(e.getMDCPropertyMap());
+
+                    final LoggingEvent copy = new LoggingEvent();
+                    copy.setLoggerName(e.getLoggerName());
+                    copy.setLoggerContextRemoteView(e.getLoggerContextVO());
+                    copy.setThreadName(e.getThreadName());
+                    copy.setLevel(e.getLevel());
+                    copy.setMessage(e.getMessage());
+                    copy.setArgumentArray(e.getArgumentArray());
+                    copy.setMarker(e.getMarker());
+                    copy.setMDCPropertyMap(mdc);
+                    copy.setTimeStamp(e.getTimeStamp());
+                    if (ThrowableProxy.class.isInstance(e.getThrowableProxy())) {
+                        copy.setThrowableProxy(ThrowableProxy.class.cast(e.getThrowableProxy()));
+                    }
+                    if (copy.hasCallerData()) {
+                        copy.setCallerData(e.getCallerData());
+                    }
+                    return LoggingEventVO.build(copy);
+                };
+            }
+        };
+        appender.setContext(loggerContext);
+        appender.setName("auditSocketAppender");
+        appender.setRemoteHost(AuditConfiguration.APPENDER_SOCKET_HOST.getString(config));
+        appender.setPort(AuditConfiguration.APPENDER_SOCKET_PORT.getInteger(config));
+        appender.start();
+        return appender;
     }
 
     static Appender<ILoggingEvent> rollingFileAppender(AuditConfigurationMap config, LoggerContext loggerContext) {
