@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import javax.crypto.AEADBadTagException;
 import javax.crypto.BadPaddingException;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
 
 import java.util.Base64;
@@ -13,13 +14,18 @@ import java.util.Base64;
 public class CipherSourcesTest {
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWithInvalidIVLength() throws Exception {
-        assertRoundTrip(CipherSources.aesGcm(33));
+    public void shouldFailWithInvalidTagLength() throws Exception {
+        assertRoundTrip(CipherSources.aesGcm(12, 4, null));
     }
 
     @Test
     public void shouldRoundtripWithDefault() throws Exception {
         assertRoundTrip(CipherSources.getDefault());
+    }
+
+    @Test
+    public void shouldRoundtripWithAESGCMAndBouncyCastle() throws Exception {
+        assertRoundTrip(CipherSources.aesGcm(12, 16, new BouncyCastleProvider()));
     }
 
     @Test
@@ -39,6 +45,16 @@ public class CipherSourcesTest {
     @Test
     public void shouldRoundtripWithAES() throws Exception {
         assertRoundTrip(CipherSources.aes());
+    }
+
+    @Test
+    public void shouldRoundtripWithAESAndDifferentTagLength() throws Exception {
+        assertRoundTrip(CipherSources.aesGcm(16, 16, null));
+    }
+
+    @Test
+    public void shouldRoundtripWithAESAndBouncyCastle() throws Exception {
+        assertRoundTrip(CipherSources.aes(new BouncyCastleProvider()));
     }
 
     @Test
@@ -63,7 +79,7 @@ public class CipherSourcesTest {
     public void blowfishUnableToDecrypt() throws Exception {
         String aWonderfulString = "aWonderfulString";
 
-        final Encryption encryptionAES = new Encryption(KeySources.machineUID(16), CipherSources.getDefault());
+        final Encryption encryptionAES = new Encryption(KeySources.machineUID(16), CipherSources.aes());
         String encryptedAESString = encryptionAES.encrypt(aWonderfulString);
 
         final Encryption encryptionBlowfish = new Encryption(KeySources.machineUID(16), CipherSources.blowfish());
@@ -74,6 +90,11 @@ public class CipherSourcesTest {
     @Test
     public void shouldRoundtripWithBlowfish() throws Exception {
         assertRoundTrip(CipherSources.blowfish());
+    }
+
+    @Test
+    public void shouldRoundtripWithBlowfishAndBouncyCastle() throws Exception {
+        assertRoundTrip(CipherSources.blowfish(new BouncyCastleProvider()));
     }
 
     @Test

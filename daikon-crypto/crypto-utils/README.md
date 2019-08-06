@@ -80,7 +80,9 @@ decrypt (2) = MyUnsecureString
 ### Available CipherSource
 
 The `CipherSources::aes()` gives a standard AES encryption support (with *random* value). Encryption of the same value will always produce the same result.
-The usage of `CipherSources::getDefault()` is strongly recommended.
+The usage of `CipherSources::getDefault()` is strongly recommended. `CipherSources::getDefault()` is equivalent to calling `CipherSources::aesGcm(12, 16, null)`, which uses AES in GCM mode (which gives you authenticated encryption) using a 12 byte IV and a 16 byte authentication tag. The last parameter refers to a JCE
+Provider that you can optionally use, e.g. to use BouncyCastle pass 'new BouncyCastleProvider()' for this parameter. However this should be unnecessary for
+most use-cases.
 
 ### Available KeySource
 
