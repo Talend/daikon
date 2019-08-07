@@ -131,6 +131,6 @@ public class CryptoHelper {
     }
 
     public static final CryptoHelper getDefault() {
-        return new CryptoHelper(new String(PASSPHRASE));
+        return new CryptoHelper(PASSPHRASE);
     }
 }
