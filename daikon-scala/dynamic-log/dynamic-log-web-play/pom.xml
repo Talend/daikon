@@ -120,6 +120,7 @@
             <plugin>
                 <groupId>com.google.code.play2-maven-plugin</groupId>
                 <artifactId>play2-maven-plugin</artifactId>
+                <version>${play2-maven-plugin.version}</version>
                 <configuration>
                     <routesAdditionalImports>org.talend.daikon.dynamiclog.logging.common.LoggerLevelBindables._</routesAdditionalImports>
                 </configuration>
