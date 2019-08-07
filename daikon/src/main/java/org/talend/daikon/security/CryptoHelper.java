@@ -44,7 +44,7 @@ public class CryptoHelper {
     // Iteration count
     private int iterationCount = 29;
 
-    public static final String PASSPHRASE = "99ZwBDt1L9yMX2ApJx fnv94o99OeHbCGuIHTy22 V9O6cZ2i374fVjdV76VX9g49DG1r3n90hT5c1"; //$NON-NLS-1$
+    public static String PASSPHRASE = KeyProvider.getInstance().getKeyValue(KeyProvider.SYSTEM_ENCRYPTION_KEY);
 
     /**
      * @param passPhrase the pass phrase used to encrypt and decrypt strings.
@@ -131,6 +131,6 @@ public class CryptoHelper {
     }
 
     public static final CryptoHelper getDefault() {
-        return new CryptoHelper(PASSPHRASE);
+        return new CryptoHelper(new String(PASSPHRASE));
     }
 }
