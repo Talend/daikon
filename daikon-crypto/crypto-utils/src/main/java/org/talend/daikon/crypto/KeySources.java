@@ -168,7 +168,14 @@ public class KeySources {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(FileSource.class);
 
-        static {
+        private final String propertyName;
+
+        private FileSource(String propertyName) {
+            init();
+            this.propertyName = propertyName;
+        }
+
+        private void init() {
             try {
                 try (InputStream standardKeyFile = KeySources.class.getResourceAsStream("key.dat")) {
                     properties.load(standardKeyFile);
@@ -186,15 +193,13 @@ public class KeySources {
             }
         }
 
-        private final String propertyName;
-
-        private FileSource(String propertyName) {
-            this.propertyName = propertyName;
-        }
-
         @Override
         public byte[] getKey() throws Exception {
-            final String o = String.valueOf(properties.get(propertyName));
+            final Object propertyObject = properties.get(propertyName);
+            if (propertyObject == null) {
+                throw new IllegalArgumentException("Property '" + propertyName + "' does not exist.");
+            }
+            final String o = String.valueOf(propertyObject);
             return EncodingUtils.BASE64_DECODER.apply(o.getBytes(EncodingUtils.ENCODING));
         }
     }

@@ -46,12 +46,12 @@ public class CryptoHelper {
     // Iteration count
     private int iterationCount = 29;
 
-    public static final String defaultPassphrase;
+    public static final String PASSPHRASE;
 
     static {
         try {
             final byte[] key = KeySources.file("system.encryption.key").getKey();
-            defaultPassphrase = new String(key, EncodingUtils.ENCODING);
+            PASSPHRASE = new String(key, EncodingUtils.ENCODING);
         } catch (Exception e) {
             throw new RuntimeException("Unable to load default pass phrase.", e);
         }
@@ -142,6 +142,6 @@ public class CryptoHelper {
     }
 
     public static final CryptoHelper getDefault() {
-        return new CryptoHelper(defaultPassphrase);
+        return new CryptoHelper(PASSPHRASE);
     }
 }
