@@ -23,6 +23,8 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.talend.daikon.crypto.EncodingUtils;
+import org.talend.daikon.crypto.KeySources;
 
 /**
  * Encrypt and decrypt strings, encapsulating the cryptography algorithm and configured by a passphrase.
@@ -44,7 +46,16 @@ public class CryptoHelper {
     // Iteration count
     private int iterationCount = 29;
 
-    public static final String PASSPHRASE = "99ZwBDt1L9yMX2ApJx fnv94o99OeHbCGuIHTy22 V9O6cZ2i374fVjdV76VX9g49DG1r3n90hT5c1"; //$NON-NLS-1$
+    public static final String PASSPHRASE;
+
+    static {
+        try {
+            final byte[] key = KeySources.file("system.encryption.key").getKey();
+            PASSPHRASE = new String(key, EncodingUtils.ENCODING);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to load default pass phrase.", e);
+        }
+    }
 
     /**
      * @param passPhrase the pass phrase used to encrypt and decrypt strings.
