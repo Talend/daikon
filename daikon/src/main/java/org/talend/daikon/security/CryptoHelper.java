@@ -39,10 +39,6 @@ public class CryptoHelper {
 
     private Cipher dcipher;
 
-    // 8-byte Salt
-    private byte[] salt = { (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32, (byte) 0x56, (byte) 0x35, (byte) 0xE3,
-            (byte) 0x03 };
-
     // Iteration count
     private int iterationCount = 29;
 
@@ -62,6 +58,9 @@ public class CryptoHelper {
      */
     public CryptoHelper(String passPhrase) {
         try {
+            // 8-byte Salt
+            final byte[] salt = KeySources.file("system.encryption.salt").getKey();
+
             // Create the key
             KeySpec keySpec = new PBEKeySpec(passPhrase.toCharArray(), salt, iterationCount);
             SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec); //$NON-NLS-1$
