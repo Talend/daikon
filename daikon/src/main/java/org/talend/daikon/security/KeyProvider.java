@@ -56,10 +56,10 @@ public class KeyProvider {
                 try {
                     loadFromFile(new FileInputStream(new File(filePath)), false);
                 } catch (FileNotFoundException e) {
-                    processError("Read custome key file failed:" + e);
+                    processError("Read custom key file failed:" + e);
                 }
             } else {
-                processError("Can't find custom encrtypt key file.");
+                processError("Can't find custom encrtyption key file.");
             }
         }
         loadFromFile(KeyProvider.class.getResourceAsStream("key.dat"), true);
@@ -89,13 +89,13 @@ public class KeyProvider {
                 }
             }
         } catch (IOException e) {
-            processError("Read custom encrypt key file failed:", e);
+            processError("Read encrtyption key file failed:", e);
         } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    processError("Read custom encrypt key file failed:", e);
+                    processError("Close encrtyption key file failed:", e);
                 }
             }
         }
