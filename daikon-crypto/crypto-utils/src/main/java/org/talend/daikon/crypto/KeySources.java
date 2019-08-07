@@ -1,5 +1,13 @@
 package org.talend.daikon.crypto;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.NetworkInterface;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -7,6 +15,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Enumeration;
 import java.util.Optional;
+import java.util.Properties;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -139,5 +148,55 @@ public class KeySources {
                 throw new IllegalStateException("Unable to generate key.", e);
             }
         };
+    }
+
+    /**
+     * An implementation of {@link KeySource} that reads keys from a property file. Default values are read from
+     * <code>key.dat</code>, you may override defaults values by specifying an external file using
+     * <code>encryption.keys.file</code>
+     * system property.
+     *
+     * @param propertyName The property name to look up for in properties file.
+     * @return The key as read from key file or <code>null</code> if not found.
+     */
+    public static KeySource file(String propertyName) {
+        return new FileSource(propertyName);
+    }
+
+    private static class FileSource implements KeySource {
+
+        private static final Properties properties = new Properties();
+
+        private static final Logger LOGGER = LoggerFactory.getLogger(FileSource.class);
+
+        static {
+            try {
+                try (InputStream standardKeyFile = KeySources.class.getResourceAsStream("key.dat")) {
+                    properties.load(standardKeyFile);
+                }
+                final String filePath = System.getProperty("encryption.keys.file");
+                if (StringUtils.isNotEmpty(filePath)) {
+                    if (new File(filePath).exists()) {
+                        try (InputStream in = new FileInputStream(new File(filePath))) {
+                            properties.load(in);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                LOGGER.error("Unable to load key file.", e);
+            }
+        }
+
+        private final String propertyName;
+
+        private FileSource(String propertyName) {
+            this.propertyName = propertyName;
+        }
+
+        @Override
+        public byte[] getKey() throws Exception {
+            final String o = String.valueOf(properties.get(propertyName));
+            return EncodingUtils.BASE64_DECODER.apply(o.getBytes(EncodingUtils.ENCODING));
+        }
     }
 }

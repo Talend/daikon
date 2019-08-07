@@ -37,7 +37,7 @@ public class KeySourcesTest {
         assertSource(KeySources.systemProperty("missingSystemProperty"));
     }
 
-    @Test()
+    @Test
     public void shouldGenerateFromSystemProperty() throws Exception {
         try {
             System.setProperty("aes.encryption.key", "DataPrepIsSoCool");
@@ -45,6 +45,15 @@ public class KeySourcesTest {
         } finally {
             System.clearProperty("aes.encryption.key");
         }
+    }
+
+    @Test
+    public void testGetKey() throws Exception {
+        final String systemKey = new String(KeySources.file("system.encryption.key").getKey(), EncodingUtils.ENCODING);
+        assertEquals("99ZwBDt1L9yMX2ApJx fnv94o99OeHbCGuIHTy22 V9O6cZ2i374fVjdV76VX9g49DG1r3n90hT5c1", systemKey);
+
+        final String propertiesKey = new String(KeySources.file("properties.encryption.key").getKey(), EncodingUtils.ENCODING);
+        assertEquals("Il faudrait trouver une passphrase plus originale que celle-ci!", propertiesKey);
     }
 
     private void assertSource(KeySource keySource) throws Exception {

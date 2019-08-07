@@ -102,7 +102,7 @@ public class StringProperty extends Property<String> {
     public void encryptStoredValue(boolean encrypt) {
         if (isFlag(Property.Flags.ENCRYPT)) {
             String value = (String) getStoredValue();
-            CryptoHelper ch = new CryptoHelper(CryptoHelper.PASSPHRASE);
+            CryptoHelper ch = new CryptoHelper(CryptoHelper.defaultPassphrase);
             if (encrypt) {
                 setStoredValue(ch.encrypt(value));
             } else {
