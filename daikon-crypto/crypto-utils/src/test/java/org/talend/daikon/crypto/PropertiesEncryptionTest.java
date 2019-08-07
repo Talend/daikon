@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.talend.daikon.exception.TalendRuntimeException;
 
 import java.io.*;
 import java.net.URL;
@@ -146,7 +145,7 @@ public class PropertiesEncryptionTest {
 
     @Test
     public void loadAndDecrypt_fileNotFound() throws Exception {
-        expectedException.expect(TalendRuntimeException.class);
+        expectedException.expect(RuntimeException.class);
         new PropertiesEncryption(encryption).loadAndDecrypt("NOT_FOUND", Collections.singleton("admin.password"));
     }
 

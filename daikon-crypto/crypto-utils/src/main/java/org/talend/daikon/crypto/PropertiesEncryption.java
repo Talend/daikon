@@ -6,7 +6,6 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.daikon.exception.TalendRuntimeException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -64,7 +63,7 @@ public class PropertiesEncryption {
      * @param input the property file path
      * @param mustBeDecrypted the set of properties that must be decrypted
      * @return a new Properties object
-     * @throws TalendRuntimeException if an IOException occured when reading input file
+     * @throws RuntimeException if an IOException occured when reading input file
      */
     public Properties loadAndDecrypt(String input, Set<String> mustBeDecrypted) {
         Path inputFilePath = Paths.get(input);
@@ -78,11 +77,11 @@ public class PropertiesEncryption {
                 return result;
             } catch (IOException e) {
                 LOGGER.error("Failed to load input {} {}", input, e);
-                throw TalendRuntimeException.createUnexpectedException(e);
+                throw new RuntimeException(e);
             }
         }
         LOGGER.error("Input file does not exist {}", input);
-        throw TalendRuntimeException.createUnexpectedException(new FileNotFoundException(input));
+        throw new RuntimeException(new FileNotFoundException(input));
     }
 
     /**
