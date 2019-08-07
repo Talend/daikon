@@ -67,7 +67,8 @@ public class KeySourcesTest {
             final String systemKey = new String(KeySources.file("system.encryption.key").getKey(), EncodingUtils.ENCODING);
             assertEquals("99ZwBDt1L9yMX2ApJx fnv94o99OeHbCGuIHTy22 V9O6cZ2i374fVjdV76VX9g49DG1r3n90hT5c1", systemKey);
 
-            final String propertiesKey = new String(KeySources.file("properties.encryption.key").getKey(), EncodingUtils.ENCODING);
+            final String propertiesKey = new String(KeySources.file("properties.encryption.key").getKey(),
+                    EncodingUtils.ENCODING);
             assertEquals("it's base64 encoded", propertiesKey);
         } finally {
             System.setProperty("encryption.keys.file", "");

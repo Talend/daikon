@@ -164,9 +164,9 @@ public class KeySources {
 
     private static class FileSource implements KeySource {
 
-        private static final Properties properties = new Properties();
-
         private static final Logger LOGGER = LoggerFactory.getLogger(FileSource.class);
+
+        private final Properties properties = new Properties();
 
         private final String propertyName;
 
