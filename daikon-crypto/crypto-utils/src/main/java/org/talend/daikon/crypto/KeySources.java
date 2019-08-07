@@ -152,9 +152,8 @@ public class KeySources {
 
     /**
      * An implementation of {@link KeySource} that reads keys from a property file. Default values are read from
-     * <code>key.dat</code>, you may override defaults values by specifying an external file using
-     * <code>encryption.keys.file</code>
-     * system property.
+     * <code>key.dat</code>, you may override default values by specifying an external file using
+     * <code>encryption.keys.file</code> system property.
      *
      * @param propertyName The property name to look up for in properties file.
      * @return The key as read from key file or <code>null</code> if not found.
