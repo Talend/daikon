@@ -77,6 +77,7 @@
     </properties>
     <modules>
         <module>daikon</module>
+        <module>daikon-crypto</module>
         <module>daikon-exception</module>
         <module>daikon-spring</module>
         <module>daikon-service</module>
@@ -88,7 +89,6 @@
         <module>daikon-messages</module>
         <module>daikon-audit</module>
       	<module>daikon-i18n</module>
-      	<module>daikon-signature-verifier</module>
         <module>daikon-scala</module>
     </modules>
     <scm>
