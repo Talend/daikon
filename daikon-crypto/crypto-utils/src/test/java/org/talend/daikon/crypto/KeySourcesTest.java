@@ -48,7 +48,7 @@ public class KeySourcesTest {
     }
 
     @Test
-    public void testGetKey() throws Exception {
+    public void testDefaultFileKeys() throws Exception {
         final String systemKey = new String(KeySources.file("system.encryption.key").getKey(), EncodingUtils.ENCODING);
         assertEquals("99ZwBDt1L9yMX2ApJx fnv94o99OeHbCGuIHTy22 V9O6cZ2i374fVjdV76VX9g49DG1r3n90hT5c1", systemKey);
 
