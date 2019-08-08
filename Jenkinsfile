@@ -3,6 +3,11 @@ def gitCredentials = usernamePassword(
     credentialsId: 'github-credentials',
     passwordVariable: 'GIT_PASSWORD',
     usernameVariable: 'GIT_LOGIN')
+def jiraCredentials = usernamePassword(
+    credentialsId: 'jira-credentials',
+    passwordVariable: 'JIRA_PASSWORD',
+    usernameVariable: 'JIRA_LOGIN')
+def currentBranch = env.CHANGE_BRANCH == null ? env.BRANCH_NAME : env.CHANGE_BRANCH
 
 pipeline {
 
@@ -38,14 +43,14 @@ spec:
       - name: docker
         mountPath: /var/run/docker.sock
       - name: m2
-        mountPath: /root/.m2/repository
+        mountPath: /root/daikon/.m2/repository
   volumes:
   - name: docker
     hostPath:
       path: /var/run/docker.sock
   - name: m2
     hostPath:
-      path: /tmp/jenkins/all/m2
+      path: /tmp/jenkins/daikon/m2
 """
     }
   }
@@ -61,23 +66,10 @@ spec:
   }
 
   stages {
-    stage('Check git connectivity') {
-      steps {
-        container('maven') {
-          withCredentials([gitCredentials]) {
-            sh """
-                ./jenkins/configure_git_credentials.sh '${GIT_LOGIN}' '${GIT_PASSWORD}'
-                git tag ci-kuke-test && git push --tags
-                git push --delete origin ci-kuke-test && git tag --delete ci-kuke-test
-            """
-          }
-        }
-      }
-    }
 
-    stage('Build master release') {
+    stage('Build release') {
       when {
-        expression { params.release && env.BRANCH_NAME == 'master' }
+        expression { params.release }
       }
       steps {
         container('maven') {
@@ -101,32 +93,12 @@ spec:
       }
     }
 
-    stage('Merge master to branch') {
-      when {
-        expression { false && env.BRANCH_NAME != 'master' }
-      }
-      steps {
-        container('maven') {
-          configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-            sh """
-              git fetch origin master
-              git branch -a
-              git checkout master
-              git pull
-              git checkout -
-              git merge master
-            """
-          }
-        }
-      }
-    }
-
     stage('Build & deploy branch') {
       when {
-        expression { env.BRANCH_NAME != 'master' }
+        expression { !params.release && env.BRANCH_NAME != 'master' }
       }
       environment {
-        escaped_branch = env.CHANGE_BRANCH.toLowerCase().replaceAll('/', '_')
+        escaped_branch = currentBranch.toLowerCase().replaceAll('/', '_')
       }
       steps {
         container('maven') {
@@ -141,18 +113,18 @@ spec:
 
     stage("Release") {
         when {
-            expression { params.release && env.BRANCH_NAME == 'master'}
+            expression { params.release }
         }
         steps {
-            withCredentials([gitCredentials]) {
+            withCredentials([gitCredentials, jiraCredentials]) {
               container('maven') {
                 configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
                   sh """
                     git config --global push.default current
-                    git checkout master
+                    git checkout ${env.BRANCH_NAME}
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DdevelopmentVersion=${params.next_version} release:prepare
-                    git log -5
                     git push
+                    git push --tags
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -DlocalCheckout=true -Dusername=${GIT_LOGIN} -Dpassword=${GIT_PASSWORD} release:perform
                   """
                 }
@@ -160,8 +132,8 @@ spec:
             }
             slackSend(
               color: "GREEN",
-              channel: "daikon",
-              message: "Daikon version ${params.release_version} released. Next version: ${params.next_version}"
+              channel: "eng-daikon",
+              message: "Daikon version ${params.release_version} released (next version: ${params.next_version}) <https://github.com/Talend/daikon/blob/master/releases/${params.release_version}.adoc|${params.release_version} release notes>"
             )
         }
     }
