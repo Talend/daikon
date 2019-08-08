@@ -56,5 +56,46 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>bundle-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>bundle</classifier>
+                            <instructions>
+                                <Bundle-SymbolicName>org.talend.daikon.crypto.utils</Bundle-SymbolicName>
+                                <DynamicImport-Package>*</DynamicImport-Package>
+                                <Service-Component>*</Service-Component>
+                                <Embed-Transitive>true</Embed-Transitive>
+                                <Embed-Dependency>*;artifactId=paranamer|snappy-java|commons-compress|xz;inline=true
+                                </Embed-Dependency>
+                                <Import-Package>
+                                    com.cedarsoftware.*;resolution:=optional,com.fasterxml.*;resolution:=optional,org.apache.*;resolution:=optional,*
+                                </Import-Package>
+                            </instructions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
 </project>
 
