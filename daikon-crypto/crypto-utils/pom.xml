@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>org.talend.daikon</groupId>
-            <artifactId>daikon</artifactId>
+            <artifactId>daikon-exception</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
