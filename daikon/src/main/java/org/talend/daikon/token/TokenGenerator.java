@@ -6,10 +6,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.UUID;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.daikon.security.CryptoHelper;
 
 /**
  * A utility class to generate tokens.
@@ -30,14 +30,14 @@ public class TokenGenerator {
      * </ul>
      * Should any of the 3 steps above fails, code falls back for a random UUID.
      *
-     * @param cryptoHelper A non-null {@link CryptoHelper helper} used to encrypt generated machine token.
+     * @param cryptoFunction A non-null {@link Function function} used to encrypt generated machine token.
      * @return A non-empty, non-null and encrypted token computed based on information of the running machine.
      * @see InetAddress#getLocalHost()
      * @see UUID#randomUUID()
      */
-    public static String generateMachineToken(CryptoHelper cryptoHelper) {
-        if (cryptoHelper == null) {
-            throw new IllegalArgumentException("Crypto helper cannot be null."); //$NON-NLS-1$
+    public static String generateMachineToken(Function<String, String> cryptoFunction) {
+        if (cryptoFunction == null) {
+            throw new IllegalArgumentException("Crypto function cannot be null."); //$NON-NLS-1$
         }
         final StringBuilder sb = new StringBuilder();
         try {
@@ -70,7 +70,7 @@ public class TokenGenerator {
         }
 
         // ... and encode the result with a static pass phrase.
-        final String machineId = cryptoHelper.encrypt(sb.toString());
+        final String machineId = cryptoFunction.apply(sb.toString());
         LOGGER.debug("Generated machine token: {}", machineId);
         return machineId;
     }
