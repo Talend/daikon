@@ -65,7 +65,7 @@
         <zipkin-sender-kafka11.version>2.1.4</zipkin-sender-kafka11.version>
         <kafka-clients.version>0.10.0.0</kafka-clients.version>
         <jsonassert.version>1.2.3</jsonassert.version>
-        <commons-codec.version>1.6</commons-codec.version>
+        <commons-codec.version>1.13</commons-codec.version>
         <javax.inject.version>1</javax.inject.version>
         <pax-url-aether.version>2.4.7</pax-url-aether.version>
         <mockito-core.version>2.2.15</mockito-core.version>
