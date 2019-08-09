@@ -182,8 +182,9 @@ public class KeySources {
                 }
                 final String filePath = System.getProperty("encryption.keys.file");
                 if (StringUtils.isNotEmpty(filePath)) {
-                    if (new File(filePath).exists()) {
-                        try (InputStream in = new FileInputStream(new File(filePath))) {
+                    File file = new File(filePath);
+                    if (file.exists()) {
+                        try (InputStream in = new FileInputStream(file)) {
                             properties.load(in);
                         }
                     }
