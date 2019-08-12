@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.lang.reflect.Field;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
@@ -370,14 +369,12 @@ public class Widget implements ToStringIndent {
                 prop.removeFlag(Property.Flags.HIDDEN);
             }
 		} else if (content != null && content instanceof PropertiesImpl) {
-			Field[] Fields = content.getClass().getFields();
-			Arrays.stream(Fields).forEach(p -> {
-				if (!p.isAccessible()) {
-					p.setAccessible(true);
+			Arrays.stream(content.getClass().getFields()).forEach(field -> {
+				if (!field.isAccessible()) {
+					field.setAccessible(true);
 				}
-				Object o;
 				try {
-					o = p.get(content);
+					Object o = field.get(content);
 					if (o instanceof Property) {
 						if (hidden) {
 							((Property) o).addFlag(Property.Flags.HIDDEN);
