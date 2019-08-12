@@ -12,15 +12,12 @@
 // ============================================================================
 package org.talend.daikon.properties.presentation;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.PropertiesVisitor;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.strings.ToStringIndent;
@@ -374,23 +371,23 @@ public class Widget implements ToStringIndent {
             } else {
                 prop.removeFlag(Property.Flags.HIDDEN);
             }
-        } else if (content instanceof Properties) {
-            ((Properties) content).accept(new PropertiesVisitor() {
+		} else if (content instanceof Properties) {
+			((Properties) content).accept(new PropertiesVisitor() {
 
-                @Override
-                public void visit(Properties properties, Properties parent) {
-                    for (NamedThing namedThing : properties.getProperties()) {
-                        if (namedThing instanceof Property) {
-                            if (hidden) {
-                                ((Property) namedThing).addFlag(Property.Flags.HIDDEN);
-                            } else {
-                                ((Property) namedThing).removeFlag(Property.Flags.HIDDEN);
-                            }
-                        }
-                    }
-                }
-            }, null);
-        }
+				@Override
+				public void visit(Properties properties, Properties parent) {
+					for (NamedThing namedThing : properties.getProperties()) {
+						if (namedThing instanceof Property) {
+							if (hidden) {
+								((Property) namedThing).addFlag(Property.Flags.HIDDEN);
+							} else {
+								((Property) namedThing).removeFlag(Property.Flags.HIDDEN);
+							}
+						}
+					}
+				}
+			}, null);
+		}
         return this;
     }
 
