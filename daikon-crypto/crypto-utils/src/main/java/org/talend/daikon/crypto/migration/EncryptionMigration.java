@@ -108,4 +108,7 @@ public class EncryptionMigration {
         return migrated;
     }
 
+    public Encryption getTarget() {
+        return target;
+    }
 }

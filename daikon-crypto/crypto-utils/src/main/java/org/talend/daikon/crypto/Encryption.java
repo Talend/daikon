@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 /**
  * This class provides a helper class to encrypt and decrypt a given string using provided {@link CipherSource} and
  * {@link KeySource}.
+ *
+ * @see KeySources
+ * @see CipherSources
  */
 public class Encryption {
 

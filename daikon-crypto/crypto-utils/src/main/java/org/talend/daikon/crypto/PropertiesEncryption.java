@@ -43,7 +43,18 @@ public class PropertiesEncryption {
      * @param mustBeEncrypted the set of properties that must be encrypted
      */
     public void encryptAndSave(String input, Set<String> mustBeEncrypted) {
-        modifyAndSave(input, mustBeEncrypted, this::encryptIfNot);
+        encryptAndSave(input, mustBeEncrypted, this::encryptIfNot);
+    }
+
+    /**
+     * Reads the specified property file and then encrypts, if not already encrypted, the specified set of properties
+     * and overwrites the specified property file.
+     *
+     * @param input the property file
+     * @param mustBeEncrypted the set of properties that must be encrypted
+     */
+    public void encryptAndSave(String input, Set<String> mustBeEncrypted, Function<String, String> encrypt) {
+        modifyAndSave(input, mustBeEncrypted, encrypt);
     }
 
     /**

@@ -12,6 +12,16 @@ import org.talend.daikon.crypto.KeySources;
 
 public class EncryptionMigrationTest {
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptEmptySource() {
+        EncryptionMigration.build(null, new Encryption(KeySources.random(6), CipherSources.getDefault()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptEmptyTarget() {
+        EncryptionMigration.build(new Encryption(KeySources.random(6), CipherSources.getDefault()), null);
+    }
+
     @Test
     public void shouldReencrypt() throws Exception {
         // given
