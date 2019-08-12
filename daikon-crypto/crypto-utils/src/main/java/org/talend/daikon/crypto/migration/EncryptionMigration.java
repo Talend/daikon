@@ -32,11 +32,11 @@ public class EncryptionMigration {
         return new EncryptionMigration(source, target);
     }
 
-    private String conditionalDecrypt(String src, Function<String, String> fromSource, Function<String, String> fromTarget) {
+    public String decrypt(String src) throws Exception {
         if (isMigrated(src)) {
-            return fromTarget.apply(src);
+            return target.decrypt(src);
         } else {
-            return fromSource.apply(src);
+            return source.decrypt(src);
         }
     }
 

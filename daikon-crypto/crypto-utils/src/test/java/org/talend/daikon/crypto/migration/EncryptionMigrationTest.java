@@ -67,4 +67,20 @@ public class EncryptionMigrationTest {
         assertNotEquals(originalEncrypted, encryptAndMigrated1);
         assertNotEquals(encryptAndMigrated1, encryptAndMigrated2);
     }
+
+    @Test
+    public void shouldPickCorrectEncryption() throws Exception {
+        // given
+        final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
+        final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
+        final EncryptionMigration migration = EncryptionMigration.migrate(source, target);
+        final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
+
+        // when
+        final String migratedEncrypted = migration.migrate(originalEncrypted);
+
+        // then
+        assertEquals("5ecr3t", migration.decrypt(originalEncrypted));
+        assertEquals("5ecr3t", migration.decrypt(migratedEncrypted));
+    }
 }
