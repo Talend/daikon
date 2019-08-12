@@ -98,12 +98,12 @@ If you want change the encryption of previously encrypted values, you may consid
 * The target encryption (`KeySource` and `CipherSource`)
 
 ```java
-final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
-final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
-final EncryptionMigration migration = EncryptionMigration.build(source, target);
-final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
+Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
+Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
+EncryptionMigration migration = EncryptionMigration.build(source, target);
+String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
 
-final String migrated = migration.migrate(originalEncrypted);
+String migrated = migration.migrate(originalEncrypted);
 System.out.println("Original & encrypted: " + originalEncrypted);
 System.out.println("Migrated & encrypted: " + migrated);
 ```
@@ -113,10 +113,10 @@ System.out.println("Migrated & encrypted: " + migrated);
 Similarly to value migration, the class `PropertiesMigration` provides tool to migrate a property file:
 
 ```java
-final Encryption source = ... // omitted
-final Encryption target = ... // omitted
-final EncryptionMigration migration = EncryptionMigration.build(source, target);
-final PropertiesMigration propertiesMigration = new PropertiesMigration(migration, //
+Encryption source = ... // omitted
+Encryption target = ... // omitted
+EncryptionMigration migration = ... // omitted (same as previous example)
+PropertiesMigration propertiesMigration = new PropertiesMigration(migration, //
     "/usr/local/application/config.properties", //
     Collections.singleton("admin.password") //
 );
