@@ -43,8 +43,6 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenSecurityConfiguration.class);
 
-    private final Filter tokenAuthenticationFilter;
-
     @Value("${talend.security.allowPublicPrometheusEndpoint:false}")
     private boolean allowPrometheusUnauthenticatedAccess;
 
@@ -56,15 +54,25 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final List<TokenProtectedPath> additionalProtectedEndpoints;
 
+    private final RequestMatcher protectedPaths;
+
+    private final Filter tokenAuthenticationFilter;
+
     public TokenSecurityConfiguration(@Value("${talend.security.token.value:}") String token,
             @Autowired List<TokenProtectedPath> additionalProtectedEndpoints) {
         this.additionalProtectedEndpoints = additionalProtectedEndpoints;
-        additionalProtectedEndpoints.add(() -> "/version");
-        final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
-                .map(TokenProtectedPath::getProtectedPath) //
-                .map(AntPathRequestMatcher::new) //
-                .toArray(AntPathRequestMatcher[]::new);
-        final RequestMatcher protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
+
+        if (additionalProtectedEndpoints.isEmpty()) {
+            protectedPaths = toAnyEndpoint();
+        } else {
+            // only add OrRequestMatcher on additionalProtectedEndpoints if they are some
+            final AntPathRequestMatcher[] matchers = additionalProtectedEndpoints.stream() //
+                    .map(TokenProtectedPath::getProtectedPath) //
+                    .map(AntPathRequestMatcher::new) //
+                    .toArray(AntPathRequestMatcher[]::new);
+            protectedPaths = new OrRequestMatcher(new OrRequestMatcher(matchers), toAnyEndpoint());
+        }
+
         if (StringUtils.isBlank(token)) {
             LOGGER.info("No token configured, protected endpoints are unavailable.");
             tokenAuthenticationFilter = new NoConfiguredTokenFilter(protectedPaths);
@@ -75,7 +83,10 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     public void configure(HttpSecurity http) throws Exception {
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.csrf().disable()
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http
+                .requestMatcher(protectedPaths)//
+                .csrf() //
+                .disable() //
                 .authorizeRequests();
         for (TokenProtectedPath protectedPath : additionalProtectedEndpoints) {
             registry = registry.antMatchers(protectedPath.getProtectedPath()).hasRole(TokenAuthentication.ROLE);

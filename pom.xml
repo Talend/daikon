@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.talend.daikon</groupId>
     <artifactId>daikon-parent</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Daikon - parent pom</name>
     <url>https://github.com/Talend/daikon</url>
@@ -65,7 +65,7 @@
         <zipkin-sender-kafka11.version>2.1.4</zipkin-sender-kafka11.version>
         <kafka-clients.version>0.10.0.0</kafka-clients.version>
         <jsonassert.version>1.2.3</jsonassert.version>
-        <commons-codec.version>1.6</commons-codec.version>
+        <commons-codec.version>1.13</commons-codec.version>
         <javax.inject.version>1</javax.inject.version>
         <pax-url-aether.version>2.4.7</pax-url-aether.version>
         <mockito-core.version>2.2.15</mockito-core.version>
@@ -251,7 +251,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.5.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>

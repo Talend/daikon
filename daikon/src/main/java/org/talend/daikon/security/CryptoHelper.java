@@ -24,6 +24,8 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.talend.daikon.crypto.EncodingUtils;
+import org.talend.daikon.crypto.KeySources;
 
 /**
  * Encrypt and decrypt strings, encapsulating the cryptography algorithm and configured by a passphrase.
@@ -41,20 +43,28 @@ public class CryptoHelper implements Function<String, String> {
 
     private Cipher dcipher;
 
-    // 8-byte Salt
-    private byte[] salt = { (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32, (byte) 0x56, (byte) 0x35, (byte) 0xE3,
-            (byte) 0x03 };
-
     // Iteration count
     private int iterationCount = 29;
 
-    public static final String PASSPHRASE = "99ZwBDt1L9yMX2ApJx fnv94o99OeHbCGuIHTy22 V9O6cZ2i374fVjdV76VX9g49DG1r3n90hT5c1"; //$NON-NLS-1$
+    public static final String PASSPHRASE;
+
+    static {
+        try {
+            final byte[] key = KeySources.file("system.encryption.key").getKey();
+            PASSPHRASE = new String(key, EncodingUtils.ENCODING);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to load default pass phrase.", e);
+        }
+    }
 
     /**
      * @param passPhrase the pass phrase used to encrypt and decrypt strings.
      */
     public CryptoHelper(String passPhrase) {
         try {
+            // 8-byte Salt
+            final byte[] salt = KeySources.file("system.encryption.salt").getKey();
+
             // Create the key
             KeySpec keySpec = new PBEKeySpec(passPhrase.toCharArray(), salt, iterationCount);
             SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec); //$NON-NLS-1$
