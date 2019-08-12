@@ -17,7 +17,7 @@ public class EncryptionMigrationTest {
         // given
         final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
         final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
-        final EncryptionMigration migration = EncryptionMigration.migrate(source, target);
+        final EncryptionMigration migration = EncryptionMigration.build(source, target);
         final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
 
         // when
@@ -34,7 +34,7 @@ public class EncryptionMigrationTest {
         // given
         final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
         final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
-        final EncryptionMigration migration = EncryptionMigration.migrate(source, target);
+        final EncryptionMigration migration = EncryptionMigration.build(source, target);
         final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
 
         // when
@@ -50,7 +50,7 @@ public class EncryptionMigrationTest {
         // given
         final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
         final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
-        final EncryptionMigration migration = EncryptionMigration.migrate(source, target);
+        final EncryptionMigration migration = EncryptionMigration.build(source, target);
         final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
 
         // when
@@ -73,7 +73,7 @@ public class EncryptionMigrationTest {
         // given
         final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
         final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
-        final EncryptionMigration migration = EncryptionMigration.migrate(source, target);
+        final EncryptionMigration migration = EncryptionMigration.build(source, target);
         final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
 
         // when
