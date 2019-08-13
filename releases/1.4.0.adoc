@@ -1,0 +1,5 @@
+= Daikon Release Notes (1.4.0)
+
+== New Feature
+- link:https://jira.talendforge.org/browse/TDKN-245[TDKN-245]: Allow daikon-audit to configure display of host information
+- link:https://jira.talendforge.org/browse/TDKN-244[TDKN-244]: Allow application to apply token protection to custom endpoints

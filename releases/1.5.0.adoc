@@ -1,0 +1,4 @@
+= Daikon Release Notes (1.5.0)
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-247[TDKN-247]: Upgrade Log4j version to 2.11.2

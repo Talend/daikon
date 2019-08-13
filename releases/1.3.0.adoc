@@ -1,0 +1,10 @@
+= Daikon Release Notes (1.3.0)
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-242[TDKN-242]: Upgrade jackson version used in daikon
+- link:https://jira.talendforge.org/browse/TDKN-241[TDKN-241]: Upgrade Daikon to Spring Boot 2.1.4
+- link:https://jira.talendforge.org/browse/TDKN-240[TDKN-240]: Upgrade Daikon dependencies
+
+== New Feature
+- link:https://jira.talendforge.org/browse/TDKN-239[TDKN-239]: Add digest helpers to crypto-utils
+- link:https://jira.talendforge.org/browse/TDKN-238[TDKN-238]: Add ability to open prometheus endpoints for dev purposes

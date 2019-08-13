@@ -6,6 +6,11 @@ import java.net.URI;
 import java.util.Comparator;
 import java.util.stream.StreamSupport;
 
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.util.concurrent.Promise;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -15,13 +20,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.rest.client.JiraRestClient;
-import com.atlassian.jira.rest.client.JiraRestClientFactory;
-import com.atlassian.jira.rest.client.domain.BasicIssueType;
-import com.atlassian.jira.rest.client.domain.Issue;
-import com.atlassian.jira.rest.client.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
-import com.atlassian.util.concurrent.Promise;
 
 /**
  * Goal which generates release notes based on fixed Jira issues in current version.
@@ -78,7 +78,7 @@ public class ReleaseNotes extends AbstractMojo {
             try (PrintWriter writer = new PrintWriter(file)) {
                 writer.println("= " + name + " Release Notes (" + jiraVersion + ")");
 
-                ThreadLocal<BasicIssueType> previousIssueType = new ThreadLocal<>();
+                ThreadLocal<IssueType> previousIssueType = new ThreadLocal<>();
                 StreamSupport.stream(results.claim().getIssues().spliterator(), false) //
                         .map(i -> {
                             final Promise<Issue> currentIssue = client.getIssueClient().getIssue(i.getKey());
