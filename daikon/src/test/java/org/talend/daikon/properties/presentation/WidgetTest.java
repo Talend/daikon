@@ -11,6 +11,7 @@ import static org.talend.daikon.properties.property.PropertyFactory.newString;
 import org.junit.Test;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.Property.Flags;
 import org.talend.daikon.properties.testproperties.TestProperties;
 
 public class WidgetTest {
@@ -93,6 +94,25 @@ public class WidgetTest {
                     .setConfigurationValue(Widget.SELECT_WIZARD_WIDGET_TYPE, true)
                     .setConfigurationValue(Widget.EXTERNAL_LINK_WIDGET_TYPE, true));
         }
+    }
+
+    @Test
+    public void testSetHidden() {
+        WidgetTestProperties properties = (WidgetTestProperties) new WidgetTestProperties("test").init();
+        Widget widget = new Widget(properties);
+        widget.setHidden(true);
+        assertTrue(properties.confProperty.getFlags().contains(Flags.HIDDEN));
+        widget.setHidden(false);
+        assertFalse(properties.confProperty.getFlags().contains(Flags.HIDDEN));
+
+        Property<String> stringProperty = newProperty("stringProperty");
+        stringProperty.getFlags();
+        Widget widget2 = new Widget(stringProperty);
+        widget2.setHidden(true);
+        assertTrue(stringProperty.isFlag(Flags.HIDDEN));
+        widget2.setHidden(false);
+        assertFalse(stringProperty.isFlag(Flags.HIDDEN));
+
     }
 
 }
