@@ -1,13 +1,6 @@
 package org.talend.daikon.crypto.migration;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.talend.daikon.crypto.Encryption;
-import org.talend.daikon.crypto.digest.DigestSources;
-import org.talend.daikon.crypto.digest.Digester;
 
 /**
  * A class to help migrations from one {@link Encryption} to an other.
@@ -16,15 +9,9 @@ import org.talend.daikon.crypto.digest.Digester;
  */
 public class EncryptionMigration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EncryptionMigration.class);
-
     private final Encryption source;
 
     private final Encryption target;
-
-    private final Digester digester = new Digester(DigestSources.pbkDf2());
-
-    private Set<String> migratedValues = new HashSet<>();
 
     private EncryptionMigration(Encryption source, Encryption target) {
         this.source = source;
@@ -66,9 +53,7 @@ public class EncryptionMigration {
      * {@link Encryption#decrypt(String)}.
      */
     public String migrate(String originalEncrypted) throws Exception {
-        final String migrated = target.encrypt(source.decrypt(originalEncrypted));
-        migratedValues.add(digester.digest(migrated));
-        return migrated;
+        return target.encrypt(source.decrypt(originalEncrypted));
     }
 
     public Encryption getTarget() {
