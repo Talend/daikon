@@ -25,43 +25,29 @@ public class EncryptionMigrationTest {
     @Test
     public void shouldReencrypt() throws Exception {
         // given
+        final String plainText = "5ecr3t";
         final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
         final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
         final EncryptionMigration migration = EncryptionMigration.build(source, target);
-        final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
+        final String originalEncrypted = source.encrypt(plainText);
 
         // when
         final String reencrypt = migration.migrate(originalEncrypted);
         final String decrypted = target.decrypt(reencrypt);
 
         // then
-        assertEquals("5ecr3t", decrypted);
+        assertEquals(plainText, decrypted);
         assertNotEquals(originalEncrypted, reencrypt);
-    }
-
-    @Test
-    public void shouldRememberEncryptedValues() throws Exception {
-        // given
-        final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
-        final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
-        final EncryptionMigration migration = EncryptionMigration.build(source, target);
-        final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
-
-        // when
-        final String encryptAndMigrated = migration.migrate(originalEncrypted);
-
-        // then
-        assertTrue(migration.isMigrated(encryptAndMigrated));
-        assertFalse(migration.isMigrated(originalEncrypted));
     }
 
     @Test
     public void shouldMigrateEncryptedString() throws Exception {
         // given
+        final String plainText = "5ecr3t";
         final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
         final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
         final EncryptionMigration migration = EncryptionMigration.build(source, target);
-        final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
+        final String originalEncrypted = source.encrypt(plainText);
 
         // when
         final String decrypt = source.decrypt(originalEncrypted);
@@ -71,26 +57,11 @@ public class EncryptionMigrationTest {
         final String decryptAfterMigrated2 = target.decrypt(encryptAndMigrated2);
 
         // then
-        assertEquals("5ecr3t", decrypt);
-        assertEquals("5ecr3t", decryptAfterMigrated1);
-        assertEquals("5ecr3t", decryptAfterMigrated2);
+        assertEquals(plainText, decrypt);
+        assertEquals(plainText, decryptAfterMigrated1);
+        assertEquals(plainText, decryptAfterMigrated2);
         assertNotEquals(originalEncrypted, encryptAndMigrated1);
         assertNotEquals(encryptAndMigrated1, encryptAndMigrated2);
     }
 
-    @Test
-    public void shouldPickCorrectEncryption() throws Exception {
-        // given
-        final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
-        final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
-        final EncryptionMigration migration = EncryptionMigration.build(source, target);
-        final String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
-
-        // when
-        final String migratedEncrypted = migration.migrate(originalEncrypted);
-
-        // then
-        assertEquals("5ecr3t", migration.decrypt(originalEncrypted));
-        assertEquals("5ecr3t", migration.decrypt(migratedEncrypted));
-    }
 }

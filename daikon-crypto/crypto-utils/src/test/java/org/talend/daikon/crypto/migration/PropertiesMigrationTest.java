@@ -26,6 +26,7 @@ public class PropertiesMigrationTest {
             Files.copy(refInStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
         }
 
+        final String plainText = "5ecr3t";
         final Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
         final Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
         final EncryptionMigration migration = EncryptionMigration.build(source, target);
@@ -42,7 +43,7 @@ public class PropertiesMigrationTest {
         try (FileInputStream fis = new FileInputStream(tempFile.toFile())) {
             migratedProperties.load(fis);
         }
-        assertNotEquals("JP6lC6hVeu3wRZA1Tzigyg==", migratedProperties.getProperty("admin.password"));
-        assertEquals("5ecr3t", target.decrypt(migratedProperties.getProperty("admin.password")));
+        assertNotEquals(source.encrypt(plainText), migratedProperties.getProperty("admin.password"));
+        assertEquals(plainText, target.decrypt(migratedProperties.getProperty("admin.password")));
     }
 }

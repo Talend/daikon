@@ -123,7 +123,8 @@ public class PropertiesEncryptionTest {
         new PropertiesEncryption(encryption).encryptAndSave(tempFile.toString(), Collections.singleton("admin.password"));
 
         assertEquals(
-                FileUtils.readFileToString(new File(getClass().getResource("keep-layout-test-expected.properties").getFile()), StandardCharsets.UTF_8),
+                FileUtils.readFileToString(new File(getClass().getResource("keep-layout-test-expected.properties").getFile()),
+                        StandardCharsets.UTF_8),
                 FileUtils.readFileToString(tempFile.toFile(), StandardCharsets.UTF_8));
     }
 
@@ -138,7 +139,8 @@ public class PropertiesEncryptionTest {
                 new HashSet<>(Arrays.asList("admin.password", "unknown")));
 
         assertEquals(
-                FileUtils.readFileToString(new File(getClass().getResource("keep-layout-test-expected.properties").getFile()), StandardCharsets.UTF_8),
+                FileUtils.readFileToString(new File(getClass().getResource("keep-layout-test-expected.properties").getFile()),
+                        StandardCharsets.UTF_8),
                 FileUtils.readFileToString(tempFile.toFile(), StandardCharsets.UTF_8));
     }
 

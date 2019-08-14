@@ -52,6 +52,7 @@ public class PropertiesEncryption {
      *
      * @param input the property file
      * @param mustBeEncrypted the set of properties that must be encrypted
+     * @param encrypt the function that encrypts the property values.
      */
     public void encryptAndSave(String input, Set<String> mustBeEncrypted, Function<String, String> encrypt) {
         modifyAndSave(input, mustBeEncrypted, encrypt);
