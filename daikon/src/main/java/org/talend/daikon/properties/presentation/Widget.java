@@ -363,7 +363,14 @@ public class Widget implements ToStringIndent {
         if (content instanceof Form) {
             // Recurse to change visibility to nested Forms
             ((Form) content).setHidden(hidden);
-        } else if (content instanceof Property) {
+        } else {
+            setHiddenProperty(content, hidden);
+        }
+        return this;
+    }
+
+    private void setHiddenProperty(Object content, boolean hidden) {
+        if (content instanceof Property) {
             // Persist this with the underlying property
             Property prop = (Property) content;
             if (hidden) {
@@ -371,24 +378,19 @@ public class Widget implements ToStringIndent {
             } else {
                 prop.removeFlag(Property.Flags.HIDDEN);
             }
-		} else if (content instanceof Properties) {
-			((Properties) content).accept(new PropertiesVisitor() {
+        } else if (content instanceof Properties) {
+            ((Properties) content).accept(new PropertiesVisitor() {
 
-				@Override
-				public void visit(Properties properties, Properties parent) {
-					for (NamedThing namedThing : properties.getProperties()) {
-						if (namedThing instanceof Property) {
-							if (hidden) {
-								((Property) namedThing).addFlag(Property.Flags.HIDDEN);
-							} else {
-								((Property) namedThing).removeFlag(Property.Flags.HIDDEN);
-							}
-						}
-					}
-				}
-			}, null);
-		}
-        return this;
+                @Override
+                public void visit(Properties properties, Properties parent) {
+                    for (NamedThing namedThing : properties.getProperties()) {
+                        if (namedThing instanceof Property || namedThing instanceof Properties) {
+                            setHiddenProperty(namedThing, hidden);
+                        }
+                    }
+                }
+            }, null);
+        }
     }
 
     /**
