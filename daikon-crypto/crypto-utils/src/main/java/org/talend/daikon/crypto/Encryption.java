@@ -75,7 +75,7 @@ public class Encryption {
         try {
             return decrypt(src);
         } catch (Exception e) {
-            LOGGER.log(Level.FINEST, "could not decrypt {0}, return it as it is", name);
+            LOGGER.log(Level.FINE, "could not decrypt {0}, return it as it is", name);
             return src;
         }
     }

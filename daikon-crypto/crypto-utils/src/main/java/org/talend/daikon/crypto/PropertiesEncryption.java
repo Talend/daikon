@@ -112,7 +112,7 @@ public class PropertiesEncryption {
                 LOGGER.log(Level.SEVERE, "unable to read " + input, e);
             }
         } else {
-            LOGGER.log(Level.FINEST, "No readable file at " + input);
+            LOGGER.log(Level.FINE, "No readable file at " + input);
         }
     }
 
@@ -131,7 +131,7 @@ public class PropertiesEncryption {
             try {
                 return encryption.encrypt(input);
             } catch (Exception e1) {
-                LOGGER.log(Level.FINEST, "Error encrypting value.", e1);
+                LOGGER.log(Level.FINE, "Error encrypting value.", e1);
             }
         }
         return "";
@@ -148,7 +148,7 @@ public class PropertiesEncryption {
             return encryption.decrypt(input);
         } catch (Exception e) {
             // Property was already decrypted
-            LOGGER.log(Level.FINEST, "Trying to decrypt a non encrypted property.", e);
+            LOGGER.log(Level.FINE, "Trying to decrypt a non encrypted property.", e);
             return input;
         }
     }
