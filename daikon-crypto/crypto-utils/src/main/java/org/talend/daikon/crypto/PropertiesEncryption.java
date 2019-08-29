@@ -1,12 +1,5 @@
 package org.talend.daikon.crypto;
 
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,6 +9,13 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 /**
  * @see <a href="https://docs.oracle.com/cd/E23095_01/Platform.93/ATGProgGuide/html/s0204propertiesfileformat01.html">
@@ -26,7 +26,7 @@ import java.util.function.Function;
  */
 public class PropertiesEncryption {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesEncryption.class);
+    private static final Logger LOGGER = Logger.getLogger(PropertiesEncryption.class.getCanonicalName());
 
     private final Encryption encryption;
 
@@ -76,11 +76,11 @@ public class PropertiesEncryption {
                 }
                 return result;
             } catch (IOException e) {
-                LOGGER.error("Failed to load input {} {}", input, e);
+                LOGGER.log(Level.SEVERE, "Failed to load input " + input, e);
                 throw new RuntimeException(e);
             }
         }
-        LOGGER.error("Input file does not exist {}", input);
+        LOGGER.log(Level.SEVERE, "Input file does not exist " + input);
         throw new RuntimeException(new FileNotFoundException(input));
     }
 
@@ -109,10 +109,10 @@ public class PropertiesEncryption {
                 }
                 builder.save();
             } catch (ConfigurationException e) {
-                LOGGER.error("unable to read {} {}", input, e);
+                LOGGER.log(Level.SEVERE, "unable to read " + input, e);
             }
         } else {
-            LOGGER.debug("No readable file at {}", input);
+            LOGGER.log(Level.FINEST, "No readable file at " + input);
         }
     }
 
@@ -131,7 +131,7 @@ public class PropertiesEncryption {
             try {
                 return encryption.encrypt(input);
             } catch (Exception e1) {
-                LOGGER.debug("Error encrypting value.", e1);
+                LOGGER.log(Level.FINEST, "Error encrypting value.", e1);
             }
         }
         return "";
@@ -148,7 +148,7 @@ public class PropertiesEncryption {
             return encryption.decrypt(input);
         } catch (Exception e) {
             // Property was already decrypted
-            LOGGER.debug("Trying to decrypt a non encrypted property.", e);
+            LOGGER.log(Level.FINEST, "Trying to decrypt a non encrypted property.", e);
             return input;
         }
     }
