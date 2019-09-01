@@ -23,7 +23,6 @@ import java.security.cert.CertPathValidatorException;
 
 import org.junit.Test;
 import org.talend.daikon.signature.exceptions.MissingEntryException;
-import org.talend.daikon.signature.exceptions.NoCodeSignCertificateException;
 import org.talend.daikon.signature.exceptions.UnsignedEntryException;
 import org.talend.daikon.signature.exceptions.VerifyFailedException;
 
