@@ -33,7 +33,7 @@
         <easymock.version>3.5.1</easymock.version>
         <avro.version>1.8.1</avro.version>
         <bcprov.version>1.62</bcprov.version>
-        <commons-compress.version>1.18</commons-compress.version>
+        <commons-compress.version>1.19</commons-compress.version>
         <commons-io.version>2.6</commons-io.version>
         <reactor-core.version>3.1.6.RELEASE</reactor-core.version>
 
@@ -76,7 +76,7 @@
         <json-path-assert.version>2.2.0</json-path-assert.version>
         <log4j.version>1.2.17</log4j.version>
         <json-smart.version>2.2.1</json-smart.version>
-        <commons-beanutils.version>1.9.3</commons-beanutils.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-configuration2.version>2.0</commons-configuration2.version>
         <httpclient.version>4.5.7</httpclient.version>
     </properties>
