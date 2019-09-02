@@ -42,10 +42,6 @@ public class EncryptionMigration {
      * This method uses <code>source</code> encryption to decrypt value and immediately encrypts value using
      * <code>target</code>.
      * </p>
-     * <p>
-     * It also remembers the values that were generated (keeps only a digest of the migration result, not the result
-     * itself).
-     * </p>
      * 
      * @param originalEncrypted A value encrypted with <code>source</code>
      * @return An encrypted value with <code>target</code> to represent same decrypted value as original's.
