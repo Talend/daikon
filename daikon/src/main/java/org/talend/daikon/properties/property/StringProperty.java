@@ -14,8 +14,12 @@ package org.talend.daikon.properties.property;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.crypto.Encryption;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
@@ -30,7 +34,11 @@ public class StringProperty extends Property<String> {
 
     private static final long serialVersionUID = -7464790471464008148L;
 
+    private static Logger log = Logger.getLogger(StringProperty.class.getCanonicalName());
+
     private List<NamedThing> possibleValues2;
+
+    private Encryption encryption;
 
     public StringProperty(String name) {
         super(String.class, name);
@@ -102,13 +110,53 @@ public class StringProperty extends Property<String> {
     public void encryptStoredValue(boolean encrypt) {
         if (isFlag(Property.Flags.ENCRYPT)) {
             String value = (String) getStoredValue();
-            CryptoHelper ch = new CryptoHelper(CryptoHelper.PASSPHRASE);
             if (encrypt) {
-                setStoredValue(ch.encrypt(value));
+                setStoredValue(encryptFunc().apply(value));
             } else {
-                setStoredValue(ch.decrypt(value));
+                setStoredValue(decryptFunc().apply(value));
             }
         }
+    }
+
+    @Override
+    public void setEncryption(Encryption e) {
+        this.encryption = e;
+    }
+
+    private Function<String,String> encryptFunc(){
+        if (this.encryption != null) {
+            return (src) -> {
+                if (src == null) {
+                    return null;
+                }
+                try {
+                    return encryption.encrypt(src);
+                } catch (Exception e) {
+                    // for backward compatibility
+                    log.log(Level.FINE, e.getMessage(), e);
+                }
+                return null;
+            };
+        }
+        return (src) -> new CryptoHelper(CryptoHelper.PASSPHRASE).encrypt(src);
+    }
+
+    private Function<String, String> decryptFunc() {
+        if (this.encryption != null) {
+            return (src) -> {
+                if (src == null || src.isEmpty()) {
+                    return null;
+                }
+                try {
+                    return encryption.decrypt(src);
+                } catch (Exception e) {
+                    // for backward compatibility
+                    log.log(Level.FINE, e.getMessage(), e);
+                }
+                return null;
+            };
+        }
+        return (src) -> new CryptoHelper(CryptoHelper.PASSPHRASE).decrypt(src);
     }
 
 }
