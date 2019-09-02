@@ -1,8 +1,6 @@
 package org.talend.daikon.crypto;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +14,8 @@ import java.security.spec.KeySpec;
 import java.util.Enumeration;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -164,7 +164,7 @@ public class KeySources {
 
     private static class FileSource implements KeySource {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(FileSource.class);
+        private static final Logger LOGGER = Logger.getLogger(FileSource.class.getCanonicalName());
 
         private final Properties properties = new Properties();
 
@@ -190,7 +190,7 @@ public class KeySources {
                     }
                 }
             } catch (IOException e) {
-                LOGGER.error("Unable to load key file.", e);
+                LOGGER.log(Level.SEVERE, "Unable to load key file.", e);
             }
         }
 

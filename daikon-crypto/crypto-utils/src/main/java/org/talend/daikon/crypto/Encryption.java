@@ -2,14 +2,11 @@ package org.talend.daikon.crypto;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Base64;
-
-import javax.crypto.Cipher;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class provides a helper class to encrypt and decrypt a given string using provided {@link CipherSource} and
@@ -17,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Encryption {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Encryption.class);
+    private static final Logger LOGGER = Logger.getLogger(Encryption.class.getCanonicalName());
 
     private final KeySource source;
 
@@ -77,7 +74,7 @@ public class Encryption {
         try {
             return decrypt(src);
         } catch (Exception e) {
-            LOGGER.debug("could not decrypt {}, return it as it is", name);
+            LOGGER.log(Level.FINE, "could not decrypt {0}, return it as it is", name);
             return src;
         }
     }
@@ -94,7 +91,7 @@ public class Encryption {
         try {
             uri = new URI(rawUri);
         } catch (URISyntaxException e) {
-            LOGGER.info("Invalid URI {}", rawUri, e);
+            LOGGER.log(Level.INFO, "Invalid URI " + rawUri, e);
             return rawUri;
         }
         UserInfo userInfo = extractCredentials(uri);
