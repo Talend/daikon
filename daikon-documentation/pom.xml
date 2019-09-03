@@ -39,7 +39,7 @@
             <!-- More recent versions are not compatible with Jira Rest client -->
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>25.1-JRE</version>
+            <version>25.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
