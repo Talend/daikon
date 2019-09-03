@@ -90,6 +90,41 @@ most use-cases.
 * `KeySources::systemProperty`: retrieve key value from a system property.
 * `KeySources::fixedKey`: use provided value as key. This one is only here to ease migration to a more secure key generation and use of it is discouraged.
 
+## Migrations
+
+If you want change the encryption of previously encrypted values, you may consider `EncryptionMigration`. To perform migration, you need:
+
+* The source encryption (`KeySource` and `CipherSource`)
+* The target encryption (`KeySource` and `CipherSource`)
+
+```java
+Encryption source = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
+Encryption target = new Encryption(KeySources.random(16), CipherSources.getDefault());
+EncryptionMigration migration = EncryptionMigration.build(source, target);
+String originalEncrypted = "JP6lC6hVeu3wRZA1Tzigyg==";
+
+String migrated = migration.migrate(originalEncrypted);
+System.out.println("Original & encrypted: " + originalEncrypted);
+System.out.println("Migrated & encrypted: " + migrated);
+```
+
+### Properties file migrations
+
+Similarly to value migration, the class `PropertiesMigration` provides tool to migrate a property file:
+
+```java
+Encryption source = ... // omitted
+Encryption target = ... // omitted
+EncryptionMigration migration = ... // omitted (same as previous example)
+PropertiesMigration propertiesMigration = new PropertiesMigration(migration, //
+    "/usr/local/application/config.properties", //
+    Collections.singleton("admin.password") //
+);
+```
+
+The code above reads and modifies the file `config.properties`: the decrypted value of `admin.password` is encrypted using 
+target encryption. 
+
 ## Support
 
 You can ask for help on our [forum](https://community.talend.com/).

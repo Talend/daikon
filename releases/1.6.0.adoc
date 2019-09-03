@@ -1,0 +1,9 @@
+= Daikon Release Notes (1.6.0)
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-253[TDKN-253]: Make authentication tag length configuration
+- link:https://jira.talendforge.org/browse/TDKN-252[TDKN-252]: Support specifying Provider objects in CipherSources
+- link:https://jira.talendforge.org/browse/TDKN-251[TDKN-251]: Exclude Commons Compress from Avro dependency
+
+== New Feature
+- link:https://jira.talendforge.org/browse/TDKN-255[TDKN-255]: Improvements for remote log in daikon-audit

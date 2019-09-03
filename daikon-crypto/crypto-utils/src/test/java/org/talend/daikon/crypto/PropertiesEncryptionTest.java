@@ -13,16 +13,15 @@
 
 package org.talend.daikon.crypto;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.talend.daikon.exception.TalendRuntimeException;
+import static org.junit.Assert.assertEquals;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,17 +31,18 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.talend.daikon.exception.TalendRuntimeException;
 
 public class PropertiesEncryptionTest {
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     private Encryption encryption;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        // Deprecated method is used on purpose here, see PropertiesMigration for encryption migration
         encryption = new Encryption(KeySources.fixedKey("DataPrepIsSoCool"), CipherSources.aes());
     }
 
@@ -53,7 +53,7 @@ public class PropertiesEncryptionTest {
         String propertyValue = "5ecr3t";
         String propertyEncodedValue = "JP6lC6hVeu3wRZA1Tzigyg==";
         Path tempFile = Files.createTempFile("dataprep-PropertiesEncryptionTest.", ".properties");
-        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, Charset.forName("UTF-8"))) {
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, StandardCharsets.UTF_8)) {
             for (int i = 0; i < 5; i++) {
                 bufferedWriter.write(propertyKey + "=" + propertyValue);
                 bufferedWriter.newLine();
@@ -71,10 +71,8 @@ public class PropertiesEncryptionTest {
     @Test
     public void shouldNotEncryptCommentedProperties() throws Exception {
         // given
-        String commentedLines = "# admin.password = administrator password";
-
         Path tempFile = Files.createTempFile("dataprep-PropertiesEncryptionTest.", ".properties");
-        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, Charset.forName("UTF-8"))) {
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, StandardCharsets.UTF_8)) {
             bufferedWriter.write("# file.password = the file password");
             bufferedWriter.newLine();
             bufferedWriter.write("file = /tmp");
@@ -100,7 +98,7 @@ public class PropertiesEncryptionTest {
         String propertyEncodedValue = "JP6lC6hVeu3wRZA1Tzigyg==";
         String propertyValue = "5ecr3t";
         Path tempFile = Files.createTempFile("dataprep-PropertiesEncryptionTest.", ".properties");
-        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, Charset.forName("UTF-8"))) {
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, StandardCharsets.UTF_8)) {
             for (int i = 0; i < 5; i++) {
                 bufferedWriter.write(propertyKey + "=" + propertyEncodedValue);
                 bufferedWriter.newLine();
@@ -125,8 +123,9 @@ public class PropertiesEncryptionTest {
         new PropertiesEncryption(encryption).encryptAndSave(tempFile.toString(), Collections.singleton("admin.password"));
 
         assertEquals(
-                FileUtils.readFileToString(new File(getClass().getResource("keep-layout-test-expected.properties").getFile())),
-                FileUtils.readFileToString(tempFile.toFile()));
+                FileUtils.readFileToString(new File(getClass().getResource("keep-layout-test-expected.properties").getFile()),
+                        StandardCharsets.UTF_8),
+                FileUtils.readFileToString(tempFile.toFile(), StandardCharsets.UTF_8));
     }
 
     @Test
@@ -140,13 +139,13 @@ public class PropertiesEncryptionTest {
                 new HashSet<>(Arrays.asList("admin.password", "unknown")));
 
         assertEquals(
-                FileUtils.readFileToString(new File(getClass().getResource("keep-layout-test-expected.properties").getFile())),
-                FileUtils.readFileToString(tempFile.toFile()));
+                FileUtils.readFileToString(new File(getClass().getResource("keep-layout-test-expected.properties").getFile()),
+                        StandardCharsets.UTF_8),
+                FileUtils.readFileToString(tempFile.toFile(), StandardCharsets.UTF_8));
     }
 
-    @Test
-    public void loadAndDecrypt_fileNotFound() throws Exception {
-        expectedException.expect(TalendRuntimeException.class);
+    @Test(expected = TalendRuntimeException.class)
+    public void loadAndDecrypt_fileNotFound() {
         new PropertiesEncryption(encryption).loadAndDecrypt("NOT_FOUND", Collections.singleton("admin.password"));
     }
 
