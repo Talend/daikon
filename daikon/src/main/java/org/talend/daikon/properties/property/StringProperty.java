@@ -144,8 +144,12 @@ public class StringProperty extends Property<String> {
     private Function<String, String> decryptFunc() {
         if (this.encryption != null) {
             return (src) -> {
-                if (src == null || src.isEmpty()) {
+                // backward compatibility
+                if (src == null) {
                     return null;
+                }
+                if (src.isEmpty()) {
+                    return "";
                 }
                 try {
                     return encryption.decrypt(src);
