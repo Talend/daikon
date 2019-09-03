@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesVisitor;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
@@ -355,10 +356,21 @@ public class Widget implements ToStringIndent {
      */
     public Widget setHidden(boolean hidden) {
         this.hidden = hidden;
-        if (content != null && content instanceof Form) {
+        if (content == null) {
+            return this;
+        }
+
+        if (content instanceof Form) {
             // Recurse to change visibility to nested Forms
             ((Form) content).setHidden(hidden);
-        } else if (content != null && content instanceof Property) {
+        } else {
+            setHiddenProperty(content, hidden);
+        }
+        return this;
+    }
+
+    private void setHiddenProperty(Object content, boolean hidden) {
+        if (content instanceof Property) {
             // Persist this with the underlying property
             Property prop = (Property) content;
             if (hidden) {
@@ -366,8 +378,19 @@ public class Widget implements ToStringIndent {
             } else {
                 prop.removeFlag(Property.Flags.HIDDEN);
             }
+        } else if (content instanceof Properties) {
+            ((Properties) content).accept(new PropertiesVisitor() {
+
+                @Override
+                public void visit(Properties properties, Properties parent) {
+                    for (NamedThing namedThing : properties.getProperties()) {
+                        if (namedThing instanceof Property || namedThing instanceof Properties) {
+                            setHiddenProperty(namedThing, hidden);
+                        }
+                    }
+                }
+            }, null);
         }
-        return this;
     }
 
     /**
