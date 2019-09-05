@@ -62,7 +62,6 @@
         <guava.version>27.1-jre</guava.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <bnd.version>3.0.0</bnd.version>
-        <zipkin-sender-kafka11.version>2.1.4</zipkin-sender-kafka11.version>
         <kafka-clients.version>0.10.0.0</kafka-clients.version>
         <jsonassert.version>1.2.3</jsonassert.version>
         <commons-codec.version>1.13</commons-codec.version>
