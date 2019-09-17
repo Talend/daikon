@@ -19,11 +19,7 @@
   "bugs": {
     "url": "https://github.com/Talend/daikon/issues"
   },
-  "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "hoist-non-react-statics": "^1.2.0",
-    "mock-socket": "^7.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-cli": "6.24.1",
     "babel-core": "6.24.1",
