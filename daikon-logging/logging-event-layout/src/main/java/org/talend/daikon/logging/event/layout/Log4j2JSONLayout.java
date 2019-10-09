@@ -47,6 +47,10 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         additionalAttributes.putAll(additionalLogAttributes);
     }
 
+    public void setMetaFields(Map<String, String> metaFields) {
+        this.metaFields = new HashMap<>(metaFields);
+    }
+
     /**
      * Creates a JSON Layout.
      *

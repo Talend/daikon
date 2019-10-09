@@ -16,6 +16,7 @@
     <modules>
         <module>audit-common</module>
         <module>audit-log4j1</module>
+        <module>audit-log4j2</module>
         <module>audit-logback</module>
         <module>audit-all</module>
     </modules>
