@@ -21,6 +21,11 @@
         </dependency>
         <dependency>
             <groupId>org.talend.daikon</groupId>
+            <artifactId>audit-log4j2</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.talend.daikon</groupId>
             <artifactId>audit-logback</artifactId>
             <version>${project.version}</version>
         </dependency>
