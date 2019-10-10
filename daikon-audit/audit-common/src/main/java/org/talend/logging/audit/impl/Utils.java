@@ -36,6 +36,10 @@ public final class Utils {
         return isClassPresent("org.apache.log4j.Logger");
     }
 
+    static boolean isLog4j2Present() {
+        return isClassPresent("org.apache.logging.log4j.Logger");
+    }
+
     static boolean isLogbackPresent() {
         return isClassPresent("ch.qos.logback.classic.LoggerContext");
     }
