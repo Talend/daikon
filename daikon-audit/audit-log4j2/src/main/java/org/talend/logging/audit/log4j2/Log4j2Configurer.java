@@ -92,6 +92,7 @@ public final class Log4j2Configurer {
 
             case NONE:
                 loggerConfig.setLevel(Level.OFF);
+                loggerContext.updateLoggers();
                 break;
 
             default:
