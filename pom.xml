@@ -19,10 +19,11 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <talend_snapshots>https://artifacts-zl.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/
+        <talend_snapshots>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/
         </talend_snapshots>
-        <talend_releases>https://artifacts-zl.talend.com/nexus/content/repositories/TalendOpenSourceRelease/
+        <talend_releases>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/
         </talend_releases>
+        <talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
         <pushChanges>false</pushChanges>
         <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
         <jackson.version>2.10.0</jackson.version>
@@ -151,7 +152,7 @@
     <distributionManagement>
         <snapshotRepository>
             <id>talend_nexus_deployment</id>
-            <url>${talend_snapshots}</url>
+            <url>${talend_snapshots_deployment}</url>
         </snapshotRepository>
         <repository>
             <id>talend_nexus_deployment</id>
