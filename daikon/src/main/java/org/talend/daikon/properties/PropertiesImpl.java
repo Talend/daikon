@@ -63,7 +63,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
 
     transient private boolean layoutAlreadyInitalized;
 
-    transient private boolean propsAlreadyInitialized;
+    transient protected boolean propsAlreadyInitialized;
 
     /**
      * Handle post deserialization.

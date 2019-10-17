@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>audit-parent</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.9.0-SNAPSHOT</version>
     </parent>
     <artifactId>daikon-audit</artifactId>
 
@@ -17,6 +17,11 @@
         <dependency>
             <groupId>org.talend.daikon</groupId>
             <artifactId>audit-log4j1</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.talend.daikon</groupId>
+            <artifactId>audit-log4j2</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
