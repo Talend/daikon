@@ -1,1 +1,12 @@
 = Daikon Release Notes (1.8.0)
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-262[TDKN-262]: Update Jackson to 2.10.0
+
+
+== Bug
+- link:https://jira.talendforge.org/browse/TUP-21518[TUP-21518]: Remove CryptoHelper
+- link:https://jira.talendforge.org/browse/TDI-43023[TDI-43023]: support log4j2 for daikon-audit
+
+== Misc
+- link:https://github.com/Talend/daikon/pull/556[tql] make mono repo private and remove unused deps
