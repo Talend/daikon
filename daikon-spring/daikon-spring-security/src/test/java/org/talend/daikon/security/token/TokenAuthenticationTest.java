@@ -22,7 +22,7 @@ public class TokenAuthenticationTest {
         assertTrue(authentication.isAuthenticated());
         assertEquals(TokenAuthentication.ADMIN_TOKEN_AUTHENTICATION, authentication.getDetails());
         assertNull(authentication.getCredentials());
-        assertNull(authentication.getPrincipal());
+        assertEquals(TokenAuthentication.ADMIN_TOKEN_AUTHENTICATION, authentication.getPrincipal());
     }
 
     @Test(expected = IllegalArgumentException.class)
