@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>daikon-parent</artifactId>
+        <groupId>org.talend.daikon</groupId>
+        <version>1.9.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>daikon-bom</artifactId>
+    <packaging>pom</packaging>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- audit -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-audit</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>audit-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>audit-log4j1</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>audit-log4j2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>audit-logback</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- crypto -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>crypto-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-signature-verifier</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- documentation -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-documentation</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- exception -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-exception</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- i18n -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-i18n</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- logging -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>logging-event-layout</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>logging-http-headers</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>logging-kafka-interceptor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>logging-request-interceptor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>logging-spring-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- messages -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>messages-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>messages-model-spring-support</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- multitenant -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>multitenant-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>multitenant-spring-async</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>multitenant-spring-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+<!-- spring -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>content-service-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>content-service-journal</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>content-service-journal-mongo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>local-content-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>s3-content-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-spring-metrics</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-spring-mongo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-spring-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-spring-tenancy</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-spring-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-spring-zipkin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+
+            <!-- tql -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-tql-bean</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-tql-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-tql-mongo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

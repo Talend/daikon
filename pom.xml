@@ -94,6 +94,7 @@
         <module>daikon-crypto</module>
         <module>daikon-scala</module>
         <module>daikon-documentation</module>
+        <module>daikon-bom</module>
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
