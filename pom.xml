@@ -94,13 +94,13 @@
         <module>daikon-crypto</module>
         <module>daikon-scala</module>
         <module>daikon-documentation</module>
+        <module>releases</module>
         <module>daikon-bom</module>
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
         <developerConnection>scm:git:https://github.com/Talend/daikon.git</developerConnection>
         <url>https://github.com/Talend/daikon</url>
-        <tag>daikon-0.27.0</tag>
     </scm>
     <repositories>
         <repository>

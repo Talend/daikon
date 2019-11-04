@@ -143,7 +143,7 @@ spec:
                     git checkout ${env.BRANCH_NAME}
                     mvn -B -s $MAVEN_SETTINGS -Darguments='-DskipTests' -Dtag=${params.release_version} -DreleaseVersion=${params.release_version} -DdevelopmentVersion=${params.next_version} release:prepare
                     cd releases/
-                    mvn install -B -s $MAVEN_SETTINGS -Duser=${JIRA_LOGIN} -Dpassword=${JIRA_PASSWORD} -Dversion=${params.release_version} -Doutput=.
+                    mvn install -P release-notes -B -s $MAVEN_SETTINGS -Duser=${JIRA_LOGIN} -Dpassword=${JIRA_PASSWORD} -Dversion=${params.release_version} -Doutput=.
                     git add -A .
                     git commit -m "Add ${params.release_version} release notes"
                     cat ${params.release_version}.adoc
