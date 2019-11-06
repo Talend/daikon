@@ -1,5 +1,13 @@
 = Daikon Release Notes (1.9.0)
 
 == Fix
+- link:https://jira.talendforge.org/browse/TPSVC-11976[TPSVC-11976]: daikon TokenAuthentication should not return null as a Principal
+- link:https://jira.talendforge.org/browse/DEVOPS-7930[DEVOPS-7930]: Daikon Jenkins build is failing because of smart branching
 
-- fix(TPSVC-11976) don't return null as the principal 
+== Work Item
+- link:https://jira.talendforge.org/browse/TSD-433[TSD-433]: Move daikon bom to daikon repo
+
+== Other
+- chore: add test and remove dead code (#557)
+- chore(deps-dev): bump eslint in /daikon-tql/daikon-tql-client (#554)
+- Update 1.8.0.adoc

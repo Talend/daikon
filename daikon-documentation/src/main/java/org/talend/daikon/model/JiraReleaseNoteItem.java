@@ -28,6 +28,11 @@ public class JiraReleaseNoteItem implements ReleaseNoteItem {
     }
 
     @Override
+    public String toString() {
+        return "JiraReleaseNoteItem{" + getIssueType() + ", " + "issue=" + issue.getSummary() + '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;

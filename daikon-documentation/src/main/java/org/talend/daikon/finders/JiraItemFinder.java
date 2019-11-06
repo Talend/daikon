@@ -32,10 +32,8 @@ public class JiraItemFinder implements ItemFinder {
     public Stream<ReleaseNoteItem> find() {
         final Promise<SearchResult> results = client //
                 .getSearchClient() //
-                .searchJql("project = '" + jiraProject + "' and fixVersion='" + jiraVersion
-                        + "' and status in (Closed, Done)");
-        return StreamSupport
-                .stream(results.claim().getIssues().spliterator(), false) //
+                .searchJql("project = '" + jiraProject + "' and fixVersion='" + jiraVersion + "' and status in (Closed, Done)");
+        return StreamSupport.stream(results.claim().getIssues().spliterator(), false) //
                 .map(i -> new JiraReleaseNoteItem(i, jiraServerUrl));
     }
 }

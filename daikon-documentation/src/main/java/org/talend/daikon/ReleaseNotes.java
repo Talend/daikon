@@ -75,8 +75,8 @@ public class ReleaseNotes extends AbstractMojo {
             // Stream all release note items
             final Optional<Stream<ReleaseNoteItem>> streams = Stream.of( //
                     new JiraItemFinder(project, jiraVersion, server, client), //
-                    new GitItemFinder(server, client), //
-                    new MiscGitItemFinder() //
+                    new GitItemFinder("../", server, client, jiraVersion), //
+                    new MiscGitItemFinder("../", jiraVersion) //
             ) //
                     .map(ItemFinder::find) //
                     .reduce(Stream::concat);
@@ -88,7 +88,8 @@ public class ReleaseNotes extends AbstractMojo {
 
                 ThreadLocal<ReleaseNoteItemType> previousIssueType = new ThreadLocal<>();
                 issueStream //
-                        .sorted(Comparator.comparingInt(i -> i.getIssueType().hashCode())) //
+                        .peek(item -> getLog().info("Found item: " + item)) //
+                        .sorted(Comparator.comparingInt(i -> i.getIssueType().ordinal())) //
                         .forEach(i -> {
                             if (previousIssueType.get() == null || !previousIssueType.get().equals(i.getIssueType())) {
                                 writer.println();

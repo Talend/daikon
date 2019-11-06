@@ -4,10 +4,10 @@ import com.atlassian.jira.rest.client.api.domain.IssueType;
 
 public enum ReleaseNoteItemType {
 
-    BUG("Bug"),
+    BUG("Fix"),
     FEATURE("Feature"),
-    WORK_ITEM("Work item"),
-    MISC("Others");
+    WORK_ITEM("Work Item"),
+    MISC("Other");
 
     private final String displayName;
 
@@ -16,13 +16,13 @@ public enum ReleaseNoteItemType {
     }
 
     public static ReleaseNoteItemType fromJiraIssueType(IssueType issueType) {
-        System.out.println(issueType);
         switch (issueType.getName().toLowerCase()) {
         case "bug":
             return BUG;
         case "work item":
             return WORK_ITEM;
         case "new feature":
+        case "epic":
             return FEATURE;
         default:
             return MISC;

@@ -14,23 +14,29 @@ public class GitItemFinder extends AbstractGitItemFinder {
 
     private final JiraRestClient client;
 
-    public GitItemFinder(String jiraServerUrl, JiraRestClient client) {
-        this(null, jiraServerUrl, client);
+    private final String version;
+
+    public GitItemFinder(String jiraServerUrl, JiraRestClient client, String version) {
+        this(null, jiraServerUrl, client, version);
     }
 
-    public GitItemFinder(String pathname, String jiraServerUrl, JiraRestClient client) {
+    public GitItemFinder(String pathname, String jiraServerUrl, JiraRestClient client, String version) {
         super(pathname);
         this.jiraServerUrl = jiraServerUrl;
         this.client = client;
+        this.version = version;
     }
 
     @Override
     public Stream<ReleaseNoteItem> find() {
         try {
-            return getGitCommits().map(c -> JIRA_DETECTION_PATTERN.matcher(c.getShortMessage())).filter(Matcher::matches) //
-                    .map(m -> m.group(1)) //
+            return getGitCommits(version) //
+                    .filter(c -> !c.getShortMessage().contains("release")) //
+                    .map(c -> JIRA_DETECTION_PATTERN.matcher(c.getShortMessage())) //
+                    .filter(Matcher::matches) //
+                    .map(matcher -> matcher.group(1)) //
                     .map(jiraId -> client.getIssueClient().getIssue(jiraId).claim()) //
-                    .map(i -> new JiraReleaseNoteItem(i, jiraServerUrl));
+                    .map(issue -> new JiraReleaseNoteItem(issue, jiraServerUrl));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

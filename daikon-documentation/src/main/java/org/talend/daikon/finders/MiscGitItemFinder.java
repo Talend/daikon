@@ -9,18 +9,23 @@ import org.talend.daikon.model.ReleaseNoteItem;
 
 public class MiscGitItemFinder extends AbstractGitItemFinder {
 
-    public MiscGitItemFinder() {
-        this(null);
+    private final String version;
+
+    public MiscGitItemFinder(String version) {
+        this(null, version);
     }
 
-    public MiscGitItemFinder(String pathname) {
+    public MiscGitItemFinder(String pathname, String version) {
         super(pathname);
+        this.version = version;
     }
 
     @Override
     public Stream<ReleaseNoteItem> find() {
         try {
-            return getGitCommits().map(c -> new Tuple(JIRA_DETECTION_PATTERN.matcher(c.getShortMessage()), c))
+            return getGitCommits(version) //
+                    .filter(c -> !c.getShortMessage().contains("release")) //
+                    .map(c -> new Tuple(JIRA_DETECTION_PATTERN.matcher(c.getShortMessage()), c)) //
                     .filter(t -> !t.matcher.matches()) //
                     .map(t -> new MiscReleaseNoteItem(t.commit));
         } catch (Exception e) {
