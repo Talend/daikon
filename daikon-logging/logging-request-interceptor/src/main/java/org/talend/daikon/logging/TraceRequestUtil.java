@@ -26,7 +26,7 @@ public class TraceRequestUtil {
             if (isValidJSON(bodyString)) {
                 return bodyString;
             } else {
-                bodyString.replaceAll("\"", "\\\"");
+                bodyString = bodyString.replaceAll("\"", "\\\"");
                 return "\"" + bodyString + "\"";
             }
         }
