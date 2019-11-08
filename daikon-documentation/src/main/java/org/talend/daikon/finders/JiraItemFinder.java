@@ -3,6 +3,7 @@ package org.talend.daikon.finders;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.google.common.collect.Streams;
 import org.talend.daikon.model.JiraReleaseNoteItem;
 import org.talend.daikon.model.ReleaseNoteItem;
 
@@ -29,11 +30,9 @@ public class JiraItemFinder implements ItemFinder {
     }
 
     @Override
-    public Stream<ReleaseNoteItem> find() {
-        final Promise<SearchResult> results = client //
-                .getSearchClient() //
-                .searchJql("project = '" + jiraProject + "' and fixVersion='" + jiraVersion + "' and status in (Closed, Done)");
-        return StreamSupport.stream(results.claim().getIssues().spliterator(), false) //
-                .map(i -> new JiraReleaseNoteItem(i, jiraServerUrl));
+    public Stream<? extends ReleaseNoteItem> find() {
+        final String jql = "project = '" + jiraProject + "' and fixVersion='" + jiraVersion + "' and status in (Closed, Done)";
+        final Promise<SearchResult> results = client.getSearchClient().searchJql(jql);
+        return Streams.stream(results.claim().getIssues()).map(i -> new JiraReleaseNoteItem(i, jiraServerUrl));
     }
 }

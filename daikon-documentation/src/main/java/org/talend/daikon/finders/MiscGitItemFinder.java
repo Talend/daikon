@@ -21,7 +21,7 @@ public class MiscGitItemFinder extends AbstractGitItemFinder {
     }
 
     @Override
-    public Stream<ReleaseNoteItem> find() {
+    public Stream<? extends ReleaseNoteItem> find() {
         try {
             return getGitCommits(version) //
                     .filter(c -> !c.getShortMessage().contains("release")) //

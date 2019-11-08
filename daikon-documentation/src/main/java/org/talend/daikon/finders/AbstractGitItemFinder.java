@@ -21,14 +21,14 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 
-public abstract class AbstractGitItemFinder implements ItemFinder {
+abstract class AbstractGitItemFinder implements ItemFinder {
 
-    public static final Pattern JIRA_DETECTION_PATTERN = Pattern.compile(".*((?<!([A-Z]{1,10})-?)[A-Z]+-\\d+).*");
+    static final Pattern JIRA_DETECTION_PATTERN = Pattern.compile(".*((?<!([A-Z]{1,10})-?)[A-Z]+-\\d+).*");
 
-    private String pathname;
+    private String gitRepositoryPath;
 
-    public AbstractGitItemFinder(String pathname) {
-        this.pathname = pathname;
+    AbstractGitItemFinder(String gitRepositoryPath) {
+        this.gitRepositoryPath = gitRepositoryPath;
     }
 
     private static Date getDate(RevWalk walk, Ref ref) {
@@ -39,12 +39,20 @@ public abstract class AbstractGitItemFinder implements ItemFinder {
         }
     }
 
-    protected Stream<RevCommit> getGitCommits(String version) {
+    private static ObjectId getTagCommitId(RevWalk walk, Ref t) {
+        try {
+            return walk.parseTag(t.getObjectId()).getObject().getId();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    Stream<RevCommit> getGitCommits(String version) {
         try {
             // Init git client
             final File dir;
-            if (StringUtils.isNotBlank(pathname)) {
-                dir = new File(pathname);
+            if (StringUtils.isNotBlank(gitRepositoryPath)) {
+                dir = new File(gitRepositoryPath);
             } else {
                 dir = new File(".");
             }
@@ -54,7 +62,7 @@ public abstract class AbstractGitItemFinder implements ItemFinder {
             final RefDatabase refDatabase = repository.getRefDatabase();
             final RevWalk walk = new RevWalk(repository);
             if (refDatabase.hasRefs()) {
-                final GitRange refsByPrefix = findRange(refDatabase, walk, repository, version);
+                final GitRange refsByPrefix = findRange(refDatabase, walk, version);
                 final ObjectId start = refsByPrefix.start;
                 final ObjectId head = refsByPrefix.end;
 
@@ -68,20 +76,20 @@ public abstract class AbstractGitItemFinder implements ItemFinder {
         return Stream.empty();
     }
 
-    private GitRange findRange(RefDatabase refDatabase, RevWalk walk, Repository repository, String version) throws IOException {
+    private GitRange findRange(RefDatabase refDatabase, RevWalk walk, String version) throws IOException {
         final Stream<Ref> base = refDatabase.getRefsByPrefix(R_TAGS).stream();
+        final ObjectId head = refDatabase.findRef("HEAD").getObjectId();
 
         if (StringUtils.isBlank(version)) {
-            final Optional<Ref> start = base.max(comparing(r -> getDate(walk, r)));
-            if (!start.isPresent()) {
-                // TODO Start from initial commit?
-                throw new IllegalStateException("Unable to find the latest tag in repository.");
-            } else {
-                return new GitRange(start.get().getObjectId(), repository.getRefDatabase().findRef("HEAD").getObjectId());
-            }
+            return base.max(comparing(r -> getDate(walk, r))) // Get latest tag from history
+                    .map(start -> new GitRange(start.getObjectId(), head)) // If found, return range of latest tag to HEAD
+                    .orElseGet(() -> { // Or else return range from HEAD to root
+                        final RevCommit headCommit = walk.lookupCommit(head);
+                        return new GitRange(headCommit.getParent(headCommit.getParentCount() - 1), head);
+                    });
         } else {
             final AtomicBoolean hasMetVersion = new AtomicBoolean(false);
-            final ObjectId[] start = new ObjectId[1];
+            final ThreadLocal<ObjectId> start = new ThreadLocal<>();
 
             final Optional<ObjectId> end = base //
                     .sorted((r1, r2) -> getDate(walk, r2).compareTo(getDate(walk, r1))) //
@@ -89,7 +97,7 @@ public abstract class AbstractGitItemFinder implements ItemFinder {
                         if (!hasMetVersion.get()) {
                             if (t.getName().contains(version)) {
                                 hasMetVersion.set(true);
-                                start[0] = getTagCommitId(walk, t);
+                                start.set(getTagCommitId(walk, t));
                                 return false; // So jump to next element after this one.
                             }
                         }
@@ -98,25 +106,17 @@ public abstract class AbstractGitItemFinder implements ItemFinder {
                     .findFirst() //
                     .map(ref -> getTagCommitId(walk, ref));
 
-            return new GitRange(end.get(), start[0]);
+            return new GitRange(end.map(ObjectId::toObjectId).orElse(head), start.get());
         }
     }
 
-    private ObjectId getTagCommitId(RevWalk walk, Ref t) {
-        try {
-            return walk.parseTag(t.getObjectId()).getObject().getId();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    class GitRange {
+    static class GitRange {
 
         ObjectId start;
 
         ObjectId end;
 
-        public GitRange(ObjectId start, ObjectId end) {
+        private GitRange(ObjectId start, ObjectId end) {
             this.start = start;
             this.end = end;
         }

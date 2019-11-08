@@ -9,5 +9,5 @@ public interface ItemFinder {
     /**
      * @return A <code>Stream</code> of {@link ReleaseNoteItem} to be used to generate release notes.
      */
-    Stream<ReleaseNoteItem> find();
+    Stream<? extends ReleaseNoteItem> find();
 }

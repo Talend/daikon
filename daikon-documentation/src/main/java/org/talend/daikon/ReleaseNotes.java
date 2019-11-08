@@ -73,7 +73,7 @@ public class ReleaseNotes extends AbstractMojo {
             final JiraRestClient client = factory.createWithBasicHttpAuthentication(jiraServerUri, user, password);
 
             // Stream all release note items
-            final Optional<Stream<ReleaseNoteItem>> streams = Stream.of( //
+            final Optional<? extends Stream<? extends ReleaseNoteItem>> streams = Stream.of( //
                     new JiraItemFinder(project, jiraVersion, server, client), //
                     new GitItemFinder("../", server, client, jiraVersion), //
                     new MiscGitItemFinder("../", jiraVersion) //
@@ -82,11 +82,11 @@ public class ReleaseNotes extends AbstractMojo {
                     .reduce(Stream::concat);
 
             // Create Ascii doc output
-            final Stream<ReleaseNoteItem> issueStream = streams.get().distinct();
+            final Stream<? extends ReleaseNoteItem> issueStream = streams.get().distinct();
             try (PrintWriter writer = new PrintWriter(file)) {
                 writer.println("= " + name + " Release Notes (" + jiraVersion + ")");
 
-                ThreadLocal<ReleaseNoteItemType> previousIssueType = new ThreadLocal<>();
+                final ThreadLocal<ReleaseNoteItemType> previousIssueType = new ThreadLocal<>();
                 issueStream //
                         .peek(item -> getLog().info("Found item: " + item)) //
                         .sorted(Comparator.comparingInt(i -> i.getIssueType().ordinal())) //

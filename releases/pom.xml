@@ -38,21 +38,13 @@
                         <version>${project.version}</version>
                         <executions>
                             <execution>
-                                <id>release-notes</id>
-                                <phase>generate-sources</phase>
+                                <id>generate-release-notes</id>
+                                <phase>compile</phase>
                                 <goals>
                                     <goal>release-notes</goal>
                                 </goals>
                             </execution>
                         </executions>
-                        <dependencies>
-                            <dependency>
-                                <!-- More recent versions are not compatible with Jira Rest client -->
-                                <groupId>com.google.guava</groupId>
-                                <artifactId>guava</artifactId>
-                                <version>25.1-jre</version>
-                            </dependency>
-                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
