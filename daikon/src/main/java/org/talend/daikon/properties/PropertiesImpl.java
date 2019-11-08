@@ -43,8 +43,6 @@ import org.talend.daikon.serialize.migration.PostDeserializeHandler;
 import org.talend.daikon.strings.ToStringIndent;
 import org.talend.daikon.strings.ToStringIndentUtil;
 
-import com.cedarsoftware.util.io.JsonWriter;
-
 /**
  * Implementation of {@link Properties} which must be subclassed to define your properties.
  */
@@ -80,7 +78,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
                 if (nt instanceof Property) {
                     Property<?> property = (Property<?>) nt;
                     if (property.isFlag(Flags.ENCRYPT)) {
-                        property.encryptStoredValue(!ENCRYPT);
+                        encryptData(property, !ENCRYPT);
                     } // else not an encrypted property
                 } // else not a Property so ignore it.
             }
@@ -264,7 +262,7 @@ public class PropertiesImpl extends TranslatableTaggedImpl
             @Override
             public void visit(Property property, Properties parent) {
                 if (property.isFlag(Property.Flags.ENCRYPT)) {
-                    property.encryptStoredValue(encrypt);
+                    encryptData(property, encrypt);
                 }
             }
         }, null);// null
@@ -766,4 +764,19 @@ public class PropertiesImpl extends TranslatableTaggedImpl
         return new ValidationResults();
     }
 
+    /**
+     * <p>
+     * When to serialize StringProperty(ENCRYPT flag is set), encrypt is used to encrypt the StringProperty, while
+     * decrypt is used to decrpt the StringProperty, by default StringProperty encryption/decryption depends on
+     * CryptoHelper, this method is supposed to be overridden.
+     * </p>
+     */
+    protected void encryptData(Property property, boolean encrypt) {
+        if (property.getStoredValue() == null) {
+            return;
+        }
+
+        // by default invokes CryptoHelper
+        property.encryptStoredValue(encrypt);
+    }
 }

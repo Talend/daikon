@@ -25,15 +25,21 @@ import static org.junit.Assert.fail;
 import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
 import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.crypto.CipherSources;
+import org.talend.daikon.crypto.Encryption;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.properties.presentation.Form;
@@ -52,6 +58,8 @@ import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.serialize.SerializerDeserializer;
 
 public class PropertiesTest {
+
+    static SecretKey key = null;
 
     private final class StringListProperties extends PropertiesImpl {
 
@@ -148,6 +156,84 @@ public class PropertiesTest {
         assertEquals("testPassword", props.password.getValue());
         assertEquals("greatness", props.nestedProps.aGreatProperty.getValue());
         assertTrue(props.suppressDate.getValue());
+    }
+
+    @Test
+    public void testAESEncryptedSerializeValues() {
+
+        class AESEncryptedProperties extends TestProperties {
+
+            static final String PREFIX = "enc:";
+
+            /**
+             * @param name
+             */
+            public AESEncryptedProperties(String name) {
+                super(name);
+            }
+
+            protected void encryptData(Property property, boolean encrypt) {
+
+                if (property.getStoredValue() == null) {
+                    return;
+                }
+
+                if (encrypt) {
+                    try {
+                        property.setStoredValue(PREFIX + getEncryption().encrypt(String.valueOf(property.getStoredValue())));
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        property.setStoredValue(
+                                getEncryption().decrypt(String.valueOf(property.getStoredValue()).substring(PREFIX.length())));
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        AESEncryptedProperties props = (AESEncryptedProperties) new AESEncryptedProperties("test").init();
+        props.userId.setValue("testUser");
+        props.password.setValue("testPassword");
+        props.suppressDate.setValue(true);
+        assertTrue(props.password.getFlags().contains(Property.Flags.ENCRYPT));
+        assertTrue(props.password.getFlags().contains(Property.Flags.SUPPRESS_LOGGING));
+        assertTrue(props.suppressDate.getValue());
+        NestedProperties nestedProp = (NestedProperties) props.getProperty("nestedProps");
+        nestedProp.aGreatProperty.setValue("greatness");
+        assertNotNull(nestedProp);
+        props = (AESEncryptedProperties) PropertiesTestUtils.checkSerialize(props, errorCollector);
+
+        // Should be encrypted
+        assertFalse(props.toSerialized().contains("testPassword"));
+        assertTrue(props.toSerialized().contains(AESEncryptedProperties.PREFIX));
+
+        assertEquals("testUser", props.userId.getStringValue());
+        assertEquals("testPassword", props.password.getValue());
+        assertEquals("greatness", props.nestedProps.aGreatProperty.getValue());
+        assertTrue(props.suppressDate.getValue());
+
+    }
+
+    private static Encryption getEncryption() {
+
+        if (key == null) {
+            KeyGenerator kg;
+            try {
+                kg = KeyGenerator.getInstance("AES");
+                kg.init(256);
+                key = kg.generateKey();
+            } catch (NoSuchAlgorithmException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return new Encryption(() -> key.getEncoded(), CipherSources.getDefault());
     }
 
     @Test
