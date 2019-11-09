@@ -1,8 +1,139 @@
 = Daikon Release Notes (1.7.0)
 
+== Fix
+- link:https://jira.talendforge.org/browse/TDI-42756[TDI-42756]: Code generated when uncheck 'Use PreparedStatement' for tJDBCInput and tJDBCRow (link:http://github.com/Talend/daikon/pull/545[#545])
+- link:https://jira.talendforge.org/browse/TUP-23482[TUP-23482]: should avoid multi version slf4j-log4j jars in the job classpath (link:http://github.com/Talend/daikon/pull/551[#551])
+- link:https://jira.talendforge.org/browse/TDKN-206[TDKN-206]: Replace AESEncryption class (link:http://github.com/Talend/daikon/pull/508[#508])
+- link:https://jira.talendforge.org/browse/TDKN-234[TDKN-234]: TalendRuntimeException.checkContext may throw NPE thus masking source error (link:http://github.com/Talend/daikon/pull/487[#487])
+- link:https://jira.talendforge.org/browse/TDKN-233[TDKN-233]: guessSeparators in BigDecimalParser don't manage all use cases (link:http://github.com/Talend/daikon/pull/483[#483])
+- link:https://jira.talendforge.org/browse/TDKN-232[TDKN-232]: daikon-messages doc references deleted classes (link:http://github.com/Talend/daikon/pull/482[#482])
+- link:https://jira.talendforge.org/browse/TDKN-206[TDKN-206]: Replace AESEncryption class
+- link:https://jira.talendforge.org/browse/TDKN-206[TDKN-206]: Replace AESEncryption class (link:http://github.com/Talend/daikon/pull/481[#481])
+- link:https://jira.talendforge.org/browse/TDKN-206[TDKN-206]: Replace AESEncryption class (link:http://github.com/Talend/daikon/pull/476[#476])
+- link:https://jira.talendforge.org/browse/TDKN-222[TDKN-222]: Audit validateConfiguration parsing error (link:http://github.com/Talend/daikon/pull/466[#466])
+- link:https://jira.talendforge.org/browse/TDKN-198[TDKN-198]: TQL to Predicate conversion fails if at least a method returns an Iterable (link:http://github.com/Talend/daikon/pull/367[#367])
+- link:https://jira.talendforge.org/browse/DEVOPS-6085[DEVOPS-6085]: Nexus Smart branch not working for daikon on jenkins-common (link:http://github.com/Talend/daikon/pull/440[#440])
+- link:https://jira.talendforge.org/browse/TUP-21205[TUP-21205]: Remove CryptoHelper from tcommon-studio-se + tcommon-studio-ee (link:http://github.com/Talend/daikon/pull/430[#430])
+- link:https://jira.talendforge.org/browse/TDKN-209[TDKN-209]: The JsonSchemaInferrer may create multiple avro schema with the same name (link:http://github.com/Talend/daikon/pull/428[#428])
+- link:https://jira.talendforge.org/browse/TDQ-16037[TDQ-16037]: chinese char pattern return too many results (link:http://github.com/Talend/daikon/pull/415[#415])
+- link:https://jira.talendforge.org/browse/TDQ-15964[TDQ-15964]: Incorrect East Asia Pattern Frequency with Hiragana and Katakana (link:http://github.com/Talend/daikon/pull/410[#410])
+- link:https://jira.talendforge.org/browse/TDQ-15966[TDQ-15966]: Hiragana and Katakana are not recognized on CS Word Pattern (Low) Frequency (link:http://github.com/Talend/daikon/pull/408[#408])
+- link:https://jira.talendforge.org/browse/TDS-3694[TDS-3694]: TQL mongo criteria for "contains" and "containsIgnoreCase" do not escape special caracters (link:http://github.com/Talend/daikon/pull/391[#391])
+
+== Feature
+- link:https://jira.talendforge.org/browse/TDKN-255[TDKN-255]: Improvements for remote log in daikon-audit (link:http://github.com/Talend/daikon/pull/523[#523])
+- link:https://jira.talendforge.org/browse/TDKN-255[TDKN-255]: Improvements for remote log in daikon-audit (link:http://github.com/Talend/daikon/pull/524[#524])
+- link:https://jira.talendforge.org/browse/TDKN-245[TDKN-245]: Allow daikon-audit to configure display of host information (link:http://github.com/Talend/daikon/pull/512[#512])
+- link:https://jira.talendforge.org/browse/TDKN-245[TDKN-245]: Allow daikon-audit to configure display of host information (link:http://github.com/Talend/daikon/pull/507[#507])
+- link:https://jira.talendforge.org/browse/TDKN-244[TDKN-244]: Allow application to apply token protection to custom endpoints (link:http://github.com/Talend/daikon/pull/506[#506])
+- link:https://jira.talendforge.org/browse/TDQ-14200[TDQ-14200]: tDataEncrypt (DI) (link:http://github.com/Talend/daikon/pull/499[#499])
+- link:https://jira.talendforge.org/browse/TDKN-239[TDKN-239]: Add digest helpers to crypto-utils (link:http://github.com/Talend/daikon/pull/484[#484])
+- link:https://jira.talendforge.org/browse/TDKN-238[TDKN-238]: Add ability to open prometheus endpoints for dev purposes (link:http://github.com/Talend/daikon/pull/496[#496])
+- link:https://jira.talendforge.org/browse/TDQ-14200[TDQ-14200]: tDataEncrypt (DI) (link:http://github.com/Talend/daikon/pull/494[#494])
+- link:https://jira.talendforge.org/browse/TDKN-238[TDKN-238]: Add ability to open prometheus endpoints for dev purposes (link:http://github.com/Talend/daikon/pull/492[#492])
+- link:https://jira.talendforge.org/browse/TDKN-238[TDKN-238]: Add ability to open prometheus endpoints for dev purposes (link:http://github.com/Talend/daikon/pull/490[#490])
+- link:https://jira.talendforge.org/browse/TDKN-229[TDKN-229]: Add some client TQL operators (link:http://github.com/Talend/daikon/pull/475[#475])
+- link:https://jira.talendforge.org/browse/TDKN-219[TDKN-219]: Add daikon-spring-metrics to Daikon Spring modules (link:http://github.com/Talend/daikon/pull/462[#462])
+- link:https://jira.talendforge.org/browse/TDKN-208[TDKN-208]: Add support for Minio as storage for content-service (link:http://github.com/Talend/daikon/pull/425[#425])
+- link:https://jira.talendforge.org/browse/TDKN-217[TDKN-217]: Add HTTP header token authentication for identified admin endpoints (link:http://github.com/Talend/daikon/pull/458[#458])
+- link:https://jira.talendforge.org/browse/TDQ-16481[TDQ-16481]: Handle multi-alphabet with FF1 in Studio (link:http://github.com/Talend/daikon/pull/445[#445])
+- link:https://jira.talendforge.org/browse/TDS-2682[TDS-2682]: Leverage Asian patterns (link:http://github.com/Talend/daikon/pull/404[#404])
+- link:https://jira.talendforge.org/browse/TDS-2682[TDS-2682]: Leverage Asian patterns (link:http://github.com/Talend/daikon/pull/403[#403])
+- link:https://jira.talendforge.org/browse/TDQ-15748[TDQ-15748]: Provide a matcher with [character|word]-based pattern (link:http://github.com/Talend/daikon/pull/402[#402])
+- link:https://jira.talendforge.org/browse/TDQ-15793[TDQ-15793]: translate character patterns into regex (link:http://github.com/Talend/daikon/pull/400[#400])
+- link:https://jira.talendforge.org/browse/TDQ-15793[TDQ-15793]: translate character patterns into regex (link:http://github.com/Talend/daikon/pull/397[#397])
+- link:https://jira.talendforge.org/browse/TDP-4404[TDP-4404]: Leverage word-based patterns (link:http://github.com/Talend/daikon/pull/394[#394])
+- link:https://jira.talendforge.org/browse/TDS-2681[TDS-2681]: Leverage word-based patterns (link:http://github.com/Talend/daikon/pull/392[#392])
+- link:https://jira.talendforge.org/browse/TPSVC-3997[TPSVC-3997]: Implement logback backend for audit (link:http://github.com/Talend/daikon/pull/389[#389])
+- link:https://jira.talendforge.org/browse/TDP-5153[TDP-5153]: Keep simple numeric values format after maths operations (link:http://github.com/Talend/daikon/pull/387[#387])
+- link:https://jira.talendforge.org/browse/TDS-669[TDS-669]: Filter via the searchbox (link:http://github.com/Talend/daikon/pull/386[#386])
+
 == Work Item
-- link:https://jira.talendforge.org/browse/TDKN-259[TDKN-259]: Update Commons Compress
-- link:https://jira.talendforge.org/browse/TDKN-258[TDKN-258]: Update Commons BeanUtils
-- link:https://jira.talendforge.org/browse/TDKN-257[TDKN-257]: Update Commons Codec
-- link:https://jira.talendforge.org/browse/TDKN-256[TDKN-256]: Remove Hard coded keys from Daikon
-- link:https://jira.talendforge.org/browse/TDKN-243[TDKN-243]: Make release note plugin compatible with latest guava version
+- link:https://jira.talendforge.org/browse/TDS-4671[TDS-4671]: finalize bom upgrade for TDS & TSD (link:http://github.com/Talend/daikon/pull/555[#555])
+- link:https://jira.talendforge.org/browse/TDKN-243[TDKN-243]: Make release note plugin compatible with latest guava version (link:http://github.com/Talend/daikon/pull/547[#547])
+- link:https://jira.talendforge.org/browse/TDKN-259[TDKN-259]: Update Commons Compress (link:http://github.com/Talend/daikon/pull/549[#549])
+- link:https://jira.talendforge.org/browse/TDKN-258[TDKN-258]: Update Commons BeanUtils (link:http://github.com/Talend/daikon/pull/548[#548])
+- link:https://jira.talendforge.org/browse/TDKN-257[TDKN-257]: Update Commons Codec (link:http://github.com/Talend/daikon/pull/543[#543])
+- link:https://jira.talendforge.org/browse/TDKN-256[TDKN-256]: Remove Hard coded keys from Daikon (link:http://github.com/Talend/daikon/pull/537[#537])
+- link:https://jira.talendforge.org/browse/TDKN-252[TDKN-252]: Support specifying Provider objects in CipherSources (link:http://github.com/Talend/daikon/pull/520[#520])
+- link:https://jira.talendforge.org/browse/TDKN-253[TDKN-253]: Make authentication tag length configuration (link:http://github.com/Talend/daikon/pull/521[#521])
+- link:https://jira.talendforge.org/browse/TDKN-251[TDKN-251]: Exclude Commons Compress from Avro dependency (link:http://github.com/Talend/daikon/pull/519[#519])
+- link:https://jira.talendforge.org/browse/TDKN-247[TDKN-247]: Upgrade Log4j version to 2.11.2 (link:http://github.com/Talend/daikon/pull/517[#517])
+- link:https://jira.talendforge.org/browse/TDKN-242[TDKN-242]: Upgrade jackson version used in daikon (link:http://github.com/Talend/daikon/pull/504[#504])
+- link:https://jira.talendforge.org/browse/TDKN-241[TDKN-241]: Upgrade Daikon to Spring Boot 2.1.4 (link:http://github.com/Talend/daikon/pull/498[#498])
+- link:https://jira.talendforge.org/browse/TDKN-241[TDKN-241]: Upgrade Daikon to Spring Boot 2.1.4 (link:http://github.com/Talend/daikon/pull/497[#497])
+- link:https://jira.talendforge.org/browse/TDKN-240[TDKN-240]: Upgrade Daikon dependencies (link:http://github.com/Talend/daikon/pull/495[#495])
+- link:https://jira.talendforge.org/browse/TDC-2245[TDC-2245]: [Back] Extend daikon-tql-bean module to add the minimal set of features needed by TDC (link:http://github.com/Talend/daikon/pull/493[#493])
+- link:https://jira.talendforge.org/browse/TDS-3833[TDS-3833]: Upgrade to Spring 5 / Spring boot 2 (link:http://github.com/Talend/daikon/pull/488[#488])
+- link:https://jira.talendforge.org/browse/TDKN-230[TDKN-230]: Move crypto-utils from Daikon EE to Daikon OSS (link:http://github.com/Talend/daikon/pull/480[#480])
+- link:https://jira.talendforge.org/browse/TDKN-228[TDKN-228]: Upgrade Guava to 25.1-JRE (link:http://github.com/Talend/daikon/pull/479[#479])
+- link:https://jira.talendforge.org/browse/TDKN-227[TDKN-227]: [Java 11 support] Need an update of commons-lang3 version (link:http://github.com/Talend/daikon/pull/477[#477])
+- link:https://jira.talendforge.org/browse/TDKN-224[TDKN-224]: Add a method to return the absolute file path in DeletableResource (link:http://github.com/Talend/daikon/pull/473[#473])
+- link:https://jira.talendforge.org/browse/TDKN-224[TDKN-224]: Add a method to return the absolute file path in DeletableResource (link:http://github.com/Talend/daikon/pull/470[#470])
+- link:https://jira.talendforge.org/browse/TDKN-225[TDKN-225]: Align Spring Cloud version with Talend Service Base Images (link:http://github.com/Talend/daikon/pull/471[#471])
+- link:https://jira.talendforge.org/browse/TDKN-220[TDKN-220]: Make audit context immutable (link:http://github.com/Talend/daikon/pull/421[#421])
+- link:https://jira.talendforge.org/browse/TDKN-214[TDKN-214]: Update Jackson
+- link:https://jira.talendforge.org/browse/TDKN-212[TDKN-212]: Migration Sprinboot 2 (link:http://github.com/Talend/daikon/pull/434[#434])
+- link:https://jira.talendforge.org/browse/TDKN-214[TDKN-214]: Update Jackson (link:http://github.com/Talend/daikon/pull/436[#436])
+- link:https://jira.talendforge.org/browse/TFD-6171[TFD-6171]: Adapt Kafka messages to enable easier consumption by external services (link:http://github.com/Talend/daikon/pull/435[#435])
+- link:https://jira.talendforge.org/browse/TDKN-213[TDKN-213]: Daikon exception is not an OSGI plugin (link:http://github.com/Talend/daikon/pull/432[#432])
+- link:https://jira.talendforge.org/browse/TDC-1373[TDC-1373]: Extract dyn log endpoints from dataset to common lib (link:http://github.com/Talend/daikon/pull/426[#426])
+- link:https://jira.talendforge.org/browse/TDKN-207[TDKN-207]: Externalize exceptions on their own library (link:http://github.com/Talend/daikon/pull/424[#424])
+- link:https://jira.talendforge.org/browse/TDKN-205[TDKN-205]: Valid security token is displayed in Kafka logs  (link:http://github.com/Talend/daikon/pull/422[#422])
+- link:https://jira.talendforge.org/browse/TDKN-204[TDKN-204]: Security fixes for daikon librairies (link:http://github.com/Talend/daikon/pull/411[#411])
+- link:https://jira.talendforge.org/browse/TDQ-15990[TDQ-15990]: Replace chinese characters with most frequent ones (link:http://github.com/Talend/daikon/pull/409[#409])
+- link:https://jira.talendforge.org/browse/TDKN-202[TDKN-202]: Add a dot to the end of message in daikon-audit (link:http://github.com/Talend/daikon/pull/399[#399])
+- link:https://jira.talendforge.org/browse/TDQ-15975[TDQ-15975]: adapt small/high japanese char-patterns (link:http://github.com/Talend/daikon/pull/407[#407])
+- link:https://jira.talendforge.org/browse/TDQ-15761[TDQ-15761]: translate word patterns into mongo/regex patterns (link:http://github.com/Talend/daikon/pull/395[#395])
+- link:https://jira.talendforge.org/browse/TDQ-15761[TDQ-15761]: translate word patterns into mongo/regex patterns (link:http://github.com/Talend/daikon/pull/393[#393])
+
+== Other
+- link:https://jira.talendforge.org/browse/TDP-7278[TDP-7278]: Update to Daikon 1.x (link:http://github.com/Talend/daikon/pull/530[#530])
+- link:https://jira.talendforge.org/browse/TDP-7278[TDP-7278]: Update to Daikon 1.x (link:http://github.com/Talend/daikon/pull/529[#529])
+- link:https://jira.talendforge.org/browse/TDP-7278[TDP-7278]: Update to Daikon 1.x (link:http://github.com/Talend/daikon/pull/528[#528])
+- link:https://jira.talendforge.org/browse/TESB-23714[TESB-23714]: Define the reason for failed test suites in run #140 (link:http://github.com/Talend/daikon/pull/406[#406])
+- link:https://jira.talendforge.org/browse/TESB-23714[TESB-23714]: Define the reason for failed test suites in run #140 (link:http://github.com/Talend/daikon/pull/405[#405])
+- chore(build): Fix case sensitive version number.
+- feat(encryption) Provide helpers to ease encryption migration  (link:http://github.com/Talend/daikon/pull/546[#546])
+- chore(clean up) Remove a leftover test file.
+- Trivial fix to avoid creating a File object twice  (link:http://github.com/Talend/daikon/pull/544[#544])
+- chore(crypto-utils) Adds a OSGI bundle for crypto-utils module.  (link:http://github.com/Talend/daikon/pull/540[#540])
+- Chore: fix cycle dependency injection  (link:http://github.com/Talend/daikon/pull/525[#525])
+- chore(crypto): Re-use File object  (link:http://github.com/Talend/daikon/pull/518[#518])
+- chore(audit): don't use jaxb to create a base64 since dependency is no more there OOTB  (link:http://github.com/Talend/daikon/pull/522[#522])
+- fix(logs): Make the KeyValuePair per logger  (link:http://github.com/Talend/daikon/pull/516[#516])
+- chore(build): Build fixes for 1.4.0 build  (link:http://github.com/Talend/daikon/pull/514[#514])
+- feat(): make LocalDeletableResource public   (link:http://github.com/Talend/daikon/pull/511[#511])
+- feat(): make LocalResourceResolver public  (link:http://github.com/Talend/daikon/pull/509[#509])
+- Remove unused dependencies from compile scope  (link:http://github.com/Talend/daikon/pull/505[#505])
+- Add from CRD thisisatest
+- Add from CRD thisisatest
+- Add from CRD thisisatest
+- chore(clean-up): Fix incorrect code format.
+- chore(build) add project name as optional parameter in the documentation  (link:http://github.com/Talend/daikon/pull/485[#485])
+- Update 1.1.0.adoc
+- Update 1.1.0.adoc
+- chore(build): Incorrect format in content-service-journal.
+- chore(build): Change .m2 repository directory to force refresh.
+- feat: use markers to dynamically populate some custom info (Logback only)  (link:http://github.com/Talend/daikon/pull/478[#478])
+- chore(): Minor code style improvements in TQL -> Bean  (link:http://github.com/Talend/daikon/pull/468[#468])
+- fix Readme links  (link:http://github.com/Talend/daikon/pull/465[#465])
+- doc(TQL): Update client readme  (link:http://github.com/Talend/daikon/pull/463[#463])
+- fix(TDKN/218) Ensure a missing SUN_BOOT_CLASS_PATH does not lead to a NPE in SunOracleStandardPropertiesStrategy  (link:http://github.com/Talend/daikon/pull/460[#460])
+- Fix readme about log correlation and custom fields  (link:http://github.com/Talend/daikon/pull/456[#456])
+- chore(build) Update version of play2-maven-plugin  (link:http://github.com/Talend/daikon/pull/459[#459])
+- chore(): Fix wrong link in PR template.
+- chore(build): Remove remaining reference to service module
+- Removing duplicate dependency  (link:http://github.com/Talend/daikon/pull/446[#446])
+- chore : Update dynamic log component  (link:http://github.com/Talend/daikon/pull/444[#444])
+- Added repository webhook, remove polling  (link:http://github.com/Talend/daikon/pull/443[#443])
+- Use 64-bit Maven builder image (required by content-service-journal-mongo)  (link:http://github.com/Talend/daikon/pull/441[#441])
+- Fix non-PR build  (link:http://github.com/Talend/daikon/pull/442[#442])
+- chore(build): Use Jenkinsfile for Daikon build  (link:http://github.com/Talend/daikon/pull/417[#417])
+- Fix : Fix module daikon.scala in pom.xml in daikon  (link:http://github.com/Talend/daikon/pull/427[#427])
+- Kjwang/feat tup 20282 job signature and verification junit  (link:http://github.com/Talend/daikon/pull/419[#419])
+- doc(readme): add codify code coverage.
+- chore: separate plugin from plugin management  (link:http://github.com/Talend/daikon/pull/414[#414])
+- feat(2681): Correct incompatibility between mongo and Fongo for regex…  (link:http://github.com/Talend/daikon/pull/398[#398])
+- feat(2681): Add tests.  (link:http://github.com/Talend/daikon/pull/396[#396])
+- Kjwang/feat tup 20282 job signature and verification  (link:http://github.com/Talend/daikon/pull/388[#388])

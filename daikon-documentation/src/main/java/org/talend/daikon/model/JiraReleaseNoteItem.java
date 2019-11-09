@@ -1,20 +1,21 @@
 package org.talend.daikon.model;
 
 import java.io.PrintWriter;
-import java.util.Objects;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
+@AllArgsConstructor
 public class JiraReleaseNoteItem implements ReleaseNoteItem {
 
     private final Issue issue;
 
     private final String jiraServerUrl;
 
-    public JiraReleaseNoteItem(Issue issue, String jiraServerUrl) {
-        this.issue = issue;
-        this.jiraServerUrl = jiraServerUrl;
-    }
+    private final PullRequest pullRequest;
 
     @Override
     public ReleaseNoteItemType getIssueType() {
@@ -23,8 +24,12 @@ public class JiraReleaseNoteItem implements ReleaseNoteItem {
 
     @Override
     public void writeTo(PrintWriter writer) {
-        writer.println(
-                "- link:" + jiraServerUrl + "/browse/" + issue.getKey() + "[" + issue.getKey() + "]: " + issue.getSummary());
+        writer.print("- link:" + jiraServerUrl + "/browse/" + issue.getKey() + "[" + issue.getKey() + "]: " + issue.getSummary());
+        if (pullRequest != null) {
+            writer.println(" (link:" + pullRequest.getUrl() + "[#" + pullRequest.getDisplay() + "])");
+        } else {
+            writer.println();
+        }
     }
 
     @Override
@@ -32,18 +37,4 @@ public class JiraReleaseNoteItem implements ReleaseNoteItem {
         return "JiraReleaseNoteItem{" + getIssueType() + ", " + "issue=" + issue.getSummary() + '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        JiraReleaseNoteItem that = (JiraReleaseNoteItem) o;
-        return Objects.equals(issue, that.issue) && Objects.equals(jiraServerUrl, that.jiraServerUrl);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(issue, jiraServerUrl);
-    }
 }

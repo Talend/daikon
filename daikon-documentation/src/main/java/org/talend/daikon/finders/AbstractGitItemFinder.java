@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
@@ -20,10 +20,19 @@ import org.eclipse.jgit.lib.RefDatabase;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.talend.daikon.model.GitCommit;
+import org.talend.daikon.model.PullRequest;
 
-abstract class AbstractGitItemFinder implements ItemFinder {
+import com.google.common.collect.Streams;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+public abstract class AbstractGitItemFinder implements ItemFinder {
 
     static final Pattern JIRA_DETECTION_PATTERN = Pattern.compile(".*((?<!([A-Z]{1,10})-?)[A-Z]+-\\d+).*");
+
+    private static final Pattern PULL_REQUEST_PATTERN = Pattern.compile(".*#(\\d+).*");
 
     private String gitRepositoryPath;
 
@@ -47,7 +56,13 @@ abstract class AbstractGitItemFinder implements ItemFinder {
         }
     }
 
-    Stream<RevCommit> getGitCommits(String version) {
+    private static PullRequest getPullRequestLink(RevCommit commit) {
+        final Matcher matcher = PULL_REQUEST_PATTERN.matcher(commit.getShortMessage());
+        return matcher.matches() ? new PullRequest("http://github.com/Talend/daikon/pull/" + matcher.group(1), matcher.group(1))
+                : null;
+    }
+
+    Stream<GitCommit> getGitCommits(String version) {
         try {
             // Init git client
             final File dir;
@@ -65,10 +80,8 @@ abstract class AbstractGitItemFinder implements ItemFinder {
                 final GitRange refsByPrefix = findRange(refDatabase, walk, version);
                 final ObjectId start = refsByPrefix.start;
                 final ObjectId head = refsByPrefix.end;
-
-                final Iterable<RevCommit> commits = git.log().addRange(start, head).call();
-                return StreamSupport.stream(commits.spliterator(), false);
-
+                return Streams.stream(git.log().addRange(start, head).call()) //
+                        .map(commit -> new GitCommit(commit, getPullRequestLink(commit)));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -82,7 +95,7 @@ abstract class AbstractGitItemFinder implements ItemFinder {
 
         if (StringUtils.isBlank(version)) {
             return base.max(comparing(r -> getDate(walk, r))) // Get latest tag from history
-                    .map(start -> new GitRange(start.getObjectId(), head)) // If found, return range of latest tag to HEAD
+                    .map(start -> new GitRange(start.getObjectId(), head)) // If found, range from latest to HEAD
                     .orElseGet(() -> { // Or else return range from HEAD to root
                         final RevCommit headCommit = walk.lookupCommit(head);
                         return new GitRange(headCommit.getParent(headCommit.getParentCount() - 1), head);
@@ -110,15 +123,13 @@ abstract class AbstractGitItemFinder implements ItemFinder {
         }
     }
 
+    @Getter
+    @AllArgsConstructor
     static class GitRange {
 
-        ObjectId start;
+        private ObjectId start;
 
-        ObjectId end;
+        private ObjectId end;
 
-        private GitRange(ObjectId start, ObjectId end) {
-            this.start = start;
-            this.end = end;
-        }
     }
 }

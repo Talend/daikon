@@ -15,9 +15,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.daikon.finders.GitItemFinder;
+import org.talend.daikon.finders.JiraGitItemFinder;
 import org.talend.daikon.finders.ItemFinder;
-import org.talend.daikon.finders.JiraItemFinder;
 import org.talend.daikon.finders.MiscGitItemFinder;
 import org.talend.daikon.model.ReleaseNoteItem;
 import org.talend.daikon.model.ReleaseNoteItemType;
@@ -74,8 +73,7 @@ public class ReleaseNotes extends AbstractMojo {
 
             // Stream all release note items
             final Optional<? extends Stream<? extends ReleaseNoteItem>> streams = Stream.of( //
-                    new JiraItemFinder(project, jiraVersion, server, client), //
-                    new GitItemFinder("../", server, client, jiraVersion), //
+                    new JiraGitItemFinder("../", server, client, jiraVersion), //
                     new MiscGitItemFinder("../", jiraVersion) //
             ) //
                     .map(ItemFinder::find) //

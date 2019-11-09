@@ -1,10 +1,18 @@
 = Daikon Release Notes (1.3.0)
 
-== Work Item
-- link:https://jira.talendforge.org/browse/TDKN-242[TDKN-242]: Upgrade jackson version used in daikon
-- link:https://jira.talendforge.org/browse/TDKN-241[TDKN-241]: Upgrade Daikon to Spring Boot 2.1.4
-- link:https://jira.talendforge.org/browse/TDKN-240[TDKN-240]: Upgrade Daikon dependencies
+== Feature
+- link:https://jira.talendforge.org/browse/TDQ-14200[TDQ-14200]: tDataEncrypt (DI) (link:http://github.com/Talend/daikon/pull/499[#499])
+- link:https://jira.talendforge.org/browse/TDKN-239[TDKN-239]: Add digest helpers to crypto-utils (link:http://github.com/Talend/daikon/pull/484[#484])
+- link:https://jira.talendforge.org/browse/TDKN-238[TDKN-238]: Add ability to open prometheus endpoints for dev purposes (link:http://github.com/Talend/daikon/pull/496[#496])
 
-== New Feature
-- link:https://jira.talendforge.org/browse/TDKN-239[TDKN-239]: Add digest helpers to crypto-utils
-- link:https://jira.talendforge.org/browse/TDKN-238[TDKN-238]: Add ability to open prometheus endpoints for dev purposes
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-242[TDKN-242]: Upgrade jackson version used in daikon (link:http://github.com/Talend/daikon/pull/504[#504])
+- link:https://jira.talendforge.org/browse/TDKN-241[TDKN-241]: Upgrade Daikon to Spring Boot 2.1.4 (link:http://github.com/Talend/daikon/pull/498[#498])
+- link:https://jira.talendforge.org/browse/TDKN-240[TDKN-240]: Upgrade Daikon dependencies (link:http://github.com/Talend/daikon/pull/495[#495])
+- link:https://jira.talendforge.org/browse/TDC-2245[TDC-2245]: [Back] Extend daikon-tql-bean module to add the minimal set of features needed by TDC (link:http://github.com/Talend/daikon/pull/493[#493])
+
+== Other
+- Remove unused dependencies from compile scope  (link:http://github.com/Talend/daikon/pull/505[#505])
+- Add from CRD thisisatest
+- Add from CRD thisisatest
+- Add from CRD thisisatest

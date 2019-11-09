@@ -3,10 +3,16 @@ package org.talend.daikon.finders;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
-import org.eclipse.jgit.revwalk.RevCommit;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import org.talend.daikon.model.GitCommit;
 import org.talend.daikon.model.MiscReleaseNoteItem;
 import org.talend.daikon.model.ReleaseNoteItem;
 
+/**
+ * Finds Git commit for release notes <b>NOT</b> linked to any Jira.
+ */
 public class MiscGitItemFinder extends AbstractGitItemFinder {
 
     private final String version;
@@ -24,24 +30,22 @@ public class MiscGitItemFinder extends AbstractGitItemFinder {
     public Stream<? extends ReleaseNoteItem> find() {
         try {
             return getGitCommits(version) //
-                    .filter(c -> !c.getShortMessage().contains("release")) //
-                    .map(c -> new Tuple(JIRA_DETECTION_PATTERN.matcher(c.getShortMessage()), c)) //
-                    .filter(t -> !t.matcher.matches()) //
-                    .map(t -> new MiscReleaseNoteItem(t.commit));
+                    .filter(c -> !c.getCommit().getShortMessage().contains("release")) //
+                    .map(c -> new Tuple(JIRA_DETECTION_PATTERN.matcher(c.getCommit().getShortMessage()), c)) //
+                    .filter(t -> !t.getMatcher().matches()) //
+                    .map(t -> new MiscReleaseNoteItem(t.getGitCommit()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Getter
+    @AllArgsConstructor
     private static class Tuple {
 
-        private final Matcher matcher;
+        private Matcher matcher;
 
-        private final RevCommit commit;
+        private GitCommit gitCommit;
 
-        private Tuple(Matcher matcher, RevCommit commit) {
-            this.matcher = matcher;
-            this.commit = commit;
-        }
     }
 }

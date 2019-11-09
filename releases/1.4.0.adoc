@@ -1,5 +1,13 @@
 = Daikon Release Notes (1.4.0)
 
-== New Feature
-- link:https://jira.talendforge.org/browse/TDKN-245[TDKN-245]: Allow daikon-audit to configure display of host information
-- link:https://jira.talendforge.org/browse/TDKN-244[TDKN-244]: Allow application to apply token protection to custom endpoints
+== Fix
+- link:https://jira.talendforge.org/browse/TDKN-206[TDKN-206]: Replace AESEncryption class (link:http://github.com/Talend/daikon/pull/508[#508])
+
+== Feature
+- link:https://jira.talendforge.org/browse/TDKN-245[TDKN-245]: Allow daikon-audit to configure display of host information (link:http://github.com/Talend/daikon/pull/512[#512])
+- link:https://jira.talendforge.org/browse/TDKN-244[TDKN-244]: Allow application to apply token protection to custom endpoints (link:http://github.com/Talend/daikon/pull/506[#506])
+
+== Other
+- chore(build): Build fixes for 1.4.0 build  (link:http://github.com/Talend/daikon/pull/514[#514])
+- feat(): make LocalDeletableResource public   (link:http://github.com/Talend/daikon/pull/511[#511])
+- feat(): make LocalResourceResolver public  (link:http://github.com/Talend/daikon/pull/509[#509])

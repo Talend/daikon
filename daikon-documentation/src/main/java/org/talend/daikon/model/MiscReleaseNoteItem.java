@@ -1,17 +1,17 @@
 package org.talend.daikon.model;
 
 import java.io.PrintWriter;
-import java.util.Objects;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
+@AllArgsConstructor
 public class MiscReleaseNoteItem implements ReleaseNoteItem {
 
-    private final RevCommit commit;
-
-    public MiscReleaseNoteItem(RevCommit commit) {
-        this.commit = commit;
-    }
+    private final GitCommit commit;
 
     @Override
     public ReleaseNoteItemType getIssueType() {
@@ -20,26 +20,20 @@ public class MiscReleaseNoteItem implements ReleaseNoteItem {
 
     @Override
     public void writeTo(PrintWriter writer) {
-        writer.println("- " + commit.getShortMessage());
+        final PullRequest pullRequest = commit.getPullRequest();
+        final RevCommit commit = this.commit.getCommit();
+        if (pullRequest != null) {
+            final String processedShortMessage = commit.getShortMessage().replace("(#" + pullRequest.getDisplay() + ")", "");
+            writer.println(
+                    "- " + processedShortMessage + " (link:" + pullRequest.getUrl() + "[#" + pullRequest.getDisplay() + "])");
+        } else {
+            writer.println("- " + commit.getShortMessage());
+        }
     }
 
     @Override
     public String toString() {
-        return "MiscReleaseNoteItem{" + getIssueType() + ", " + "commit=" + commit.getShortMessage() + '}';
+        return "MiscReleaseNoteItem{" + getIssueType() + ", " + "commit=" + commit.getCommit().getShortMessage() + '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        MiscReleaseNoteItem that = (MiscReleaseNoteItem) o;
-        return Objects.equals(commit, that.commit);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(commit);
-    }
 }

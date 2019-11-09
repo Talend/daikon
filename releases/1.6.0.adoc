@@ -1,9 +1,15 @@
 = Daikon Release Notes (1.6.0)
 
-== Work Item
-- link:https://jira.talendforge.org/browse/TDKN-253[TDKN-253]: Make authentication tag length configuration
-- link:https://jira.talendforge.org/browse/TDKN-252[TDKN-252]: Support specifying Provider objects in CipherSources
-- link:https://jira.talendforge.org/browse/TDKN-251[TDKN-251]: Exclude Commons Compress from Avro dependency
+== Feature
+- link:https://jira.talendforge.org/browse/TDKN-255[TDKN-255]: Improvements for remote log in daikon-audit (link:http://github.com/Talend/daikon/pull/523[#523])
 
-== New Feature
-- link:https://jira.talendforge.org/browse/TDKN-255[TDKN-255]: Improvements for remote log in daikon-audit
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-252[TDKN-252]: Support specifying Provider objects in CipherSources (link:http://github.com/Talend/daikon/pull/520[#520])
+- link:https://jira.talendforge.org/browse/TDKN-253[TDKN-253]: Make authentication tag length configuration (link:http://github.com/Talend/daikon/pull/521[#521])
+- link:https://jira.talendforge.org/browse/TDKN-251[TDKN-251]: Exclude Commons Compress from Avro dependency (link:http://github.com/Talend/daikon/pull/519[#519])
+
+== Other
+- link:https://jira.talendforge.org/browse/TDP-7278[TDP-7278]: Update to Daikon 1.x (link:http://github.com/Talend/daikon/pull/530[#530])
+- Chore: fix cycle dependency injection  (link:http://github.com/Talend/daikon/pull/525[#525])
+- chore(crypto): Re-use File object  (link:http://github.com/Talend/daikon/pull/518[#518])
+- chore(audit): don't use jaxb to create a base64 since dependency is no more there OOTB  (link:http://github.com/Talend/daikon/pull/522[#522])
