@@ -1,7 +1,9 @@
 = Daikon Release Notes (1.5.0)
 
+Thanks to @Pierre Reliquet
+
 == Work Item
-- link:https://jira.talendforge.org/browse/TDKN-247[TDKN-247]: Upgrade Log4j version to 2.11.2 (link:http://github.com/Talend/daikon/pull/517[#517])
+- link:https://jira.talendforge.org/browse/TDKN-247[TDKN-247]: Upgrade Log4j version to 2.11.2 (link:https://github.com/Talend/daikon/pull/517[#517])
 
 == Other
-- fix(logs): Make the KeyValuePair per logger  (link:http://github.com/Talend/daikon/pull/516[#516])
+- fix(logs): Make the KeyValuePair per logger  (link:https://github.com/Talend/daikon/pull/516[#516])

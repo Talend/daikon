@@ -1,13 +1,16 @@
 = Daikon Release Notes (1.2.0)
 
+Thanks to @Francois Huaulme, @Aurélien F, @fhuaulme, @Henri-Mayeul de Benque
+
 == Fix
-- link:https://jira.talendforge.org/browse/TDKN-234[TDKN-234]: TalendRuntimeException.checkContext may throw NPE thus masking source error (link:http://github.com/Talend/daikon/pull/487[#487])
+- link:https://jira.talendforge.org/browse/TDKN-234[TDKN-234]: TalendRuntimeException.checkContext may throw NPE thus masking source error (link:https://github.com/Talend/daikon/pull/487[#487])
 
 == Feature
-- link:https://jira.talendforge.org/browse/TDKN-238[TDKN-238]: Add ability to open prometheus endpoints for dev purposes (link:http://github.com/Talend/daikon/pull/492[#492])
+- link:https://jira.talendforge.org/browse/TDKN-238[TDKN-238]: Add ability to open prometheus endpoints for dev purposes (link:https://github.com/Talend/daikon/pull/492[#492])
+- link:https://jira.talendforge.org/browse/TDKN-238[TDKN-238]: Add ability to open prometheus endpoints for dev purposes (link:https://github.com/Talend/daikon/pull/490[#490])
 
 == Work Item
-- link:https://jira.talendforge.org/browse/TDS-3833[TDS-3833]: Upgrade to Spring 5 / Spring boot 2 (link:http://github.com/Talend/daikon/pull/488[#488])
+- link:https://jira.talendforge.org/browse/TDS-3833[TDS-3833]: Upgrade to Spring 5 / Spring boot 2 (link:https://github.com/Talend/daikon/pull/488[#488])
 
 == Other
 - chore(clean-up): Fix incorrect code format.
