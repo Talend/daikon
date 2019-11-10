@@ -28,7 +28,7 @@ import com.google.common.collect.Streams;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public abstract class AbstractGitItemFinder implements ItemFinder {
+public abstract class AbstractGitItemFinder {
 
     static final Pattern JIRA_DETECTION_PATTERN = Pattern.compile(".*((?<!([A-Z]{1,10})-?)[A-Z]+-\\d+).*");
 
@@ -36,9 +36,12 @@ public abstract class AbstractGitItemFinder implements ItemFinder {
 
     private final String gitHubRepositoryUrl;
 
+    private final String version;
+
     private final String gitRepositoryPath;
 
-    AbstractGitItemFinder(String gitRepositoryPath, String gitHubRepositoryUrl) {
+    AbstractGitItemFinder(String version, String gitRepositoryPath, String gitHubRepositoryUrl) {
+        this.version = version;
         this.gitRepositoryPath = gitRepositoryPath;
         this.gitHubRepositoryUrl = gitHubRepositoryUrl;
     }
@@ -64,7 +67,7 @@ public abstract class AbstractGitItemFinder implements ItemFinder {
         return matcher.matches() ? new PullRequest(gitHubRepositoryUrl + "/pull/" + matcher.group(1), matcher.group(1)) : null;
     }
 
-    Stream<GitCommit> getGitCommits(String version) {
+    Stream<GitCommit> getGitCommits() {
         try {
             // Init git client
             final File dir;

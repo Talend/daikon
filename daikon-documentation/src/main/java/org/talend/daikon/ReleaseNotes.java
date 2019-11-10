@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,9 +16,12 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.daikon.finders.AuthorFinder;
+import org.talend.daikon.finders.GitAuthorFinder;
 import org.talend.daikon.finders.JiraGitItemFinder;
 import org.talend.daikon.finders.ItemFinder;
 import org.talend.daikon.finders.MiscGitItemFinder;
+import org.talend.daikon.model.Author;
 import org.talend.daikon.model.ReleaseNoteItem;
 import org.talend.daikon.model.ReleaseNoteItemType;
 
@@ -75,17 +79,25 @@ public class ReleaseNotes extends AbstractMojo {
             final JiraRestClient client = factory.createWithBasicHttpAuthentication(jiraServerUri, user, password);
 
             // Stream all release note items
-            final Optional<? extends Stream<? extends ReleaseNoteItem>> streams = Stream.of( //
+            final Optional<? extends Stream<? extends ReleaseNoteItem>> streams = Stream.<ItemFinder> of( //
                     new JiraGitItemFinder("../", server, client, jiraVersion, gitHubRepositoryUrl), //
                     new MiscGitItemFinder("../", jiraVersion, gitHubRepositoryUrl) //
             ) //
                     .map(ItemFinder::find) //
                     .reduce(Stream::concat);
 
+            // Stream all authors for release
+            final AuthorFinder gitAuthorFinder = new GitAuthorFinder(jiraVersion, "../", gitHubRepositoryUrl);
+            Stream<Author> authors = gitAuthorFinder.findAuthors();
+
             // Create Ascii doc output
             final Stream<? extends ReleaseNoteItem> issueStream = streams.get().distinct();
             try (PrintWriter writer = new PrintWriter(file)) {
                 writer.println("= " + name + " Release Notes (" + jiraVersion + ")");
+
+                writer.println();
+                final String allAuthors = authors.map(author -> "@" + author.getName()).collect(Collectors.joining(", "));
+                writer.println("Thanks to " + allAuthors);
 
                 final ThreadLocal<ReleaseNoteItemType> previousIssueType = new ThreadLocal<>();
                 issueStream //

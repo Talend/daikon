@@ -1,5 +1,7 @@
 = Daikon Release Notes (1.7.0)
 
+Thanks to @Aurélien F, @pyzhou, @fhuaulme, @Francois Huaulme, @Colm O hEigeartaigh, @bhe-talendbj, @Fabien Abballe, @Romain Manni-Bucau, @JM Brun, @Pierre Reliquet, @talend-vlesquere, @nrousseau, @Application, @Laurent Meunier, @Prada Souvanlasy, @Henri-Mayeul de Benque, @cgall, @wang wei, @Jérémie Descottes, @Rémy DUBOIS, @tduperron, @Thomas, @lcelton-talend, @Damien Prot, @iwangtalend, @Abbass Marouni, @Tao Tao, @Pierre Bailly-Ferry, @YoannAlbert, @Armel Chever, @kjwang-talend, @sgandon, @sizhaoliu, @Yves Armel CAROF, @gmzoughi, @Fabien Rassinier, @Ievgen Tarasov
+
 == Fix
 - link:https://jira.talendforge.org/browse/TDI-42756[TDI-42756]: Code generated when uncheck 'Use PreparedStatement' for tJDBCInput and tJDBCRow (link:https://github.com/Talend/daikon/pull/545[#545])
 - link:https://jira.talendforge.org/browse/TUP-23482[TUP-23482]: should avoid multi version slf4j-log4j jars in the job classpath (link:https://github.com/Talend/daikon/pull/551[#551])

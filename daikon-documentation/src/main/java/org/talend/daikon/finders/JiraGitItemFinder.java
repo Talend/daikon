@@ -22,13 +22,11 @@ import lombok.Getter;
 /**
  * Finds Jira for release note based of Git history (finds Jira ids from Git commit messages).
  */
-public class JiraGitItemFinder extends AbstractGitItemFinder {
+public class JiraGitItemFinder extends AbstractGitItemFinder implements ItemFinder {
 
     private final String jiraServerUrl;
 
     private final JiraRestClient client;
-
-    private final String version;
 
     public JiraGitItemFinder(String jiraServerUrl, JiraRestClient client, String version, String gitHubRepositoryUrl) {
         this(null, jiraServerUrl, client, version, gitHubRepositoryUrl);
@@ -36,10 +34,9 @@ public class JiraGitItemFinder extends AbstractGitItemFinder {
 
     public JiraGitItemFinder(String gitRepositoryPath, String jiraServerUrl, JiraRestClient client, String version,
             String gitHubRepositoryUrl) {
-        super(gitRepositoryPath, gitHubRepositoryUrl);
+        super(version, gitRepositoryPath, gitHubRepositoryUrl);
         this.jiraServerUrl = jiraServerUrl;
         this.client = client;
-        this.version = version;
     }
 
     @Override
@@ -47,7 +44,7 @@ public class JiraGitItemFinder extends AbstractGitItemFinder {
         try {
             final Map<String, Issue> issueCache = new HashMap<>();
             return supplyAsync(() -> { // Get all Jira id from commits
-                return getGitCommits(version) //
+                return getGitCommits() //
                         .filter(c -> !c.getCommit().getShortMessage().contains("release")) //
                         .map(c -> new RawGitCommit(JIRA_DETECTION_PATTERN.matcher(c.getCommit().getShortMessage()),
                                 c.getPullRequest())) //

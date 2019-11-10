@@ -1,11 +1,13 @@
 = Daikon Release Notes (1.8.0)
 
+Thanks to @wang wei, @bhe-talendbj, @Colm O hEigeartaigh, @Jean-Michel FRANCOIS
+
 == Feature
-- link:https://jira.talendforge.org/browse/TUP-21518[TUP-21518]: Remove CryptoHelper to use AES (link:http://github.com/Talend/daikon/pull/559[#559])
+- link:https://jira.talendforge.org/browse/TUP-21518[TUP-21518]: Remove CryptoHelper to use AES (link:https://github.com/Talend/daikon/pull/559[#559])
 
 == Work Item
-- link:https://jira.talendforge.org/browse/TDI-43023[TDI-43023]: Support log4j2 for daikon-audit (link:http://github.com/Talend/daikon/pull/560[#560])
-- link:https://jira.talendforge.org/browse/TDKN-262[TDKN-262]: Update Jackson to 2.10.0 (link:http://github.com/Talend/daikon/pull/561[#561])
+- link:https://jira.talendforge.org/browse/TDI-43023[TDI-43023]: Support log4j2 for daikon-audit (link:https://github.com/Talend/daikon/pull/560[#560])
+- link:https://jira.talendforge.org/browse/TDKN-262[TDKN-262]: Update Jackson to 2.10.0 (link:https://github.com/Talend/daikon/pull/561[#561])
 
 == Other
-- chore(tql): make mono repo private and remove unused deps  (link:http://github.com/Talend/daikon/pull/556[#556])
+- chore(tql): make mono repo private and remove unused deps  (link:https://github.com/Talend/daikon/pull/556[#556])

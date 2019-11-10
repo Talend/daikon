@@ -12,23 +12,20 @@ import org.talend.daikon.model.ReleaseNoteItem;
 /**
  * Finds Git commit for release notes <b>NOT</b> linked to any Jira.
  */
-public class MiscGitItemFinder extends AbstractGitItemFinder {
-
-    private final String version;
+public class MiscGitItemFinder extends AbstractGitItemFinder implements ItemFinder {
 
     public MiscGitItemFinder(String version, String gitHubRepositoryUrl) {
         this(null, version, gitHubRepositoryUrl);
     }
 
     public MiscGitItemFinder(String pathname, String version, String gitHubRepositoryUrl) {
-        super(pathname, gitHubRepositoryUrl);
-        this.version = version;
+        super(version, pathname, gitHubRepositoryUrl);
     }
 
     @Override
     public Stream<? extends ReleaseNoteItem> find() {
         try {
-            return getGitCommits(version) //
+            return getGitCommits() //
                     .filter(c -> !c.getCommit().getShortMessage().contains("release")) //
                     .map(c -> new Tuple(JIRA_DETECTION_PATTERN.matcher(c.getCommit().getShortMessage()), c)) //
                     .filter(t -> !t.getMatcher().matches()) //

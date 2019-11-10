@@ -1,13 +1,15 @@
 = Daikon Release Notes (1.9.0)
 
+Thanks to @Henri-Mayeul de Benque, @dependabot[bot], @Michael Tallet, @tduperron, @Francois Huaulme, @iwangtalend
+
 == Fix
-- link:https://jira.talendforge.org/browse/TPSVC-11976[TPSVC-11976]: daikon TokenAuthentication should not return null as a Principal (link:http://github.com/Talend/daikon/pull/565[#565])
-- link:https://jira.talendforge.org/browse/DEVOPS-7930[DEVOPS-7930]: Daikon Jenkins build is failing because of smart branching (link:http://github.com/Talend/daikon/pull/562[#562])
+- link:https://jira.talendforge.org/browse/TPSVC-11976[TPSVC-11976]: daikon TokenAuthentication should not return null as a Principal (link:https://github.com/Talend/daikon/pull/565[#565])
+- link:https://jira.talendforge.org/browse/DEVOPS-7930[DEVOPS-7930]: Daikon Jenkins build is failing because of smart branching (link:https://github.com/Talend/daikon/pull/562[#562])
 
 == Work Item
-- link:https://jira.talendforge.org/browse/TSD-433[TSD-433]: Move daikon bom to daikon repo (link:http://github.com/Talend/daikon/pull/563[#563])
+- link:https://jira.talendforge.org/browse/TSD-433[TSD-433]: Move daikon bom to daikon repo (link:https://github.com/Talend/daikon/pull/563[#563])
 
 == Other
-- chore: add test and remove dead code  (link:http://github.com/Talend/daikon/pull/557[#557])
-- chore(deps-dev): bump eslint in /daikon-tql/daikon-tql-client  (link:http://github.com/Talend/daikon/pull/554[#554])
+- chore: add test and remove dead code  (link:https://github.com/Talend/daikon/pull/557[#557])
+- chore(deps-dev): bump eslint in /daikon-tql/daikon-tql-client  (link:https://github.com/Talend/daikon/pull/554[#554])
 - Update 1.8.0.adoc
