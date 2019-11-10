@@ -4,7 +4,6 @@ import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import org.talend.daikon.model.GitCommit;
 import org.talend.daikon.model.MiscReleaseNoteItem;
@@ -17,12 +16,12 @@ public class MiscGitItemFinder extends AbstractGitItemFinder {
 
     private final String version;
 
-    public MiscGitItemFinder(String version) {
-        this(null, version);
+    public MiscGitItemFinder(String version, String gitHubRepositoryUrl) {
+        this(null, version, gitHubRepositoryUrl);
     }
 
-    public MiscGitItemFinder(String pathname, String version) {
-        super(pathname);
+    public MiscGitItemFinder(String pathname, String version, String gitHubRepositoryUrl) {
+        super(pathname, gitHubRepositoryUrl);
         this.version = version;
     }
 

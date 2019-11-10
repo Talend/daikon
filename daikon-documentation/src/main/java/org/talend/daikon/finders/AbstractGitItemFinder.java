@@ -34,10 +34,13 @@ public abstract class AbstractGitItemFinder implements ItemFinder {
 
     private static final Pattern PULL_REQUEST_PATTERN = Pattern.compile(".*#(\\d+).*");
 
-    private String gitRepositoryPath;
+    private final String gitHubRepositoryUrl;
 
-    AbstractGitItemFinder(String gitRepositoryPath) {
+    private final String gitRepositoryPath;
+
+    AbstractGitItemFinder(String gitRepositoryPath, String gitHubRepositoryUrl) {
         this.gitRepositoryPath = gitRepositoryPath;
+        this.gitHubRepositoryUrl = gitHubRepositoryUrl;
     }
 
     private static Date getDate(RevWalk walk, Ref ref) {
@@ -56,10 +59,9 @@ public abstract class AbstractGitItemFinder implements ItemFinder {
         }
     }
 
-    private static PullRequest getPullRequestLink(RevCommit commit) {
+    private PullRequest getPullRequestLink(RevCommit commit) {
         final Matcher matcher = PULL_REQUEST_PATTERN.matcher(commit.getShortMessage());
-        return matcher.matches() ? new PullRequest("http://github.com/Talend/daikon/pull/" + matcher.group(1), matcher.group(1))
-                : null;
+        return matcher.matches() ? new PullRequest(gitHubRepositoryUrl + "/pull/" + matcher.group(1), matcher.group(1)) : null;
     }
 
     Stream<GitCommit> getGitCommits(String version) {

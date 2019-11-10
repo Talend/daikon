@@ -30,12 +30,13 @@ public class JiraGitItemFinder extends AbstractGitItemFinder {
 
     private final String version;
 
-    public JiraGitItemFinder(String jiraServerUrl, JiraRestClient client, String version) {
-        this(null, jiraServerUrl, client, version);
+    public JiraGitItemFinder(String jiraServerUrl, JiraRestClient client, String version, String gitHubRepositoryUrl) {
+        this(null, jiraServerUrl, client, version, gitHubRepositoryUrl);
     }
 
-    public JiraGitItemFinder(String gitRepositoryPath, String jiraServerUrl, JiraRestClient client, String version) {
-        super(gitRepositoryPath);
+    public JiraGitItemFinder(String gitRepositoryPath, String jiraServerUrl, JiraRestClient client, String version,
+            String gitHubRepositoryUrl) {
+        super(gitRepositoryPath, gitHubRepositoryUrl);
         this.jiraServerUrl = jiraServerUrl;
         this.client = client;
         this.version = version;

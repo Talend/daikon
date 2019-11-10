@@ -55,6 +55,9 @@ public class ReleaseNotes extends AbstractMojo {
     @Parameter(defaultValue = "Daikon", property = "name", required = false)
     private String name;
 
+    @Parameter(defaultValue = "https://github.com/Talend/daikon", property = "github-repository")
+    private String gitHubRepositoryUrl;
+
     public void execute() throws MojoExecutionException {
         try {
             // Prepare output resources
@@ -73,8 +76,8 @@ public class ReleaseNotes extends AbstractMojo {
 
             // Stream all release note items
             final Optional<? extends Stream<? extends ReleaseNoteItem>> streams = Stream.of( //
-                    new JiraGitItemFinder("../", server, client, jiraVersion), //
-                    new MiscGitItemFinder("../", jiraVersion) //
+                    new JiraGitItemFinder("../", server, client, jiraVersion, gitHubRepositoryUrl), //
+                    new MiscGitItemFinder("../", jiraVersion, gitHubRepositoryUrl) //
             ) //
                     .map(ItemFinder::find) //
                     .reduce(Stream::concat);
