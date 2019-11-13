@@ -1,4 +1,4 @@
-= Daikon Release Notes (1.2.0)
+= Daikon Release Notes (1.2.0) - 05/09/2019
 
 Thanks to @Francois Huaulme, @Aurélien F, @fhuaulme, @Henri-Mayeul de Benque
 

@@ -1,4 +1,4 @@
-= Daikon Release Notes (1.5.0)
+= Daikon Release Notes (1.5.0) - 06/24/2019
 
 Thanks to @Pierre Reliquet
 

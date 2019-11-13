@@ -1,4 +1,4 @@
-= Daikon Release Notes (1.4.0)
+= Daikon Release Notes (1.4.0) - 06/11/2019
 
 Thanks to @Francois Huaulme, @Colm O hEigeartaigh, @Fabien Abballe
 

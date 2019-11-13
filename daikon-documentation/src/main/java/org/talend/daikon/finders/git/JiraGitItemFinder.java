@@ -1,4 +1,4 @@
-package org.talend.daikon.finders;
+package org.talend.daikon.finders.git;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import org.talend.daikon.finders.ItemFinder;
 import org.talend.daikon.model.JiraReleaseNoteItem;
 import org.talend.daikon.model.PullRequest;
 import org.talend.daikon.model.ReleaseNoteItem;

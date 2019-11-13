@@ -3,7 +3,10 @@ package org.talend.daikon;
 import java.io.File;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,10 +20,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.finders.AuthorFinder;
-import org.talend.daikon.finders.GitAuthorFinder;
-import org.talend.daikon.finders.JiraGitItemFinder;
+import org.talend.daikon.finders.git.GitAuthorFinder;
+import org.talend.daikon.finders.git.GitReleaseDateFinder;
+import org.talend.daikon.finders.git.JiraGitItemFinder;
 import org.talend.daikon.finders.ItemFinder;
-import org.talend.daikon.finders.MiscGitItemFinder;
+import org.talend.daikon.finders.git.MiscGitItemFinder;
 import org.talend.daikon.model.Author;
 import org.talend.daikon.model.ReleaseNoteItem;
 import org.talend.daikon.model.ReleaseNoteItemType;
@@ -90,10 +94,15 @@ public class ReleaseNotes extends AbstractMojo {
             final AuthorFinder gitAuthorFinder = new GitAuthorFinder(jiraVersion, "../", gitHubRepositoryUrl);
             Stream<Author> authors = gitAuthorFinder.findAuthors();
 
+            // Find release date
+            final GitReleaseDateFinder releaseDateFinder = new GitReleaseDateFinder(jiraVersion, "../", gitHubRepositoryUrl);
+            final Date releaseDate = releaseDateFinder.find();
+
             // Create Ascii doc output
             final Stream<? extends ReleaseNoteItem> issueStream = streams.get().distinct();
             try (PrintWriter writer = new PrintWriter(file)) {
-                writer.println("= " + name + " Release Notes (" + jiraVersion + ")");
+                DateFormat dateFormat = new SimpleDateFormat("MM/dd/YYYY");
+                writer.println("= " + name + " Release Notes (" + jiraVersion + ") - " + dateFormat.format(releaseDate));
 
                 writer.println();
                 final String allAuthors = authors.map(author -> "@" + author.getName()).collect(Collectors.joining(", "));

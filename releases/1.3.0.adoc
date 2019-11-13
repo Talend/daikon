@@ -1,4 +1,4 @@
-= Daikon Release Notes (1.3.0)
+= Daikon Release Notes (1.3.0) - 05/29/2019
 
 Thanks to @Colm O hEigeartaigh, @talend-vlesquere, @nrousseau, @Application, @Francois Huaulme, @Laurent Meunier, @Prada Souvanlasy
 

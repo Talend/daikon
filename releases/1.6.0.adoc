@@ -1,4 +1,4 @@
-= Daikon Release Notes (1.6.0)
+= Daikon Release Notes (1.6.0) - 08/06/2019
 
 Thanks to @Fabien Abballe, @Romain Manni-Bucau, @JM Brun, @Colm O hEigeartaigh
 

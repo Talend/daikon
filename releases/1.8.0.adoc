@@ -1,4 +1,4 @@
-= Daikon Release Notes (1.8.0)
+= Daikon Release Notes (1.8.0) - 10/17/2019
 
 Thanks to @wang wei, @bhe-talendbj, @Colm O hEigeartaigh, @Jean-Michel FRANCOIS
 

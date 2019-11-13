@@ -1,4 +1,4 @@
-package org.talend.daikon.finders;
+package org.talend.daikon.finders.git;
 
 import static java.util.Comparator.comparing;
 import static org.eclipse.jgit.lib.Constants.R_TAGS;

@@ -1,7 +1,8 @@
-package org.talend.daikon.finders;
+package org.talend.daikon.finders.git;
 
 import java.util.stream.Stream;
 
+import org.talend.daikon.finders.AuthorFinder;
 import org.talend.daikon.model.Author;
 
 public class GitAuthorFinder extends AbstractGitItemFinder implements AuthorFinder {

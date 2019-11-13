@@ -1,4 +1,4 @@
-= Daikon Release Notes (1.7.0)
+= Daikon Release Notes (1.7.0) - 09/06/2019
 
 Thanks to @Aurélien F, @pyzhou, @fhuaulme, @Francois Huaulme, @Colm O hEigeartaigh, @bhe-talendbj, @Fabien Abballe, @Romain Manni-Bucau, @JM Brun, @Pierre Reliquet, @talend-vlesquere, @nrousseau, @Application, @Laurent Meunier, @Prada Souvanlasy, @Henri-Mayeul de Benque, @cgall, @wang wei, @Jérémie Descottes, @Rémy DUBOIS, @tduperron, @Thomas, @lcelton-talend, @Damien Prot, @iwangtalend, @Abbass Marouni, @Tao Tao, @Pierre Bailly-Ferry, @YoannAlbert, @Armel Chever, @kjwang-talend, @sgandon, @sizhaoliu, @Yves Armel CAROF, @gmzoughi, @Fabien Rassinier, @Ievgen Tarasov
 
