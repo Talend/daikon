@@ -20,18 +20,15 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
 import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 
 import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.junit.Rule;
@@ -40,6 +37,8 @@ import org.junit.rules.ErrorCollector;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.crypto.CipherSources;
 import org.talend.daikon.crypto.Encryption;
+import org.talend.daikon.crypto.KeySource;
+import org.talend.daikon.crypto.KeySources;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.properties.presentation.Form;
@@ -59,9 +58,9 @@ import org.talend.daikon.serialize.SerializerDeserializer;
 
 public class PropertiesTest {
 
-    static SecretKey key = null;
+    private static final KeySource keySource = KeySources.random(16);
 
-    private final class StringListProperties extends PropertiesImpl {
+    private final static class StringListProperties extends PropertiesImpl {
 
         public Property<List<String>> listString = newProperty(new TypeLiteral<List<String>>() {
         }, "listString");
@@ -71,7 +70,7 @@ public class PropertiesTest {
         }
     }
 
-    private final class AnotherNestedProperties extends PropertiesImpl {
+    private final static class AnotherNestedProperties extends PropertiesImpl {
 
         public StringProperty stringProp = newProperty("stringProp");
 
@@ -163,11 +162,8 @@ public class PropertiesTest {
 
         class AESEncryptedProperties extends TestProperties {
 
-            static final String PREFIX = "enc:";
+            private static final String PREFIX = "enc:";
 
-            /**
-             * @param name
-             */
             public AESEncryptedProperties(String name) {
                 super(name);
             }
@@ -221,19 +217,7 @@ public class PropertiesTest {
     }
 
     private static Encryption getEncryption() {
-
-        if (key == null) {
-            KeyGenerator kg;
-            try {
-                kg = KeyGenerator.getInstance("AES");
-                kg.init(256);
-                key = kg.generateKey();
-            } catch (NoSuchAlgorithmException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return new Encryption(() -> key.getEncoded(), CipherSources.getDefault());
+        return new Encryption(keySource, CipherSources.getDefault());
     }
 
     @Test
@@ -263,10 +247,10 @@ public class PropertiesTest {
     public void testFindForm() {
         TestProperties props = (TestProperties) new TestProperties("test").init();
         Form main = props.getForm(Form.MAIN);
-        assertTrue(main == props.mainForm);
+        assertSame(main, props.mainForm);
         assertEquals(Form.MAIN, main.getName());
         Form restoreTest = props.getForm("restoreTest");
-        assertTrue(restoreTest == props.restoreForm);
+        assertSame(restoreTest, props.restoreForm);
         assertEquals("restoreTest", restoreTest.getName());
     }
 
@@ -275,12 +259,12 @@ public class PropertiesTest {
         TestProperties props = (TestProperties) new TestProperties("test").init();
         // Test fallback
         Form main = props.getPreferredForm(Form.CITIZEN_USER);
-        assertTrue(main == props.mainForm);
+        assertSame(main, props.mainForm);
         // Test actual
         main = props.getPreferredForm(Form.MAIN);
-        assertTrue(main == props.mainForm);
+        assertSame(main, props.mainForm);
         Form restoreTest = props.getPreferredForm("restoreTest");
-        assertTrue(restoreTest == props.restoreForm);
+        assertSame(restoreTest, props.restoreForm);
     }
 
     @Test
@@ -455,7 +439,7 @@ public class PropertiesTest {
     public void testGetPropsList() {
         TestProperties componentProperties = (TestProperties) new TestProperties("test").init();
         List<NamedThing> pList = componentProperties.getProperties();
-        assertTrue(pList.get(0) != null);
+        assertNotNull(pList.get(0));
         assertEquals(17, pList.size());
     }
 
@@ -463,8 +447,7 @@ public class PropertiesTest {
     public void testGetPropsListInherited() {
         Properties componentProperties = new InheritedProperties("test");
         List<NamedThing> pList = componentProperties.getProperties();
-        System.out.println(pList);
-        assertTrue(pList.get(0) != null);
+        assertNotNull(pList.get(0));
         assertEquals(5, pList.size());
     }
 
@@ -673,13 +656,6 @@ public class PropertiesTest {
         assertEquals(nestedNestedProperties, props.nestedInitLater.nestedProp);
     }
 
-    // @Test
-    public void testJavaListOfNestedProperties() {
-        TestProperties props = (TestProperties) new TestProperties("test").init();
-        String javaCode = PropertiesTestUtils.generatedNestedComponentCompatibilitiesJavaCode(props);
-        System.out.println(javaCode);
-    }
-
     @Test
     public void testFormNotNullAfterSerialized() {
         AnotherNestedProperties props = (AnotherNestedProperties) new AnotherNestedProperties("test").init();
@@ -729,9 +705,6 @@ public class PropertiesTest {
 
             public StringProperty stringProp = newProperty("stringProp");
 
-            /**
-             * @param name
-             */
             public NestProps(String name) {
                 super(name);
             }
@@ -778,7 +751,7 @@ public class PropertiesTest {
         Properties newInstance = PropertiesImpl.createNewInstance(instanceWithStringConstructor.getClass(), "bar");
         assertEquals("bar", newInstance.getName());
         newInstance = PropertiesImpl.createNewInstance(instanceWithStringConstructor.getClass(), null);
-        assertEquals(null, newInstance.getName());
+        assertNull(newInstance.getName());
         Properties instanceWithEmptyConstructor = new EmptyConstructorProperties();
         try {
             PropertiesImpl.createNewInstance(instanceWithEmptyConstructor.getClass(), "bar");

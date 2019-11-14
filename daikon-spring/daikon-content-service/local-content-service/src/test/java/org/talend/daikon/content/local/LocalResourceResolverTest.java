@@ -3,6 +3,7 @@ package org.talend.daikon.content.local;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,11 +35,7 @@ public class LocalResourceResolverTest {
         final PathMatchingResourcePatternResolver delegate = new PathMatchingResourcePatternResolver(resourceLoader);
 
         resolverRepositoryPath = Files.createTempDirectory(LocalResourceResolverTest.class.getSimpleName());
-
-        final String relativeTempDirPath = SystemUtils.getUserDir().toPath().relativize(resolverRepositoryPath).toFile()
-                .getPath();
-
-        resolver = new LocalResourceResolver(new ContextualPatternResolver(delegate, relativeTempDirPath), relativeTempDirPath);
+        resolver = new LocalResourceResolver(new ContextualPatternResolver(delegate, "store"), "store");
     }
 
     @After

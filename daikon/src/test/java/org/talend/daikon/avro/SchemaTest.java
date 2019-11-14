@@ -18,8 +18,7 @@ public class SchemaTest {
         Property schemaMain = PropertyFactory.newSchema("main");
         schemaMain.setValue(main);
 
-        String jsonMain = JsonWriter.objectToJson(schemaMain);
-        System.out.println(jsonMain);
+        JsonWriter.objectToJson(schemaMain);
     }
 
 }

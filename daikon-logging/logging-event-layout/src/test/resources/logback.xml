@@ -18,8 +18,6 @@
     </layout>
  </appender>
       
-  <logger name="org.apache.syncope" level="DEBUG"/>
-
   <root level="INFO">
      <appender-ref ref="STDOUT" />
      <appender-ref ref="FILE" />
