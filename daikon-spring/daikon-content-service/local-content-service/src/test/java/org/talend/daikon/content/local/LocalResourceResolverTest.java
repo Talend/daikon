@@ -26,7 +26,7 @@ public class LocalResourceResolverTest {
 
     private LocalResourceResolver resolver;
 
-    private File resolverRepositoryPath;
+    private Path resolverRepositoryPath;
 
     @Before
     public void createCache() throws IOException {
@@ -34,13 +34,13 @@ public class LocalResourceResolverTest {
         resourceLoader = new FileSystemResourceLoader();
         final PathMatchingResourcePatternResolver delegate = new PathMatchingResourcePatternResolver(resourceLoader);
 
-        resolverRepositoryPath = new File("target");
-        resolver = new LocalResourceResolver(new ContextualPatternResolver(delegate, "target/store"), "target/store");
+        resolverRepositoryPath = Files.createTempDirectory(LocalResourceResolverTest.class.getSimpleName());
+        resolver = new LocalResourceResolver(new ContextualPatternResolver(delegate, "store"), "store");
     }
 
     @After
     public void cleanupRepository() {
-        FileUtils.deleteQuietly(resolverRepositoryPath);
+        FileUtils.deleteQuietly(resolverRepositoryPath.toFile());
     }
 
     @Test
