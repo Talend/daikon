@@ -35,7 +35,7 @@ public class LocalResourceResolverTest {
         final PathMatchingResourcePatternResolver delegate = new PathMatchingResourcePatternResolver(resourceLoader);
 
         resolverRepositoryPath = Files.createTempDirectory(LocalResourceResolverTest.class.getSimpleName());
-        resolver = new LocalResourceResolver(new ContextualPatternResolver(delegate, "store"), "store");
+        resolver = new LocalResourceResolver(new ContextualPatternResolver(delegate, "target/store"), "target/store");
     }
 
     @After
