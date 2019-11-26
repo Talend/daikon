@@ -62,7 +62,7 @@
         <jsonassert.version>1.2.3</jsonassert.version>
         <commons-codec.version>1.13</commons-codec.version>
         <javax.inject.version>1</javax.inject.version>
-        <pax-url-aether.version>2.4.7</pax-url-aether.version>
+        <pax-url-aether.version>2.6.2</pax-url-aether.version>
         <mockito-core.version>2.2.15</mockito-core.version>
         <ch.qos.logback.version>1.1.7</ch.qos.logback.version>
         <log4j2.version>2.11.2</log4j2.version>
@@ -235,7 +235,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.20.1</version>
+                    <version>2.22.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
