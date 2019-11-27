@@ -83,9 +83,8 @@ public class RequiresAuthorityAspect {
             streamSupplier = valueStreamSupplier;
         }
 
-        final Class<? extends Supplier<Boolean>> activeIf = annotation.activeIf();
-        final boolean isActive = activeIf.equals(RequiresAuthorityConditionDefaults.AlwaysTrue.class);
-        if (streamSupplier != null && !isActive && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
+        final boolean isActive = annotation.activeIf().equals(RequiresAuthorityConditionDefaults.AlwaysTrue.class);
+        if (streamSupplier != null && isActive && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
             LOGGER.debug("Access denied for user {} on {}.", authentication, method);
             final Class<? extends AccessDenied> onDeny = annotation.onDeny();
             final AccessDenied accessDenied;

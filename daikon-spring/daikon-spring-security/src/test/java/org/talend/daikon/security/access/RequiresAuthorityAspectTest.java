@@ -50,6 +50,11 @@ public class RequiresAuthorityAspectTest {
     }
 
     @Test
+    public void shouldInvokeSuccessfullyIfConditionIsFalse() {
+        assertEquals("secret string", component.authorityValuesWithConditionPriority());
+    }
+
+    @Test
     public void shouldFailToInvoke() {
         try {
             component.execute();

@@ -14,8 +14,18 @@ package org.talend.daikon.security.access;
 
 import org.springframework.stereotype.Component;
 
+import java.util.function.Supplier;
+
 @Component
 public class RequiresTestComponent {
+
+    public static class AlwaysFalse implements Supplier<Boolean> {
+
+        @Override
+        public Boolean get() {
+            return Boolean.FALSE;
+        }
+    }
 
     @RequiresAuthority(authority = { "TestComponentExec", "Test 0" }, value = { "Test 1", "Test 2" })
     public String authoritiesValuesPriority() {
@@ -24,6 +34,11 @@ public class RequiresTestComponent {
 
     @RequiresAuthority(authority = "TestComponentExec", value = { "Test 1", "Test 2" })
     public String authorityValuesPriority() {
+        return "secret string";
+    }
+
+    @RequiresAuthority(authority = "TestComponentExec", value = { "Test 1", "Test 2" }, activeIf = AlwaysFalse.class)
+    public String authorityValuesWithConditionPriority() {
         return "secret string";
     }
 
