@@ -27,6 +27,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.access.AccessDeniedException;
@@ -41,6 +43,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @EnableAspectJAutoProxy
 @Aspect
 public class RequiresAuthorityAspect {
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     private static final AnonymousAuthenticationToken ANONYMOUS = new AnonymousAuthenticationToken("anonymous", //
             new Object(), //
@@ -83,8 +88,9 @@ public class RequiresAuthorityAspect {
             streamSupplier = valueStreamSupplier;
         }
 
-        final boolean isActive = annotation.activeIf().equals(RequiresAuthorityConditionDefaults.AlwaysTrue.class);
-        if (streamSupplier != null && isActive && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
+        final Class<? extends Supplier<Boolean>> activeIf = annotation.activeIf();
+        final Supplier<Boolean> condition = applicationContext.getBean(activeIf);
+        if (streamSupplier != null && condition.get() && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
             LOGGER.debug("Access denied for user {} on {}.", authentication, method);
             final Class<? extends AccessDenied> onDeny = annotation.onDeny();
             final AccessDenied accessDenied;

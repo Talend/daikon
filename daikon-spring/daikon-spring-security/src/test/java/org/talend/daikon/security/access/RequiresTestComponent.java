@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 @Component
 public class RequiresTestComponent {
 
+    @Component
     public static class AlwaysFalse implements Supplier<Boolean> {
 
         @Override
