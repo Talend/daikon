@@ -50,8 +50,24 @@ public class RequiresAuthorityAspectTest {
     }
 
     @Test
-    public void shouldInvokeSuccessfullyIfConditionIsFalse() {
-        assertEquals("secret string", component.authorityValuesWithConditionPriority());
+    public void shouldInvokeSuccessfullyIfFalsyActiveIf() {
+        assertEquals("secret string", component.authorityValuesWithFalsyActiveIf());
+    }
+
+    @Test
+    public void shouldFailToInvokeIfMissingAuthorityAndTruthyActiveIf() {
+        try {
+            component.mssingAuthorityWithTruthyActiveIf();
+            fail("Expected an error.");
+        } catch (TalendRuntimeException e) {
+            assertEquals(403, e.getCode().getHttpStatus());
+        }
+    }
+
+    @Test
+    public void shouldInvokeSuccessfullyIfAuthorityAndTruthyActiveIf() {
+        SecurityContextHolder.getContext().setAuthentication(GRANTED);
+        assertEquals("secret string", component.authorityValuesWithTruthyActiveIf());
     }
 
     @Test

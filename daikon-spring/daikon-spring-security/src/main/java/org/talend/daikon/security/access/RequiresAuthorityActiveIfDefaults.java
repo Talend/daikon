@@ -4,13 +4,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.function.Supplier;
 
-public class RequiresAuthorityConditionDefaults {
+public class RequiresAuthorityActiveIfDefaults {
 
-    private RequiresAuthorityConditionDefaults() {
+    private RequiresAuthorityActiveIfDefaults() {
     }
 
     /**
-     * Return true
+     * {@link RequiresAuthority} annotations are enabled by default
+     * Return true Always true
      */
     @Component
     public static class AlwaysTrue implements Supplier<Boolean> {

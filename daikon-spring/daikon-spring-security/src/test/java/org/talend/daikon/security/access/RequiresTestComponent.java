@@ -39,7 +39,17 @@ public class RequiresTestComponent {
     }
 
     @RequiresAuthority(authority = "TestComponentExec", value = { "Test 1", "Test 2" }, activeIf = AlwaysFalse.class)
-    public String authorityValuesWithConditionPriority() {
+    public String authorityValuesWithFalsyActiveIf() {
+        return "secret string";
+    }
+
+    @RequiresAuthority(authority = "", value = { "Test 1", "Test 2" }, activeIf = RequiresAuthorityActiveIfDefaults.AlwaysTrue.class)
+    public String mssingAuthorityWithTruthyActiveIf() {
+        return "secret string";
+    }
+
+    @RequiresAuthority(authority = "TestComponentExec", value = { "Test 1", "Test 2" }, activeIf = RequiresAuthorityActiveIfDefaults.AlwaysTrue.class)
+    public String authorityValuesWithTruthyActiveIf() {
         return "secret string";
     }
 

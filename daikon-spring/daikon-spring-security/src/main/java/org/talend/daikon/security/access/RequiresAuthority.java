@@ -47,7 +47,7 @@ public @interface RequiresAuthority {
     /**
      * @return A predicate to know if the authority list should be checked.
      */
-    Class<? extends Supplier<Boolean>> activeIf() default RequiresAuthorityConditionDefaults.AlwaysTrue.class;
+    Class<? extends Supplier<Boolean>> activeIf() default RequiresAuthorityActiveIfDefaults.AlwaysTrue.class;
 
     /**
      * @return A {@link AccessDenied} implementation to handle access denials.
