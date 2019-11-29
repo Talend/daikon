@@ -17,8 +17,9 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -47,7 +48,7 @@ public @interface RequiresAuthority {
     /**
      * @return A predicate to know if the authority list should be checked.
      */
-    Class<? extends Supplier<Boolean>> activeIf() default RequiresAuthorityActiveIfDefaults.AlwaysTrue.class;
+    Class<? extends Function<ApplicationContext, Boolean>> activeIf() default RequiresAuthorityActiveIfDefaults.AlwaysTrue.class;
 
     /**
      * @return A {@link AccessDenied} implementation to handle access denials.

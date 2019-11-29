@@ -1,8 +1,8 @@
 package org.talend.daikon.security.access;
 
-import org.springframework.stereotype.Component;
+import org.springframework.context.ApplicationContext;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class RequiresAuthorityActiveIfDefaults {
 
@@ -13,11 +13,10 @@ public class RequiresAuthorityActiveIfDefaults {
      * {@link RequiresAuthority} annotations are enabled by default
      * Return true Always true
      */
-    @Component
-    public static class AlwaysTrue implements Supplier<Boolean> {
+    public static class AlwaysTrue implements Function<ApplicationContext, Boolean> {
 
         @Override
-        public Boolean get() {
+        public Boolean apply(ApplicationContext applicationContext) {
             return Boolean.TRUE;
         }
     }

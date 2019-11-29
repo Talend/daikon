@@ -17,6 +17,7 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -88,9 +89,9 @@ public class RequiresAuthorityAspect {
             streamSupplier = valueStreamSupplier;
         }
 
-        final Class<? extends Supplier<Boolean>> activeIf = annotation.activeIf();
-        final Supplier<Boolean> condition = applicationContext.getBean(activeIf);
-        if (streamSupplier != null && condition.get() && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
+        final Class<? extends Function<ApplicationContext, Boolean>> activeIf = annotation.activeIf();
+        final Boolean isActive = activeIf.newInstance().apply(applicationContext);
+        if (streamSupplier != null && isActive && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
             LOGGER.debug("Access denied for user {} on {}.", authentication, method);
             final Class<? extends AccessDenied> onDeny = annotation.onDeny();
             final AccessDenied accessDenied;

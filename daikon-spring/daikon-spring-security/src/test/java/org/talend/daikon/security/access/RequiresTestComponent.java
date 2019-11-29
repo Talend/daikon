@@ -12,18 +12,18 @@
 
 package org.talend.daikon.security.access;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 @Component
 public class RequiresTestComponent {
 
-    @Component
-    public static class AlwaysFalse implements Supplier<Boolean> {
+    public static class AlwaysFalse implements Function<ApplicationContext, Boolean> {
 
         @Override
-        public Boolean get() {
+        public Boolean apply(ApplicationContext applicationContext) {
             return Boolean.FALSE;
         }
     }
@@ -43,12 +43,14 @@ public class RequiresTestComponent {
         return "secret string";
     }
 
-    @RequiresAuthority(authority = "", value = { "Test 1", "Test 2" }, activeIf = RequiresAuthorityActiveIfDefaults.AlwaysTrue.class)
+    @RequiresAuthority(authority = "", value = { "Test 1",
+            "Test 2" }, activeIf = RequiresAuthorityActiveIfDefaults.AlwaysTrue.class)
     public String mssingAuthorityWithTruthyActiveIf() {
         return "secret string";
     }
 
-    @RequiresAuthority(authority = "TestComponentExec", value = { "Test 1", "Test 2" }, activeIf = RequiresAuthorityActiveIfDefaults.AlwaysTrue.class)
+    @RequiresAuthority(authority = "TestComponentExec", value = { "Test 1",
+            "Test 2" }, activeIf = RequiresAuthorityActiveIfDefaults.AlwaysTrue.class)
     public String authorityValuesWithTruthyActiveIf() {
         return "secret string";
     }
