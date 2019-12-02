@@ -17,6 +17,7 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -27,6 +28,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.access.AccessDeniedException;
@@ -41,6 +44,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @EnableAspectJAutoProxy
 @Aspect
 public class RequiresAuthorityAspect {
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     private static final AnonymousAuthenticationToken ANONYMOUS = new AnonymousAuthenticationToken("anonymous", //
             new Object(), //
@@ -83,7 +89,9 @@ public class RequiresAuthorityAspect {
             streamSupplier = valueStreamSupplier;
         }
 
-        if (streamSupplier != null && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
+        final Class<? extends Function<ApplicationContext, Boolean>> activeIf = annotation.activeIf();
+        final Boolean isActive = activeIf.newInstance().apply(applicationContext);
+        if (streamSupplier != null && isActive && streamSupplier.get().noneMatch(RequiresAuthorityAspect::isAllowed)) {
             LOGGER.debug("Access denied for user {} on {}.", authentication, method);
             final Class<? extends AccessDenied> onDeny = annotation.onDeny();
             final AccessDenied accessDenied;

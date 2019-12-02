@@ -1,0 +1,7 @@
+= Daikon Release Notes (1.11.0) - 11/29/2019
+
+Thanks to @Fabien Rassinier, @Francois Huaulme
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDP-5002[TDP-5002]: Implements Catalog perm in dataprep (link:https://github.com/Talend/daikon/pull/574[#574])
+- link:https://jira.talendforge.org/browse/TDKN-267[TDKN-267]: Remove dependency on spring-cloud-aws-starter in S3 content service (link:https://github.com/Talend/daikon/pull/572[#572])
