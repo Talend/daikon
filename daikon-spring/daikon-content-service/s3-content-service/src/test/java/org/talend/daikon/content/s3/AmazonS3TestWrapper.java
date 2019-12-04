@@ -24,7 +24,7 @@ public class AmazonS3TestWrapper implements AmazonS3 {
 
     private final AmazonS3 delegate;
 
-    AmazonS3TestWrapper(AmazonS3 delegate) {
+    public AmazonS3TestWrapper(AmazonS3 delegate) {
         this.delegate = delegate;
     }
 
