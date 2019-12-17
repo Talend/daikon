@@ -6,7 +6,7 @@ import org.slf4j.event.Level;
 /**
  * Utility class to log at runtime defined log level.
  *
- * Based on stackoverflow https://stackoverflow.com/a/7829534
+ * Based on <a href="https://stackoverflow.com/a/7829534">stackoverflow</a>
  */
 public final class VariableLevelLog {
 

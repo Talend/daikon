@@ -74,6 +74,6 @@ public @interface LogTimed {
     /**
      * @return the log level of the different messages : start, additional and end message
      */
-    Level logLevel() default Level.INFO;
+    Level logLevel() default Level.DEBUG;
 
 }
