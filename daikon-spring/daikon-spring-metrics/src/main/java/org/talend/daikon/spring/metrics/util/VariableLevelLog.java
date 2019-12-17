@@ -8,7 +8,7 @@ import org.slf4j.event.Level;
  *
  * Based on <a href="https://stackoverflow.com/a/7829534">stackoverflow</a>
  */
-public final class VariableLevelLog {
+public class VariableLevelLog {
 
     /**
      * This class cannot be instantiated, why would you want to?
