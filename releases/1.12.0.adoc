@@ -1,0 +1,6 @@
+= Daikon Release Notes (1.12.0) - 12/04/2019
+
+Thanks to @Fabien Abballe
+
+== Fix
+- link:https://jira.talendforge.org/browse/TPSVC-12467[TPSVC-12467]: RuntimeException when using ConfigurationCommand (link:https://github.com/Talend/daikon/pull/575[#575])

@@ -52,7 +52,7 @@ public class SSLContextProvider {
             KeyStore tks = KeyStore.getInstance(keytype);
             tks.load(stream, storePass.toCharArray());
 
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509"); //$NON-NLS-1$
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(tks, storePass.toCharArray());
 
             return kmf.getKeyManagers();
@@ -78,7 +78,7 @@ public class SSLContextProvider {
             KeyStore tks = KeyStore.getInstance(trusttype);
             tks.load(stream, storePass.toCharArray());
 
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509"); //$NON-NLS-1$
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(tks);
 
             return tmf.getTrustManagers();

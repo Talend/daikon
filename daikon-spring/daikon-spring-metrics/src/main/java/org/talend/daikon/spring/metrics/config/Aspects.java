@@ -12,18 +12,24 @@
 
 package org.talend.daikon.spring.metrics.config;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Optional;
-import java.util.concurrent.Callable;
-
-import javax.servlet.http.Part;
-
+import brave.ScopedSpan;
+import brave.Tracer;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.talend.daikon.multitenant.context.TenancyContext;
+import org.talend.daikon.multitenant.context.TenancyContextHolder;
+import org.talend.daikon.multitenant.core.Tenant;
+import org.talend.daikon.spring.metrics.LogTimed;
 import org.talend.daikon.spring.metrics.io.Metered;
 import org.talend.daikon.spring.metrics.io.MeteredInputStream;
 import org.talend.daikon.spring.metrics.io.MeteredOutputStream;
@@ -31,10 +37,16 @@ import org.talend.daikon.spring.metrics.io.PartWrapper;
 import org.talend.daikon.spring.metrics.io.ReleasableInputStream;
 import org.talend.daikon.spring.metrics.io.ReleasableOutputStream;
 import org.talend.daikon.spring.metrics.io.SpanOutputStream;
+import org.talend.daikon.spring.metrics.util.VariableLevelLog;
 
-import brave.ScopedSpan;
-import brave.Tracer;
-import io.micrometer.core.instrument.MeterRegistry;
+import javax.servlet.http.Part;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.concurrent.Callable;
 
 @Aspect
 public class Aspects {
@@ -42,6 +54,13 @@ public class Aspects {
     private final MeterRegistry repository;
 
     private final Optional<Tracer> tracer;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Aspects.class);
+
+    /** Tenant ID returned when not in multi-tenancy context. */
+    private String NONE_TENANT_ID = "none";
+
+    private static final String ANONYMOUS_USER_NAME = "anonymous";
 
     public Aspects(Tracer tracer, MeterRegistry repository) {
         this.tracer = Optional.ofNullable(tracer);
@@ -143,4 +162,80 @@ public class Aspects {
         return outputStream;
     }
 
+    @Around("@annotation(org.talend.dataprep.metrics.LogTimed)")
+    public Object logTimed(ProceedingJoinPoint pjp) throws Throwable {
+
+        MethodSignature signature = (MethodSignature) pjp.getSignature();
+
+        LogTimed logTimed = signature.getMethod().getAnnotation(LogTimed.class);
+        Level logLevel = logTimed.logLevel();
+
+        if (!VariableLevelLog.isEnabledFor(LOGGER, logLevel)) {
+            return pjp.proceed();
+        }
+
+        Logger loggerExecution = LoggerFactory.getLogger(pjp.getSignature().getDeclaringType());
+
+        final String methodName = signature.getName();
+
+        String args = Arrays.toString(pjp.getArgs());
+
+        String tenantId = getTenantId();
+        String userId = getUserId();
+
+        String startMessage = logTimed.startMessage().isEmpty() ? "Call" : logTimed.startMessage();
+
+        if (!logTimed.additionalMessage().isEmpty()) {
+            VariableLevelLog.log(loggerExecution, logLevel, logTimed.additionalMessage());
+        }
+
+        if (logTimed.displayStartingMessage()) {
+            VariableLevelLog.log(loggerExecution, logLevel, "{}: [{}] with args {}. [tenantId = {}, userId = {}]",
+                    new Object[] { startMessage, methodName, args, tenantId, userId });
+        }
+
+        Instant start = Instant.now();
+        Object output;
+        try {
+            output = pjp.proceed();
+        } finally {
+
+            Instant finish = Instant.now();
+
+            long elapsedTime = Duration.between(start, finish).toMillis();
+
+            String stopMessage = logTimed.endMessage().isEmpty() ? "End call" : logTimed.endMessage();
+
+            VariableLevelLog.log(loggerExecution, logLevel,
+                    "{}: Elapsed time {} ms for [{}] with args {}: . [tenantId = {}, userId = {}]",
+                    new Object[] { stopMessage, elapsedTime, methodName, args, tenantId, userId });
+        }
+        return output;
+    }
+
+    private String getTenantId() {
+        final TenancyContext context = TenancyContextHolder.getContext();
+        Optional<Tenant> tenant = context.getOptionalTenant();
+        if (!tenant.isPresent()) {
+            return NONE_TENANT_ID;
+        }
+        try {
+            return String.valueOf(tenant.get().getIdentity());
+        } catch (RuntimeException e) {
+            LOGGER.debug("Unable to find tenancy information.", e);
+            return "<missing>";
+        }
+    }
+
+    private static String getUserId() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        if (context != null) {
+            Authentication authentication = context.getAuthentication();
+            if (authentication != null) {
+                return authentication.getName();
+            }
+        }
+        LOGGER.debug("Unable to find user information.");
+        return ANONYMOUS_USER_NAME;
+    }
 }
