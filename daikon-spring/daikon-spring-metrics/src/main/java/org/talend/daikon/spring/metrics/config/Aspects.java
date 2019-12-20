@@ -162,7 +162,7 @@ public class Aspects {
         return outputStream;
     }
 
-    @Around("@annotation(org.talend.dataprep.metrics.LogTimed)")
+    @Around("@annotation(org.talend.daikon.spring.metrics.LogTimed)")
     public Object logTimed(ProceedingJoinPoint pjp) throws Throwable {
 
         MethodSignature signature = (MethodSignature) pjp.getSignature();
