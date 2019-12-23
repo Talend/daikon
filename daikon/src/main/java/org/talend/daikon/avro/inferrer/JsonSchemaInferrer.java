@@ -35,8 +35,6 @@ import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
-import avro.shaded.com.google.common.annotations.VisibleForTesting;
-
 /**
  * Converts json string to avro schema.
  */
@@ -108,7 +106,6 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
      * @param jsonNode
      * @return fields schema of json node
      */
-    @VisibleForTesting
     List<Schema.Field> getFields(final JsonNode jsonNode) {
         List<Schema.Field> fields = new ArrayList<>();
         final Iterator<Map.Entry<String, JsonNode>> elements = jsonNode.fields();
@@ -179,7 +176,6 @@ public class JsonSchemaInferrer implements SchemaInferrer<String> {
      * @param node Json node.
      * @return an Avro schema using {@link AvroUtils#wrapAsNullable(Schema)} by node type.
      */
-    @VisibleForTesting
     Schema getAvroSchema(JsonNode node) {
         if (node instanceof TextNode) {
             return AvroUtils.wrapAsNullable(AvroUtils._string());

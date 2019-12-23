@@ -33,11 +33,6 @@
 					<groupId>org.codehaus.jackson</groupId>
 					<artifactId>jackson-mapper-asl</artifactId>
 				</exclusion>
-				<!-- Remove this when we upgrade to Avro 1.9.0 -->
-				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-compress</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- include the avro dependencies manually with fixes for those know CVEs -->

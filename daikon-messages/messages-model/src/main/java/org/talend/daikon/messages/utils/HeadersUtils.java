@@ -26,7 +26,7 @@ public class HeadersUtils {
         headers.add(new RecordHeader("name", messageHeader.getName().getBytes()));
         headers.add(new RecordHeader("securityToken", messageHeader.getSecurityToken().getBytes()));
         headers.add(new RecordHeader("tenantId", messageHeader.getTenantId().getBytes()));
-        headers.add(new RecordHeader("timestamp", messageHeader.getTimestamp().toString().getBytes()));
+        headers.add(new RecordHeader("timestamp", String.valueOf(messageHeader.getTimestamp()).getBytes()));
         headers.add(new RecordHeader("userId", messageHeader.getUserId().getBytes()));
         headers.add(new RecordHeader("type", messageHeader.getType().toString().getBytes()));
 

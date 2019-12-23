@@ -6,7 +6,7 @@
     "type" : "int"
   }, {
     "name" : "optionalLongField",
-    "type" : ["long", "null"],
+    "type" : [ "null", "long"],
     "default": null
   } ]
 }
