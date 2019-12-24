@@ -15,15 +15,18 @@ class IterableMethodAccessor implements MethodAccessor {
 
     private final Method method;
 
-    IterableMethodAccessor(Method method) {
+    private final Object[] args;
+
+    IterableMethodAccessor(Method method, Object... args) {
         this.method = method;
+        this.args = args;
     }
 
     @Override
     public Set<Object> getValues(Set<Object> o) {
         return o.stream().flatMap(value -> {
             try {
-                return StreamSupport.stream(((Iterable<Object>) method.invoke(value)).spliterator(), false);
+                return StreamSupport.stream(((Iterable<Object>) method.invoke(value, args)).spliterator(), false);
             } catch (Exception e) {
                 throw new UnsupportedOperationException("Not able to retrieve values", e);
             }

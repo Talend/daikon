@@ -10,11 +10,11 @@ public class MethodAccessorFactory {
     private MethodAccessorFactory() {
     }
 
-    public static MethodAccessor build(Method method) {
+    public static MethodAccessor build(Method method, Object... args) {
         if (Iterable.class.isAssignableFrom(method.getReturnType())) {
-            return new IterableMethodAccessor(method);
+            return new IterableMethodAccessor(method, args);
         } else {
-            return new UnaryMethodAccessor(method);
+            return new UnaryMethodAccessor(method, args);
         }
     }
 }
