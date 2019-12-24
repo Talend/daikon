@@ -39,7 +39,7 @@ class IterableMethodAccessor implements MethodAccessor {
         try {
             final ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
             return Class.forName(returnType.getActualTypeArguments()[0].getTypeName());
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException|ArrayIndexOutOfBoundsException e) {
             throw new UnsupportedOperationException("Can't find collection return type '" + method + "'.");
         }
     }
