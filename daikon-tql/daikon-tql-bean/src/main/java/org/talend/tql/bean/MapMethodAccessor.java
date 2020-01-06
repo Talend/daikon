@@ -6,24 +6,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-/**
- * A {@link MethodAccessor} implementation to handle method that returns an {@link Iterable}.
- *
- * @see UnaryMethodAccessor
- */
-class IterableMethodAccessor implements MethodAccessor {
+public class MapMethodAccessor implements MethodAccessor {
 
     private final Method method;
 
-    IterableMethodAccessor(Method method) {
+    private final Object key;
+
+    MapMethodAccessor(Method method, Object key) {
         this.method = method;
+        this.key = key;
     }
 
     @Override
     public Set<Object> getValues(Set<Object> o) {
         return o.stream().flatMap(value -> {
             try {
-                return StreamSupport.stream(((Iterable<Object>) method.invoke(value)).spliterator(), false);
+                return StreamSupport.stream(((Iterable<Object>) method.invoke(value, key)).spliterator(), false);
             } catch (Exception e) {
                 throw new UnsupportedOperationException("Not able to retrieve values", e);
             }
@@ -35,12 +33,8 @@ class IterableMethodAccessor implements MethodAccessor {
     public Class getReturnType() {
         try {
             final ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
-            if (returnType.getActualTypeArguments().length == 0) {
-                return Object.class;
-            } else {
-                return Class.forName(returnType.getActualTypeArguments()[0].getTypeName());
-            }
-        } catch (ClassNotFoundException e) {
+            return Class.forName(returnType.getActualTypeArguments()[0].getTypeName());
+        } catch (ClassNotFoundException|ArrayIndexOutOfBoundsException e) {
             throw new UnsupportedOperationException("Can't find collection return type '" + method + "'.");
         }
     }

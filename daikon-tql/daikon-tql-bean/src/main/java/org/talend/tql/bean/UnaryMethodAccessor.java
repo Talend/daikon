@@ -13,18 +13,15 @@ class UnaryMethodAccessor implements MethodAccessor {
 
     private final Method method;
 
-    private final Object[] args;
-
-    UnaryMethodAccessor(Method method, Object... args) {
+    UnaryMethodAccessor(Method method) {
         this.method = method;
-        this.args = args;
     }
 
     @Override
     public Set<Object> getValues(Set<Object> o) {
         return o.stream().map(value -> {
             try {
-                return method.invoke(value, args);
+                return method.invoke(value);
             } catch (Exception e) {
                 throw new UnsupportedOperationException("Not able to retrieve values", e);
             }
