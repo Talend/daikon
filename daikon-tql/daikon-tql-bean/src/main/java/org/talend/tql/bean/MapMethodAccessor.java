@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class MapMethodAccessor implements MethodAccessor {
@@ -21,21 +22,20 @@ public class MapMethodAccessor implements MethodAccessor {
     public Set<Object> getValues(Set<Object> o) {
         return o.stream().flatMap(value -> {
             try {
-                return StreamSupport.stream(((Iterable<Object>) method.invoke(value, key)).spliterator(), false);
+                Object result = method.invoke(value, key);
+                if (result != null && Iterable.class.isAssignableFrom(result.getClass())) {
+                    return StreamSupport.stream(((Iterable<Object>) result).spliterator(), false);
+                } else {
+                    return Stream.of(result);
+                }
             } catch (Exception e) {
                 throw new UnsupportedOperationException("Not able to retrieve values", e);
             }
         }).collect(Collectors.toSet());
-
     }
 
     @Override
     public Class getReturnType() {
-        try {
-            final ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
-            return Class.forName(returnType.getActualTypeArguments()[0].getTypeName());
-        } catch (ClassNotFoundException|ArrayIndexOutOfBoundsException e) {
-            throw new UnsupportedOperationException("Can't find collection return type '" + method + "'.");
-        }
+        return Object.class;
     }
 }

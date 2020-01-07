@@ -52,7 +52,8 @@ public class DefaultLanguageBinder implements LanguageBinder {
                 // Current class type is a map, the next method will be get(key)
                 if (Map.class.isAssignableFrom(currentClass)) {
                     try {
-                        methods.add(new MapMethodAccessor(currentClass.getMethod("get", String.class), methodName));
+                        Method method = currentClass.getMethod("get", Object.class);
+                        methods.add(new MapMethodAccessor(method, methodName));
                     } catch (Exception e) {
                         LOGGER.debug("Can't find get '{}'.", field, e);
                     }
