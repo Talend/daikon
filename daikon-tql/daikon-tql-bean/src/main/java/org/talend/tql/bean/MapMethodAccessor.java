@@ -1,12 +1,18 @@
 package org.talend.tql.bean;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * A {@link MethodAccessor} implementation to handle get method from Map structures.
+ * Can returns an {@link Iterable} or a single value (not an {@link Iterable}.
+ *
+ * @see UnaryMethodAccessor
+ * @see IterableMethodAccessor
+ */
 public class MapMethodAccessor implements MethodAccessor {
 
     private final Method method;

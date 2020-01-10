@@ -10,6 +10,7 @@ import java.util.stream.StreamSupport;
  * A {@link MethodAccessor} implementation to handle method that returns an {@link Iterable}.
  *
  * @see UnaryMethodAccessor
+ * @see MapMethodAccessor
  */
 class IterableMethodAccessor implements MethodAccessor {
 

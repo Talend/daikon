@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
  * A {@link MethodAccessor} implementation to handle method that returns a single value (not an {@link Iterable}).
  *
  * @see IterableMethodAccessor
+ * @see MapMethodAccessor
  */
 class UnaryMethodAccessor implements MethodAccessor {
 

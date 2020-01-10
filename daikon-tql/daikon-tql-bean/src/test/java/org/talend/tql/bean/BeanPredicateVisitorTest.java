@@ -449,6 +449,18 @@ public class BeanPredicateVisitorTest {
     }
 
     @Test
+    public void testMyMapWithAValidUnaryKeyThatNotMatch() {
+        // given
+        final Expression query = Tql.parse("attributes.version = '2.0'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertFalse(predicate.test(bean));
+    }
+
+    @Test
     public void testMyMapWithAValidIterableKey() {
         // given
         final Expression query = Tql.parse("attributes.tags = 'Released'");
