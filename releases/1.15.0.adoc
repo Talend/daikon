@@ -1,0 +1,10 @@
+= Daikon Release Notes (1.15.0) - 01/17/2020
+
+Thanks to @dependabot[bot], @wru-talend
+
+== Feature
+- link:https://jira.talendforge.org/browse/TDC-3117[TDC-3117]: [Back] Improve TQL to manage custom attribute (link:https://github.com/Talend/daikon/pull/581[#581])
+
+== Other
+- chore(deps): bump handlebars in /daikon-tql/daikon-tql-client  (link:https://github.com/Talend/daikon/pull/582[#582])
+- chore(deps): bump handlebars from 4.0.11 to 4.5.3 in /daikon-tql  (link:https://github.com/Talend/daikon/pull/583[#583])

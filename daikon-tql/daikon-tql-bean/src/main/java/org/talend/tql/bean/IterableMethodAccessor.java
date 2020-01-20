@@ -10,6 +10,7 @@ import java.util.stream.StreamSupport;
  * A {@link MethodAccessor} implementation to handle method that returns an {@link Iterable}.
  *
  * @see UnaryMethodAccessor
+ * @see MapMethodAccessor
  */
 class IterableMethodAccessor implements MethodAccessor {
 
@@ -35,7 +36,11 @@ class IterableMethodAccessor implements MethodAccessor {
     public Class getReturnType() {
         try {
             final ParameterizedType returnType = (ParameterizedType) method.getGenericReturnType();
-            return Class.forName(returnType.getActualTypeArguments()[0].getTypeName());
+            if (returnType.getActualTypeArguments().length == 0) {
+                return Object.class;
+            } else {
+                return Class.forName(returnType.getActualTypeArguments()[0].getTypeName());
+            }
         } catch (ClassNotFoundException e) {
             throw new UnsupportedOperationException("Can't find collection return type '" + method + "'.");
         }

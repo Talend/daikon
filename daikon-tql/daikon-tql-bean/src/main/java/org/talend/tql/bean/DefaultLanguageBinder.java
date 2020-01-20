@@ -3,10 +3,7 @@ package org.talend.tql.bean;
 import static org.talend.tql.bean.MethodAccessorFactory.build;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -51,12 +48,23 @@ public class DefaultLanguageBinder implements LanguageBinder {
                         "is" + WordUtils.capitalize(methodName) };
 
                 final int beforeFind = methods.size();
-                for (String getterCandidate : getterCandidates) {
+
+                // Current class type is a map, the next method will be get(key)
+                if (Map.class.isAssignableFrom(currentClass)) {
                     try {
-                        methods.add(build(currentClass.getMethod(getterCandidate)));
-                        break;
+                        Method method = currentClass.getMethod("get", Object.class);
+                        methods.add(new MapMethodAccessor(method, methodName));
                     } catch (Exception e) {
-                        LOGGER.debug("Can't find getter '{}'.", field, e);
+                        LOGGER.debug("Can't find get '{}'.", field, e);
+                    }
+                } else {
+                    for (String getterCandidate : getterCandidates) {
+                        try {
+                            methods.add(build(currentClass.getMethod(getterCandidate)));
+                            break;
+                        } catch (Exception e) {
+                            LOGGER.debug("Can't find getter '{}'.", field, e);
+                        }
                     }
                 }
 

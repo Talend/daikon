@@ -4,7 +4,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import org.junit.Test;
@@ -434,6 +436,54 @@ public class BeanPredicateVisitorTest {
         assertFalse(predicate.test(bean));
     }
 
+    @Test
+    public void testMyMapWithAValidUnaryKey() {
+        // given
+        final Expression query = Tql.parse("attributes.version = '1.0'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
+    @Test
+    public void testMyMapWithAValidUnaryKeyThatNotMatch() {
+        // given
+        final Expression query = Tql.parse("attributes.version = '2.0'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertFalse(predicate.test(bean));
+    }
+
+    @Test
+    public void testMyMapWithAValidIterableKey() {
+        // given
+        final Expression query = Tql.parse("attributes.tags = 'Released'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
+    @Test
+    public void testMyMapWithAInvalidValidKey() {
+        // given
+        final Expression query = Tql.parse("attributes.invalid = 'error'");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertFalse(predicate.test(bean));
+    }
+
     // Test class
     public static class Bean {
 
@@ -461,6 +511,13 @@ public class BeanPredicateVisitorTest {
         @JsonProperty("aDifferentName")
         public void setMyValue() {
             // No code needed, just to ensure setters are not detected.
+        }
+
+        public Map<String, Object> getAttributes() {
+            Map<String, Object> attributes = new HashMap<>();
+            attributes.put("version", "1.0");
+            attributes.put("tags", Arrays.asList("Complete", "Released"));
+            return attributes;
         }
     }
 

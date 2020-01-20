@@ -1,6 +1,7 @@
 package org.talend.tql.parser;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.talend.tql.TqlLexer;
 import org.talend.tql.TqlParser;
@@ -25,7 +26,7 @@ public class Tql {
      * @return A {@link TqlElement AST} of the query.
      */
     public static Expression parse(String query) {
-        ANTLRInputStream input = new ANTLRInputStream(query);
+        CharStream input = CharStreams.fromString(query);
         TqlLexer lexer = new TqlLexer(input);
         TqlParser parser = new TqlParser(new CommonTokenStream(lexer));
         TqlParser.ExpressionContext expression = parser.expression();

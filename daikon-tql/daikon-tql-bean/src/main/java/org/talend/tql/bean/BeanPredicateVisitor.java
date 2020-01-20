@@ -20,14 +20,7 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.talend.tql.bean.MethodAccessorFactory.build;
 
 import java.lang.reflect.Method;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -353,7 +346,8 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     private void visitClassMethods(Class targetClass, Set<Class> visitedClasses, MethodAccessor... previous) {
         List<MethodAccessor> previousMethods = Arrays.asList(previous);
         for (Method method : targetClass.getMethods()) {
-            if (method.getName().startsWith("get") || method.getName().startsWith("is")) {
+            if (Map.class.isAssignableFrom(targetClass)
+                    && (method.getName().startsWith("get") || method.getName().startsWith("is"))) {
                 final MethodAccessor methodAccessor = build(method);
                 final MethodAccessor[] path = concat(previousMethods.stream(), Stream.of(methodAccessor))
                         .toArray(MethodAccessor[]::new);
