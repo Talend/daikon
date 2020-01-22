@@ -29,7 +29,6 @@ import org.apache.avro.message.SchemaStore;
 #end
 #if (${this.gettersReturnOptional} || ${this.createOptionalGetters})import java.util.Optional;#end
 
-@SuppressWarnings("all")
 #if ($schema.getDoc())
 /** $schema.getDoc() */
 #end
@@ -294,7 +293,6 @@ return new #if ($schema.getNamespace())$schema.getNamespace().#end${this.mangle(
 /**
 * RecordBuilder for ${this.mangle($schema.getName())} instances.
 */
-@org.apache.avro.specific.AvroGenerated
 public static class Builder extends#if ($schema.isError()) org.apache.avro.specific.SpecificErrorBuilderBase<${this.mangle($schema.getName())}>#else org.apache.avro.specific.SpecificRecordBuilderBase<${this.mangle($schema.getName())}>#end
 
 implements#if ($schema.isError()) org.apache.avro.data.ErrorBuilder<${this.mangle($schema.getName())}>#else org.apache.avro.data.RecordBuilder<${this.mangle($schema.getName())}>#end {
@@ -352,29 +350,29 @@ fieldSetFlags()[$field.pos()] = true;
 }
 #if ($schema.isError())
 
-    @Override
-    public #if ($schema.getNamespace())$schema.getNamespace().#end${this.mangle($schema.getName())}.Builder setValue(Object value) {
-      super.setValue(value);
-      return this;
-    }
+@Override
+public #if ($schema.getNamespace())$schema.getNamespace().#end${this.mangle($schema.getName())}.Builder setValue(Object value) {
+super.setValue(value);
+return this;
+}
 
-    @Override
-    public #if ($schema.getNamespace())$schema.getNamespace().#end${this.mangle($schema.getName())}.Builder clearValue() {
-      super.clearValue();
-      return this;
-    }
+@Override
+public #if ($schema.getNamespace())$schema.getNamespace().#end${this.mangle($schema.getName())}.Builder clearValue() {
+super.clearValue();
+return this;
+}
 
-    @Override
-    public #if ($schema.getNamespace())$schema.getNamespace().#end${this.mangle($schema.getName())}.Builder setCause(Throwable cause) {
-      super.setCause(cause);
-      return this;
-    }
+@Override
+public #if ($schema.getNamespace())$schema.getNamespace().#end${this.mangle($schema.getName())}.Builder setCause(Throwable cause) {
+super.setCause(cause);
+return this;
+}
 
-    @Override
-    public #if ($schema.getNamespace())$schema.getNamespace().#end${this.mangle($schema.getName())}.Builder clearCause() {
-      super.clearCause();
-      return this;
-    }
+@Override
+public #if ($schema.getNamespace())$schema.getNamespace().#end${this.mangle($schema.getName())}.Builder clearCause() {
+super.clearCause();
+return this;
+}
 #end
 
 #foreach ($field in $schema.getFields())
