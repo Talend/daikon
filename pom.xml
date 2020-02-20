@@ -52,7 +52,6 @@
         <guava.version>21</guava.version>
         <spring-core.version>4.3.20.RELEASE</spring-core.version>
         <spring-data-mongodb.version>1.8.2.RELEASE</spring-data-mongodb.version>
-        <jackson.version>2.9.5</jackson.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <commons-lang.version>2.6</commons-lang.version>
         <spring-aop.version>4.3.6.RELEASE</spring-aop.version>
