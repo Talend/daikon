@@ -1,0 +1,11 @@
+= Daikon Release Notes (2.0.0) - 03/20/2020
+
+Thanks to @Colm O hEigeartaigh, @Michael Tallet, @Fabien Abballe
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-279[TDKN-279]: Upgrade commons-configuration2 to 2.7  (link:https://github.com/Talend/daikon/pull/590[#590])
+
+== Other
+- link:https://jira.talendforge.org/browse/TDP-7886[TDP-7886]: Embed new dataset-dispatcher service on the OnPrem build (link:https://github.com/Talend/daikon/pull/580[#580])
+- chore(upgrade) CQRS POC + update Spring Boot  (link:https://github.com/Talend/daikon/pull/587[#587])
+- feat(security) allow anonymous access to the version endpoint  (link:https://github.com/Talend/daikon/pull/584[#584])

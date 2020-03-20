@@ -95,21 +95,15 @@ public abstract class AbstractGitItemFinder {
     }
 
     private GitRange findRange(RefDatabase refDatabase, RevWalk walk, String version) throws IOException {
-        final Stream<Ref> base = refDatabase.getRefsByPrefix(R_TAGS).stream();
         final ObjectId head = refDatabase.findRef("HEAD").getObjectId();
 
         if (StringUtils.isBlank(version)) {
-            return base.max(comparing(r -> getDate(walk, r))) // Get latest tag from history
-                    .map(start -> new GitRange(start.getObjectId(), head)) // If found, range from latest to HEAD
-                    .orElseGet(() -> { // Or else return range from HEAD to root
-                        final RevCommit headCommit = walk.lookupCommit(head);
-                        return new GitRange(headCommit.getParent(headCommit.getParentCount() - 1), head);
-                    });
+            return fullHistory(walk, refDatabase.getRefsByPrefix(R_TAGS).stream(), head);
         } else {
             final AtomicBoolean hasMetVersion = new AtomicBoolean(false);
             final ThreadLocal<ObjectId> start = new ThreadLocal<>();
 
-            final Optional<ObjectId> end = base //
+            final Optional<ObjectId> end = refDatabase.getRefsByPrefix(R_TAGS).stream() //
                     .sorted((r1, r2) -> getDate(walk, r2).compareTo(getDate(walk, r1))) //
                     .filter(t -> {
                         if (!hasMetVersion.get()) {
@@ -133,10 +127,28 @@ public abstract class AbstractGitItemFinder {
             }
 
             if (start.get() == null) {
-                throw new IllegalStateException("Unable to find range start.");
+                return fullHistory(walk, refDatabase.getRefsByPrefix(R_TAGS).stream(), head);
+            } else {
+                return new GitRange(start.get(), end.map(ObjectId::toObjectId).orElse(head));
             }
-            return new GitRange(start.get(), end.map(ObjectId::toObjectId).orElse(head));
         }
+    }
+
+    private GitRange fullHistory(RevWalk walk, Stream<Ref> base, ObjectId head) {
+        return base.max(comparing(r -> getDate(walk, r))) // Get latest tag from history
+                .map(start -> new GitRange(start.getObjectId(), head)) // If found, range from latest to HEAD
+                .orElseGet(() -> { // Or else return range from HEAD to root
+                    try {
+                        RevCommit startCommit = walk.lookupCommit(head);
+                        walk.markStart(startCommit);
+                        for (RevCommit revCommit : walk) {
+                            startCommit = revCommit;
+                        }
+                        return new GitRange(startCommit, head);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Unable to find start commit.", e);
+                    }
+                });
     }
 
     @Getter
