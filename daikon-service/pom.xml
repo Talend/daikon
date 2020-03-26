@@ -31,6 +31,8 @@
 		<talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
 		<talend_releases_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</talend_releases_deployment>
 		<jackson.version>2.9.5</jackson.version>
+		<!-- Override beanutils version from spring-boot-starter-parent 1.5.1.RELEASE-->
+		<commons-beanutils.version>1.9.4</commons-beanutils.version>
 	</properties>
 
 	<dependencyManagement>
