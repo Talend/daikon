@@ -40,6 +40,10 @@ public final class Utils {
         return isClassPresent("org.apache.logging.log4j.Logger");
     }
 
+    static boolean isKafkaPresent() {
+        return isClassPresent("org.apache.kafka.clients.producer.KafkaProducer");
+    }
+
     static boolean isLogbackPresent() {
         return isClassPresent("ch.qos.logback.classic.LoggerContext");
     }

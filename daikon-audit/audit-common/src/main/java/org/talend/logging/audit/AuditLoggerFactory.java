@@ -53,7 +53,7 @@ public final class AuditLoggerFactory {
     }
 
     @SuppressWarnings({ "unchecked" })
-    static <T extends EventAuditLogger> T getEventAuditLogger(Class<T> clz, AuditLoggerBase auditLoggerBase) {
+    public static <T extends EventAuditLogger> T getEventAuditLogger(Class<T> clz, AuditLoggerBase auditLoggerBase) {
         return (T) Proxy.newProxyInstance(AuditLoggerFactory.class.getClassLoader(), new Class<?>[] { clz },
                 new ProxyEventAuditLogger(auditLoggerBase));
     }

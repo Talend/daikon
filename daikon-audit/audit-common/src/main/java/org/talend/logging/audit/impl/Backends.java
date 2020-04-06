@@ -7,5 +7,6 @@ public enum Backends {
     AUTO,
     LOGBACK,
     LOG4J1,
-    LOG4J2
+    LOG4J2,
+    KAFKA
 }
