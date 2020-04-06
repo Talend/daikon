@@ -3,6 +3,7 @@ package org.talend.daikon.logging.http.headers;
 import java.util.Map;
 import java.util.UUID;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -15,6 +16,11 @@ public abstract class AbstractHttpHeadersMDCTest {
 
     @LocalServerPort
     int httpPort;
+
+    @After
+    public void tearDown() throws Exception {
+        TestController.MDCs.clear();
+    }
 
     public void testFilter() throws Exception {
         setReplaceRemoteAddrWithForwardedFor(false);
