@@ -33,7 +33,7 @@
         <logback.version>1.2.3</logback.version>
         <easymock.version>3.5.1</easymock.version>
         <avro.version>1.9.1</avro.version>
-        <bcprov.version>1.62</bcprov.version>
+        <bcprov.version>1.65</bcprov.version>
         <commons-compress.version>1.19</commons-compress.version>
         <commons-io.version>2.6</commons-io.version>
         <reactor-core.version>3.1.6.RELEASE</reactor-core.version>
