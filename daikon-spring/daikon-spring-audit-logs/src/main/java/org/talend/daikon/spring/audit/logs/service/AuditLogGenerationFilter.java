@@ -1,7 +1,17 @@
 package org.talend.daikon.spring.audit.logs.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,25 +26,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.talend.daikon.spring.audit.logs.api.AuditContextFilter;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.GenerateAuditLog;
-import org.talend.daikon.spring.audit.logs.config.AuditKafkaProperties;
-import org.talend.logging.audit.AuditLoggerFactory;
-import org.talend.logging.audit.LogAppenders;
-import org.talend.logging.audit.impl.AuditConfiguration;
-import org.talend.logging.audit.impl.AuditConfigurationMap;
-import org.talend.logging.audit.impl.Backends;
-import org.talend.logging.audit.impl.SimpleAuditLoggerBase;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Aspect
 public class AuditLogGenerationFilter {
@@ -47,27 +41,10 @@ public class AuditLogGenerationFilter {
 
     private final AuditLogger auditLogger;
 
-    private final AuditKafkaProperties auditKafkaProperties;
-
-    public AuditLogGenerationFilter(ObjectMapper objectMapper, AuditUserProvider auditUserProvider,
-            AuditKafkaProperties auditKafkaProperties, String applicationName) {
+    public AuditLogGenerationFilter(ObjectMapper objectMapper, AuditUserProvider auditUserProvider, AuditLogger auditLogger) {
         this.objectMapper = objectMapper;
         this.auditUserProvider = auditUserProvider;
-        this.auditKafkaProperties = auditKafkaProperties;
-        Properties properties = getProperties(auditKafkaProperties, applicationName);
-        AuditConfigurationMap config = AuditConfiguration.loadFromProperties(properties);
-        this.auditLogger = AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, new SimpleAuditLoggerBase(config));
-    }
-
-    private Properties getProperties(AuditKafkaProperties auditKafkaProperties, String applicationName) {
-        Properties properties = new Properties();
-        properties.put("application.name", applicationName);
-        properties.put("backend", Backends.KAFKA.name());
-        properties.put("log.appender", LogAppenders.NONE.name());
-        properties.put("kafka.bootstrap.servers", auditKafkaProperties.getBootstrapServers());
-        properties.put("kafka.topic", auditKafkaProperties.getTopic());
-        properties.put("kafka.partition.key.name", auditKafkaProperties.getPartitionKeyName());
-        return properties;
+        this.auditLogger = auditLogger;
     }
 
     @Around("@annotation(org.talend.daikon.spring.audit.logs.api.GenerateAuditLog)")

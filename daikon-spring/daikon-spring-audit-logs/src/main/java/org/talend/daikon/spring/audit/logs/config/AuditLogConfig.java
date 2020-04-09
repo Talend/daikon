@@ -1,6 +1,7 @@
 package org.talend.daikon.spring.audit.logs.config;
 
 import java.util.Optional;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,6 +12,13 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.NoOpAuditUserProvider;
 import org.talend.daikon.spring.audit.logs.service.AuditLogGenerationFilter;
+import org.talend.daikon.spring.audit.logs.service.AuditLogger;
+import org.talend.logging.audit.AuditLoggerFactory;
+import org.talend.logging.audit.LogAppenders;
+import org.talend.logging.audit.impl.AuditConfiguration;
+import org.talend.logging.audit.impl.AuditConfigurationMap;
+import org.talend.logging.audit.impl.Backends;
+import org.talend.logging.audit.impl.SimpleAuditLoggerBase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,10 +28,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ConditionalOnProperty(value = "audit.enabled", havingValue = "true", matchIfMissing = true)
 public class AuditLogConfig {
 
+    private Properties getProperties(AuditKafkaProperties auditKafkaProperties, String applicationName) {
+        Properties properties = new Properties();
+        properties.put("application.name", applicationName);
+        properties.put("backend", Backends.KAFKA.name());
+        properties.put("log.appender", LogAppenders.NONE.name());
+        properties.put("kafka.bootstrap.servers", auditKafkaProperties.getBootstrapServers());
+        properties.put("kafka.topic", auditKafkaProperties.getTopic());
+        properties.put("kafka.partition.key.name", auditKafkaProperties.getPartitionKeyName());
+        return properties;
+    }
+
+    @Bean
+    public AuditLogger auditLogger(AuditKafkaProperties auditKafkaProperties,
+            @Value("${spring.application.name}") String applicationName) {
+        Properties properties = getProperties(auditKafkaProperties, applicationName);
+        AuditConfigurationMap config = AuditConfiguration.loadFromProperties(properties);
+        return AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, new SimpleAuditLoggerBase(config));
+    }
+
     @Bean
     public AuditLogGenerationFilter auditLogAspect(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
-            AuditKafkaProperties auditKafkaProperties, @Value("${spring.application.name}") String applicationName) {
-        return new AuditLogGenerationFilter(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()),
-                auditKafkaProperties, applicationName);
+            AuditLogger auditLogger) {
+        return new AuditLogGenerationFilter(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
     }
 }
