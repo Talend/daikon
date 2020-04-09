@@ -1,0 +1,23 @@
+package org.talend.daikon.spring.audit.logs.service;
+
+import org.mockito.Mockito;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@Configuration
+@ComponentScan("org.talend.daikon.spring.audit.logs.config")
+public class AuditLogGenerationFilterConfiguration {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public AuditLogger auditLogger() {
+        return Mockito.spy(AuditLogger.class);
+    }
+}
