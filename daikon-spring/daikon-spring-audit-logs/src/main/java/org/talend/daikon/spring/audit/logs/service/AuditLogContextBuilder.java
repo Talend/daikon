@@ -1,7 +1,16 @@
 package org.talend.daikon.spring.audit.logs.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -9,16 +18,8 @@ import org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum;
 import org.talend.logging.audit.Context;
 import org.talend.logging.audit.impl.DefaultContextImpl;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AuditLogContextBuilder {
 

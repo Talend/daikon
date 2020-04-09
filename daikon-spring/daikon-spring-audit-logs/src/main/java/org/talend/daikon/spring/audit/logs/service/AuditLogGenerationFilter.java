@@ -47,8 +47,12 @@ public class AuditLogGenerationFilter {
         this.auditLogger = auditLogger;
     }
 
+    /**
+     * This aspect will be ran around all method with the @GenerateAuditLog annotation
+     */
     @Around("@annotation(org.talend.daikon.spring.audit.logs.api.GenerateAuditLog)")
     public Object auditLogGeneration(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        // Retrieve @GenerateAuditLog annotation
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
         Method method = signature.getMethod();
         GenerateAuditLog auditLogAnnotation = method.getAnnotation(GenerateAuditLog.class);
@@ -57,8 +61,14 @@ public class AuditLogGenerationFilter {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
 
-        Annotation[][] parameterAnnotations = ((MethodSignature) proceedingJoinPoint.getSignature()).getMethod()
-                .getParameterAnnotations();
+        /**
+         * ---------------------
+         * Determine Request info
+         * ---------------------
+         */
+
+        // Retrieve @RequestBody annotation index (if used in original method)
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         AtomicReference<Integer> argumentIndex = new AtomicReference<>();
         AtomicInteger index = new AtomicInteger();
         Arrays.asList(parameterAnnotations).forEach(annotations -> {
@@ -68,31 +78,48 @@ public class AuditLogGenerationFilter {
             }
             index.getAndIncrement();
         });
+        // If @RequestBody arg annotation exists, retrieve the associated argument
         Object requestBody = null;
         if (argumentIndex.get() != null) {
             requestBody = proceedingJoinPoint.getArgs()[argumentIndex.get()];
         }
-        int responseCode = response != null ? response.getStatus() : 0;
 
-        // Run original method
+        /**
+         * ----------------------
+         * Determine Response info
+         * ----------------------
+         */
+
+        // Response code is deducted from HttpServletResponse if possible
+        // Otherwise let's use a default value (0)
+        int responseCode = response != null ? response.getStatus() : 0;
         try {
+            // Run original method and retrieve the result
             Object responseObject = proceedingJoinPoint.proceed();
+            // This result will be used as Response body
             Object auditLogResponseObject = responseObject;
             if (responseObject instanceof ResponseEntity) {
+                // In case of ResponseEntity, body and status code can be retrieved directly
                 responseCode = ((ResponseEntity) responseObject).getStatusCode().value();
                 auditLogResponseObject = ((ResponseEntity) responseObject).getBody();
             }
+            // Finally send the audit log
             sendAuditLog(request, requestBody, responseCode, auditLogResponseObject, auditLogAnnotation);
             return responseObject;
         } catch (Throwable throwable) {
+            // In case of exception, the audit log must be send anyway
             sendAuditLog(request, requestBody, HttpStatus.INTERNAL_SERVER_ERROR.value(), null, auditLogAnnotation);
             throw throwable;
         }
 
     }
 
+    /**
+     * Build the context and send the audit log
+     */
     private void sendAuditLog(HttpServletRequest request, Object requestBody, int responseCode, Object responseObject,
             GenerateAuditLog auditLogAnnotation) throws JsonProcessingException {
+        // Build context from request, response & annotation info
         AuditLogContextBuilder auditLogContextBuilder = AuditLogContextBuilder.create()
                 .withTimestamp(OffsetDateTime.now().toString()).withLogId(UUID.randomUUID()).withRequestId(UUID.randomUUID())
                 .withApplicationId(auditLogAnnotation.application()).withEventType(auditLogAnnotation.eventType())
@@ -105,12 +132,14 @@ public class AuditLogGenerationFilter {
                                 : null);
 
         try {
+            // Filter the context if needed
             AuditContextFilter filter = auditLogAnnotation.filter().getDeclaredConstructor().newInstance();
             auditLogContextBuilder = filter.filter(auditLogContextBuilder, requestBody);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
 
+        // Finally send the log
         auditLogger.sendAuditLog(auditLogContextBuilder.build());
 
         LOGGER.info("audit log generated with metadata {}", auditLogAnnotation);
