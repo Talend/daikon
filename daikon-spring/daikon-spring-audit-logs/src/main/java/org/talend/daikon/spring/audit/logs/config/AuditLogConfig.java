@@ -12,6 +12,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.NoOpAuditUserProvider;
 import org.talend.daikon.spring.audit.logs.service.AuditLogGenerationFilter;
+import org.talend.daikon.spring.audit.logs.service.AuditLogGenerationFilterImpl;
 import org.talend.daikon.spring.audit.logs.service.AuditLogger;
 import org.talend.logging.audit.AuditLoggerFactory;
 import org.talend.logging.audit.LogAppenders;
@@ -40,16 +41,11 @@ public class AuditLogConfig {
     }
 
     @Bean
-    public AuditLogger auditLogger(AuditKafkaProperties auditKafkaProperties,
-            @Value("${spring.application.name}") String applicationName) {
+    public AuditLogGenerationFilter auditLogAspect(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
+            AuditKafkaProperties auditKafkaProperties, @Value("${spring.application.name}") String applicationName) {
         Properties properties = getProperties(auditKafkaProperties, applicationName);
         AuditConfigurationMap config = AuditConfiguration.loadFromProperties(properties);
-        return AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, new SimpleAuditLoggerBase(config));
-    }
-
-    @Bean
-    public AuditLogGenerationFilter auditLogAspect(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
-            AuditLogger auditLogger) {
-        return new AuditLogGenerationFilter(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
+        AuditLogger auditLogger = AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, new SimpleAuditLoggerBase(config));
+        return new AuditLogGenerationFilterImpl(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
     }
 }

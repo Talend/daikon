@@ -30,6 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
@@ -42,15 +43,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = AuditLogGenerationFilterConfiguration.class)
-@TestPropertySource(properties = { "spring.application.name=daikon", "audit.enabled=true",
-        "audit.kafka.bootstrapServers=localhost:9092" })
-public class AuditLogGenerationFilterTest {
+@TestPropertySource(properties = { "audit.enabled=false" })
+public class AuditLogGenerationFilterImplTest {
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
-    @Autowired
-    private AuditLogGenerationFilter auditLogGenerationFilter;
+    private AuditLogGenerationFilterImpl auditLogGenerationFilterImpl;
 
     @Autowired
     private AuditLogger auditLogger;
@@ -77,6 +76,8 @@ public class AuditLogGenerationFilterTest {
         MethodSignature methodSignature = mock(MethodSignature.class);
         when(proceedingJoinPoint.getSignature()).thenReturn(methodSignature);
         when(methodSignature.getMethod()).thenReturn(method);
+
+        auditLogGenerationFilterImpl = new AuditLogGenerationFilterImpl(objectMapper, auditUserProvider, auditLogger);
     }
 
     /**
@@ -109,7 +110,7 @@ public class AuditLogGenerationFilterTest {
         exceptionRule.expect(RuntimeException.class);
         exceptionRule.expectMessage("audit log context is incomplete, missing information: ");
         exceptionRule.expectMessage(AuditLogFieldEnum.METHOD.toString());
-        auditLogGenerationFilter.auditLogGeneration(proceedingJoinPoint);
+        auditLogGenerationFilterImpl.auditLogGeneration(proceedingJoinPoint);
     }
 
     /**
@@ -137,7 +138,7 @@ public class AuditLogGenerationFilterTest {
         mockHttpResponse(HttpStatus.OK, null);
 
         // WHEN the method is called (a rest request has been performed)
-        auditLogGenerationFilter.auditLogGeneration(proceedingJoinPoint);
+        auditLogGenerationFilterImpl.auditLogGeneration(proceedingJoinPoint);
 
         // THEN an audit log with minimal context must be sent
         ArgumentCaptor<Context> context = ArgumentCaptor.forClass(Context.class);
@@ -172,6 +173,66 @@ public class AuditLogGenerationFilterTest {
     }
 
     /**
+     * GIVEN a minimal context configured
+     * AND the @GenerateAuditLog well configured placed on a RestController method
+     * WHEN the method is called (a rest request has been performed) and that method is annotated with @ResponseStatus
+     * THEN an audit log with minimal context must be sent
+     */
+    @Test
+    public void testGenerateAuditLogMinimalContextWithResponseCode() throws Throwable {
+
+        // GIVEN a minimal context configured
+        // AND the @GenerateAuditLog well configured placed on a RestController method
+
+        // Mock @GenerateAuditLog annotation as following :
+        // @GenerateAuditLog(application = "TMC", eventType = "application security", eventCategory = "user account",
+        // eventOperation = "create")
+        mockGenerateAuditLog("daikon", "security", "resource", "create", false);
+        mockResponseStatus(HttpStatus.NO_CONTENT);
+
+        // Mock no authenticated user
+        mockUser(null, null, null, null);
+
+        // Mock minimal HTTP request & response
+        mockHttpRequest("0.0.0.0", "/resource", HttpMethod.POST, null, null);
+        mockHttpResponse(HttpStatus.OK, null);
+
+        // WHEN the method is called (a rest request has been performed)
+        auditLogGenerationFilterImpl.auditLogGeneration(proceedingJoinPoint);
+
+        // THEN an audit log with minimal context must be sent
+        ArgumentCaptor<Context> context = ArgumentCaptor.forClass(Context.class);
+        verify(auditLogger, times(1)).sendAuditLog(context.capture());
+        verifyContext(context.getValue(),
+                // Basic mandatory fields must be filled
+                AuditLogFieldEnum.TIMESTAMP, is(not(nullValue())), //
+                AuditLogFieldEnum.REQUEST_ID, is(not(nullValue())), //
+                AuditLogFieldEnum.LOG_ID, is(not(nullValue())), //
+                // User information must be empty
+                AuditLogFieldEnum.ACCOUNT_ID, is(nullValue()), //
+                AuditLogFieldEnum.USER_ID, is(nullValue()), //
+                AuditLogFieldEnum.USERNAME, is(nullValue()), //
+                AuditLogFieldEnum.EMAIL, is(nullValue()), //
+                // Other mandatory contextual information must be filled
+                AuditLogFieldEnum.APPLICATION_ID, is("daikon"), //
+                AuditLogFieldEnum.EVENT_TYPE, is("security"), //
+                AuditLogFieldEnum.EVENT_CATEGORY, is("resource"), //
+                AuditLogFieldEnum.EVENT_OPERATION, is("create"), //
+                AuditLogFieldEnum.CLIENT_IP, is("0.0.0.0"), //
+                // Request payload must be filled with minimal mandatory info
+                AuditLogFieldEnum.REQUEST,
+                containsString(String.format("\"%s\":\"http://localhost/resource\"", AuditLogFieldEnum.URL.getId())),
+                AuditLogFieldEnum.REQUEST,
+                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.METHOD.getId(), HttpMethod.POST)),
+                AuditLogFieldEnum.REQUEST, not(containsString(AuditLogFieldEnum.REQUEST_BODY.getId())), AuditLogFieldEnum.REQUEST,
+                not(containsString(AuditLogFieldEnum.USER_AGENT.getId())),
+                // Response payload must be filled with minimal mandatory info
+                AuditLogFieldEnum.RESPONSE, not(containsString(AuditLogFieldEnum.RESPONSE_BODY.getId())),
+                AuditLogFieldEnum.RESPONSE,
+                containsString(String.format("\"%s\":\"204\"", AuditLogFieldEnum.RESPONSE_CODE.getId())));
+    }
+
+    /**
      * GIVEN a full context configured
      * AND the @GenerateAuditLog well configured placed on a RestController method
      * WHEN the method is called (a rest request has been performed)
@@ -199,7 +260,7 @@ public class AuditLogGenerationFilterTest {
         mockHttpResponse(HttpStatus.OK, createdResource);
 
         // WHEN the method is called (a rest request has been performed)
-        auditLogGenerationFilter.auditLogGeneration(proceedingJoinPoint);
+        auditLogGenerationFilterImpl.auditLogGeneration(proceedingJoinPoint);
 
         // THEN an audit log with full context must be sent
         ArgumentCaptor<Context> context = ArgumentCaptor.forClass(Context.class);
@@ -273,7 +334,7 @@ public class AuditLogGenerationFilterTest {
         exceptionRule.expect(Exception.class);
         exceptionRule.expectMessage("Ouch !");
         try {
-            auditLogGenerationFilter.auditLogGeneration(proceedingJoinPoint);
+            auditLogGenerationFilterImpl.auditLogGeneration(proceedingJoinPoint);
         } catch (Exception e) {
             // THEN an audit log with full context must be sent
             ArgumentCaptor<Context> context = ArgumentCaptor.forClass(Context.class);
@@ -410,6 +471,13 @@ public class AuditLogGenerationFilterTest {
         when(annotation.eventOperation()).thenReturn(eventOperation);
         when(annotation.includeBodyResponse()).thenReturn(includeBodyResponse);
         doReturn(NoOpAuditContextFilter.class).when(annotation).filter();
-        when(method.getAnnotation(any())).thenReturn(annotation);
+        when(method.getAnnotation(GenerateAuditLog.class)).thenReturn(annotation);
+    }
+
+    private void mockResponseStatus(HttpStatus httpStatus) {
+        reset(auditLogger);
+        ResponseStatus annotation = mock(ResponseStatus.class);
+        when(annotation.value()).thenReturn(httpStatus);
+        when(method.getAnnotation(ResponseStatus.class)).thenReturn(annotation);
     }
 }
