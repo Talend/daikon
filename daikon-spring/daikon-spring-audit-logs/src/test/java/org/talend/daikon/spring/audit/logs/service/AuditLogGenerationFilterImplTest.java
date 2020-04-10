@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.talend.daikon.spring.audit.logs.api.AuditContextFilter;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.GenerateAuditLog;
 import org.talend.daikon.spring.audit.logs.api.NoOpAuditContextFilter;
@@ -45,6 +46,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ContextConfiguration(classes = AuditLogGenerationFilterConfiguration.class)
 @TestPropertySource(properties = { "audit.enabled=false" })
 public class AuditLogGenerationFilterImplTest {
+
+    static public class SensitiveFilter implements AuditContextFilter {
+
+        @Override
+        public AuditLogContextBuilder filter(AuditLogContextBuilder auditLogContextBuilder, Object requestBody) {
+            return auditLogContextBuilder.withRequestBody(((String) requestBody).replace("sensitiveValue", ""));
+        }
+    }
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -70,6 +79,8 @@ public class AuditLogGenerationFilterImplTest {
 
     @Before
     public void setUp() {
+        // Reset AuditLogger mock
+        reset(auditLogger);
         // Mock ProceedingJoinPoint & Method
         proceedingJoinPoint = mock(ProceedingJoinPoint.class);
         method = mock(Method.class);
@@ -302,6 +313,79 @@ public class AuditLogGenerationFilterImplTest {
     /**
      * GIVEN a full context configured
      * AND the @GenerateAuditLog well configured placed on a RestController method
+     * AND a filter configured to remove sensitive information
+     * WHEN the method is called (a rest request has been performed) with sensitive information
+     * THEN an audit log with full context must be sent without sensitive information
+     */
+    @Test
+    public void testGenerateAuditLogFilteredContext() throws Throwable {
+
+        // GIVEN a full context configured
+        // AND the @GenerateAuditLog well configured placed on a RestController method
+        // AND a filter configured to remove sensitive information
+
+        // Mock @GenerateAuditLog annotation as following :
+        // @GenerateAuditLog(application = "TMC", eventType = "application security", eventCategory = "user account",
+        // eventOperation = "create", filter = SensitiveFilter.class)
+        mockGenerateAuditLog("daikon", "security", "resource", "create", true, SensitiveFilter.class);
+
+        // Mock current authenticated user
+        mockUser("user1", "ejarvis", "edwin.jarvis@talend.com", "account1");
+
+        // Mock HTTP request & response
+        Map<String, String> createdResource = new HashMap<>();
+        createdResource.put("id", "myResourceId");
+        createdResource.put("name", "myResourceName");
+        // Request contains sensitive data
+        createdResource.put("sensitiveKey", "sensitiveValue");
+        mockHttpRequest("0.0.0.0", "/resource", HttpMethod.POST, objectMapper.writeValueAsString(createdResource), "myUserAgent");
+        mockHttpResponse(HttpStatus.OK, createdResource);
+
+        // WHEN the method is called (a rest request has been performed) with sensitive information
+        auditLogGenerationFilterImpl.auditLogGeneration(proceedingJoinPoint);
+
+        // THEN an audit log with full context must be sent without sensitive information
+        ArgumentCaptor<Context> context = ArgumentCaptor.forClass(Context.class);
+        verify(auditLogger, times(1)).sendAuditLog(context.capture());
+        verifyContext(context.getValue(),
+                // Basic mandatory fields must be filled
+                AuditLogFieldEnum.TIMESTAMP, is(not(nullValue())), //
+                AuditLogFieldEnum.REQUEST_ID, is(not(nullValue())), //
+                AuditLogFieldEnum.LOG_ID, is(not(nullValue())), //
+                // User information must be filled
+                AuditLogFieldEnum.ACCOUNT_ID, is("account1"), //
+                AuditLogFieldEnum.USER_ID, is("user1"), //
+                AuditLogFieldEnum.USERNAME, is("ejarvis"), //
+                AuditLogFieldEnum.EMAIL, is("edwin.jarvis@talend.com"), //
+                // Other mandatory contextual information must be filled
+                AuditLogFieldEnum.APPLICATION_ID, is("daikon"), //
+                AuditLogFieldEnum.EVENT_TYPE, is("security"), //
+                AuditLogFieldEnum.EVENT_CATEGORY, is("resource"), //
+                AuditLogFieldEnum.EVENT_OPERATION, is("create"), //
+                AuditLogFieldEnum.CLIENT_IP, is("0.0.0.0"), //
+                // Request payload must be filled
+                AuditLogFieldEnum.REQUEST,
+                containsString(String.format("\"%s\":\"http://localhost/resource\"", AuditLogFieldEnum.URL.getId())),
+                AuditLogFieldEnum.REQUEST,
+                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.METHOD.getId(), HttpMethod.POST)),
+                // Verify that request doesn't contain any sensitive value
+                AuditLogFieldEnum.REQUEST,
+                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.REQUEST_BODY.getId(),
+                        StringEscapeUtils
+                                .escapeJava(objectMapper.writeValueAsString(createdResource).replace("sensitiveValue", "")))),
+                AuditLogFieldEnum.REQUEST,
+                containsString(String.format("\"%s\":\"myUserAgent\"", AuditLogFieldEnum.USER_AGENT.getId())),
+                // Response payload must be filled
+                AuditLogFieldEnum.RESPONSE,
+                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId(),
+                        StringEscapeUtils.escapeJava(objectMapper.writeValueAsString(createdResource)))),
+                AuditLogFieldEnum.RESPONSE,
+                containsString(String.format("\"%s\":\"200\"", AuditLogFieldEnum.RESPONSE_CODE.getId())));
+    }
+
+    /**
+     * GIVEN a full context configured
+     * AND the @GenerateAuditLog well configured placed on a RestController method
      * WHEN the method is called (a rest request has been performed)
      * AND an exception occurs
      * THEN an audit log with full context must be sent with code 500
@@ -461,21 +545,44 @@ public class AuditLogGenerationFilterImplTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
     }
 
+    /**
+     * Mock @GenerateAuditLog annotation with default NoOp filter
+     *
+     * @param application application param value
+     * @param eventType eventType param value
+     * @param eventCategory eventCategory param value
+     * @param eventOperation eventOperation param value
+     * @param includeBodyResponse includeBodyResponse param value
+     */
     private void mockGenerateAuditLog(String application, String eventType, String eventCategory, String eventOperation,
             boolean includeBodyResponse) {
-        reset(auditLogger);
+        mockGenerateAuditLog(application, eventType, eventCategory, eventOperation, includeBodyResponse,
+                NoOpAuditContextFilter.class);
+    }
+
+    /**
+     * Mock @GenerateAuditLog annotation with custom filter
+     *
+     * @param application application param value
+     * @param eventType eventType param value
+     * @param eventCategory eventCategory param value
+     * @param eventOperation eventOperation param value
+     * @param includeBodyResponse includeBodyResponse param value
+     * @param filterClass custom filter class
+     */
+    private void mockGenerateAuditLog(String application, String eventType, String eventCategory, String eventOperation,
+            boolean includeBodyResponse, Class<? extends AuditContextFilter> filterClass) {
         GenerateAuditLog annotation = mock(GenerateAuditLog.class);
         when(annotation.application()).thenReturn(application);
         when(annotation.eventType()).thenReturn(eventType);
         when(annotation.eventCategory()).thenReturn(eventCategory);
         when(annotation.eventOperation()).thenReturn(eventOperation);
         when(annotation.includeBodyResponse()).thenReturn(includeBodyResponse);
-        doReturn(NoOpAuditContextFilter.class).when(annotation).filter();
+        doReturn(filterClass).when(annotation).filter();
         when(method.getAnnotation(GenerateAuditLog.class)).thenReturn(annotation);
     }
 
     private void mockResponseStatus(HttpStatus httpStatus) {
-        reset(auditLogger);
         ResponseStatus annotation = mock(ResponseStatus.class);
         when(annotation.value()).thenReturn(httpStatus);
         when(method.getAnnotation(ResponseStatus.class)).thenReturn(annotation);
