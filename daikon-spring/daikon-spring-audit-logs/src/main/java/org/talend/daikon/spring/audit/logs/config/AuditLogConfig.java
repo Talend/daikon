@@ -41,7 +41,7 @@ public class AuditLogConfig {
     }
 
     @Bean
-    public AuditLogGenerationFilter auditLogAspect(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
+    public AuditLogGenerationFilterImpl auditLogAspect(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
             AuditKafkaProperties auditKafkaProperties, @Value("${spring.application.name}") String applicationName) {
         Properties properties = getProperties(auditKafkaProperties, applicationName);
         AuditConfigurationMap config = AuditConfiguration.loadFromProperties(properties);
