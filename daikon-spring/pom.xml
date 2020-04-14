@@ -39,5 +39,6 @@
         <module>daikon-content-service</module>
         <module>daikon-spring-examples</module>
         <module>daikon-spring-metrics</module>
+        <module>daikon-spring-audit-logs</module>
     </modules>
 </project>
