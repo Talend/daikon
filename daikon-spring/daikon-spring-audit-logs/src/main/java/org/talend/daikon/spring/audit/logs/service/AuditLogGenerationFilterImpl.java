@@ -142,7 +142,7 @@ public class AuditLogGenerationFilterImpl implements AuditLogGenerationFilter {
         try {
             // Filter the context if needed
             AuditContextFilter filter = auditLogAnnotation.filter().getDeclaredConstructor().newInstance();
-            auditLogContextBuilder = filter.filter(auditLogContextBuilder, requestBody);
+            auditLogContextBuilder = filter.filter(auditLogContextBuilder, requestBody, responseObject);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
