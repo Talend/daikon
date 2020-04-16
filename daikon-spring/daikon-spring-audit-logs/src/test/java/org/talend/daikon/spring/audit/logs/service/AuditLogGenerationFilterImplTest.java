@@ -50,7 +50,8 @@ public class AuditLogGenerationFilterImplTest {
     static public class SensitiveFilter implements AuditContextFilter {
 
         @Override
-        public AuditLogContextBuilder filter(AuditLogContextBuilder auditLogContextBuilder, Object requestBody) {
+        public AuditLogContextBuilder filter(AuditLogContextBuilder auditLogContextBuilder, Object requestBody,
+                Object responseObject) {
             return auditLogContextBuilder.withRequestBody(((String) requestBody).replace("sensitiveValue", ""));
         }
     }
