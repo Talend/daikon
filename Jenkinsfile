@@ -31,7 +31,7 @@ pipeline {
 
   agent {
     kubernetes {
-      label 'all_daikon'
+      label "all_daikon" + UUID.randomUUID().toString()
       yaml """
 apiVersion: v1
 kind: Pod
