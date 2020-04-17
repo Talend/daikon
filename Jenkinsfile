@@ -47,6 +47,8 @@ spec:
         mountPath: /var/run/docker.sock
       - name: m2
         mountPath: /root/daikon/.m2/repository
+  imagePullSecrets:
+    - talend-registry
   volumes:
   - name: docker
     hostPath:
