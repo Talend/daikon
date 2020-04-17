@@ -1,5 +1,7 @@
 package org.talend.daikon.logging.http.headers;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,7 +38,7 @@ public abstract class AbstractHttpHeadersMDCTest {
 
         Assert.assertNotNull(mdc);
 
-        Assert.assertEquals("127.0.0.1", mdc.get(HttpHeadersMDC.HTTP_REMOTE_ADDR));
+        Assert.assertEquals(TestUtils.LOCAL_ADDRESS, mdc.get(HttpHeadersMDC.HTTP_REMOTE_ADDR));
         Assert.assertEquals(forwardedFor, mdc.get(HttpHeadersMDC.HTTP_FORWARDED_FOR));
 
         String portStr = mdc.get(HttpHeadersMDC.HTTP_REMOTE_PORT);
@@ -95,7 +97,7 @@ public abstract class AbstractHttpHeadersMDCTest {
 
         Assert.assertNotNull(mdc);
 
-        Assert.assertEquals("127.0.0.1", mdc.get(HttpHeadersMDC.HTTP_REMOTE_ADDR));
+        Assert.assertEquals(TestUtils.LOCAL_ADDRESS, mdc.get(HttpHeadersMDC.HTTP_REMOTE_ADDR));
         Assert.assertEquals(forwardedFor, mdc.get(HttpHeadersMDC.HTTP_FORWARDED_FOR));
 
         String portStr = mdc.get(HttpHeadersMDC.HTTP_REMOTE_PORT);

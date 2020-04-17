@@ -7,10 +7,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  *
  */
 public class TestUtils {
+
+    public static final String LOCAL_ADDRESS;
+
+    static {
+        try {
+            LOCAL_ADDRESS = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("Unable to resolve localhost address", e);
+        }
+    }
 
     private TestUtils() {
     }
@@ -27,7 +40,7 @@ public class TestUtils {
 
         final HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> response = client.exchange("http://127.0.0.1:" + port + "/" + id, method, entity, String.class);
+        ResponseEntity<String> response = client.exchange("http://" + LOCAL_ADDRESS + ":" + port + "/" + id, method, entity, String.class);
 
         return response.getBody();
     }
