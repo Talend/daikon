@@ -38,7 +38,7 @@ kind: Pod
 spec:
   containers:
     - name: maven
-      image: artifactory.datapwn.com/tlnd-docker-prod/talend/common/tsbi/jdk8-dev-base:2.0.0-20200414174049
+      image: artifactory.datapwn.com/tlnd-docker-prod/talend/common/tsbi/jdk8-builder-base:2.0.0-20200414174049
       command:
       - cat
       tty: true
