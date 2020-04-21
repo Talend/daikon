@@ -6,23 +6,23 @@ import java.util.List;
 public enum AuditLogFieldEnum {
 
     TIMESTAMP("timestamp"),
-    REQUEST_ID("request_id"),
-    LOG_ID("log_id"),
+    REQUEST_ID("requestId"),
+    LOG_ID("logId"),
     // account id is not mandatory in the case of audit log of anonymous users
-    ACCOUNT_ID("account_id", false),
+    ACCOUNT_ID("accountId", false),
     // user info is not mandatory in the case of audit log of anonymous users
-    USER_ID("user_id", false),
+    USER_ID("userId", false),
     USERNAME("username", false),
     EMAIL("email", false),
-    APPLICATION_ID("application_id"),
-    EVENT_TYPE("event_type"),
-    EVENT_CATEGORY("event_category"),
-    EVENT_OPERATION("event_operation"),
-    CLIENT_IP("client_ip"),
+    APPLICATION_ID("applicationId"),
+    EVENT_TYPE("eventType"),
+    EVENT_CATEGORY("eventCategory"),
+    EVENT_OPERATION("eventOperation"),
+    CLIENT_IP("clientIp"),
     URL("url"),
     METHOD("method"),
     // user agent not mandatory because not always provided
-    USER_AGENT("user_agent", false),
+    USER_AGENT("userAgent", false),
     // request body is not present for all user actions
     REQUEST_BODY("body", false),
     REQUEST("request", Arrays.asList(URL, METHOD, USER_AGENT, REQUEST_BODY)),
