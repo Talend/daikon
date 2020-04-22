@@ -39,7 +39,7 @@ audit:
     kafka:
         bootstrapServers: localhost:9092 # Kafka bootstrap server urls for audit logs sending
         topic: audit-logs # Kafka topic for audit logs sending
-        partitionKeyName: account_id # Kafka partitionKey for audit logs sending
+        partitionKeyName: accountId # Kafka partitionKey for audit logs sending
 ```
 
 == @GenerateAuditLog
