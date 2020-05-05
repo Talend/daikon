@@ -10,12 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.NoOpAuditUserProvider;
-import org.talend.daikon.spring.audit.logs.service.AuditLogGeneratorAspect;
-import org.talend.daikon.spring.audit.logs.service.AuditLogGeneratorInterceptor;
-import org.talend.daikon.spring.audit.logs.service.AuditLogSender;
-import org.talend.daikon.spring.audit.logs.service.AuditLogger;
+import org.talend.daikon.spring.audit.logs.service.*;
 import org.talend.logging.audit.AuditLoggerFactory;
 import org.talend.logging.audit.LogAppenders;
 import org.talend.logging.audit.impl.AuditConfiguration;
@@ -24,6 +22,12 @@ import org.talend.logging.audit.impl.Backends;
 import org.talend.logging.audit.impl.SimpleAuditLoggerBase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
@@ -59,5 +63,14 @@ public class AuditLogConfig {
     @Bean
     public AuditLogGeneratorInterceptor auditLogGeneratorInterceptor(AuditLogSender auditLogSender) {
         return new AuditLogGeneratorInterceptor(auditLogSender);
+    }
+
+    @Bean
+    public Filter filter() {
+        return (servletRequest, servletResponse, filterChain) -> {
+            HttpServletRequest currentRequest = (HttpServletRequest) servletRequest;
+            ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(currentRequest);
+            filterChain.doFilter(wrappedRequest, servletResponse);
+        };
     }
 }

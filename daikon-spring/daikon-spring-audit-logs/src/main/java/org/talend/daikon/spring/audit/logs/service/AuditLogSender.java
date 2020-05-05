@@ -1,19 +1,23 @@
 package org.talend.daikon.spring.audit.logs.service;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.talend.daikon.spring.audit.logs.api.AuditContextFilter;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.GenerateAuditLog;
 import org.talend.daikon.spring.audit.logs.exception.AuditLogException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AuditLogSender {
@@ -35,9 +39,13 @@ public class AuditLogSender {
     /**
      * Build the context and send the audit log
      */
-    public void sendAuditLog(HttpServletRequest request, Object requestBody, int responseCode, Object responseObject,
+    public void sendAuditLog(HttpServletRequest request, int responseCode, Object responseObject,
             GenerateAuditLog auditLogAnnotation) {
         try {
+            ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
+            String requestBody = Optional
+                    .ofNullable(IOUtils.toString(requestWrapper.getContentAsByteArray(), StandardCharsets.UTF_8.toString()))
+                    .filter(content -> !content.isEmpty()).orElse(null);
             // Build context from request, response & annotation info
             AuditLogContextBuilder auditLogContextBuilder = AuditLogContextBuilder.create()
                     .withTimestamp(OffsetDateTime.now().toString()).withLogId(UUID.randomUUID()).withRequestId(UUID.randomUUID())
@@ -57,8 +65,8 @@ public class AuditLogSender {
             // Finally send the log
             auditLogger.sendAuditLog(auditLogContextBuilder.build());
             LOGGER.info("audit log generated with metadata {}", auditLogAnnotation);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException
-                | JsonProcessingException | AuditLogException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | IOException
+                | AuditLogException e) {
             LOGGER.error("audit log with metadata {} has not been generated", auditLogAnnotation, e);
         }
     }
