@@ -1,13 +1,18 @@
 package org.talend.daikon.spring.audit.logs.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.talend.daikon.spring.audit.logs.service.AuditLogGeneratorInterceptor;
 
 @Configuration
-@ConditionalOnProperty(value = "audit.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBean(AuditLogGeneratorInterceptor.class)
 public class AuditLogWebConfig implements WebMvcConfigurer {
 
     private final AuditLogGeneratorInterceptor auditLogGeneratorInterceptor;
@@ -19,5 +24,14 @@ public class AuditLogWebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(auditLogGeneratorInterceptor);
+    }
+
+    @Bean
+    public Filter filter() {
+        return (servletRequest, servletResponse, filterChain) -> {
+            HttpServletRequest currentRequest = (HttpServletRequest) servletRequest;
+            ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(currentRequest);
+            filterChain.doFilter(wrappedRequest, servletResponse);
+        };
     }
 }

@@ -1,10 +1,6 @@
 package org.talend.daikon.spring.audit.logs.service;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,8 +9,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -45,29 +41,6 @@ public class AuditLogGeneratorAspect {
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
 
         /**
-         * ---------------------
-         * Determine Request info
-         * ---------------------
-         */
-
-        // Retrieve @RequestBody annotation index (if used in original method)
-        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-        AtomicReference<Integer> argumentIndex = new AtomicReference<>();
-        AtomicInteger index = new AtomicInteger();
-        Arrays.asList(parameterAnnotations).forEach(annotations -> {
-            if (Arrays.stream(annotations)
-                    .anyMatch(annotation -> annotation.annotationType().getName().equals(RequestBody.class.getName()))) {
-                argumentIndex.set(index.intValue());
-            }
-            index.getAndIncrement();
-        });
-        // If @RequestBody arg annotation exists, retrieve the associated argument
-        Object requestBody = null;
-        if (argumentIndex.get() != null) {
-            requestBody = proceedingJoinPoint.getArgs()[argumentIndex.get()];
-        }
-
-        /**
          * ----------------------
          * Determine Response info
          * ----------------------
@@ -79,7 +52,6 @@ public class AuditLogGeneratorAspect {
         if (responseStatusAnnotation != null) {
             responseCode = responseStatusAnnotation.value().value();
         }
-
         // Run original method and retrieve the result
         Object responseObject = proceedingJoinPoint.proceed();
         // This result will be used as Response body
@@ -89,8 +61,11 @@ public class AuditLogGeneratorAspect {
             responseCode = ((ResponseEntity) responseObject).getStatusCode().value();
             auditLogResponseObject = ((ResponseEntity) responseObject).getBody();
         }
-        // Finally send the audit log
-        auditLogSender.sendAuditLog(request, requestBody, responseCode, auditLogResponseObject, auditLogAnnotation);
+
+        if (responseCode == 0 || HttpStatus.valueOf(responseCode).is2xxSuccessful()) {
+            // Finally send the audit log
+            auditLogSender.sendAuditLog(request, responseCode, auditLogResponseObject, auditLogAnnotation);
+        }
         return responseObject;
     }
 }
