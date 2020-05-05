@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.talend.daikon.spring.audit.logs.exception.AuditLogException;
 import org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum;
 import org.talend.logging.audit.Context;
 import org.talend.logging.audit.impl.DefaultContextImpl;
@@ -128,7 +129,7 @@ public class AuditLogContextBuilder {
         return this.with(RESPONSE_BODY.getId(), responseBody, response);
     }
 
-    public Context build() {
+    public Context build() throws AuditLogException {
         try {
             context.values().removeAll(Collections.singletonList(null));
             request.values().removeAll(Collections.singletonList(null));
@@ -142,7 +143,7 @@ public class AuditLogContextBuilder {
             checkAuditContextIsValid();
             return new DefaultContextImpl(context);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new AuditLogException("audit log serialization failure", e);
         }
     }
 
@@ -156,7 +157,7 @@ public class AuditLogContextBuilder {
         return withResponseCode(httpStatus).withResponseBody(body);
     }
 
-    public void checkAuditContextIsValid() {
+    public void checkAuditContextIsValid() throws AuditLogException {
         // check elements of the context
         List<AuditLogFieldEnum> notFound = new ArrayList<>();
         for (AuditLogFieldEnum auditLogFieldEnum : AuditLogFieldEnum.values()) {
@@ -182,7 +183,7 @@ public class AuditLogContextBuilder {
         }
 
         if (!notFound.isEmpty()) {
-            throw new RuntimeException("audit log context is incomplete, missing information: " + notFound);
+            throw new AuditLogException("audit log context is incomplete, missing information: " + notFound);
         }
     }
 
