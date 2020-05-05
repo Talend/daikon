@@ -19,7 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
@@ -42,6 +44,7 @@ import ch.qos.logback.core.read.ListAppender;
 @SpringBootTest(classes = AuditLogTestApp.class)
 @AutoConfigureMockMvc
 @TestPropertySource(properties = { "audit.enabled=false" })
+@ComponentScan("org.talend.daikon.spring.audit.logs.config")
 public class AuditLogTest {
 
     @Autowired
@@ -57,10 +60,33 @@ public class AuditLogTest {
 
     @Before
     public void setUp() {
+        // Rest auditLogger mock
+        reset(auditLogger);
+        // Set up logger list appender
         Logger logger = (Logger) LoggerFactory.getLogger(AuditLogSender.class);
         logListAppender = new ListAppender<>();
         logListAppender.start();
         logger.addAppender(logListAppender);
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet400Exception() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_EXCEPTION)).andExpect(status().isBadRequest());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_EXCEPTION, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST, null));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet400Annotation() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_ANNOTATION)).andExpect(status().isBadRequest());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_ANNOTATION, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST, null));
     }
 
     @Test
@@ -69,6 +95,7 @@ public class AuditLogTest {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_401)).andExpect(status().isUnauthorized());
 
         verify(auditLogger, times(0)).sendAuditLog(any());
+        assertThat(logListAppender.list.get(0).getLevel(), is(Level.ERROR));
     }
 
     @Test
@@ -76,7 +103,9 @@ public class AuditLogTest {
     public void testGet403() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_403)).andExpect(status().isForbidden());
 
-        verify(auditLogger, times(0)).sendAuditLog(any());
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_403, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.FORBIDDEN, null));
     }
 
     @Test
@@ -84,7 +113,9 @@ public class AuditLogTest {
     public void testGet404() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_404)).andExpect(status().isNotFound());
 
-        verifyContext();
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_404, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.NOT_FOUND, null));
     }
 
     @Test
@@ -101,35 +132,10 @@ public class AuditLogTest {
     public void testGet200Body() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY)).andExpect(status().isOk());
 
-        verifyContext(
-                // Basic mandatory fields must be filled
-                AuditLogFieldEnum.TIMESTAMP, is(not(nullValue())), //
-                AuditLogFieldEnum.REQUEST_ID, is(not(nullValue())), //
-                AuditLogFieldEnum.LOG_ID, is(not(nullValue())), //
-                // User information must be filled
-                AuditLogFieldEnum.ACCOUNT_ID, is(AuditLogTestApp.ACCOUNT_ID), //
-                AuditLogFieldEnum.USER_ID, is(AuditLogTestApp.USER_ID), //
-                AuditLogFieldEnum.USERNAME, is(AuditLogTestApp.USERNAME), //
-                AuditLogFieldEnum.EMAIL, is(AuditLogTestApp.USER_EMAIL), //
-                // Other mandatory contextual information must be filled
-                AuditLogFieldEnum.APPLICATION_ID, is(AuditLogTestApp.APPLICATION), //
-                AuditLogFieldEnum.EVENT_TYPE, is(AuditLogTestApp.EVENT_TYPE), //
-                AuditLogFieldEnum.EVENT_CATEGORY, is(AuditLogTestApp.EVENT_CATEGORY), //
-                AuditLogFieldEnum.EVENT_OPERATION, is(AuditLogTestApp.EVENT_OPERATION), //
-                AuditLogFieldEnum.CLIENT_IP, is("127.0.0.1"), //
-                // Request payload must be filled with minimal mandatory info
-                AuditLogFieldEnum.REQUEST,
-                containsString(String.format("\"%s\":\"http://localhost%s\"", AuditLogFieldEnum.URL.getId(),
-                        AuditLogTestApp.GET_200_WITH_BODY)), //
-                AuditLogFieldEnum.REQUEST,
-                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.METHOD.getId(), HttpMethod.GET)), //
-                AuditLogFieldEnum.REQUEST, not(containsString(String.format("\"%s\"", AuditLogFieldEnum.REQUEST_BODY.getId()))), //
-                // Response payload must be filled with minimal mandatory info
-                AuditLogFieldEnum.RESPONSE,
-                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId(),
-                        StringEscapeUtils.escapeJava(objectMapper.writeValueAsString(AuditLogTestApp.BODY_RESPONSE)))), //
-                AuditLogFieldEnum.RESPONSE,
-                containsString(String.format("\"%s\":\"200\"", AuditLogFieldEnum.RESPONSE_CODE.getId())));
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_200_WITH_BODY, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.OK,
+                StringEscapeUtils.escapeJava(objectMapper.writeValueAsString(AuditLogTestApp.BODY_RESPONSE))));
     }
 
     @Test
@@ -137,33 +143,9 @@ public class AuditLogTest {
     public void testGet200NoBody() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITHOUT_BODY)).andExpect(status().isOk());
 
-        verifyContext(
-                // Basic mandatory fields must be filled
-                AuditLogFieldEnum.TIMESTAMP, is(not(nullValue())), //
-                AuditLogFieldEnum.REQUEST_ID, is(not(nullValue())), //
-                AuditLogFieldEnum.LOG_ID, is(not(nullValue())), //
-                // User information must be filled
-                AuditLogFieldEnum.ACCOUNT_ID, is(AuditLogTestApp.ACCOUNT_ID), //
-                AuditLogFieldEnum.USER_ID, is(AuditLogTestApp.USER_ID), //
-                AuditLogFieldEnum.USERNAME, is(AuditLogTestApp.USERNAME), //
-                AuditLogFieldEnum.EMAIL, is(AuditLogTestApp.USER_EMAIL), //
-                // Other mandatory contextual information must be filled
-                AuditLogFieldEnum.APPLICATION_ID, is(AuditLogTestApp.APPLICATION), //
-                AuditLogFieldEnum.EVENT_TYPE, is(AuditLogTestApp.EVENT_TYPE), //
-                AuditLogFieldEnum.EVENT_CATEGORY, is(AuditLogTestApp.EVENT_CATEGORY), //
-                AuditLogFieldEnum.EVENT_OPERATION, is(AuditLogTestApp.EVENT_OPERATION), //
-                AuditLogFieldEnum.CLIENT_IP, is("127.0.0.1"), //
-                // Request payload must be filled with minimal mandatory info
-                AuditLogFieldEnum.REQUEST,
-                containsString(String.format("\"%s\":\"http://localhost%s\"", AuditLogFieldEnum.URL.getId(),
-                        AuditLogTestApp.GET_200_WITHOUT_BODY)), //
-                AuditLogFieldEnum.REQUEST,
-                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.METHOD.getId(), HttpMethod.GET)), //
-                AuditLogFieldEnum.REQUEST, not(containsString(String.format("\"%s\"", AuditLogFieldEnum.REQUEST_BODY.getId()))), //
-                // Response payload must be filled with minimal mandatory info
-                AuditLogFieldEnum.RESPONSE, not(containsString(String.format("\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId()))), //
-                AuditLogFieldEnum.RESPONSE,
-                containsString(String.format("\"%s\":\"200\"", AuditLogFieldEnum.RESPONSE_CODE.getId())));
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_200_WITHOUT_BODY, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.OK, null));
     }
 
     @Test
@@ -172,7 +154,37 @@ public class AuditLogTest {
         mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_200_FILTERED).content("Any content"))
                 .andExpect(status().isOk());
 
-        verifyContext(
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.POST_200_FILTERED, HttpMethod.POST,
+                AuditLogTestApp.FILTERED_BODY_REQUEST));
+        verifyContext(httpResponseContextCheck(HttpStatus.OK, AuditLogTestApp.FILTERED_BODY_RESPONSE));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testPost204() throws Exception {
+        final String content = "myContent";
+        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_204).content(content)).andExpect(status().isNoContent());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.POST_204, HttpMethod.POST, content));
+        verifyContext(httpResponseContextCheck(HttpStatus.NO_CONTENT, null));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testPost500() throws Exception {
+        final String content = "myContent";
+        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_500).content(content))
+                .andExpect(status().isInternalServerError());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.POST_500, HttpMethod.POST, content));
+        verifyContext(httpResponseContextCheck(HttpStatus.INTERNAL_SERVER_ERROR, null));
+    }
+
+    private Object[] basicContextCheck() {
+        return new Object[] {
                 // Basic mandatory fields must be filled
                 AuditLogFieldEnum.TIMESTAMP, is(not(nullValue())), //
                 AuditLogFieldEnum.REQUEST_ID, is(not(nullValue())), //
@@ -187,22 +199,27 @@ public class AuditLogTest {
                 AuditLogFieldEnum.EVENT_TYPE, is(AuditLogTestApp.EVENT_TYPE), //
                 AuditLogFieldEnum.EVENT_CATEGORY, is(AuditLogTestApp.EVENT_CATEGORY), //
                 AuditLogFieldEnum.EVENT_OPERATION, is(AuditLogTestApp.EVENT_OPERATION), //
-                AuditLogFieldEnum.CLIENT_IP, is("127.0.0.1"), //
-                // Request payload must be filled with minimal mandatory info
-                AuditLogFieldEnum.REQUEST,
-                containsString(String.format("\"%s\":\"http://localhost%s\"", AuditLogFieldEnum.URL.getId(),
-                        AuditLogTestApp.POST_200_FILTERED)), //
-                AuditLogFieldEnum.REQUEST,
-                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.METHOD.getId(), HttpMethod.POST)), //
-                AuditLogFieldEnum.REQUEST,
-                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.REQUEST_BODY.getId(),
-                        AuditLogTestApp.FILTERED_BODY_REQUEST)), //
-                // Response payload must be filled with minimal mandatory info
-                AuditLogFieldEnum.RESPONSE,
-                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId(),
-                        AuditLogTestApp.FILTERED_BODY_RESPONSE)), //
-                AuditLogFieldEnum.RESPONSE,
-                containsString(String.format("\"%s\":\"200\"", AuditLogFieldEnum.RESPONSE_CODE.getId())));
+                AuditLogFieldEnum.CLIENT_IP, is("127.0.0.1") //
+        };
+    }
+
+    private Object[] httpRequestContextCheck(String url, HttpMethod method, String body) {
+        return new Object[] { AuditLogFieldEnum.REQUEST, //
+                containsString(String.format("\"%s\":\"http://localhost%s\"", AuditLogFieldEnum.URL.getId(), url)), //
+                AuditLogFieldEnum.REQUEST, //
+                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.METHOD.getId(), method)), //
+                AuditLogFieldEnum.REQUEST, //
+                body == null ? not(containsString(String.format("\"%s\"", AuditLogFieldEnum.REQUEST_BODY.getId())))
+                        : containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.REQUEST_BODY.getId(), body)) };
+    }
+
+    private Object[] httpResponseContextCheck(HttpStatus status, String body) {
+        return new Object[] { AuditLogFieldEnum.RESPONSE, //
+                containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.RESPONSE_CODE.getId(), status.value())), //
+                AuditLogFieldEnum.RESPONSE, //
+                body == null ? not(containsString(String.format("\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId())))
+                        : containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId(), body)), //
+        };
     }
 
     /**
@@ -221,7 +238,5 @@ public class AuditLogTest {
                                 ? context.getValue().get(((AuditLogFieldEnum) o[i]).getId())
                                 : null,
                         (Matcher<String>) o[i + 1]));
-        // Rest auditLogger mock
-        reset(auditLogger);
     }
 }

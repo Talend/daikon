@@ -1,4 +1,4 @@
-package org.talend.daikon.spring.audit.logs.api;
+package org.talend.daikon.spring.audit.logs.config;
 
 import java.util.Optional;
 
@@ -18,12 +18,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.talend.daikon.spring.audit.logs.service.AuditLogGeneratorAspect;
-import org.talend.daikon.spring.audit.logs.service.AuditLogGeneratorInterceptor;
-import org.talend.daikon.spring.audit.logs.service.AuditLogSender;
-import org.talend.daikon.spring.audit.logs.service.AuditLogger;
+import org.talend.daikon.spring.audit.logs.api.AuditLogTestApp;
+import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
+import org.talend.daikon.spring.audit.logs.service.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServletRequest;
 
 @Configuration
 public class AuditLogTestConfig extends WebSecurityConfigurerAdapter {

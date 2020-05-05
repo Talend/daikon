@@ -6,10 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.talend.daikon.spring.audit.logs.service.AuditLogContextBuilder;
 
 import java.util.UUID;
@@ -19,6 +17,8 @@ import java.util.UUID;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AuditLogTestApp {
 
+    // Basic audit logs properties
+
     public static final String APPLICATION = "Daikon";
 
     public static final String EVENT_TYPE = "test type";
@@ -26,6 +26,8 @@ public class AuditLogTestApp {
     public static final String EVENT_CATEGORY = "test category";
 
     public static final String EVENT_OPERATION = "test category";
+
+    // User properties
 
     public static final String USER_ID = UUID.randomUUID().toString();
 
@@ -35,9 +37,15 @@ public class AuditLogTestApp {
 
     public static final String ACCOUNT_ID = UUID.randomUUID().toString();
 
+    // Controller endpoints
+
     public static final String GET_200_WITH_BODY = "/get/200/body";
 
     public static final String GET_200_WITHOUT_BODY = "/get/200/nobody";
+
+    public static final String GET_400_ANNOTATION = "/get/400/annotation";
+
+    public static final String GET_400_EXCEPTION = "/get/400/exception";
 
     public static final String GET_401 = "/get/401";
 
@@ -50,6 +58,8 @@ public class AuditLogTestApp {
     public static final String POST_204 = "/post/204";
 
     public static final String POST_500 = "/post/500";
+
+    // HTTP request & response properties
 
     public static final String BODY_RESPONSE = "Hello world !";
 
@@ -80,6 +90,19 @@ public class AuditLogTestApp {
     @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION, includeBodyResponse = false)
     public ResponseEntity get200WithoutBody() {
         return ResponseEntity.ok(BODY_RESPONSE);
+    }
+
+    @GetMapping(GET_400_ANNOTATION)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION)
+    public String get400Annotation() {
+        return BODY_RESPONSE;
+    }
+
+    @GetMapping(GET_400_EXCEPTION)
+    @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION)
+    public ResponseEntity get400Exception() {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sorry ... bad request :(");
     }
 
     @GetMapping(GET_401)
