@@ -9,10 +9,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.NoOpAuditUserProvider;
-import org.talend.daikon.spring.audit.logs.service.AuditLogGenerationFilter;
-import org.talend.daikon.spring.audit.logs.service.AuditLogGenerationFilterImpl;
+import org.talend.daikon.spring.audit.logs.service.AuditLogGeneratorAspect;
+import org.talend.daikon.spring.audit.logs.service.AuditLogGeneratorInterceptor;
+import org.talend.daikon.spring.audit.logs.service.AuditLogSender;
 import org.talend.daikon.spring.audit.logs.service.AuditLogger;
 import org.talend.logging.audit.AuditLoggerFactory;
 import org.talend.logging.audit.LogAppenders;
@@ -41,11 +43,21 @@ public class AuditLogConfig {
     }
 
     @Bean
-    public AuditLogGenerationFilterImpl auditLogAspect(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
+    public AuditLogSender auditLogSender(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
             AuditKafkaProperties auditKafkaProperties, @Value("${spring.application.name}") String applicationName) {
         Properties properties = getProperties(auditKafkaProperties, applicationName);
         AuditConfigurationMap config = AuditConfiguration.loadFromProperties(properties);
         AuditLogger auditLogger = AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, new SimpleAuditLoggerBase(config));
-        return new AuditLogGenerationFilterImpl(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
+        return new AuditLogSender(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
+    }
+
+    @Bean
+    public AuditLogGeneratorAspect auditLogGeneratorAspect(AuditLogSender auditLogSender) {
+        return new AuditLogGeneratorAspect(auditLogSender);
+    }
+
+    @Bean
+    public AuditLogGeneratorInterceptor auditLogGeneratorInterceptor(AuditLogSender auditLogSender) {
+        return new AuditLogGeneratorInterceptor(auditLogSender);
     }
 }
