@@ -9,7 +9,7 @@ public enum AuditLogFieldEnum {
     REQUEST_ID("requestId"),
     LOG_ID("logId"),
     // account id is not mandatory in the case of audit log of anonymous users
-    ACCOUNT_ID("accountId", false),
+    ACCOUNT_ID("accountId"),
     // user info is not mandatory in the case of audit log of anonymous users
     USER_ID("userId", false),
     USERNAME("username", false),
