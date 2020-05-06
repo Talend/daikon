@@ -24,9 +24,6 @@ import org.talend.daikon.spring.audit.logs.service.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServletRequest;
-
 @Configuration
 public class AuditLogTestConfig extends WebSecurityConfigurerAdapter {
 
@@ -84,7 +81,7 @@ public class AuditLogTestConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuditLogSender auditLogSender(ObjectMapper objectMapper, AuditUserProvider auditUserProvider,
             AuditLogger auditLogger) {
-        return new AuditLogSender(objectMapper, auditUserProvider, auditLogger);
+        return new AuditLogSenderImpl(objectMapper, auditUserProvider, auditLogger);
     }
 
     @Bean
