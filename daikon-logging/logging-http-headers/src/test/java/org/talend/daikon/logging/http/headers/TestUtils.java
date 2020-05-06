@@ -40,7 +40,8 @@ public class TestUtils {
 
         final HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> response = client.exchange("http://" + LOCAL_ADDRESS + ":" + port + "/" + id, method, entity, String.class);
+        ResponseEntity<String> response = client.exchange("http://" + LOCAL_ADDRESS + ":" + port + "/" + id, method, entity,
+                String.class);
 
         return response.getBody();
     }
