@@ -86,6 +86,8 @@ public abstract class AbstractHttpHeadersMDCTest {
 
     @Test
     public void testAsync() {
+        setReplaceRemoteAddrWithForwardedFor(false);
+
         final String testId = UUID.randomUUID().toString();
         final String forwardedFor = "137.137.137.137";
 
