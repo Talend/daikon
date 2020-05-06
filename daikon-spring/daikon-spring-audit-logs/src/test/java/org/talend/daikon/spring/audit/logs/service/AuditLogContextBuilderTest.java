@@ -52,19 +52,18 @@ public class AuditLogContextBuilderTest {
                 .withResponse(httpStatus.value(), responseBody).build();
 
         assertNotNull(context.get("timestamp"));
-        assertNotNull(context.get("log_id"));
-        assertNotNull(context.get("request_id"));
-        assertEquals("accountId", context.get("account_id"));
-        assertEquals("userId", context.get("user_id"));
+        assertNotNull(context.get("logId"));
+        assertNotNull(context.get("requestId"));
+        assertEquals("accountId", context.get("accountId"));
+        assertEquals("userId", context.get("userId"));
         assertEquals("fakeUser", context.get("username"));
         assertEquals("fakeUser@talend.com", context.get("email"));
-        assertEquals("TTT", context.get("application_id"));
-        assertEquals("a type", context.get("event_type"));
-        assertEquals("a category", context.get("event_category"));
-        assertEquals("an operation", context.get("event_operation"));
-        assertEquals("127.0.0.1", context.get("client_ip"));
-        assertEquals(
-                "{\"url\":\"http://localhost/\",\"method\":\"POST\",\"user_agent\":\"user agent\",\"body\":\"post request\"}",
+        assertEquals("TTT", context.get("applicationId"));
+        assertEquals("a type", context.get("eventType"));
+        assertEquals("a category", context.get("eventCategory"));
+        assertEquals("an operation", context.get("eventOperation"));
+        assertEquals("127.0.0.1", context.get("clientIp"));
+        assertEquals("{\"url\":\"http://localhost/\",\"method\":\"POST\",\"userAgent\":\"user agent\",\"body\":\"post request\"}",
                 context.get("request"));
         assertEquals("{\"code\":\"202\",\"body\":{\"error\":false,\"entity\":\"user\"}}", context.get("response"));
     }
@@ -121,13 +120,13 @@ public class AuditLogContextBuilderTest {
                 .withResponse(httpStatus.value(), null).build();
 
         assertNotNull(context.get("timestamp"));
-        assertNotNull(context.get("log_id"));
-        assertNotNull(context.get("request_id"));
-        assertEquals("TTT", context.get("application_id"));
-        assertEquals("a type", context.get("event_type"));
-        assertEquals("a category", context.get("event_category"));
-        assertEquals("an operation", context.get("event_operation"));
-        assertEquals("127.0.0.1", context.get("client_ip"));
+        assertNotNull(context.get("logId"));
+        assertNotNull(context.get("requestId"));
+        assertEquals("TTT", context.get("applicationId"));
+        assertEquals("a type", context.get("eventType"));
+        assertEquals("a category", context.get("eventCategory"));
+        assertEquals("an operation", context.get("eventOperation"));
+        assertEquals("127.0.0.1", context.get("clientIp"));
         assertEquals("{\"url\":\"http://localhost/\",\"method\":\"POST\"}", context.get("request"));
         assertEquals("{\"code\":\"202\"}", context.get("response"));
     }

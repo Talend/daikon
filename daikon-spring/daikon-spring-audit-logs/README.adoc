@@ -39,7 +39,7 @@ audit:
     kafka:
         bootstrapServers: localhost:9092 # Kafka bootstrap server urls for audit logs sending
         topic: audit-logs # Kafka topic for audit logs sending
-        partitionKeyName: account_id # Kafka partitionKey for audit logs sending
+        partitionKeyName: accountId # Kafka partitionKey for audit logs sending
 ```
 
 == @GenerateAuditLog
@@ -59,13 +59,13 @@ A call to the `createResource` method will generate and send the following audit
 ```json
 {
     "timestamp": "2020-04-07T13:26:09.741821Z",
-    "request_id": "009a511a-a71e-4b6c-8e0b-822a90c71e43",
-    "log_id": "6bfbc27c-654a-41c2-a241-1cbe0e69c1c6",
-    "application_id": "daikon",
-    "event_type": "security",
-    "event_category": "resource",
-    "event_operation": "create",
-    "client_ip": "10.80.48.155",
+    "requestId": "009a511a-a71e-4b6c-8e0b-822a90c71e43",
+    "logId": "6bfbc27c-654a-41c2-a241-1cbe0e69c1c6",
+    "applicationId": "daikon",
+    "eventType": "security",
+    "eventCategory": "resource",
+    "eventOperation": "create",
+    "clientIp": "10.80.48.155",
     "request": "{\"url\":\"http://app.url/resource\",\"method\":\"POST\",\"user_agent\":\"{USER_AGENT}\",\"body\":\"{REQUEST_BODY}\"}",
     "response": "{\"code\":\"200\",\"body\":\"{REQUEST_BODY}\"}"
 }
@@ -117,17 +117,17 @@ Will generate an audit log enhanced with user information :
 ```json
 {
     "timestamp": "2020-04-07T13:26:09.741821Z",
-    "request_id": "009a511a-a71e-4b6c-8e0b-822a90c71e43",
-    "log_id": "6bfbc27c-654a-41c2-a241-1cbe0e69c1c6",
-    "account_id": "81fd11b5-d0c2-479d-833c-85d67f79edd0",
-    "user_id": "84dc9524-b9b6-4533-a849-606feba86720",
+    "requestId": "009a511a-a71e-4b6c-8e0b-822a90c71e43",
+    "logId": "6bfbc27c-654a-41c2-a241-1cbe0e69c1c6",
+    "accountId": "81fd11b5-d0c2-479d-833c-85d67f79edd0",
+    "userId": "84dc9524-b9b6-4533-a849-606feba86720",
     "username": "1510_3_int@trial01775.us.talend.com",
     "email": "1510_3_int@yopmail.com",
-    "application_id": "daikon",
-    "event_type": "security",
-    "event_category": "resource",
-    "event_operation": "create",
-    "client_ip": "10.80.48.155",
+    "applicationId": "daikon",
+    "eventType": "security",
+    "eventCategory": "resource",
+    "eventOperation": "create",
+    "clientIp": "10.80.48.155",
     "request": "{\"url\":\"http://app.url/resource\",\"method\":\"POST\",\"user_agent\":\"{USER_AGENT}\",\"body\":\"{REQUEST_BODY}\"}",
     "response": "{\"code\":\"200\",\"body\":\"{REQUEST_BODY}\"}"
 }

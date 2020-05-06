@@ -186,7 +186,15 @@ public class AuditLogContextBuilder {
         }
     }
 
-    Map<String, String> getContext() {
+    public Map<String, String> getContext() {
         return context;
+    }
+
+    public Map<String, Object> getRequest() {
+        return request;
+    }
+
+    public Map<String, Object> getResponse() {
+        return response;
     }
 }

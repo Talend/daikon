@@ -9,7 +9,7 @@ public class AuditKafkaProperties {
 
     private String topic = "audit-logs";
 
-    private String partitionKeyName = "account_id";
+    private String partitionKeyName = "accountId";
 
     public String getBootstrapServers() {
         return bootstrapServers;
