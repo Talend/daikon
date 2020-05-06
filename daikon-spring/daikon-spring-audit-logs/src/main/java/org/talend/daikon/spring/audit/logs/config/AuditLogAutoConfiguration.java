@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.NoOpAuditUserProvider;
@@ -24,9 +23,6 @@ import org.talend.logging.audit.impl.SimpleAuditLoggerBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 @Configuration
@@ -52,7 +48,7 @@ public class AuditLogAutoConfiguration {
         Properties properties = getProperties(auditKafkaProperties, applicationName);
         AuditConfigurationMap config = AuditConfiguration.loadFromProperties(properties);
         AuditLogger auditLogger = AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, new SimpleAuditLoggerBase(config));
-        return new AuditLogSender(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
+        return new AuditLogSenderImpl(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
     }
 
     @Bean

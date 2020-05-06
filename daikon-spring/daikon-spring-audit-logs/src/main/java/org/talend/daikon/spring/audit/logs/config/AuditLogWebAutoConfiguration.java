@@ -27,7 +27,7 @@ public class AuditLogWebAutoConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public Filter filter() {
+    public Filter auditLogCachingFilter() {
         return (servletRequest, servletResponse, filterChain) -> {
             HttpServletRequest currentRequest = (HttpServletRequest) servletRequest;
             ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(currentRequest);

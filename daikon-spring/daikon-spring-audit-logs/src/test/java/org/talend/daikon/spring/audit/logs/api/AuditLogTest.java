@@ -29,7 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum;
-import org.talend.daikon.spring.audit.logs.service.AuditLogSender;
+import org.talend.daikon.spring.audit.logs.service.AuditLogSenderImpl;
 import org.talend.daikon.spring.audit.logs.service.AuditLogger;
 import org.talend.logging.audit.Context;
 
@@ -63,7 +63,7 @@ public class AuditLogTest {
         // Rest auditLogger mock
         reset(auditLogger);
         // Set up logger list appender
-        Logger logger = (Logger) LoggerFactory.getLogger(AuditLogSender.class);
+        Logger logger = (Logger) LoggerFactory.getLogger(AuditLogSenderImpl.class);
         logListAppender = new ListAppender<>();
         logListAppender.start();
         logger.addAppender(logListAppender);
