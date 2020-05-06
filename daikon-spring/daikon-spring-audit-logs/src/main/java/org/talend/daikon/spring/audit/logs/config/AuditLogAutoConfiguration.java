@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableConfigurationProperties(AuditKafkaProperties.class)
 @ConditionalOnProperty(value = "audit.enabled", havingValue = "true", matchIfMissing = true)
-public class AuditLogConfig {
+public class AuditLogAutoConfiguration {
 
     private Properties getProperties(AuditKafkaProperties auditKafkaProperties, String applicationName) {
         Properties properties = new Properties();

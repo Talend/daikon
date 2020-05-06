@@ -13,11 +13,11 @@ import org.talend.daikon.spring.audit.logs.service.AuditLogGeneratorInterceptor;
 
 @Configuration
 @ConditionalOnBean(AuditLogGeneratorInterceptor.class)
-public class AuditLogWebConfig implements WebMvcConfigurer {
+public class AuditLogWebAutoConfiguration implements WebMvcConfigurer {
 
     private final AuditLogGeneratorInterceptor auditLogGeneratorInterceptor;
 
-    public AuditLogWebConfig(AuditLogGeneratorInterceptor auditLogGeneratorInterceptor) {
+    public AuditLogWebAutoConfiguration(AuditLogGeneratorInterceptor auditLogGeneratorInterceptor) {
         this.auditLogGeneratorInterceptor = auditLogGeneratorInterceptor;
     }
 
