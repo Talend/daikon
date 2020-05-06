@@ -95,7 +95,7 @@ spec:
       steps {
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-            sh 'cd daikon-logging && mvn install -B -s $MAVEN_SETTINGS'
+            sh 'mvn install -B -s $MAVEN_SETTINGS'
           }
         }
       }
