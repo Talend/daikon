@@ -27,6 +27,8 @@ public class AuditLogWebAutoConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
+    // The purpose of this filter is to cache request content
+    // And then be able to read it from the interceptor
     public Filter auditLogCachingFilter() {
         return (servletRequest, servletResponse, filterChain) -> {
             HttpServletRequest currentRequest = (HttpServletRequest) servletRequest;

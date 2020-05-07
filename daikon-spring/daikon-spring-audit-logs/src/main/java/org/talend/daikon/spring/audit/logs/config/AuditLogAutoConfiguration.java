@@ -21,9 +21,6 @@ import org.talend.logging.audit.impl.SimpleAuditLoggerBase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServletRequest;
-
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableConfigurationProperties(AuditKafkaProperties.class)

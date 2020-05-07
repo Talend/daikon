@@ -32,21 +32,25 @@ public class AuditLogGeneratorInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
+        // Retrieve @GenerateAuditLog annotation from method if any
         Optional<GenerateAuditLog> generateAuditLog = Optional.of(handler).filter(h -> h instanceof HandlerMethod)
                 .map(HandlerMethod.class::cast).map(HandlerMethod::getMethod).map(m -> m.getAnnotation(GenerateAuditLog.class));
-
         if (!generateAuditLog.isPresent()) {
             super.afterCompletion(request, response, handler, ex);
         } else {
             int responseCode = response.getStatus();
+            // In some cases AccessDeniedException or AuthenticationException are thrown
+            // while response code is 200
             if (ex != null & ex instanceof AccessDeniedException) {
                 responseCode = HttpStatus.FORBIDDEN.value();
             }
             if (ex != null & ex instanceof AuthenticationException) {
                 responseCode = HttpStatus.UNAUTHORIZED.value();
             }
+            // Read request content from cached http request
             String requestBody = Optional.ofNullable(request).filter(r -> r instanceof ContentCachingRequestWrapper)
                     .map(ContentCachingRequestWrapper.class::cast).map(this::extractContent).orElse(null);
+            // Only log if code is not successful
             if (!HttpStatus.valueOf(responseCode).is2xxSuccessful()) {
                 this.auditLogSender.sendAuditLog(request, requestBody, responseCode, null, generateAuditLog.get());
             }
