@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.NoOpAuditUserProvider;
 import org.talend.daikon.spring.audit.logs.service.*;
@@ -59,14 +58,5 @@ public class AuditLogAutoConfiguration {
     @Bean
     public AuditLogGeneratorInterceptor auditLogGeneratorInterceptor(AuditLogSender auditLogSender) {
         return new AuditLogGeneratorInterceptor(auditLogSender);
-    }
-
-    @Bean
-    public Filter filter() {
-        return (servletRequest, servletResponse, filterChain) -> {
-            HttpServletRequest currentRequest = (HttpServletRequest) servletRequest;
-            ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(currentRequest);
-            filterChain.doFilter(wrappedRequest, servletResponse);
-        };
     }
 }
