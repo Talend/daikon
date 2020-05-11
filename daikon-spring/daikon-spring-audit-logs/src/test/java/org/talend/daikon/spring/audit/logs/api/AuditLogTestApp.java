@@ -12,9 +12,9 @@ import org.talend.daikon.spring.audit.logs.service.AuditLogContextBuilder;
 
 import java.util.UUID;
 
-@SpringBootApplication
 @RestController
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@SpringBootApplication(scanBasePackages = "org.talend.daikon.spring.audit.logs.config")
 public class AuditLogTestApp {
 
     // Basic audit logs properties
