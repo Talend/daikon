@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.talend.daikon.logging.http.headers.HttpHeadersMDCSpringConfig

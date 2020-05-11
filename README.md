@@ -25,6 +25,13 @@ _Modules_                                                     |_Description_
 [poc](poc)                                                    |*module use to store experiments and POCs like the CQRS one*
 [reporting](reporting)                                        |*Internal module used to aggregate jacoco converage reports and send them to codacy during the deploy phase*
 
+## Library compatibility
+
+|              | *Daikon 2.x*    | *Daikon 2.1.x*  | *Daikon 3.x* |
+|--------------|-----------------|-----------------|--------------|
+| Spring Boot  | 2.1.10          | 2.1.13          | 2.2.5        |
+| Spring Cloud | Greenwich SR4   | Greenwich SR5   | Hoxton SR3   |
+| Jackson      | 2.10.1          | 2.10.3          | 2.10.3       |
 
 ## Support
 

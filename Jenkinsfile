@@ -31,14 +31,14 @@ pipeline {
 
   agent {
     kubernetes {
-      label 'all_daikon'
+      label "all_daikon" + UUID.randomUUID().toString()
       yaml """
 apiVersion: v1
 kind: Pod
 spec:
   containers:
     - name: maven
-      image: jenkinsxio/builder-maven:0.1.211
+      image: artifactory.datapwn.com/tlnd-docker-prod/talend/common/tsbi/jdk8-builder-base:2.0.0-20200414174049
       command:
       - cat
       tty: true
@@ -47,6 +47,8 @@ spec:
         mountPath: /var/run/docker.sock
       - name: m2
         mountPath: /root/daikon/.m2/repository
+  imagePullSecrets:
+    - talend-registry
   volumes:
   - name: docker
     hostPath:
@@ -158,7 +160,7 @@ spec:
             slackSend(
               color: "GREEN",
               channel: "eng-daikon",
-              message: "Daikon version ${params.release_version} released (next version: ${params.next_version}) <https://github.com/Talend/daikon/blob/master/releases/${params.release_version}.adoc|${params.release_version} release notes>"
+              message: "Daikon version ${params.release_version} released (next version: ${params.next_version}) <https://github.com/Talend/daikon/blob/" + env.BRANCH_NAME + "/releases/${params.release_version}.adoc|${params.release_version} release notes>"
             )
         }
     }
