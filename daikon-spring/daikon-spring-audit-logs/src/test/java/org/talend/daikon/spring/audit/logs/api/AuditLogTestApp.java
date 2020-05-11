@@ -47,6 +47,8 @@ public class AuditLogTestApp {
 
     public static final String GET_400_EXCEPTION = "/get/400/exception";
 
+    public static final String GET_400_RESPONSE_ENTITY = "/get/400/responseentity";
+
     public static final String GET_401 = "/get/401";
 
     public static final String GET_403 = "/get/403";
@@ -66,6 +68,8 @@ public class AuditLogTestApp {
     public static final String FILTERED_BODY_RESPONSE = "Censored response !";
 
     public static final String FILTERED_BODY_REQUEST = "Censored request !";
+
+    public static final String BODY_RESPONSE_400 = "Sorry, bad request :(";
 
     public static class TestAuditContextFilter implements AuditContextFilter {
 
@@ -102,7 +106,13 @@ public class AuditLogTestApp {
     @GetMapping(GET_400_EXCEPTION)
     @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION)
     public ResponseEntity get400Exception() {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sorry ... bad request :(");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(GET_400_RESPONSE_ENTITY)
+    @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION)
+    public ResponseEntity get400ResponseEntity() {
+        return ResponseEntity.badRequest().body(BODY_RESPONSE_400);
     }
 
     @GetMapping(GET_401)

@@ -84,7 +84,20 @@ public class AuditLogTest {
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_ANNOTATION, HttpMethod.GET, null));
-        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST,
+                StringEscapeUtils.escapeJava(objectMapper.writeValueAsString(AuditLogTestApp.BODY_RESPONSE))));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet400ResponseEntity() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_RESPONSE_ENTITY)).andExpect(status().isBadRequest())
+                .andExpect(content().string(AuditLogTestApp.BODY_RESPONSE_400)).andReturn();
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_RESPONSE_ENTITY, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST,
+                StringEscapeUtils.escapeJava(objectMapper.writeValueAsString(AuditLogTestApp.BODY_RESPONSE_400))));
     }
 
     @Test
