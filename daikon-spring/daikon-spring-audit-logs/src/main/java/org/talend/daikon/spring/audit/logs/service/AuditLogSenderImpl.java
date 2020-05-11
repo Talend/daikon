@@ -61,7 +61,7 @@ public class AuditLogSenderImpl implements AuditLogSender {
             auditLogContextBuilder = filter.filter(auditLogContextBuilder, requestBody, responseObject);
 
             // Finally send the log
-            auditLogger.sendAuditLog(auditLogContextBuilder.build());
+            this.sendAuditLog(auditLogContextBuilder.build());
             LOGGER.info("audit log generated with metadata {}", auditLogAnnotation);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | IOException
                 | AuditLogException e) {
