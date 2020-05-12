@@ -45,12 +45,17 @@ public class AuditLogSenderImpl implements AuditLogSender {
             GenerateAuditLog auditLogAnnotation) {
         try {
             // Build context from request, response & annotation info
-            AuditLogContextBuilder auditLogContextBuilder = AuditLogContextBuilder.create()
-                    .withTimestamp(OffsetDateTime.now().toString()).withLogId(UUID.randomUUID()).withRequestId(UUID.randomUUID())
-                    .withApplicationId(auditLogAnnotation.application()).withEventType(auditLogAnnotation.eventType())
-                    .withEventCategory(auditLogAnnotation.eventCategory()).withEventOperation(auditLogAnnotation.eventOperation())
-                    .withUserId(auditUserProvider.getUserId()).withUsername(auditUserProvider.getUsername())
-                    .withEmail(auditUserProvider.getUserEmail()).withAccountId(auditUserProvider.getAccountId())
+            AuditLogContextBuilder auditLogContextBuilder = AuditLogContextBuilder.create() //
+                    .withTimestamp(OffsetDateTime.now().toString()) //
+                    .withLogId(UUID.randomUUID()).withRequestId(UUID.randomUUID()) //
+                    .withApplicationId(auditLogAnnotation.application()) //
+                    .withEventType(auditLogAnnotation.eventType()) //
+                    .withEventCategory(auditLogAnnotation.eventCategory()) //
+                    .withEventOperation(auditLogAnnotation.eventOperation()) //
+                    .withUserId(auditUserProvider.getUserId()) //
+                    .withUsername(auditUserProvider.getUsername()) //
+                    .withEmail(auditUserProvider.getUserEmail()) //
+                    .withAccountId(auditUserProvider.getAccountId()) //
                     .withRequest(request, requestBody).withResponse(responseCode,
                             (auditLogAnnotation.includeBodyResponse() && responseObject != null)
                                     ? objectMapper.writeValueAsString(responseObject)
