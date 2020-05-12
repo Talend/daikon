@@ -69,11 +69,6 @@ public class AuditLogTestConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
-
-    @Bean
     public AuditLogger auditLogger() {
         return Mockito.spy(AuditLogger.class);
     }

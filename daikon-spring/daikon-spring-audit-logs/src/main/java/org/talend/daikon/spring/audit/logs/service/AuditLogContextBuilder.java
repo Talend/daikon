@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.talend.daikon.exception.ExceptionContext;
+import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.spring.audit.logs.exception.AuditLogException;
 import org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum;
 import org.talend.logging.audit.Context;
@@ -143,7 +145,7 @@ public class AuditLogContextBuilder {
             checkAuditContextIsValid();
             return new DefaultContextImpl(context);
         } catch (JsonProcessingException e) {
-            throw new AuditLogException("audit log serialization failure", e);
+            throw new AuditLogException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
     }
 
@@ -183,7 +185,9 @@ public class AuditLogContextBuilder {
         }
 
         if (!notFound.isEmpty()) {
-            throw new AuditLogException("audit log context is incomplete, missing information: " + notFound);
+            throw new AuditLogException(CommonErrorCodes.UNEXPECTED_EXCEPTION, ExceptionContext.withBuilder()
+                    .put(ExceptionContext.KEY_MESSAGE, "audit log context is incomplete, missing information: " + notFound)
+                    .build());
         }
     }
 
