@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.talend.daikon.spring.audit.logs.config.AuditLogAutoConfiguration,\
-org.talend.daikon.spring.audit.logs.config.AuditLogWebAutoConfiguration
+org.talend.daikon.spring.audit.logs.config.AuditLogAutoConfiguration

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -42,13 +43,14 @@ import ch.qos.logback.core.read.ListAppender;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AuditLogTestApp.class)
 @AutoConfigureMockMvc
-@TestPropertySource(properties = { "audit.enabled=false" })
+@TestPropertySource(properties = { "audit.enabled=true", "spring.application.name=daikon",
+        "audit.kafka.bootstrapServers=localhost:9092" })
 public class AuditLogTest {
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
+    @MockBean
     private AuditLogger auditLogger;
 
     @Autowired

@@ -9,23 +9,35 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
 import org.talend.daikon.spring.audit.logs.api.NoOpAuditUserProvider;
 import org.talend.daikon.spring.audit.logs.service.*;
 import org.talend.logging.audit.AuditLoggerFactory;
 import org.talend.logging.audit.LogAppenders;
-import org.talend.logging.audit.impl.AuditConfiguration;
-import org.talend.logging.audit.impl.AuditConfigurationMap;
-import org.talend.logging.audit.impl.Backends;
-import org.talend.logging.audit.impl.SimpleAuditLoggerBase;
+import org.talend.logging.audit.impl.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.servlet.Filter;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableConfigurationProperties(AuditKafkaProperties.class)
 @ConditionalOnProperty(value = "audit.enabled", havingValue = "true", matchIfMissing = true)
-public class AuditLogAutoConfiguration {
+public class AuditLogAutoConfiguration implements WebMvcConfigurer {
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(this.auditLogGeneratorInterceptor(null));
+    }
 
     private Properties getProperties(AuditKafkaProperties auditKafkaProperties, String applicationName) {
         Properties properties = new Properties();
@@ -39,11 +51,29 @@ public class AuditLogAutoConfiguration {
     }
 
     @Bean
-    public AuditLogSender auditLogSender(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
-            AuditKafkaProperties auditKafkaProperties, @Value("${spring.application.name}") String applicationName) {
+    // The purpose of this filter is to cache request content
+    // And then be able to read it from the interceptor
+    public Filter auditLogCachingFilter() {
+        return (servletRequest, servletResponse, filterChain) -> {
+            ServletRequest wrappedRequest = Optional.of(servletRequest).filter(r -> r instanceof HttpServletRequest)
+                    .map(HttpServletRequest.class::cast).map(ContentCachingRequestWrapper::new).get();
+            ServletResponse wrappedResponse = Optional.of(servletResponse).filter(r -> r instanceof HttpServletResponse)
+                    .map(HttpServletResponse.class::cast).map(ContentCachingResponseWrapper::new).get();
+            filterChain.doFilter(wrappedRequest, wrappedResponse);
+        };
+    }
+
+    @Bean
+    public AuditLogger auditLogger(AuditKafkaProperties auditKafkaProperties,
+            @Value("${spring.application.name}") String applicationName) {
         Properties properties = getProperties(auditKafkaProperties, applicationName);
         AuditConfigurationMap config = AuditConfiguration.loadFromProperties(properties);
-        AuditLogger auditLogger = AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, new SimpleAuditLoggerBase(config));
+        return AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, new SimpleAuditLoggerBase(config));
+    }
+
+    @Bean
+    public AuditLogSender auditLogSender(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
+            AuditLogger auditLogger) {
         return new AuditLogSenderImpl(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
     }
 

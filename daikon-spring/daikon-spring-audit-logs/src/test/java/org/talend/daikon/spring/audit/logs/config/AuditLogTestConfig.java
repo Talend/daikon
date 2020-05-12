@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -20,9 +19,6 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.talend.daikon.spring.audit.logs.api.AuditLogTestApp;
 import org.talend.daikon.spring.audit.logs.api.AuditUserProvider;
-import org.talend.daikon.spring.audit.logs.service.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 public class AuditLogTestConfig extends WebSecurityConfigurerAdapter {
@@ -66,26 +62,5 @@ public class AuditLogTestConfig extends WebSecurityConfigurerAdapter {
                 return StringUtils.isBlank(getUsername()) ? null : AuditLogTestApp.ACCOUNT_ID;
             }
         };
-    }
-
-    @Bean
-    public AuditLogger auditLogger() {
-        return Mockito.spy(AuditLogger.class);
-    }
-
-    @Bean
-    public AuditLogSender auditLogSender(ObjectMapper objectMapper, AuditUserProvider auditUserProvider,
-            AuditLogger auditLogger) {
-        return new AuditLogSenderImpl(objectMapper, auditUserProvider, auditLogger);
-    }
-
-    @Bean
-    public AuditLogGeneratorAspect auditLogGeneratorAspect(AuditLogSender auditLogSender) {
-        return new AuditLogGeneratorAspect(auditLogSender);
-    }
-
-    @Bean
-    public AuditLogGeneratorInterceptor auditLogGeneratorInterceptor(AuditLogSender auditLogSender) {
-        return new AuditLogGeneratorInterceptor(auditLogSender);
     }
 }
