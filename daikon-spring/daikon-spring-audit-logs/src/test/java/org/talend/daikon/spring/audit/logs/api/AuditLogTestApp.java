@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @RestController
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@SpringBootApplication(scanBasePackages = "org.talend.daikon.spring.audit.logs.config")
+@SpringBootApplication
 public class AuditLogTestApp {
 
     // Basic audit logs properties
