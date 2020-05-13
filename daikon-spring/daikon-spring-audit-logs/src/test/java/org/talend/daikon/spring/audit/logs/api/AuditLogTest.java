@@ -32,8 +32,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.talend.daikon.spring.audit.logs.config.AuditLogTestConfig;
 import org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum;
 import org.talend.daikon.spring.audit.logs.service.AuditLogSenderImpl;
-import org.talend.daikon.spring.audit.logs.service.AuditLogger;
 import org.talend.logging.audit.Context;
+import org.talend.logging.audit.impl.AuditLoggerBase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -54,7 +54,7 @@ public class AuditLogTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private AuditLogger auditLogger;
+    private AuditLoggerBase auditLoggerBase;
 
     @Autowired
     private MockMvc mockMvc;
@@ -64,7 +64,7 @@ public class AuditLogTest {
     @Before
     public void setUp() {
         // Rest auditLogger mock
-        reset(auditLogger);
+        reset(auditLoggerBase);
         // Set up logger list appender
         Logger logger = (Logger) LoggerFactory.getLogger(AuditLogSenderImpl.class);
         logListAppender = new ListAppender<>();
@@ -110,7 +110,7 @@ public class AuditLogTest {
     public void testGet401() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_401)).andExpect(status().isUnauthorized());
 
-        verify(auditLogger, times(0)).sendAuditLog(any());
+        verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
         assertThat(logListAppender.list.get(0).getLevel(), is(Level.ERROR));
     }
 
@@ -139,7 +139,7 @@ public class AuditLogTest {
     public void testGet200Anonymous() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY)).andExpect(status().isOk());
 
-        verify(auditLogger, times(0)).sendAuditLog(any());
+        verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
         assertThat(logListAppender.list.get(0).getLevel(), is(Level.ERROR));
     }
 
@@ -246,7 +246,7 @@ public class AuditLogTest {
     private void verifyContext(Object... o) {
         // Verify that auditLogger has been called only once and capture the context
         ArgumentCaptor<Context> context = ArgumentCaptor.forClass(Context.class);
-        verify(auditLogger, times(1)).sendAuditLog(context.capture());
+        verify(auditLoggerBase, times(1)).log(any(), any(), context.capture(), any(), any());
         // Check if the context contains the expected information
         IntStream.range(0, o.length).filter(i -> i % 2 == 0)
                 .forEach(i -> assertThat(String.format("Wrong expected value for key %s", ((AuditLogFieldEnum) o[i]).getId()),
