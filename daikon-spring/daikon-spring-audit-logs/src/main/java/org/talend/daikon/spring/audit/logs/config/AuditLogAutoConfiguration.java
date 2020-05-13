@@ -64,16 +64,17 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public AuditLogger auditLogger(AuditKafkaProperties auditKafkaProperties,
+    public AuditLoggerBase auditLoggerBase(AuditKafkaProperties auditKafkaProperties,
             @Value("${spring.application.name}") String applicationName) {
         Properties properties = getProperties(auditKafkaProperties, applicationName);
         AuditConfigurationMap config = AuditConfiguration.loadFromProperties(properties);
-        return AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, new SimpleAuditLoggerBase(config));
+        return new SimpleAuditLoggerBase(config);
     }
 
     @Bean
     public AuditLogSender auditLogSender(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
-            AuditLogger auditLogger) {
+            AuditLoggerBase auditLoggerBase) {
+        AuditLogger auditLogger = AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, auditLoggerBase);
         return new AuditLogSenderImpl(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
     }
 
