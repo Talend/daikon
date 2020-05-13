@@ -47,7 +47,8 @@ public class AuditLogSenderImpl implements AuditLogSender {
             // Build context from request, response & annotation info
             AuditLogContextBuilder auditLogContextBuilder = AuditLogContextBuilder.create() //
                     .withTimestamp(OffsetDateTime.now().toString()) //
-                    .withLogId(UUID.randomUUID()).withRequestId(UUID.randomUUID()) //
+                    .withLogId(UUID.randomUUID()) //
+                    .withRequestId(UUID.randomUUID()) //
                     .withApplicationId(auditLogAnnotation.application()) //
                     .withEventType(auditLogAnnotation.eventType()) //
                     .withEventCategory(auditLogAnnotation.eventCategory()) //
@@ -56,7 +57,8 @@ public class AuditLogSenderImpl implements AuditLogSender {
                     .withUsername(auditUserProvider.getUsername()) //
                     .withEmail(auditUserProvider.getUserEmail()) //
                     .withAccountId(auditUserProvider.getAccountId()) //
-                    .withRequest(request, requestBody).withResponse(responseCode,
+                    .withRequest(request, requestBody)
+                    .withResponse(responseCode, //
                             (auditLogAnnotation.includeBodyResponse() && responseObject != null)
                                     ? objectMapper.writeValueAsString(responseObject)
                                     : null);
