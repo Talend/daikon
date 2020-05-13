@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.stream.IntStream;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,8 +88,7 @@ public class AuditLogTest {
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_ANNOTATION, HttpMethod.GET, null));
-        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST,
-                StringEscapeUtils.escapeJava(objectMapper.writeValueAsString(AuditLogTestApp.BODY_RESPONSE))));
+        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST, AuditLogTestApp.BODY_RESPONSE));
     }
 
     @Test
@@ -101,8 +99,7 @@ public class AuditLogTest {
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_RESPONSE_ENTITY, HttpMethod.GET, null));
-        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST,
-                StringEscapeUtils.escapeJava(objectMapper.writeValueAsString(AuditLogTestApp.BODY_RESPONSE_400))));
+        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST, AuditLogTestApp.BODY_RESPONSE_400));
     }
 
     @Test
@@ -150,8 +147,7 @@ public class AuditLogTest {
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_200_WITH_BODY, HttpMethod.GET, null));
-        verifyContext(httpResponseContextCheck(HttpStatus.OK,
-                StringEscapeUtils.escapeJava(objectMapper.writeValueAsString(AuditLogTestApp.BODY_RESPONSE))));
+        verifyContext(httpResponseContextCheck(HttpStatus.OK, AuditLogTestApp.BODY_RESPONSE));
     }
 
     @Test

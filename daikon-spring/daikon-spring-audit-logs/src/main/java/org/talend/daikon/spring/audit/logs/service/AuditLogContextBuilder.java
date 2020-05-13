@@ -137,9 +137,11 @@ public class AuditLogContextBuilder {
             request.values().removeAll(Collections.singletonList(null));
             response.values().removeAll(Collections.singletonList(null));
             if (!request.isEmpty()) {
+                request.replaceAll((k, v) -> convertToString(v));
                 context.put(REQUEST.getId(), objectMapper.writeValueAsString(request));
             }
             if (!response.isEmpty()) {
+                response.replaceAll((k, v) -> convertToString(v));
                 context.put(RESPONSE.getId(), objectMapper.writeValueAsString(response));
             }
             checkAuditContextIsValid();
@@ -201,5 +203,19 @@ public class AuditLogContextBuilder {
 
     public Map<String, Object> getResponse() {
         return response;
+    }
+
+    private String convertToString(Object value) {
+        String stringValue = null;
+        if (value instanceof String) {
+            stringValue = (String) value;
+        } else if (value != null) {
+            try {
+                stringValue = objectMapper.writeValueAsString(value);
+            } catch (JsonProcessingException e) {
+                throw new AuditLogException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
+            }
+        }
+        return stringValue;
     }
 }
