@@ -12,15 +12,15 @@ import javax.servlet.http.HttpServletRequest;
 public interface AuditLogSender {
 
     /**
-     * Send the audit log from a context given as paraùeter
-     * 
+     * Send the audit log from a context given as parameter
+     *
      * @param context audit log context
      */
     void sendAuditLog(Context context);
 
     /**
      * Build a context from given parameters and send the corresponding audit log
-     * 
+     *
      * @param request HTTP request
      * @param requestBody request body if different than HTTP request content
      * @param responseCode response code
@@ -32,7 +32,7 @@ public interface AuditLogSender {
 
     /**
      * Audit user provider
-     * 
+     *
      * @return the audit user provider containing information about current user
      */
     AuditUserProvider getAuditUserProvider();
