@@ -70,9 +70,6 @@ public class AuditLogGeneratorInterceptor extends HandlerInterceptorAdapter {
         if (rawContent != null) {
             try {
                 stringContent = IOUtils.toString(rawContent, StandardCharsets.UTF_8.toString());
-                if (wrapper instanceof ContentCachingResponseWrapper) {
-                    ((ContentCachingResponseWrapper) wrapper).copyBodyToResponse();
-                }
             } catch (IOException e) {
                 LOGGER.warn("Wrapper content can't be read", e);
             }
