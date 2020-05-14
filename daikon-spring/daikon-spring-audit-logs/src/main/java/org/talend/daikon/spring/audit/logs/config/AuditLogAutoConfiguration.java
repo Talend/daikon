@@ -60,6 +60,9 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
             ServletResponse wrappedResponse = Optional.of(servletResponse).filter(r -> r instanceof HttpServletResponse)
                     .map(HttpServletResponse.class::cast).map(ContentCachingResponseWrapper::new).get();
             filterChain.doFilter(wrappedRequest, wrappedResponse);
+            if (wrappedResponse instanceof ContentCachingResponseWrapper) {
+                ((ContentCachingResponseWrapper) wrappedResponse).copyBodyToResponse();
+            }
         };
     }
 
