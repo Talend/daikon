@@ -60,6 +60,19 @@ public class DefaultAuditLoggerBase extends AbstractAuditLoggerBase {
             this.logger = loadBackend(LOG4J2_BACKEND, config);
             break;
 
+        case CUSTOM:
+            final String backendClass = AuditConfiguration.BACKEND_CLASS_NAME.getString(config);
+
+            if (backendClass == null) {
+                throw new IllegalArgumentException("Selected backend is " + backend + " and no backend class name has been specified");
+            } else if (!Utils.isClassPresent(backendClass)) {
+                throw new IllegalArgumentException("Selected backend is " + backend + " and its associated backend class "
+                        + backendClass + " is not available on classpath");
+            }
+
+            this.logger = loadBackend(backendClass, config);
+            break;
+
         default:
             throw new IllegalArgumentException("Unsupported backend " + backend);
         }

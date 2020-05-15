@@ -30,10 +30,14 @@ public final class AuditLoggerFactory {
      * @return instance of customized interface.
      * @see AuditLogger
      */
-    @SuppressWarnings({ "unchecked" })
     public static <T extends AuditLogger> T getAuditLogger(Class<T> clz) {
+        return getAuditLogger(clz, AuditLoggerBaseHolder.BASE_LOGGER);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public static <T extends AuditLogger> T getAuditLogger(Class<T> clz, AuditLoggerBase auditLoggerBase) {
         return (T) Proxy.newProxyInstance(AuditLoggerFactory.class.getClassLoader(), new Class<?>[] { clz },
-                new ProxyAuditLogger(AuditLoggerBaseHolder.BASE_LOGGER));
+                new ProxyAuditLogger(auditLoggerBase));
     }
 
     public static StandardEventAuditLogger getEventAuditLogger() {

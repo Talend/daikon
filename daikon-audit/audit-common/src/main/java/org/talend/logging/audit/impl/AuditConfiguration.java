@@ -39,7 +39,8 @@ public enum AuditConfiguration {
     APPENDER_HTTP_CONNECT_TIMEOUT(Integer.class, 30000),
     APPENDER_HTTP_READ_TIMEOUT(Integer.class, 60000),
     PROPAGATE_APPENDER_EXCEPTIONS(PropagateExceptions.class, PropagateExceptions.NONE),
-    BACKEND(Backends.class, Backends.AUTO);
+    BACKEND(Backends.class, Backends.AUTO),
+    BACKEND_CLASS_NAME(String.class, null, true);
 
     private static final String PLACEHOLDER_START = "${";
 

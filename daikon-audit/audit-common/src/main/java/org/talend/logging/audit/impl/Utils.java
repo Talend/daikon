@@ -44,7 +44,7 @@ public final class Utils {
         return isClassPresent("ch.qos.logback.classic.LoggerContext");
     }
 
-    private static boolean isClassPresent(String className) {
+    static boolean isClassPresent(String className) {
         try {
             Class.forName(className);
             return true;

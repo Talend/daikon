@@ -17,7 +17,7 @@ public class AuditConfigurationTest {
         AuditConfigurationMap config = AuditConfiguration.loadFromClasspath("/test.audit.properties");
 
         for (AuditConfiguration c : AuditConfiguration.values()) {
-            if (!config.containsKey(c)) {
+            if (!config.containsKey(c) && !c.canBeNull()) {
                 throw new IllegalStateException("Value for configuration option '" + c.toString() + "' is not set.");
             }
         }
