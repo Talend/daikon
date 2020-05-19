@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.talend.daikon.exception.ExceptionContext;
+import org.talend.daikon.exception.error.CommonErrorCodes;
+import org.talend.daikon.spring.audit.logs.exception.AuditLogException;
 import org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum;
 import org.talend.logging.audit.Context;
 import org.talend.logging.audit.impl.DefaultContextImpl;
@@ -128,21 +131,23 @@ public class AuditLogContextBuilder {
         return this.with(RESPONSE_BODY.getId(), responseBody, response);
     }
 
-    public Context build() {
+    public Context build() throws AuditLogException {
         try {
             context.values().removeAll(Collections.singletonList(null));
             request.values().removeAll(Collections.singletonList(null));
             response.values().removeAll(Collections.singletonList(null));
             if (!request.isEmpty()) {
+                request.replaceAll((k, v) -> convertToString(v));
                 context.put(REQUEST.getId(), objectMapper.writeValueAsString(request));
             }
             if (!response.isEmpty()) {
+                response.replaceAll((k, v) -> convertToString(v));
                 context.put(RESPONSE.getId(), objectMapper.writeValueAsString(response));
             }
             checkAuditContextIsValid();
             return new DefaultContextImpl(context);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new AuditLogException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
     }
 
@@ -156,7 +161,7 @@ public class AuditLogContextBuilder {
         return withResponseCode(httpStatus).withResponseBody(body);
     }
 
-    public void checkAuditContextIsValid() {
+    public void checkAuditContextIsValid() throws AuditLogException {
         // check elements of the context
         List<AuditLogFieldEnum> notFound = new ArrayList<>();
         for (AuditLogFieldEnum auditLogFieldEnum : AuditLogFieldEnum.values()) {
@@ -182,7 +187,9 @@ public class AuditLogContextBuilder {
         }
 
         if (!notFound.isEmpty()) {
-            throw new RuntimeException("audit log context is incomplete, missing information: " + notFound);
+            throw new AuditLogException(CommonErrorCodes.UNEXPECTED_EXCEPTION, ExceptionContext.withBuilder()
+                    .put(ExceptionContext.KEY_MESSAGE, "audit log context is incomplete, missing information: " + notFound)
+                    .build());
         }
     }
 
@@ -196,5 +203,19 @@ public class AuditLogContextBuilder {
 
     public Map<String, Object> getResponse() {
         return response;
+    }
+
+    private String convertToString(Object value) {
+        String stringValue = null;
+        if (value instanceof String) {
+            stringValue = (String) value;
+        } else if (value != null) {
+            try {
+                stringValue = objectMapper.writeValueAsString(value);
+            } catch (JsonProcessingException e) {
+                throw new AuditLogException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
+            }
+        }
+        return stringValue;
     }
 }

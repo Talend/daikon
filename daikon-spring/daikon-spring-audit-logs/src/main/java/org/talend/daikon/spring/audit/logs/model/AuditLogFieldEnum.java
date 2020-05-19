@@ -8,8 +8,8 @@ public enum AuditLogFieldEnum {
     TIMESTAMP("timestamp"),
     REQUEST_ID("requestId"),
     LOG_ID("logId"),
-    // account id is not mandatory in the case of audit log of anonymous users
-    ACCOUNT_ID("accountId", false),
+    // account id is mandatory as an audit log always belong to an account
+    ACCOUNT_ID("accountId"),
     // user info is not mandatory in the case of audit log of anonymous users
     USER_ID("userId", false),
     USERNAME("username", false),
