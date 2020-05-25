@@ -26,7 +26,7 @@ public class CustomAuditBackendTest {
             new TestableAuditLoggerBase(auditConfigurationMap);
             fail("Custom backend instanciation should have failed because backend.custom.class property is missing");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().endsWith("no backend class has been specified"));
+            assertTrue(e.getMessage().endsWith("no backend class name has been specified"));
         }
     }
 
