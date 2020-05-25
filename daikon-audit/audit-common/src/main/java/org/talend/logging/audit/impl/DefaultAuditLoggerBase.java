@@ -64,9 +64,9 @@ public class DefaultAuditLoggerBase extends AbstractAuditLoggerBase {
             final String backendClass = AuditConfiguration.BACKEND_CLASS_NAME.getString(config);
 
             if (backendClass == null) {
-                throw new IllegalArgumentException("Selected backend is " + backend + " and no backend class name has been specified");
+                throw new IllegalArgumentException("Selected backend is '" + backend + "' and no backend class name has been specified");
             } else if (!Utils.isClassPresent(backendClass)) {
-                throw new IllegalArgumentException("Selected backend is " + backend + " and its associated backend class "
+                throw new IllegalArgumentException("Selected backend is '" + backend + "' and its associated backend class "
                         + backendClass + " is not available on classpath");
             }
 
