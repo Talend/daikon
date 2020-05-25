@@ -9,6 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This test backend is used to test the dynamic instantiation of audit backends
+ * using the {@link org.talend.logging.audit.impl.Backends#CUSTOM} backend type.
+ *
+ * <pre>{@code
+ * final Properties auditProperties = new Properties();
+ *
+ * // ... set other daikon-audit properties
+ * auditProperties.setProperty("backend", "custom");
+ * auditProperties.setProperty("backend.class.name", "org.talend.logging.audit.custom.CustomAuditBackend");
+ *
+ * // Dynamically instantiate custom backend
+ * final AuditConfigurationMap auditConfigurationMap = AuditConfiguration.loadFromProperties(auditProperties);
+ * }</pre>
+ */
 public class CustomAuditBackend extends AbstractBackend {
 
     private final List<AuditBackendMessage> loggedMessages = new ArrayList<>();
