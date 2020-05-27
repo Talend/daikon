@@ -43,11 +43,19 @@ public class AuditLogTestApp {
 
     public static final String GET_200_WITHOUT_BODY = "/get/200/nobody";
 
+    public static final String GET_200_ERROR_ONLY = "/get/200/error";
+
+    public static final String GET_200_SUCCESS_ONLY = "/get/200/success";
+
     public static final String GET_400_ANNOTATION = "/get/400/annotation";
 
     public static final String GET_400_EXCEPTION = "/get/400/exception";
 
     public static final String GET_400_RESPONSE_ENTITY = "/get/400/responseentity";
+
+    public static final String GET_400_ERROR_ONLY = "/get/400/error";
+
+    public static final String GET_400_SUCCESS_ONLY = "/get/400/success";
 
     public static final String GET_401 = "/get/401";
 
@@ -96,6 +104,18 @@ public class AuditLogTestApp {
         return ResponseEntity.ok(BODY_RESPONSE);
     }
 
+    @GetMapping(GET_200_ERROR_ONLY)
+    @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION, scope = AuditLogScope.ERROR)
+    public ResponseEntity get200ErrorOnly() {
+        return ResponseEntity.ok(BODY_RESPONSE);
+    }
+
+    @GetMapping(GET_200_SUCCESS_ONLY)
+    @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION, scope = AuditLogScope.SUCCESS)
+    public ResponseEntity get200SuccessOnly() {
+        return ResponseEntity.ok(BODY_RESPONSE);
+    }
+
     @GetMapping(GET_400_ANNOTATION)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION)
@@ -113,6 +133,18 @@ public class AuditLogTestApp {
     @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION)
     public ResponseEntity get400ResponseEntity() {
         return ResponseEntity.badRequest().body(BODY_RESPONSE_400);
+    }
+
+    @GetMapping(GET_400_ERROR_ONLY)
+    @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION, scope = AuditLogScope.ERROR)
+    public ResponseEntity get400ErrorOnly() {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(GET_400_SUCCESS_ONLY)
+    @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION, scope = AuditLogScope.SUCCESS)
+    public ResponseEntity get400SuccessOnly() {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping(GET_401)

@@ -103,6 +103,24 @@ public class AuditLogTest {
     }
 
     @Test
+    @WithUserDetails
+    public void testGet400ErrorOnly() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_ERROR_ONLY)).andExpect(status().isBadRequest());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_ERROR_ONLY, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.BAD_REQUEST, null));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet400SuccessOnly() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_SUCCESS_ONLY)).andExpect(status().isBadRequest());
+
+        verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
+    }
+
+    @Test
     @WithAnonymousUser
     public void testGet401() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_401)).andExpect(status().isUnauthorized());
@@ -158,6 +176,24 @@ public class AuditLogTest {
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_200_WITHOUT_BODY, HttpMethod.GET, null));
         verifyContext(httpResponseContextCheck(HttpStatus.OK, null));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet200ErrorOnly() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_ERROR_ONLY)).andExpect(status().isOk());
+
+        verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet200SuccessOnly() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_SUCCESS_ONLY)).andExpect(status().isOk());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_200_SUCCESS_ONLY, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.OK, AuditLogTestApp.BODY_RESPONSE));
     }
 
     @Test
