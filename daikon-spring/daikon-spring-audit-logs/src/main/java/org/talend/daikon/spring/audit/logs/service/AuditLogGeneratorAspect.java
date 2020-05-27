@@ -1,5 +1,7 @@
 package org.talend.daikon.spring.audit.logs.service;
 
+import static org.talend.daikon.spring.audit.logs.api.AuditLogScope.*;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -35,42 +37,45 @@ public class AuditLogGeneratorAspect {
      */
     @Around("@annotation(org.talend.daikon.spring.audit.logs.api.GenerateAuditLog)")
     public Object auditLogGeneration(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+
         // Retrieve @GenerateAuditLog annotation
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
         Method method = signature.getMethod();
         GenerateAuditLog auditLogAnnotation = method.getAnnotation(GenerateAuditLog.class);
-        ResponseStatus responseStatusAnnotation = method.getAnnotation(ResponseStatus.class);
 
-        // Retrieve HTTP request & response
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
-
-        /**
-         * ----------------------
-         * Determine Response info
-         * ----------------------
-         */
-
-        // Response code is deducted from HttpServletResponse if possible
-        // Otherwise let's use a default value (0)
-        int responseCode = response != null ? response.getStatus() : 0;
-        if (responseStatusAnnotation != null) {
-            responseCode = responseStatusAnnotation.value().value();
-        }
         // Run original method and retrieve the result
         Object responseObject = proceedingJoinPoint.proceed();
-        // This result will be used as Response body
-        Object auditLogResponseObject = responseObject;
-        if (responseObject instanceof ResponseEntity) {
-            // In case of ResponseEntity, body and status code can be retrieved directly
-            responseCode = ((ResponseEntity) responseObject).getStatusCode().value();
-            auditLogResponseObject = ((ResponseEntity) responseObject).getBody();
-        }
-        // Send logs only in case of success or if responseCode can't be defined
-        if (responseCode == 0 || HttpStatus.valueOf(responseCode).is2xxSuccessful()) {
-            // Finally send the audit log
-            auditLogSender.sendAuditLog(request, extractRequestBody(proceedingJoinPoint), responseCode, auditLogResponseObject,
-                    auditLogAnnotation);
+
+        if (auditLogAnnotation.scope().in(ALL, SUCCESS)) {
+
+            // Retrieve HTTP request & response
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                    .getRequest();
+            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                    .getResponse();
+
+            // Response code is deducted from HttpServletResponse if possible
+            // Otherwise let's use a default value (0)
+            ResponseStatus responseStatusAnnotation = method.getAnnotation(ResponseStatus.class);
+            int responseCode = response != null ? response.getStatus() : 0;
+            if (responseStatusAnnotation != null) {
+                responseCode = responseStatusAnnotation.value().value();
+            }
+
+            // This result will be used as Response body
+            Object auditLogResponseObject = responseObject;
+            if (responseObject instanceof ResponseEntity) {
+                // In case of ResponseEntity, body and status code can be retrieved directly
+                responseCode = ((ResponseEntity) responseObject).getStatusCode().value();
+                auditLogResponseObject = ((ResponseEntity) responseObject).getBody();
+            }
+
+            // Send logs only in case of success or if responseCode can't be defined
+            if (responseCode == 0 || HttpStatus.valueOf(responseCode).is2xxSuccessful()) {
+                // Finally send the audit log
+                auditLogSender.sendAuditLog(request, extractRequestBody(proceedingJoinPoint), responseCode,
+                        auditLogResponseObject, auditLogAnnotation);
+            }
         }
         return responseObject;
     }
