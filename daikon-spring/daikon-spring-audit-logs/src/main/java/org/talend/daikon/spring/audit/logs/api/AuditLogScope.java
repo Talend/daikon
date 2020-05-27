@@ -1,5 +1,7 @@
 package org.talend.daikon.spring.audit.logs.api;
 
+import java.util.Arrays;
+
 /**
  * Audit log scope indicating if audit logs must be generated for :
  * - ALL cases
@@ -9,5 +11,9 @@ package org.talend.daikon.spring.audit.logs.api;
 public enum AuditLogScope {
     ALL,
     SUCCESS,
-    ERROR
+    ERROR;
+
+    public boolean in(AuditLogScope... scopes) {
+        return Arrays.stream(scopes).anyMatch(scope -> scope == this);
+    }
 }

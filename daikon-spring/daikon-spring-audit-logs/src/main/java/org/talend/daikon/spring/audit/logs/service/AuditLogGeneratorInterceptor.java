@@ -1,5 +1,11 @@
 package org.talend.daikon.spring.audit.logs.service;
 
+import static org.talend.daikon.spring.audit.logs.api.AuditLogScope.*;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,10 +21,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import org.talend.daikon.spring.audit.logs.api.GenerateAuditLog;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 @Component
 public class AuditLogGeneratorInterceptor extends HandlerInterceptorAdapter {
@@ -37,9 +39,7 @@ public class AuditLogGeneratorInterceptor extends HandlerInterceptorAdapter {
         // Retrieve @GenerateAuditLog annotation from method if any
         Optional<GenerateAuditLog> generateAuditLog = Optional.of(handler).filter(h -> h instanceof HandlerMethod)
                 .map(HandlerMethod.class::cast).map(HandlerMethod::getMethod).map(m -> m.getAnnotation(GenerateAuditLog.class));
-        if (!generateAuditLog.isPresent()) {
-            super.afterCompletion(request, response, handler, ex);
-        } else {
+        if (generateAuditLog.isPresent() && generateAuditLog.get().scope().in(ALL, ERROR)) {
             int responseCode = response.getStatus();
             // In some cases AccessDeniedException or AuthenticationException are thrown
             // while response code is 200
@@ -56,6 +56,8 @@ public class AuditLogGeneratorInterceptor extends HandlerInterceptorAdapter {
             if (!HttpStatus.valueOf(responseCode).is2xxSuccessful()) {
                 this.auditLogSender.sendAuditLog(request, requestBody, responseCode, responseBody, generateAuditLog.get());
             }
+        } else {
+            super.afterCompletion(request, response, handler, ex);
         }
     }
 
