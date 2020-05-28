@@ -36,7 +36,7 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(this.auditLogGeneratorInterceptor(null));
+        registry.addInterceptor(this.auditLogGeneratorInterceptor(null, null));
     }
 
     private Properties getProperties(AuditKafkaProperties auditKafkaProperties, String applicationName) {
@@ -87,7 +87,7 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public AuditLogGeneratorInterceptor auditLogGeneratorInterceptor(AuditLogSender auditLogSender) {
-        return new AuditLogGeneratorInterceptor(auditLogSender);
+    public AuditLogGeneratorInterceptor auditLogGeneratorInterceptor(AuditLogSender auditLogSender, ObjectMapper objectMapper) {
+        return new AuditLogGeneratorInterceptor(auditLogSender, objectMapper);
     }
 }

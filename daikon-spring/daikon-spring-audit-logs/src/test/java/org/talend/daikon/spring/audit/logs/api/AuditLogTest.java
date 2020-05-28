@@ -5,10 +5,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.stream.IntStream;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -199,13 +201,18 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testPost200Filtered() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_200_FILTERED).content("Any content"))
-                .andExpect(status().isOk());
+        AuditLogTestApp.RequestObject request = new AuditLogTestApp.RequestObject("val1", "val2");
+
+        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_200_FILTERED) //
+                .content(objectMapper.writeValueAsString(request)) //
+                .contentType(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+        ).andExpect(status().isOk());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.POST_200_FILTERED, HttpMethod.POST,
-                AuditLogTestApp.FILTERED_BODY_REQUEST));
-        verifyContext(httpResponseContextCheck(HttpStatus.OK, AuditLogTestApp.FILTERED_BODY_RESPONSE));
+                objectMapper.writeValueAsString(request.setUnsafeProp(null))));
+        verifyContext(httpResponseContextCheck(HttpStatus.OK, objectMapper.writeValueAsString(request.setUnsafeProp(null))));
     }
 
     @Test
@@ -228,6 +235,23 @@ public class AuditLogTest {
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.POST_500, HttpMethod.POST, content));
+        verifyContext(httpResponseContextCheck(HttpStatus.INTERNAL_SERVER_ERROR, null));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testPost500Filtered() throws Exception {
+        AuditLogTestApp.RequestObject request = new AuditLogTestApp.RequestObject("val1", "val2");
+
+        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_500_FILTERED) //
+                .content(objectMapper.writeValueAsString(request)) //
+                .contentType(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+        ).andExpect(status().isInternalServerError());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.POST_500_FILTERED, HttpMethod.POST,
+                objectMapper.writeValueAsString(request.setUnsafeProp(null))));
         verifyContext(httpResponseContextCheck(HttpStatus.INTERNAL_SERVER_ERROR, null));
     }
 
@@ -258,7 +282,8 @@ public class AuditLogTest {
                 containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.METHOD.getId(), method)), //
                 AuditLogFieldEnum.REQUEST, //
                 body == null ? not(containsString(String.format("\"%s\"", AuditLogFieldEnum.REQUEST_BODY.getId())))
-                        : containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.REQUEST_BODY.getId(), body)) };
+                        : containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.REQUEST_BODY.getId(),
+                                StringEscapeUtils.escapeJson(body))) };
     }
 
     private Object[] httpResponseContextCheck(HttpStatus status, String body) {
@@ -266,7 +291,8 @@ public class AuditLogTest {
                 containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.RESPONSE_CODE.getId(), status.value())), //
                 AuditLogFieldEnum.RESPONSE, //
                 body == null ? not(containsString(String.format("\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId())))
-                        : containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId(), body)), //
+                        : containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId(),
+                                StringEscapeUtils.escapeJson(body))), //
         };
     }
 

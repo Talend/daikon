@@ -1,16 +1,18 @@
 package org.talend.daikon.spring.audit.logs.api;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.talend.daikon.spring.audit.logs.service.AuditLogContextBuilder;
-
-import java.util.UUID;
 
 @RestController
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -69,13 +71,11 @@ public class AuditLogTestApp {
 
     public static final String POST_500 = "/post/500";
 
+    public static final String POST_500_FILTERED = "/post/500/filtered";
+
     // HTTP request & response properties
 
     public static final String BODY_RESPONSE = "Hello world !";
-
-    public static final String FILTERED_BODY_RESPONSE = "Censored response !";
-
-    public static final String FILTERED_BODY_REQUEST = "Censored request !";
 
     public static final String BODY_RESPONSE_400 = "Sorry, bad request :(";
 
@@ -84,7 +84,44 @@ public class AuditLogTestApp {
         @Override
         public AuditLogContextBuilder filter(AuditLogContextBuilder auditLogContextBuilder, Object requestBody,
                 Object responseObject) {
-            return auditLogContextBuilder.withRequestBody(FILTERED_BODY_REQUEST).withResponseBody(FILTERED_BODY_RESPONSE);
+            Object filteredRequest = Optional.ofNullable(requestBody).filter(RequestObject.class::isInstance)
+                    .map(RequestObject.class::cast).map(r -> r.setUnsafeProp(null)).orElse(null);
+            Object filteredResponse = Optional.ofNullable(responseObject).filter(RequestObject.class::isInstance)
+                    .map(RequestObject.class::cast).map(r -> r.setUnsafeProp(null)).orElse(null);
+            return auditLogContextBuilder.withRequestBody(filteredRequest).withResponseBody(filteredResponse);
+        }
+    }
+
+    public static class RequestObject {
+
+        private String safeProp;
+
+        private String unsafeProp;
+
+        public RequestObject() {
+        }
+
+        public RequestObject(String safeProp, String unsafeProp) {
+            this.safeProp = safeProp;
+            this.unsafeProp = unsafeProp;
+        }
+
+        public String getSafeProp() {
+            return safeProp;
+        }
+
+        public RequestObject setSafeProp(String safeProp) {
+            this.safeProp = safeProp;
+            return this;
+        }
+
+        public String getUnsafeProp() {
+            return unsafeProp;
+        }
+
+        public RequestObject setUnsafeProp(String unsafeProp) {
+            this.unsafeProp = unsafeProp;
+            return this;
         }
     }
 
@@ -167,10 +204,11 @@ public class AuditLogTestApp {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping(POST_200_FILTERED)
+    @PostMapping(path = POST_200_FILTERED, produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
+            MediaType.APPLICATION_JSON_VALUE })
     @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION, filter = TestAuditContextFilter.class)
-    public ResponseEntity post200Filtered(@RequestBody String requestBody) {
-        return ResponseEntity.ok(BODY_RESPONSE);
+    public ResponseEntity post200Filtered(@RequestBody RequestObject requestBody) {
+        return ResponseEntity.ok(requestBody);
     }
 
     @PostMapping(POST_204)
@@ -182,6 +220,13 @@ public class AuditLogTestApp {
     @PostMapping(POST_500)
     @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION)
     public ResponseEntity post500(@RequestBody String requestBody) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @PostMapping(path = POST_500_FILTERED, produces = { MediaType.APPLICATION_JSON_VALUE }, consumes = {
+            MediaType.APPLICATION_JSON_VALUE })
+    @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION, filter = TestAuditContextFilter.class)
+    public ResponseEntity post500Filtered(@RequestBody RequestObject requestBody) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
