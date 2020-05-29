@@ -71,8 +71,7 @@ public class AuditLogGeneratorAspect {
             }
 
             // Send logs only in case of success or if responseCode can't be defined
-            if (responseCode == 0 || HttpStatus.valueOf(responseCode).is2xxSuccessful()
-                    || HttpStatus.valueOf(responseCode).is3xxRedirection()) {
+            if (responseCode == 0 || !HttpStatus.valueOf(responseCode).isError()) {
                 // Finally send the audit log
                 auditLogSender.sendAuditLog(request, extractRequestBody(proceedingJoinPoint), responseCode,
                         auditLogResponseObject, auditLogAnnotation);
