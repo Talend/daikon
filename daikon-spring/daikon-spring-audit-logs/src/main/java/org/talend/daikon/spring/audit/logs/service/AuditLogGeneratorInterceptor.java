@@ -63,7 +63,7 @@ public class AuditLogGeneratorInterceptor extends HandlerInterceptorAdapter {
                     .map(this::extractRequestType).map(t -> this.parse(requestBodyString, t)).orElse(null);
             String responseBodyString = Optional.ofNullable(response).map(this::extractContent).orElse(null);
             // Only log if code is not successful
-            if (!HttpStatus.valueOf(responseCode).is2xxSuccessful()) {
+            if (HttpStatus.valueOf(responseCode).isError()) {
                 this.auditLogSender.sendAuditLog(request, requestBody, responseCode, responseBodyString, generateAuditLog.get());
             }
         } else {

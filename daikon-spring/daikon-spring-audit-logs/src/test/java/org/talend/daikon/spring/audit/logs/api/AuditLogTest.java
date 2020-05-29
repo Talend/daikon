@@ -217,6 +217,16 @@ public class AuditLogTest {
 
     @Test
     @WithUserDetails
+    public void testGet302SuccessOnly() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_302_SUCCESS_ONLY)).andExpect(status().isFound());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_302_SUCCESS_ONLY, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.FOUND, null));
+    }
+
+    @Test
+    @WithUserDetails
     public void testPost204() throws Exception {
         final String content = "myContent";
         mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_204).content(content)).andExpect(status().isNoContent());
