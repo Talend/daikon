@@ -1,5 +1,6 @@
 package org.talend.daikon.spring.audit.logs.api;
 
+import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,6 +49,8 @@ public class AuditLogTestApp {
     public static final String GET_200_ERROR_ONLY = "/get/200/error";
 
     public static final String GET_200_SUCCESS_ONLY = "/get/200/success";
+
+    public static final String GET_302_SUCCESS_ONLY = "/get/302/success";
 
     public static final String GET_400_ANNOTATION = "/get/400/annotation";
 
@@ -151,6 +154,12 @@ public class AuditLogTestApp {
     @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION, scope = AuditLogScope.SUCCESS)
     public ResponseEntity get200SuccessOnly() {
         return ResponseEntity.ok(BODY_RESPONSE);
+    }
+
+    @GetMapping(GET_302_SUCCESS_ONLY)
+    @GenerateAuditLog(application = APPLICATION, eventType = EVENT_TYPE, eventCategory = EVENT_CATEGORY, eventOperation = EVENT_OPERATION, scope = AuditLogScope.SUCCESS)
+    public ResponseEntity get302SuccessOnly() {
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(GET_200_SUCCESS_ONLY)).build();
     }
 
     @GetMapping(GET_400_ANNOTATION)
