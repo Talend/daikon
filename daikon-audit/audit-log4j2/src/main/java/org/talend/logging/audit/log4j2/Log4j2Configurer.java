@@ -114,7 +114,7 @@ public final class Log4j2Configurer {
             parent_dir = logfilepath.substring(0, index + 1);
         }
 
-        String archived_log_file_pattern = parent_dir + "$${date:yyyy-MM}/audit-%d{yyyy-MM-dd}-%i.log.gz";
+        String archived_log_file_pattern = parent_dir + "logs/audit-%d{yyyy-MM-dd}-%i.log.gz";
 
         Appender appender = RollingFileAppender.newBuilder().setName("auditFileAppender").withStrategy(strategy)
                 .withPolicy(policy).withImmediateFlush(true).withAppend(true).withBufferedIo(false).withBufferSize(8 * 1024)
