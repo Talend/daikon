@@ -158,7 +158,7 @@ spec:
             slackSend(
               color: "GREEN",
               channel: "eng-daikon",
-              message: "Daikon version ${params.release_version} released (next version: ${params.next_version}) <https://github.com/Talend/daikon/blob/${env.BRANCH_NAME}/releases/${params.release_version}.adoc|${params.release_version} release notes>"
+              message: "Daikon version ${params.release_version} released. (next version: ${params.next_version}) <https://github.com/Talend/daikon/blob/${env.BRANCH_NAME}/releases/${params.release_version}.adoc|${params.release_version} release notes>"
             )
         }
     }
