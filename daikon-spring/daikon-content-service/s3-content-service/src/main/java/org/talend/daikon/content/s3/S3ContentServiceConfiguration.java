@@ -79,7 +79,7 @@ public class S3ContentServiceConfiguration {
             if (!environment.containsProperty(S3_ENDPOINT_URL)) {
                 throw new InvalidConfiguration("Missing '" + S3_ENDPOINT_URL + "' configuration");
             }
-            builder = AmazonS3ClientBuilder.standard();
+            builder = builder.withPathStyleAccessEnabled(true);
             break;
         case CUSTOM_AUTHENTICATION:
             try {

@@ -37,14 +37,14 @@ public class S3ContentServiceConfigurationTest {
 
         when(environment.getProperty(eq("content-service.store.s3.authentication"), anyString())).thenReturn("MINIO");
         when(environment.containsProperty(eq(S3ContentServiceConfiguration.S3_ENDPOINT_URL))).thenReturn(true);
-        when(environment.getProperty(eq(S3ContentServiceConfiguration.S3_ENDPOINT_URL))).thenReturn("http://fake.io");
+        when(environment.getProperty(eq(S3ContentServiceConfiguration.S3_ENDPOINT_URL))).thenReturn("http://fake.io:9001");
 
         // when
         final AmazonS3 amazonS3 = configuration.amazonS3(environment, context);
 
         // then
         final String fileUrl = amazonS3.getUrl("mybucket", "file.csv").toString();
-        assertEquals("http://mybucket.fake.io/file.csv", fileUrl);
+        assertEquals("http://fake.io:9001/mybucket/file.csv", fileUrl);
     }
 
     @Test
