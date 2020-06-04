@@ -52,8 +52,8 @@ spec:
     hostPath:
       path: /var/run/docker.sock
   - name: m2
-    hostPath:
-      path: /tmp/jenkins/daikon/m2
+    persistentVolumeClaim:
+      claimName: efs-jenkins-common-m2
 """
     }
   }
