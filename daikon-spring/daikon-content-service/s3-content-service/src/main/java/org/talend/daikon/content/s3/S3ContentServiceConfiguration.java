@@ -44,6 +44,8 @@ public class S3ContentServiceConfiguration {
 
     static final String S3_ENDPOINT_URL = "content-service.store.s3.endpoint_url";
 
+    static final String S3_ENABLE_PATH_STYLE = "content-service.store.s3.enable_path_style";
+
     private static AmazonS3ClientBuilder configureEC2Authentication(AmazonS3ClientBuilder builder) {
         LOGGER.info("Using EC2 authentication");
         return builder.withCredentials(new EC2ContainerCredentialsProviderWrapper());
@@ -70,16 +72,18 @@ public class S3ContentServiceConfiguration {
         switch (authentication) {
         case EC2_AUTHENTICATION:
             builder = configureEC2Authentication(builder);
+            builder = configurePathStyleAccess(environment, builder, false);
             break;
         case TOKEN_AUTHENTICATION:
             builder = configureTokenAuthentication(environment, builder);
+            builder = configurePathStyleAccess(environment, builder, false);
             break;
         case MINIO_AUTHENTICATION:
             // Nothing to do to standard builder, but check "content-service.store.s3.endpoint_url" is set.
             if (!environment.containsProperty(S3_ENDPOINT_URL)) {
                 throw new InvalidConfiguration("Missing '" + S3_ENDPOINT_URL + "' configuration");
             }
-            builder = builder.withPathStyleAccessEnabled(true);
+            builder = configurePathStyleAccess(environment, builder, true);
             break;
         case CUSTOM_AUTHENTICATION:
             try {
@@ -106,6 +110,13 @@ public class S3ContentServiceConfiguration {
 
         // All set
         return builder.build();
+    }
+
+    private static AmazonS3ClientBuilder configurePathStyleAccess(Environment environment, AmazonS3ClientBuilder builder,
+            boolean defaultValue) {
+        final boolean enablePathStyle = environment.getProperty(S3_ENABLE_PATH_STYLE, Boolean.class, defaultValue);
+        builder = builder.withPathStyleAccessEnabled(enablePathStyle);
+        return builder;
     }
 
     @Bean
