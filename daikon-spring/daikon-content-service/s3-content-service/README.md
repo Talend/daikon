@@ -38,6 +38,16 @@ public class MyComponent {
 
 ## Additional S3 configuration
 
+### Specify bucket name using path or host style
+
+You can configure S3 client to use "path style" for bucket name instead of host using the `content-service.store.s3.enable_path_style` property. Its default value differs from the authentication mode you use:
+
+| Authentication mode | Use path style as default? |
+|---------------------|----------------------------|
+| EC2                 | no                         |
+| TOKEN               | no                         |
+| MINIO               | yes                        |
+
 ### S3 client creation
 By default, AWS S3 client will authenticate using running EC2 instance credentials. Default behavior is same as:
 
