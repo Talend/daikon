@@ -2,17 +2,12 @@ package org.talend.daikon.spring.audit.logs.service;
 
 import static org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.error.CommonErrorCodes;
@@ -26,7 +21,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AuditLogContextBuilder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogContextBuilder.class);
+    private static final String INTERNAL_PROXIES = "" + //
+            "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" + //
+            "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" + //
+            "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" + //
+            "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" + //
+            "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" + //
+            "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" + //
+            "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" + //
+            "0:0:0:0:0:0:0:1|::1"; //
+
+    private static final Pattern INTERNAL_PROXIES_PATTERN = Pattern.compile(INTERNAL_PROXIES);
+
+    private static final String REMOTE_IP_HEADER = "X-Forwarded-For";
 
     private final Map<String, String> context = new LinkedHashMap<>();
 
@@ -153,7 +160,7 @@ public class AuditLogContextBuilder {
 
     public AuditLogContextBuilder withRequest(HttpServletRequest request, Object requestBody) {
         String userAgent = request.getHeader("User-Agent");
-        return withClientIp(request.getRemoteAddr()).withRequestUrl(request.getRequestURL().toString())
+        return withClientIp(extractPublicIps(request)).withRequestUrl(request.getRequestURL().toString())
                 .withRequestMethod(request.getMethod()).withRequestUserAgent(userAgent).withRequestBody(requestBody);
     }
 
@@ -217,5 +224,11 @@ public class AuditLogContextBuilder {
             }
         }
         return stringValue;
+    }
+
+    private String extractPublicIps(HttpServletRequest request) {
+        return Arrays.stream(Optional.ofNullable(request.getHeader(REMOTE_IP_HEADER)).orElse(request.getRemoteAddr()).split(","))
+                .map(String::trim).filter(ip -> !INTERNAL_PROXIES_PATTERN.matcher(ip).matches()).distinct()
+                .collect(Collectors.joining(", "));
     }
 }

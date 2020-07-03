@@ -51,6 +51,16 @@ import ch.qos.logback.core.read.ListAppender;
 @Import(AuditLogTestConfig.class)
 public class AuditLogTest {
 
+    private static final String REMOTE_IP_HEADER = "X-Forwarded-For";
+
+    private static final String MY_IP = "35.74.154.242";
+
+    private static final String MY_IP_WITH_INTERNAL_PROXIES = "35.74.154.242, 10.72.5.245, 10.80.17.172";
+
+    private static final String MY_IP_WITH_FORGERY_ATTEMPT = "51.51.51.51, 35.74.154.242";
+
+    private static final String MY_IP_WITH_FORGERY_ATTEMPT_AND_INTERNAL_PROXIES = "51.51.51.51, 35.74.154.242, 10.72.5.245, 10.80.17.172";
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -76,7 +86,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet400Exception() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_EXCEPTION)).andExpect(status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_EXCEPTION).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isBadRequest());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_EXCEPTION, HttpMethod.GET, null));
@@ -86,7 +97,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet400Annotation() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_ANNOTATION)).andExpect(status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_ANNOTATION).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isBadRequest());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_ANNOTATION, HttpMethod.GET, null));
@@ -96,8 +108,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet400ResponseEntity() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_RESPONSE_ENTITY)).andExpect(status().isBadRequest())
-                .andExpect(content().string(AuditLogTestApp.BODY_RESPONSE_400)).andReturn();
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_RESPONSE_ENTITY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isBadRequest()).andExpect(content().string(AuditLogTestApp.BODY_RESPONSE_400)).andReturn();
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_RESPONSE_ENTITY, HttpMethod.GET, null));
@@ -107,7 +119,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet400ErrorOnly() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_ERROR_ONLY)).andExpect(status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_ERROR_ONLY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isBadRequest());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_400_ERROR_ONLY, HttpMethod.GET, null));
@@ -117,7 +130,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet400SuccessOnly() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_SUCCESS_ONLY)).andExpect(status().isBadRequest());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_400_SUCCESS_ONLY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isBadRequest());
 
         verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
     }
@@ -125,7 +139,8 @@ public class AuditLogTest {
     @Test
     @WithAnonymousUser
     public void testGet401() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_401)).andExpect(status().isUnauthorized());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_401).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isUnauthorized());
 
         verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
         assertThat(logListAppender.list.get(0).getLevel(), is(Level.ERROR));
@@ -134,7 +149,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet403() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_403)).andExpect(status().isForbidden());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_403).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isForbidden());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_403, HttpMethod.GET, null));
@@ -144,7 +160,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet404() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_404)).andExpect(status().isNotFound());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_404).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isNotFound());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_404, HttpMethod.GET, null));
@@ -154,7 +171,8 @@ public class AuditLogTest {
     @Test
     @WithAnonymousUser
     public void testGet200Anonymous() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY)).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isOk());
 
         verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
         assertThat(logListAppender.list.get(0).getLevel(), is(Level.ERROR));
@@ -163,7 +181,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet200Body() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY)).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isOk());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_200_WITH_BODY, HttpMethod.GET, null));
@@ -173,7 +192,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet200NoBody() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITHOUT_BODY)).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITHOUT_BODY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isOk());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_200_WITHOUT_BODY, HttpMethod.GET, null));
@@ -183,7 +203,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet200ErrorOnly() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_ERROR_ONLY)).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_ERROR_ONLY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isOk());
 
         verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
     }
@@ -191,7 +212,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet200SuccessOnly() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_SUCCESS_ONLY)).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_SUCCESS_ONLY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isOk());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_200_SUCCESS_ONLY, HttpMethod.GET, null));
@@ -200,10 +222,45 @@ public class AuditLogTest {
 
     @Test
     @WithUserDetails
+    public void testGet200InternalProxies() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER,
+                MY_IP_WITH_INTERNAL_PROXIES)).andExpect(status().isOk());
+
+        verifyContext(basicContextCheck());
+        verifyContext(AuditLogFieldEnum.CLIENT_IP, is(MY_IP));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet200ForgeryAttempt() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER,
+                MY_IP_WITH_FORGERY_ATTEMPT_AND_INTERNAL_PROXIES)).andExpect(status().isOk());
+
+        verifyContext(basicContextCheck());
+        verifyContext(AuditLogFieldEnum.CLIENT_IP, is(MY_IP_WITH_FORGERY_ATTEMPT));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet200EmptyXForwardedForHeader() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders //
+                .get(AuditLogTestApp.GET_200_WITH_BODY) //
+                .with(req -> {
+                    req.setRemoteAddr(MY_IP);
+                    return req;
+                })).andExpect(status().isOk());
+
+        verifyContext(basicContextCheck());
+        verifyContext(AuditLogFieldEnum.CLIENT_IP, is(MY_IP));
+    }
+
+    @Test
+    @WithUserDetails
     public void testPost200Filtered() throws Exception {
         AuditLogTestApp.RequestObject request = new AuditLogTestApp.RequestObject("val1", "val2");
 
         mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_200_FILTERED) //
+                .header(REMOTE_IP_HEADER, MY_IP) //
                 .content(objectMapper.writeValueAsString(request)) //
                 .contentType(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
@@ -218,7 +275,8 @@ public class AuditLogTest {
     @Test
     @WithUserDetails
     public void testGet302SuccessOnly() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_302_SUCCESS_ONLY)).andExpect(status().isFound());
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_302_SUCCESS_ONLY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isFound());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.GET_302_SUCCESS_ONLY, HttpMethod.GET, null));
@@ -229,7 +287,8 @@ public class AuditLogTest {
     @WithUserDetails
     public void testPost204() throws Exception {
         final String content = "myContent";
-        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_204).content(content)).andExpect(status().isNoContent());
+        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_204).header(REMOTE_IP_HEADER, MY_IP).content(content))
+                .andExpect(status().isNoContent());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheck(AuditLogTestApp.POST_204, HttpMethod.POST, content));
@@ -240,7 +299,7 @@ public class AuditLogTest {
     @WithUserDetails
     public void testPost500() throws Exception {
         final String content = "myContent";
-        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_500).content(content))
+        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_500).header(REMOTE_IP_HEADER, MY_IP).content(content))
                 .andExpect(status().isInternalServerError());
 
         verifyContext(basicContextCheck());
@@ -253,7 +312,7 @@ public class AuditLogTest {
     public void testPost500Filtered() throws Exception {
         AuditLogTestApp.RequestObject request = new AuditLogTestApp.RequestObject("val1", "val2");
 
-        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_500_FILTERED) //
+        mockMvc.perform(MockMvcRequestBuilders.post(AuditLogTestApp.POST_500_FILTERED).header(REMOTE_IP_HEADER, MY_IP) //
                 .content(objectMapper.writeValueAsString(request)) //
                 .contentType(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
@@ -281,7 +340,7 @@ public class AuditLogTest {
                 AuditLogFieldEnum.EVENT_TYPE, is(AuditLogTestApp.EVENT_TYPE), //
                 AuditLogFieldEnum.EVENT_CATEGORY, is(AuditLogTestApp.EVENT_CATEGORY), //
                 AuditLogFieldEnum.EVENT_OPERATION, is(AuditLogTestApp.EVENT_OPERATION), //
-                AuditLogFieldEnum.CLIENT_IP, is("127.0.0.1") //
+                AuditLogFieldEnum.CLIENT_IP, containsString(MY_IP) //
         };
     }
 
