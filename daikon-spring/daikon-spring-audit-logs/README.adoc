@@ -36,6 +36,7 @@ Then the module must be enabled and configured with Kafka information :
 ```yaml
 audit:
     enabled: true # Enable audit feature
+    trusted-proxies: 42.42.42.42 # Regular expression matching trusted proxy ips (these ips won't appear in audit logs)
     kafka:
         bootstrapServers: localhost:9092 # Kafka bootstrap server urls for audit logs sending
         topic: audit-logs # Kafka topic for audit logs sending
@@ -195,6 +196,8 @@ Private internal proxy addresses are extracted with the following pattern (http:
 0:0:0:0:0:0:0:1|::1
 ```
 
+In addition, the `audit.trusted-proxies` property can be defined in order to filter extra trusted ips.
+
 === Unique public IP
 
 For example, a request with the following `x-forwarded-for` header value :
@@ -229,6 +232,29 @@ In this case, the generated audit log will contains all the public ips :
 {
    "...": "...",
    "clientIp":"51.51.51.51, 62.23.50.122",
+   "...": "..."
+}
+```
+
+=== Trusted IP
+
+Public IPs can be filtered from `x-forwarded-for` header by specifying a matching regex pattern in the `audit.trusted-proxies` property :
+
+```yaml
+audit:
+   trusted-proxies: 42.42.42.42
+```
+
+The IPs from `x-forwarded-for` header matching the trusted proxies pattern won't appear in the generated audit logs :
+
+```
+x-forwarded-header: "62.23.50.122, 42.42.42.42, 10.12.15.26, 172.169.12.54"
+```
+
+```json
+{
+   "...": "...",
+   "clientIp":"62.23.50.122",
    "...": "..."
 }
 ```
