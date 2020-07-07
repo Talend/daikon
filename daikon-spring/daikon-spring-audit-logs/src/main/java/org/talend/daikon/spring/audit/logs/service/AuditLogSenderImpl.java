@@ -14,22 +14,21 @@ import org.talend.daikon.spring.audit.logs.api.GenerateAuditLog;
 import org.talend.daikon.spring.audit.logs.exception.AuditLogException;
 import org.talend.logging.audit.Context;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class AuditLogSenderImpl implements AuditLogSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogSenderImpl.class);
-
-    private final ObjectMapper objectMapper;
 
     private final AuditUserProvider auditUserProvider;
 
     private final AuditLogger auditLogger;
 
-    public AuditLogSenderImpl(ObjectMapper objectMapper, AuditUserProvider auditUserProvider, AuditLogger auditLogger) {
-        this.objectMapper = objectMapper;
+    private final AuditLogIpExtractor auditLogIpExtractor;
+
+    public AuditLogSenderImpl(AuditUserProvider auditUserProvider, AuditLogger auditLogger,
+            AuditLogIpExtractor auditLogIpExtractor) {
         this.auditUserProvider = auditUserProvider;
         this.auditLogger = auditLogger;
+        this.auditLogIpExtractor = auditLogIpExtractor;
     }
 
     /**
@@ -53,7 +52,8 @@ public class AuditLogSenderImpl implements AuditLogSender {
                     .withEmail(auditUserProvider.getUserEmail()) //
                     .withAccountId(auditUserProvider.getAccountId()) //
                     .withRequest(request, requestBody) //
-                    .withResponse(responseCode, auditLogAnnotation.includeBodyResponse() ? responseObject : null);
+                    .withResponse(responseCode, auditLogAnnotation.includeBodyResponse() ? responseObject : null)
+                    .withIpExtractor(this.auditLogIpExtractor);
 
             // Filter the context if needed
             AuditContextFilter filter = auditLogAnnotation.filter().getDeclaredConstructor().newInstance();
@@ -66,6 +66,13 @@ public class AuditLogSenderImpl implements AuditLogSender {
                 | AuditLogException e) {
             LOGGER.error("audit log with metadata {} has not been generated", auditLogAnnotation, e);
         }
+    }
+
+    /**
+     * Build a context from a context builder and send the generated context
+     */
+    public void sendAuditLog(AuditLogContextBuilder builder) {
+        auditLogger.sendAuditLog(builder.withIpExtractor(this.auditLogIpExtractor).build());
     }
 
     /**
