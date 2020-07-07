@@ -7,6 +7,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.talend.daikon.spring.audit.logs.api.AuditLogTest.TRUSTED_PROXIES;
 
 import java.util.stream.IntStream;
 
@@ -46,16 +47,26 @@ import ch.qos.logback.core.read.ListAppender;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AuditLogTestApp.class)
 @AutoConfigureMockMvc
-@TestPropertySource(properties = { "audit.enabled=true", "spring.application.name=daikon",
-        "audit.kafka.bootstrapServers=localhost:9092" })
+@TestPropertySource(properties = { //
+        "audit.enabled=true", //
+        "spring.application.name=daikon", //
+        "audit.kafka.bootstrapServers=localhost:9092", //
+        "audit.trusted-proxies=" + TRUSTED_PROXIES //
+})
 @Import(AuditLogTestConfig.class)
 public class AuditLogTest {
 
     private static final String REMOTE_IP_HEADER = "X-Forwarded-For";
 
+    public static final String TRUSTED_PROXIES = "42.42.42.42";
+
     private static final String MY_IP = "35.74.154.242";
 
+    private static final String MY_IP_WITH_INVALID_IP = "35.74.154.242, ImAWrongIp";
+
     private static final String MY_IP_WITH_INTERNAL_PROXIES = "35.74.154.242, 10.72.5.245, 10.80.17.172";
+
+    private static final String MY_IP_WITH_INTERNAL_PROXIES_AND_TRUSTED_PROXIES = "35.74.154.242, 42.42.42.42, 10.72.5.245, 10.80.17.172";
 
     private static final String MY_IP_WITH_FORGERY_ATTEMPT = "51.51.51.51, 35.74.154.242";
 
@@ -222,9 +233,30 @@ public class AuditLogTest {
 
     @Test
     @WithUserDetails
+    public void testGet200InvalidIp() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP_WITH_INVALID_IP))
+                .andExpect(status().isOk());
+
+        verifyContext(basicContextCheck());
+        verifyContext(AuditLogFieldEnum.CLIENT_IP, is(MY_IP));
+    }
+
+    @Test
+    @WithUserDetails
     public void testGet200InternalProxies() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER,
                 MY_IP_WITH_INTERNAL_PROXIES)).andExpect(status().isOk());
+
+        verifyContext(basicContextCheck());
+        verifyContext(AuditLogFieldEnum.CLIENT_IP, is(MY_IP));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet200InternalAndTrustedProxies() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER,
+                MY_IP_WITH_INTERNAL_PROXIES_AND_TRUSTED_PROXIES)).andExpect(status().isOk());
 
         verifyContext(basicContextCheck());
         verifyContext(AuditLogFieldEnum.CLIENT_IP, is(MY_IP));

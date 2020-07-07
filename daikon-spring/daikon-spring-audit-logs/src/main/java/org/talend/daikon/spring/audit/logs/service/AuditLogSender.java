@@ -19,6 +19,13 @@ public interface AuditLogSender {
     void sendAuditLog(Context context);
 
     /**
+     * Build a context from a context builder and send the generated context
+     *
+     * @param builder audit log context builder
+     */
+    void sendAuditLog(AuditLogContextBuilder builder);
+
+    /**
      * Build a context from given parameters and send the corresponding audit log
      *
      * @param request HTTP request
