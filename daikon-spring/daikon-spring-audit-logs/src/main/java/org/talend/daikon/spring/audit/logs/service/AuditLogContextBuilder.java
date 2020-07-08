@@ -133,12 +133,12 @@ public class AuditLogContextBuilder {
 
     public Context build() throws AuditLogException {
         try {
+            // Compute request fields only at build step to leverage ip extractor
+            computeRequestFields();
+
             context.values().removeAll(Collections.singletonList(null));
             request.values().removeAll(Collections.singletonList(null));
             response.values().removeAll(Collections.singletonList(null));
-
-            // Compute request fields only at build step to leverage ip extractor
-            computeRequestFields();
 
             if (!request.isEmpty()) {
                 request.replaceAll((k, v) -> convertToString(v));
