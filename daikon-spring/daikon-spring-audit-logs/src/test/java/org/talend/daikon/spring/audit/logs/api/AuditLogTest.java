@@ -68,9 +68,9 @@ public class AuditLogTest {
 
     private static final String MY_IP_WITH_INTERNAL_PROXIES_AND_TRUSTED_PROXIES = "35.74.154.242, 42.42.42.42, 10.72.5.245, 10.80.17.172";
 
-    private static final String MY_IP_WITH_FORGERY_ATTEMPT = "51.51.51.51, 35.74.154.242";
+    private static final String MY_IP_WITH_FORGERY_ATTEMPT = "35.74.154.242, 51.51.51.51";
 
-    private static final String MY_IP_WITH_FORGERY_ATTEMPT_AND_INTERNAL_PROXIES = "51.51.51.51, 35.74.154.242, 10.72.5.245, 10.80.17.172";
+    private static final String MY_IP_WITH_FORGERY_ATTEMPT_AND_INTERNAL_PROXIES = "35.74.154.242, 51.51.51.51, 10.72.5.245, 10.80.17.172";
 
     @Autowired
     private ObjectMapper objectMapper;
