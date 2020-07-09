@@ -484,6 +484,18 @@ public class BeanPredicateVisitorTest {
         assertFalse(predicate.test(bean));
     }
 
+    @Test
+    public void testDoubleIntComparison() {
+        // given
+        final Expression query = Tql.parse("int = 10.0");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
     // Test class
     public static class Bean {
 
