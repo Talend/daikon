@@ -1,7 +1,6 @@
 package org.talend.daikon.spring.audit.logs.service;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -39,7 +38,7 @@ public class AuditLogIpExtractorImpl implements AuditLogIpExtractor {
     }
 
     public String extract(HttpServletRequest request) {
-        String ips = request.getRemoteAddr();
+        String ips = "";
         if (request.getHeader(REMOTE_IP_HEADER) != null) {
             ips = Arrays.stream(request.getHeader(REMOTE_IP_HEADER).split(",")) //
                     .map(String::trim)
@@ -52,6 +51,6 @@ public class AuditLogIpExtractorImpl implements AuditLogIpExtractor {
                     .distinct() //
                     .collect(Collectors.joining(", "));
         }
-        return ips;
+        return ips.isEmpty() ? request.getRemoteAddr() : ips;
     }
 }
