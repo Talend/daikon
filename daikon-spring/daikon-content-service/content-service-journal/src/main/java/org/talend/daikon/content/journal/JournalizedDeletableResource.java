@@ -50,7 +50,7 @@ class JournalizedDeletableResource implements DeletableResource {
 
     @Override
     public boolean exists() {
-        return true;
+        return resource.exists();
     }
 
     @Override
