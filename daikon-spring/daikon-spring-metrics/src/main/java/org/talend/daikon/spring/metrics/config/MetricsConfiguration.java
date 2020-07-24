@@ -1,6 +1,7 @@
 package org.talend.daikon.spring.metrics.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 public class MetricsConfiguration {
 
     @Bean
+    @ConditionalOnBean({ Tracer.class, MeterRegistry.class })
     public Aspects metricAspect(@Autowired Tracer tracer, @Autowired MeterRegistry repository) {
         return new Aspects(tracer, repository);
     }
