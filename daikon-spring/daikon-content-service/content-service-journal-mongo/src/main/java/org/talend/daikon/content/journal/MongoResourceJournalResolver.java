@@ -3,6 +3,7 @@ package org.talend.daikon.content.journal;
 import java.io.IOException;
 import java.util.stream.Stream;
 
+import io.micrometer.core.annotation.Timed;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ public class MongoResourceJournalResolver implements ResourceJournal {
      */
     private ResourceResolver resourceResolver;
 
+    @Timed
     @Override
     public void sync() {
         if (ready()) {
@@ -100,6 +102,7 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         return locationPrefix;
     }
 
+    @Timed
     @Override
     public Stream<String> matches(String pattern) {
         LOGGER.debug("Match locations using pattern '{}'", pattern);
@@ -111,6 +114,7 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         return repository.findByNameStartsWith(patternForMatch).stream().map(ResourceJournalEntry::getName);
     }
 
+    @Timed
     @Override
     public void clear(String pattern) {
         String patternForClear = formattingStringToMongoPattern(removePrefixFromResourceName(pattern));
@@ -118,6 +122,7 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         LOGGER.debug("Cleared location '{}'.", patternForClear);
     }
 
+    @Timed
     @Override
     public void add(String location) {
         if (StringUtils.isEmpty(location)) {
@@ -130,12 +135,14 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         LOGGER.debug("Location '{}' added to journal.", savedLocation);
     }
 
+    @Timed
     @Override
     public void remove(String location) {
         repository.deleteByName(removePrefixFromResourceName(location));
         LOGGER.debug("Location '{}' removed from journal.", location);
     }
 
+    @Timed
     @Override
     public void move(String source, String target) {
         String sourceWithoutPrefix = removePrefixFromResourceName(source);
@@ -153,6 +160,7 @@ public class MongoResourceJournalResolver implements ResourceJournal {
         }
     }
 
+    @Timed
     @Override
     public boolean exist(String location) {
         String savedLocation = updateLocationToAbsolutePath(removePrefixFromResourceName(location));
