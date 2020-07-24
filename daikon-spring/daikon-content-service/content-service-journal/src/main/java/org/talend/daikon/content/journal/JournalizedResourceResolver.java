@@ -1,5 +1,6 @@
 package org.talend.daikon.content.journal;
 
+import io.micrometer.core.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.content.DeletableResource;
@@ -25,6 +26,7 @@ public class JournalizedResourceResolver implements ResourceResolver {
         this.resourceJournal = resourceJournal;
     }
 
+    @Timed
     @Override
     public DeletableResource[] getResources(String locationPattern) throws IOException {
         if (resourceJournal.ready()) {
@@ -36,6 +38,7 @@ public class JournalizedResourceResolver implements ResourceResolver {
         }
     }
 
+    @Timed
     @Override
     public DeletableResource getResource(String location) {
         final DeletableResource resource = delegate.getResource(location);
@@ -48,6 +51,7 @@ public class JournalizedResourceResolver implements ResourceResolver {
         return delegate.getLocationPrefix();
     }
 
+    @Timed
     @Override
     public void clear(String location) throws IOException {
         Stream.of(getResources(location)).forEach(deletableResource -> {

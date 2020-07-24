@@ -5,6 +5,7 @@ import static org.talend.daikon.content.s3.LocationUtils.S3PathBuilder.builder;
 
 import java.io.IOException;
 
+import io.micrometer.core.annotation.Timed;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.WritableResource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -26,6 +27,7 @@ class S3ResourceResolver extends AbstractResourceResolver {
         this.bucket = bucket;
     }
 
+    @Timed
     @Override
     public DeletableResource[] getResources(String locationPattern) throws IOException {
         final String location = builder(bucket.getBucketName()) //
@@ -35,6 +37,7 @@ class S3ResourceResolver extends AbstractResourceResolver {
         return super.getResources("s3://" + location);
     }
 
+    @Timed
     @Override
     public DeletableResource getResource(String location) {
         if (location == null) {
