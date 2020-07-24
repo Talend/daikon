@@ -1,7 +1,6 @@
 package org.talend.daikon.spring.audit.logs.service;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -39,15 +38,19 @@ public class AuditLogIpExtractorImpl implements AuditLogIpExtractor {
     }
 
     public String extract(HttpServletRequest request) {
-        return Arrays.stream(Optional.ofNullable(request.getHeader(REMOTE_IP_HEADER)).orElse(request.getRemoteAddr()).split(",")) //
-                .map(String::trim)
-                // Validate Ip format
-                .filter(ip -> InetAddressValidator.getInstance().isValid(ip))
-                // Do not keep ips matching internal proxy ips
-                .filter(ip -> !INTERNAL_PROXIES_PATTERN.matcher(ip).matches())
-                // Do not keep ips matching trusted proxy pattern
-                .filter(ip -> !trustedProxiesPattern.matcher(ip).matches()) //
-                .distinct() //
-                .collect(Collectors.joining(", "));
+        String ips = "";
+        if (request.getHeader(REMOTE_IP_HEADER) != null) {
+            ips = Arrays.stream(request.getHeader(REMOTE_IP_HEADER).split(",")) //
+                    .map(String::trim)
+                    // Validate Ip format
+                    .filter(ip -> InetAddressValidator.getInstance().isValid(ip))
+                    // Do not keep ips matching internal proxy ips
+                    .filter(ip -> !INTERNAL_PROXIES_PATTERN.matcher(ip).matches())
+                    // Do not keep ips matching trusted proxy pattern
+                    .filter(ip -> !trustedProxiesPattern.matcher(ip).matches()) //
+                    .distinct() //
+                    .collect(Collectors.joining(", "));
+        }
+        return ips.isEmpty() ? request.getRemoteAddr() : ips;
     }
 }
