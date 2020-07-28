@@ -60,14 +60,13 @@ public class S3ResourceResolver extends AbstractResourceResolver {
                 .append(toS3Location(location)) //
                 .build();
 
-        String host = environment.getProperty(S3ContentServiceConfiguration.S3_ENDPOINT_URL);
         final String authentication = environment
                 .getProperty(S3ContentServiceConfiguration.CONTENT_SERVICE_STORE_AUTHENTICATION, EC2_AUTHENTICATION)
                 .toUpperCase();
-
         switch (authentication) {
             case S3ContentServiceConfiguration.MINIO_AUTHENTICATION:
             case S3ContentServiceConfiguration.CUSTOM_AUTHENTICATION:
+                final String host = environment.getProperty(S3ContentServiceConfiguration.S3_ENDPOINT_URL);
                 return new FixedURLS3Resource(host, s3Location, super.getResource("s3://" + s3Location));
             default:
                 return super.getResource("s3://" + s3Location);
