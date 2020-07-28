@@ -34,6 +34,7 @@ public class JournalizedResourceResolver implements ResourceResolver {
                     .map(location -> new LazyDeletableResource(location, this)) //
                     .toArray(DeletableResource[]::new);
         } else {
+            LOGGER.warn("Journal is not ready (delegate call to non-indexed resolver to find '{}')", locationPattern);
             return delegate.getResources(locationPattern);
         }
     }
