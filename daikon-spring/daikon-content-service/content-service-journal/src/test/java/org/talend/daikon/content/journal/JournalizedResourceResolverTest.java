@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -43,14 +44,8 @@ public class JournalizedResourceResolverTest {
     @Test
     public void shouldListUsingRepository() throws IOException {
         // given
-        final DeletableResource resource1 = mock(DeletableResource.class);
-        final DeletableResource resource2 = mock(DeletableResource.class);
         when(resourceJournal.ready()).thenReturn(true);
         when(resourceJournal.matches(eq("/**"))).thenReturn(Stream.of("resource1.txt", "resource2.txt"));
-        when(resource1.getFilename()).thenReturn("resource1.txt");
-        when(resource2.getFilename()).thenReturn("resource2.txt");
-        when(delegate.getResource("resource1.txt")).thenReturn(resource1);
-        when(delegate.getResource("resource2.txt")).thenReturn(resource2);
 
         // when
         final DeletableResource[] resources = journalizedResourceResolver.getResources("/**");
@@ -81,5 +76,25 @@ public class JournalizedResourceResolverTest {
         verify(resourceJournal, times(1)).remove(eq("/location2"));
         verify(location1, times(1)).delete();
         verify(location2, times(1)).delete();
+    }
+
+    @Test
+    public void shouldMaterializeResolvedResource() throws IOException {
+        // given
+        when(resourceJournal.ready()).thenReturn(true);
+        when(resourceJournal.matches(eq("/**"))).thenReturn(Stream.of("resource1.txt", "resource2.txt"));
+        when(delegate.getResource(eq("resource1.txt"))).thenReturn(mock(DeletableResource.class));
+        when(delegate.getResource(eq("resource2.txt"))).thenReturn(mock(DeletableResource.class));
+        final DeletableResource[] resources = journalizedResourceResolver.getResources("/**");
+
+        // when
+        for (DeletableResource resource : resources) {
+            resource.delete(); // Delete will materialize resource and generate calls to getResource()
+        }
+
+        // then
+        verify(delegate, times(1)).getResource(eq("resource1.txt"));
+        verify(delegate, times(1)).getResource(eq("resource2.txt"));
+        verify(delegate, times(2)).getResource(anyString());
     }
 }
