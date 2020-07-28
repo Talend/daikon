@@ -85,15 +85,19 @@ public class FixedURLS3Resource implements DeletableResource {
 
     @Override
     public URL getURL() throws IOException {
-        return new URL("https", host, s3Location);
+        if (s3Location.startsWith("/")) {
+            return new URL(host + s3Location);
+        } else {
+            return new URL(host + "/" + s3Location);
+        }
     }
 
     @Override
-    public URI getURI() throws IOException {
-        try {
-            return new URI("https", host, s3Location);
-        } catch (URISyntaxException e) {
-            throw new IOException("Unable to build URI", e);
+    public URI getURI() {
+        if (s3Location.startsWith("/")) {
+            return URI.create(host + s3Location);
+        } else {
+            return URI.create(host + "/" + s3Location);
         }
     }
 
