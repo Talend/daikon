@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -41,11 +40,6 @@ public class FixedURLS3Resource implements DeletableResource {
     @Override
     public void move(String location) throws IOException {
         delegate.move(location);
-    }
-
-    @Override
-    public String getAbsolutePath() throws IOException {
-        return delegate.getAbsolutePath();
     }
 
     @Override
