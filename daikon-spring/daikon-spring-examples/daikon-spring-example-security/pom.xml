@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-spring-examples</artifactId>
-        <version>2.0.12-SNAPSHOT</version>
+        <version>2.0.13-SNAPSHOT</version>
     </parent>
 
     <artifactId>daikon-spring-example-security</artifactId>
-    <version>2.0.12-SNAPSHOT</version>
+    <version>2.0.13-SNAPSHOT</version>
 
     <build>
         <plugins>

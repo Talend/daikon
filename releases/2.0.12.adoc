@@ -1,0 +1,6 @@
+= Daikon Release Notes (2.0.12) - 07/27/2020
+
+Thanks to @fhuaulme
+
+== Other
+- chore(content service): Application requests for content service
