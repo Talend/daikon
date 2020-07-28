@@ -31,7 +31,7 @@ public class JournalizedResourceResolver implements ResourceResolver {
     public DeletableResource[] getResources(String locationPattern) throws IOException {
         if (resourceJournal.ready()) {
             return resourceJournal.matches(locationPattern) //
-                    .map(this::getResource) //
+                    .map(location -> new LazyDeletableResource(location, this)) //
                     .toArray(DeletableResource[]::new);
         } else {
             return delegate.getResources(locationPattern);
