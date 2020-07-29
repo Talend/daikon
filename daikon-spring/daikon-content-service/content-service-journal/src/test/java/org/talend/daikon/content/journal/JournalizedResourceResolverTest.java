@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -96,5 +97,18 @@ public class JournalizedResourceResolverTest {
         verify(delegate, times(1)).getResource(eq("resource1.txt"));
         verify(delegate, times(1)).getResource(eq("resource2.txt"));
         verify(delegate, times(2)).getResource(anyString());
+    }
+
+    @Test
+    public void shouldBypassGetResources() throws IOException {
+        // given
+        when(delegate.getResource(eq("resource1.txt"))).thenReturn(mock(DeletableResource.class));
+
+        // when
+        journalizedResourceResolver.getResources("resource1.txt");
+
+        // then
+        verify(delegate, times(1)).getResource(eq("resource1.txt"));
+        verify(resourceJournal, never()).matches(anyString());
     }
 }
