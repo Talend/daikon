@@ -33,10 +33,9 @@ public class JournalizedResourceResolverTest {
     private ResourceResolver delegate;
 
     @Test
-    public void shouldAddToRepository() throws Exception {
+    public void shouldAddToRepository() {
         // when
         journalizedResourceResolver.getResource("myResource.txt");
-        journalizedResourceResolver.destroy();
 
         // then
         verify(delegate, times(1)).getResource(eq("myResource.txt"));

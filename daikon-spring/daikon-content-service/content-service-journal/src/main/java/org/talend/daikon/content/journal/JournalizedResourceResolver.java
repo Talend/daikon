@@ -1,31 +1,22 @@
 package org.talend.daikon.content.journal;
 
 import java.io.IOException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 
 import io.micrometer.core.annotation.Timed;
 
-public class JournalizedResourceResolver implements ResourceResolver, DisposableBean {
+public class JournalizedResourceResolver implements ResourceResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JournalizedResourceResolver.class);
 
     private final ResourceResolver delegate;
 
     private final ResourceJournal resourceJournal;
-
-    private final ExecutorService executor = Executors.newFixedThreadPool(4);
 
     public JournalizedResourceResolver(ResourceResolver delegate) {
         this(delegate, new ResourceResolverJournal(delegate));
@@ -59,7 +50,7 @@ public class JournalizedResourceResolver implements ResourceResolver, Disposable
     @Override
     public DeletableResource getResource(String location) {
         final DeletableResource resource = delegate.getResource(location);
-        executor.execute(() -> resourceJournal.add(location));
+        resourceJournal.add(location);
         return new JournalizedDeletableResource(location, resource, resourceJournal);
     }
 
@@ -86,9 +77,4 @@ public class JournalizedResourceResolver implements ResourceResolver, Disposable
         return delegate.getClassLoader();
     }
 
-    @Override
-    public void destroy() throws Exception {
-        executor.awaitTermination(1, TimeUnit.SECONDS);
-        executor.shutdown();
-    }
 }
