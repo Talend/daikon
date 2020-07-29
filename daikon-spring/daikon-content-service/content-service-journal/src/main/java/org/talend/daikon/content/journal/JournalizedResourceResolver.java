@@ -1,13 +1,14 @@
 package org.talend.daikon.content.journal;
 
-import io.micrometer.core.annotation.Timed;
+import java.io.IOException;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.daikon.content.DeletableResource;
 import org.talend.daikon.content.ResourceResolver;
 
-import java.io.IOException;
-import java.util.stream.Stream;
+import io.micrometer.core.annotation.Timed;
 
 public class JournalizedResourceResolver implements ResourceResolver {
 
@@ -29,8 +30,14 @@ public class JournalizedResourceResolver implements ResourceResolver {
     @Timed
     @Override
     public DeletableResource[] getResources(String locationPattern) throws IOException {
+        if (locationPattern.indexOf('*') < 0) {
+            // No pattern in locationPattern, switch to getResource
+            return new DeletableResource[] { delegate.getResource(locationPattern) };
+        }
+
         if (resourceJournal.ready()) {
-            return resourceJournal.matches(locationPattern) //
+            return resourceJournal
+                    .matches(locationPattern) //
                     .map(location -> new LazyDeletableResource(location, this)) //
                     .toArray(DeletableResource[]::new);
         } else {
