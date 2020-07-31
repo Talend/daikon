@@ -46,7 +46,13 @@ public class S3ResourceResolver extends AbstractResourceResolver {
         final DeletableResource[] resources = super.getResources("s3://" + cleanedUpLocationPattern);
         return Stream
                 .of(resources) //
-                .map(r -> wrap(toS3Location(r.getFilename()), r)) //
+                .map(r -> {
+                    final String s3Location = builder(bucket.getBucketName()) //
+                            .append(bucket.getRoot()) //
+                            .append(toS3Location(r.getFilename())) //
+                            .build();
+                    return wrap(s3Location, r);
+                }) //
                 .toArray(DeletableResource[]::new);
     }
 
