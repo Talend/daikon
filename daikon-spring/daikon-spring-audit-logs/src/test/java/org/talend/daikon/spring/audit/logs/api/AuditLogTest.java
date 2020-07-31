@@ -91,6 +91,7 @@ public class AuditLogTest {
         Logger logger = (Logger) LoggerFactory.getLogger(AuditLogSenderImpl.class);
         logListAppender = new ListAppender<>();
         logListAppender.start();
+        logger.setLevel(Level.DEBUG);
         logger.addAppender(logListAppender);
     }
 
@@ -154,7 +155,7 @@ public class AuditLogTest {
                 .andExpect(status().isUnauthorized());
 
         verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
-        assertThat(logListAppender.list.get(0).getLevel(), is(Level.ERROR));
+        assertThat(logListAppender.list.iterator().next().getLevel(), is(Level.DEBUG));
     }
 
     @Test
@@ -186,7 +187,7 @@ public class AuditLogTest {
                 .andExpect(status().isOk());
 
         verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
-        assertThat(logListAppender.list.get(0).getLevel(), is(Level.ERROR));
+        assertThat(logListAppender.list.iterator().next().getLevel(), is(Level.DEBUG));
     }
 
     @Test

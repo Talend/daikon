@@ -62,9 +62,10 @@ public class AuditLogSenderImpl implements AuditLogSender {
             // Finally send the log
             this.sendAuditLog(auditLogContextBuilder.build());
             LOGGER.info("audit log generated with metadata {}", auditLogAnnotation);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException
-                | AuditLogException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error("audit log with metadata {} has not been generated", auditLogAnnotation, e);
+        } catch (AuditLogException e) {
+            LOGGER.debug("audit log with metadata {} has not been generated", auditLogAnnotation, e);
         }
     }
 
