@@ -27,8 +27,7 @@ public class S3ResourceResolver extends AbstractResourceResolver {
 
     private final Environment environment;
 
-    S3ResourceResolver(ResourcePatternResolver delegate, AmazonS3 amazonS3, S3BucketProvider bucket,
-            Environment environment) {
+    S3ResourceResolver(ResourcePatternResolver delegate, AmazonS3 amazonS3, S3BucketProvider bucket, Environment environment) {
         super(delegate);
         this.amazonS3 = amazonS3;
         this.bucket = bucket;
@@ -44,8 +43,7 @@ public class S3ResourceResolver extends AbstractResourceResolver {
                 .build();
 
         final DeletableResource[] resources = super.getResources("s3://" + cleanedUpLocationPattern);
-        return Stream
-                .of(resources) //
+        return Stream.of(resources) //
                 .map(r -> {
                     final String s3Location = builder(bucket.getBucketName()) //
                             .append(bucket.getRoot()) //
@@ -99,7 +97,7 @@ public class S3ResourceResolver extends AbstractResourceResolver {
 
     @Override
     protected DeletableResource convert(WritableResource writableResource) {
-        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(),
-                bucket.getBucketName(), bucket.getRoot());
+        return new S3DeletableResource(writableResource, amazonS3, writableResource.getFilename(), bucket.getBucketName(),
+                bucket.getRoot());
     }
 }
