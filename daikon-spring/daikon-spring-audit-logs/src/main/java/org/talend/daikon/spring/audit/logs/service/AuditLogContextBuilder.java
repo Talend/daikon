@@ -7,6 +7,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.spring.audit.logs.exception.AuditLogException;
@@ -215,7 +216,7 @@ public class AuditLogContextBuilder {
                 withClientIp(auditLogIpExtractor.extract(httpServletRequest));
             }
             if (!context.containsKey(URL.getId())) {
-                withRequestUrl(httpServletRequest.getRequestURL().toString());
+                withRequestUrl(computeRequestUrl(httpServletRequest));
             }
             if (!context.containsKey(METHOD.getId())) {
                 withRequestMethod(httpServletRequest.getMethod());
@@ -223,6 +224,17 @@ public class AuditLogContextBuilder {
             if (!context.containsKey(USER_AGENT.getId())) {
                 withRequestUserAgent(userAgent);
             }
+        }
+    }
+
+    private String computeRequestUrl(HttpServletRequest httpServletRequest) {
+        if (!StringUtils.isEmpty(httpServletRequest.getHeader("X-Forwarded-Host"))) {
+            return UriComponentsBuilder.fromPath(httpServletRequest.getRequestURI())
+                    .scheme(httpServletRequest.getHeader("X-Forwarded-Proto"))
+                    .host(httpServletRequest.getHeader("X-Forwarded-Host")).query(httpServletRequest.getQueryString()).build()
+                    .toUri().toString();
+        } else {
+            return httpServletRequest.getRequestURL().toString();
         }
     }
 
