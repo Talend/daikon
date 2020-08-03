@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@EnableConfigurationProperties(AuditKafkaProperties.class)
+@EnableConfigurationProperties({ AuditProperties.class, AuditKafkaProperties.class })
 @ConditionalOnProperty(value = "audit.enabled", havingValue = "true", matchIfMissing = true)
 public class AuditLogAutoConfiguration implements WebMvcConfigurer {
 
@@ -75,10 +75,10 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public AuditLogSender auditLogSender(ObjectMapper objectMapper, Optional<AuditUserProvider> auditUserProvider,
-            AuditLoggerBase auditLoggerBase) {
+    public AuditLogSender auditLogSender(Optional<AuditUserProvider> auditUserProvider, AuditLoggerBase auditLoggerBase,
+            AuditLogIpExtractor AuditLogIpExtractor) {
         AuditLogger auditLogger = AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, auditLoggerBase);
-        return new AuditLogSenderImpl(objectMapper, auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger);
+        return new AuditLogSenderImpl(auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger, AuditLogIpExtractor);
     }
 
     @Bean
@@ -89,5 +89,10 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
     @Bean
     public AuditLogGeneratorInterceptor auditLogGeneratorInterceptor(AuditLogSender auditLogSender, ObjectMapper objectMapper) {
         return new AuditLogGeneratorInterceptor(auditLogSender, objectMapper);
+    }
+
+    @Bean
+    public AuditLogIpExtractor auditLogIpExtractor(AuditProperties auditProperties) {
+        return new AuditLogIpExtractorImpl(auditProperties);
     }
 }

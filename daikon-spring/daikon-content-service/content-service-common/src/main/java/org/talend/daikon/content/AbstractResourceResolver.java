@@ -4,6 +4,7 @@ import static java.util.Arrays.stream;
 
 import java.io.IOException;
 
+import io.micrometer.core.annotation.Timed;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -16,6 +17,7 @@ public abstract class AbstractResourceResolver implements ResourceResolver {
         this.delegate = delegate;
     }
 
+    @Timed
     @Override
     public DeletableResource[] getResources(String locationPattern) throws IOException {
         final Resource[] resources = delegate.getResources(locationPattern);
@@ -24,6 +26,7 @@ public abstract class AbstractResourceResolver implements ResourceResolver {
                 .toArray(DeletableResource[]::new);
     }
 
+    @Timed
     @Override
     public DeletableResource getResource(String location) {
         return convert((WritableResource) delegate.getResource(location));

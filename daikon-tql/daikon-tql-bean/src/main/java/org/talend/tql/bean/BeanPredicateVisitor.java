@@ -20,11 +20,20 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.talend.tql.bean.MethodAccessorFactory.build;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -227,7 +236,21 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
     }
 
     private Predicate<T> eq(Object value, MethodAccessor[] accessors) {
-        return anyMatch(accessors, o -> equalsIgnoreCase(valueOf(o), valueOf(value)));
+        // Check if accessor type is numeric (if numeric, use parseDouble or use string equals for others)
+        Class<?> returnType = value.getClass();
+        if (accessors.length > 0) {
+            returnType = accessors[0].getReturnType();
+            if (returnType.isPrimitive()) {
+                // Handle case where return type is primitive (e.g. "int" not "Integer")
+                returnType = ClassUtils.primitiveToWrapper(returnType);
+            }
+        }
+
+        if (Number.class.isAssignableFrom(returnType)) {
+            return anyMatch(accessors, o -> parseDouble(valueOf(o)) == parseDouble(valueOf(value)));
+        } else {
+            return anyMatch(accessors, o -> equalsIgnoreCase(valueOf(o), valueOf(value)));
+        }
     }
 
     @Override

@@ -2,17 +2,10 @@ package org.talend.daikon.spring.audit.logs.service;
 
 import static org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.error.CommonErrorCodes;
@@ -26,13 +19,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AuditLogContextBuilder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogContextBuilder.class);
-
     private final Map<String, String> context = new LinkedHashMap<>();
 
     private final Map<String, Object> request = new LinkedHashMap<>();
 
     private final Map<String, Object> response = new LinkedHashMap<>();
+
+    private AuditLogIpExtractor auditLogIpExtractor = r -> r.getRemoteAddr();
+
+    private HttpServletRequest httpServletRequest;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -56,6 +51,11 @@ public class AuditLogContextBuilder {
             throw new IllegalArgumentException("key cannot be null");
         }
         contextMap.put(key, value);
+        return this;
+    }
+
+    public AuditLogContextBuilder withIpExtractor(AuditLogIpExtractor ipExtractor) {
+        this.auditLogIpExtractor = ipExtractor;
         return this;
     }
 
@@ -133,9 +133,13 @@ public class AuditLogContextBuilder {
 
     public Context build() throws AuditLogException {
         try {
+            // Compute request fields only at build step to leverage ip extractor
+            computeRequestFields();
+
             context.values().removeAll(Collections.singletonList(null));
             request.values().removeAll(Collections.singletonList(null));
             response.values().removeAll(Collections.singletonList(null));
+
             if (!request.isEmpty()) {
                 request.replaceAll((k, v) -> convertToString(v));
                 context.put(REQUEST.getId(), objectMapper.writeValueAsString(request));
@@ -152,9 +156,8 @@ public class AuditLogContextBuilder {
     }
 
     public AuditLogContextBuilder withRequest(HttpServletRequest request, Object requestBody) {
-        String userAgent = request.getHeader("User-Agent");
-        return withClientIp(request.getRemoteAddr()).withRequestUrl(request.getRequestURL().toString())
-                .withRequestMethod(request.getMethod()).withRequestUserAgent(userAgent).withRequestBody(requestBody);
+        this.httpServletRequest = request;
+        return withRequestBody(requestBody);
     }
 
     public AuditLogContextBuilder withResponse(int httpStatus, Object body) {
@@ -203,6 +206,24 @@ public class AuditLogContextBuilder {
 
     public Map<String, Object> getResponse() {
         return response;
+    }
+
+    private void computeRequestFields() {
+        if (httpServletRequest != null) {
+            String userAgent = httpServletRequest.getHeader("User-Agent");
+            if (!context.containsKey(CLIENT_IP.getId())) {
+                withClientIp(auditLogIpExtractor.extract(httpServletRequest));
+            }
+            if (!context.containsKey(URL.getId())) {
+                withRequestUrl(httpServletRequest.getRequestURL().toString());
+            }
+            if (!context.containsKey(METHOD.getId())) {
+                withRequestMethod(httpServletRequest.getMethod());
+            }
+            if (!context.containsKey(USER_AGENT.getId())) {
+                withRequestUserAgent(userAgent);
+            }
+        }
     }
 
     private String convertToString(Object value) {

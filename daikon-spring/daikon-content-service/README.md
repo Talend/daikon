@@ -15,6 +15,11 @@ This module contains the source files for a generic content service with multipl
 | [local-content-service](local-content-service)     | *Adds local file system capabilities*    |
 | [s3-content-service](s3-content-service)           | *Adds S3 file system capabilities*       |
 
+## Integration with existing monitoring
+Implementations of content service uses `@Timed` to track time spent in operations.
+
+Make sure to include `daikon-spring-metrics` in your dependencies to integrate with Spring Boot Actuator and tracing system.
+
 ## Usage
 
 To use local file system, see [local-content-service](local-content-service) for configuration.

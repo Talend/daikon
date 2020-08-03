@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-content-service</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.2.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>content-service-common</artifactId>
@@ -13,6 +13,10 @@
             <groupId>org.talend.daikon</groupId>
             <artifactId>daikon</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
         </dependency>
 
         <dependency>

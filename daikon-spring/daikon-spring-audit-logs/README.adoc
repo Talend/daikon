@@ -36,6 +36,7 @@ Then the module must be enabled and configured with Kafka information :
 ```yaml
 audit:
     enabled: true # Enable audit feature
+    trusted-proxies: 42.42.42.42 # Regular expression matching trusted proxy ips (these ips won't appear in audit logs)
     kafka:
         bootstrapServers: localhost:9092 # Kafka bootstrap server urls for audit logs sending
         topic: audit-logs # Kafka topic for audit logs sending
@@ -58,18 +59,29 @@ A call to the `createResource` method will generate and send the following audit
 
 ```json
 {
-    "timestamp": "2020-04-07T13:26:09.741821Z",
-    "requestId": "009a511a-a71e-4b6c-8e0b-822a90c71e43",
-    "logId": "6bfbc27c-654a-41c2-a241-1cbe0e69c1c6",
-    "applicationId": "daikon",
-    "eventType": "security",
-    "eventCategory": "resource",
-    "eventOperation": "create",
-    "clientIp": "10.80.48.155",
-    "request": "{\"url\":\"http://app.url/resource\",\"method\":\"POST\",\"user_agent\":\"{USER_AGENT}\",\"body\":\"{REQUEST_BODY}\"}",
-    "response": "{\"code\":\"200\",\"body\":\"{REQUEST_BODY}\"}"
+   "timestamp":"2020-04-07T13:26:09.741821Z",
+   "requestId":"009a511a-a71e-4b6c-8e0b-822a90c71e43",
+   "logId":"6bfbc27c-654a-41c2-a241-1cbe0e69c1c6",
+   "accountId":"81fd11b5-d0c2-479d-833c-85d67f79edd0",
+   "userId":"84dc9524-b9b6-4533-a849-606feba86720",
+   "username":"1510_3_int@trial01775.us.talend.com",
+   "email":"1510_3_int@yopmail.com",
+   "applicationId":"daikon",
+   "eventType":"security",
+   "eventCategory":"resource",
+   "eventOperation":"create",
+   "clientIp":"62.80.48.155",
+   "request":{
+      "url":"http://app.url/resource",
+      "method":"POST",
+      "user_agent":"{USER_AGENT}",
+      "body":"{REQUEST_BODY}"
+   },
+   "response":{
+      "code":"200",
+      "body":"{REQUEST_BODY}"
+   }
 }
-
 ```
 
 It is possible to choose to include or not the body response in the generated log with the `includeBodyResponse` annotation parameter.
@@ -116,22 +128,29 @@ Will generate an audit log enhanced with user information :
 
 ```json
 {
-    "timestamp": "2020-04-07T13:26:09.741821Z",
-    "requestId": "009a511a-a71e-4b6c-8e0b-822a90c71e43",
-    "logId": "6bfbc27c-654a-41c2-a241-1cbe0e69c1c6",
-    "accountId": "81fd11b5-d0c2-479d-833c-85d67f79edd0",
-    "userId": "84dc9524-b9b6-4533-a849-606feba86720",
-    "username": "1510_3_int@trial01775.us.talend.com",
-    "email": "1510_3_int@yopmail.com",
-    "applicationId": "daikon",
-    "eventType": "security",
-    "eventCategory": "resource",
-    "eventOperation": "create",
-    "clientIp": "10.80.48.155",
-    "request": "{\"url\":\"http://app.url/resource\",\"method\":\"POST\",\"user_agent\":\"{USER_AGENT}\",\"body\":\"{REQUEST_BODY}\"}",
-    "response": "{\"code\":\"200\",\"body\":\"{REQUEST_BODY}\"}"
+   "timestamp":"2020-04-07T13:26:09.741821Z",
+   "requestId":"009a511a-a71e-4b6c-8e0b-822a90c71e43",
+   "logId":"6bfbc27c-654a-41c2-a241-1cbe0e69c1c6",
+   "accountId":"account1",
+   "userId":"user1",
+   "username":"ejarvis",
+   "email":"edwin.jarvis@talend.com",
+   "applicationId":"daikon",
+   "eventType":"security",
+   "eventCategory":"resource",
+   "eventOperation":"create",
+   "clientIp":"62.80.48.155",
+   "request":{
+      "url":"http://app.url/resource",
+      "method":"POST",
+      "user_agent":"{USER_AGENT}",
+      "body":"{REQUEST_BODY}"
+   },
+   "response":{
+      "code":"200",
+      "body":"{REQUEST_BODY}"
+   }
 }
-
 ```
 
 
@@ -156,4 +175,86 @@ Then the filter must be referenced in the `@GenerateAuditLog` annotation :
 
 ```java
 @GenerateAuditLog([...], filter = MyCustomAuditContextFilter.class)
+```
+
+== IP address
+The IP address(es) is extracted from `x-forwarded-for` header if available.
+If the header is not set, https://docs.oracle.com/javaee/6/api/javax/servlet/ServletRequest.html#getRemoteAddr()[`ServletRequest.getRemoteAddr()`] method is called.
+
+As `x-forwarded-for` header can contain many addresses, including private and public ones,
+only the public addresses are extracted.
+Private internal proxy addresses are extracted with the following pattern (http://tomcat.apache.org/tomcat-9.0-doc/api/org/apache/catalina/valves/RemoteIpValve.html[from Tomcat specifications]) :
+
+```
+10\.\d{1,3}\.\d{1,3}\.\d{1,3}|
+192\.168\.\d{1,3}\.\d{1,3}|
+169\.254\.\d{1,3}\.\d{1,3}|
+127\.\d{1,3}\.\d{1,3}\.\d{1,3}|
+172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|
+172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|
+172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}|
+0:0:0:0:0:0:0:1|::1
+```
+
+In addition, the `audit.trusted-proxies` property can be defined in order to filter extra trusted ips.
+
+=== Unique public IP
+
+For example, a request with the following `x-forwarded-for` header value :
+
+```
+x-forwarded-header: "62.23.50.122, 10.12.15.26, 172.169.12.54"
+```
+
+Will generate an audit log with the following ip :
+
+```json
+{
+   "...": "...",
+   "clientIp":"62.23.50.122",
+   "...": "..."
+}
+```
+
+The private internal addresses `10.12.15.26` and `172.169.12.54` are filtered.
+
+=== Multiple public IPs
+
+In some cases (ip forgery attempt, public proxy, ...), the `x-forwarded-for` can contains several public ips :
+
+```
+x-forwarded-header: "51.51.51.51, 62.23.50.122, 10.12.15.26, 172.169.12.54"
+```
+
+In this case, the generated audit log will contains all the public ips :
+
+```json
+{
+   "...": "...",
+   "clientIp":"51.51.51.51, 62.23.50.122",
+   "...": "..."
+}
+```
+
+=== Trusted IP
+
+Public IPs can be filtered from `x-forwarded-for` header by specifying a matching regex pattern in the `audit.trusted-proxies` property :
+
+```yaml
+audit:
+   trusted-proxies: 42.42.42.42
+```
+
+The IPs from `x-forwarded-for` header matching the trusted proxies pattern won't appear in the generated audit logs :
+
+```
+x-forwarded-header: "62.23.50.122, 42.42.42.42, 10.12.15.26, 172.169.12.54"
+```
+
+```json
+{
+   "...": "...",
+   "clientIp":"62.23.50.122",
+   "...": "..."
+}
 ```
