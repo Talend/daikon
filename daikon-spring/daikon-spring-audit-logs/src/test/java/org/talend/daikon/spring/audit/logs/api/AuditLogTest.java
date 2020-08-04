@@ -203,6 +203,18 @@ public class AuditLogTest {
 
     @Test
     @WithUserDetails
+    public void testGet200BodyWithXFH() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP)
+                // simulate the application is running behind the LB
+                .header("X-Forwarded-Host", "iam.qa.cloud.talend.com")).andExpect(status().isOk());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheckWithLBHost(AuditLogTestApp.GET_200_WITH_BODY, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.OK, AuditLogTestApp.BODY_RESPONSE));
+    }
+
+    @Test
+    @WithUserDetails
     public void testGet200NoBody() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITHOUT_BODY).header(REMOTE_IP_HEADER, MY_IP))
                 .andExpect(status().isOk());
@@ -378,8 +390,18 @@ public class AuditLogTest {
     }
 
     private Object[] httpRequestContextCheck(String url, HttpMethod method, String body) {
+        return httpRequestContextCheck("http", "localhost", url, method, body);
+    }
+
+    private Object[] httpRequestContextCheckWithLBHost(String url, HttpMethod method, String body) {
+        return httpRequestContextCheck("https", "iam.qa.cloud.talend.com", url, method, body);
+    }
+
+    private Object[] httpRequestContextCheck(String expectedProto, String expectedHost, String url, HttpMethod method,
+            String body) {
         return new Object[] { AuditLogFieldEnum.REQUEST, //
-                containsString(String.format("\"%s\":\"http://localhost%s\"", AuditLogFieldEnum.URL.getId(), url)), //
+                containsString(
+                        String.format("\"%s\":\"%s://%s%s\"", AuditLogFieldEnum.URL.getId(), expectedProto, expectedHost, url)), //
                 AuditLogFieldEnum.REQUEST, //
                 containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.METHOD.getId(), method)), //
                 AuditLogFieldEnum.REQUEST, //
