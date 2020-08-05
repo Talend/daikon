@@ -5,6 +5,7 @@ import static org.talend.daikon.content.s3.LocationUtils.S3PathBuilder.builder;
 import static org.talend.daikon.content.s3.S3ContentServiceConfiguration.EC2_AUTHENTICATION;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
@@ -36,11 +37,21 @@ public class S3ResourceResolver extends AbstractResourceResolver {
     @Timed
     @Override
     public DeletableResource[] getResources(String locationPattern) throws IOException {
-        final String location = builder(bucket.getBucketName()) //
+        final String cleanedUpLocationPattern = builder(bucket.getBucketName()) //
                 .append(bucket.getRoot()) //
                 .append(locationPattern) //
                 .build();
-        return super.getResources("s3://" + location);
+
+        final DeletableResource[] resources = super.getResources("s3://" + cleanedUpLocationPattern);
+        return Stream.of(resources) //
+                .map(r -> {
+                    final String s3Location = builder(bucket.getBucketName()) //
+                            .append(bucket.getRoot()) //
+                            .append(toS3Location(r.getFilename())) //
+                            .build();
+                    return wrap(s3Location, r);
+                }) //
+                .toArray(DeletableResource[]::new);
     }
 
     @Timed
@@ -59,6 +70,11 @@ public class S3ResourceResolver extends AbstractResourceResolver {
                 .append(toS3Location(location)) //
                 .build();
 
+        final DeletableResource resource = super.getResource("s3://" + s3Location);
+        return wrap(s3Location, resource);
+    }
+
+    private DeletableResource wrap(String s3Location, DeletableResource resource) {
         final String authentication = environment
                 .getProperty(S3ContentServiceConfiguration.CONTENT_SERVICE_STORE_AUTHENTICATION, EC2_AUTHENTICATION)
                 .toUpperCase();
@@ -66,9 +82,9 @@ public class S3ResourceResolver extends AbstractResourceResolver {
         case S3ContentServiceConfiguration.MINIO_AUTHENTICATION:
         case S3ContentServiceConfiguration.CUSTOM_AUTHENTICATION:
             final String host = environment.getProperty(S3ContentServiceConfiguration.S3_ENDPOINT_URL);
-            return new FixedURLS3Resource(host, s3Location, super.getResource("s3://" + s3Location));
+            return new FixedURLS3Resource(host, s3Location, resource);
         default:
-            return super.getResource("s3://" + s3Location);
+            return resource;
         }
     }
 
