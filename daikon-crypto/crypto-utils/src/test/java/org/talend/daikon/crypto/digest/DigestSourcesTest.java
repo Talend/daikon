@@ -1,6 +1,10 @@
 package org.talend.daikon.crypto.digest;
 
+import java.util.Arrays;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
+import org.talend.daikon.crypto.EncodingUtils;
 import org.talend.daikon.crypto.KeySources;
 
 import static org.junit.Assert.*;
@@ -16,7 +20,20 @@ public class DigestSourcesTest {
         final String digest = DigestSources.sha256().digest(data, KeySources.fixedKey("abcd1234").getKey());
 
         // Then
-        assertEquals("6c7nGrky/ehjM40Ivk3p3+OeoEm9r7NCzmWexUULaa7IG36TBiw+3zjgPRtgPlyVMhJAo7BDDZ6176QavT7/Eg==", digest);
+        assertEquals("aUh5A+XLT97dzHBZd5cRV7raB2ZiLNDvjwVlGzdeRlg=", digest);
+    }
+
+    @Test
+    public void digestShouldBe32Bits() throws Exception {
+        // Given
+        final String data = "value to digest";
+
+        // When
+        final String digest = DigestSources.sha256().digest(data, KeySources.fixedKey("abcd1234").getKey());
+
+        // Then
+        byte[] decodedDigest = EncodingUtils.BASE64_DECODER.apply(digest.getBytes(EncodingUtils.ENCODING));
+        assertEquals(32, decodedDigest.length);
     }
 
     @Test
@@ -31,6 +48,21 @@ public class DigestSourcesTest {
         // Then
         assertEquals(digest1, digest2);
         assertEquals("yBt+kwYsPt844D0bYD5clTISQKOwQw2ete+kGr0+/xI=", digest1);
+    }
+
+    @Test
+    public void saltShouldBeUsedWithPasswordDigest() throws Exception {
+        // Given
+        final String data = "value to digest";
+
+        // When
+        final String digest = DigestSources.sha256().digest(data, KeySources.fixedKey("abcd1234").getKey());
+
+        // Then
+        byte[] decodedDigest = EncodingUtils.BASE64_DECODER.apply(digest.getBytes(EncodingUtils.ENCODING));
+        byte[] passwordPart = new byte[decodedDigest.length / 2];
+        System.arraycopy(decodedDigest, decodedDigest.length / 2, passwordPart, 0, decodedDigest.length / 2);
+        assertFalse(Arrays.equals(passwordPart, DigestUtils.sha256(data)));
     }
 
     @Test
