@@ -4,13 +4,12 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>scala-parent</artifactId>
-        <version>3.1.2-RDU-SNAPSHOT</version>
+        <version>3.1.2-SNAPSHOT</version>
         <relativePath>../scala-parent/pom.xml</relativePath>
     </parent>
     <artifactId>dynamic-log</artifactId>
     <packaging>pom</packaging>
     <name>Daikon Dynamic Log</name>
-    <version>3.1.2-RDU-SNAPSHOT</version>
     <url>https://github.com/Talend/daikon</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

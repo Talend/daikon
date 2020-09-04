@@ -9,7 +9,6 @@
     <artifactId>scala-parent</artifactId>
     <name>scala-parent</name>
     <packaging>pom</packaging>
-    <version>3.1.2-RDU-SNAPSHOT</version>
 
     <properties>
         <scala-plugin-version>3.3.2</scala-plugin-version>

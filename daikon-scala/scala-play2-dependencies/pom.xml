@@ -4,12 +4,11 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-scala</artifactId>
-        <version>3.1.2-RDU-SNAPSHOT</version>
+        <version>3.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>scala-play2-dependencies</artifactId>
     <name>scala-play2-dependencies</name>
     <packaging>pom</packaging>
-    <version>3.1.2-RDU-SNAPSHOT</version>
 
     <properties>
         <play2-version>2.7.4</play2-version>

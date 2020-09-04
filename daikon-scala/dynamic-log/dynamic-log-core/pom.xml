@@ -4,20 +4,19 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>dynamic-log</artifactId>
-        <version>3.1.2-RDU-SNAPSHOT</version>
+        <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>dynamic-log-core</artifactId>
     <name>dynamic-log-core</name>
     <packaging>jar</packaging>
-    <version>3.1.2-RDU-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>scala-play2-dependencies</artifactId>
-		<version>3.1.2-RDU-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

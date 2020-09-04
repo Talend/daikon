@@ -4,13 +4,12 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>dynamic-log</artifactId>
-        <version>3.1.2-RDU-SNAPSHOT</version>
+        <version>3.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>dynamic-log-web-play_2.11</artifactId>
     <name>dynamic-log-web-play</name>
     <packaging>jar</packaging>
-    <version>3.1.2-RDU-SNAPSHOT</version>
 
 
     <repositories>
