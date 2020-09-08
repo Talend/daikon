@@ -56,8 +56,7 @@ public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
 
     private void logInternal(LogLevel level, String category, Context context, Throwable throwable, String message) {
         // creating copy of passed context to be able to modify it
-        Context actualContext =
-                context == null ? ContextBuilder.emptyContext() : ContextBuilder.create(context).build();
+        Context actualContext = context == null ? ContextBuilder.emptyContext() : ContextBuilder.create(context).build();
         Map<String, String> enrichedContext = getEnricher().enrich(category, actualContext);
 
         final AbstractBackend logger = getLogger();
