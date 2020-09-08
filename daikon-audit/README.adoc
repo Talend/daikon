@@ -247,3 +247,13 @@ log.appender=none
 ----
 
 NOTE: If application is running it needs to be restarted for this change to take effect.
+
+=== Disable audit message in audit event
+
+You may use constant `org.talend.logging.audit.impl.AbstractAuditLoggerBase.MDC_OUTPUT_MESSAGE` in the MDC to disable
+message output in case all interesting information is located in MDC.
+
+```
+Context ctx = ContextBuilder.create(MDC_OUTPUT_MESSAGE, "false").build();
+
+```
