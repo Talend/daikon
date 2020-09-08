@@ -1,7 +1,6 @@
 package org.talend.daikon.spring.audit.logs.api;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Mockito.*;
@@ -56,9 +55,11 @@ import ch.qos.logback.core.read.ListAppender;
 @Import(AuditLogTestConfig.class)
 public class AuditLogTest {
 
+    public static final String TRUSTED_PROXIES = "42.42.42.42";
+
     private static final String REMOTE_IP_HEADER = "X-Forwarded-For";
 
-    public static final String TRUSTED_PROXIES = "42.42.42.42";
+    private static final String X_FORWARDED_HOST = "X-Forwarded-Host";
 
     private static final String MY_IP = "35.74.154.242";
 
@@ -206,7 +207,19 @@ public class AuditLogTest {
     public void testGet200BodyWithXFH() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP)
                 // simulate the application is running behind the LB
-                .header("X-Forwarded-Host", "iam.qa.cloud.talend.com")).andExpect(status().isOk());
+                .header(X_FORWARDED_HOST, "iam.qa.cloud.talend.com")).andExpect(status().isOk());
+
+        verifyContext(basicContextCheck());
+        verifyContext(httpRequestContextCheckWithLBHost(AuditLogTestApp.GET_200_WITH_BODY, HttpMethod.GET, null));
+        verifyContext(httpResponseContextCheck(HttpStatus.OK, AuditLogTestApp.BODY_RESPONSE));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testGet200BodyWithXfhAndPort() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP)
+                // simulate the application is running behind the LB that adds port to X-Forwarded-Host header
+                .header(X_FORWARDED_HOST, "iam.qa.cloud.talend.com:443")).andExpect(status().isOk());
 
         verifyContext(basicContextCheck());
         verifyContext(httpRequestContextCheckWithLBHost(AuditLogTestApp.GET_200_WITH_BODY, HttpMethod.GET, null));

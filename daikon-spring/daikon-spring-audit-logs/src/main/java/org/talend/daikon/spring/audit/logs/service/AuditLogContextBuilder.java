@@ -231,11 +231,17 @@ public class AuditLogContextBuilder {
         if (!StringUtils.isEmpty(httpServletRequest.getHeader("X-Forwarded-Host"))) {
             return UriComponentsBuilder.fromPath(httpServletRequest.getRequestURI())
                     .scheme(Optional.ofNullable(httpServletRequest.getHeader("X-Forwarded-Proto")).orElse("https"))
-                    .host(httpServletRequest.getHeader("X-Forwarded-Host")).query(httpServletRequest.getQueryString()).build()
-                    .toUri().toString();
+                    .host(retrieveHost(httpServletRequest))
+                    .query(httpServletRequest.getQueryString())
+                    .build().toUri().toString();
         } else {
             return httpServletRequest.getRequestURL().toString();
         }
+    }
+
+    private String retrieveHost(HttpServletRequest httpServletRequest) {
+        String hostWithPort = httpServletRequest.getHeader("X-Forwarded-Host");
+        return hostWithPort.split(":")[0];
     }
 
     private String convertToString(Object value) {
