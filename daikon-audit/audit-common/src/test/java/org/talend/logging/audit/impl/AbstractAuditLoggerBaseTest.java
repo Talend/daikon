@@ -25,6 +25,31 @@ public class AbstractAuditLoggerBaseTest {
 
     @Test
     @SuppressWarnings({ "unchecked" })
+    public void testNoMessageOutput() {
+        // Given
+        String category = "testCat";
+        Context ctx = ContextBuilder.create(AbstractAuditLoggerBase.MDC_OUTPUT_MESSAGE, "false").build();
+
+        AbstractBackend logger = mock(AbstractBackend.class);
+        logger.log(category.toLowerCase(), LogLevel.INFO, "", null);
+        expect(logger.getCopyOfContextMap()).andReturn(new LinkedHashMap<>());
+        expect(logger.setNewContext(anyObject(Map.class), anyObject(Map.class))).andReturn(ctx);
+        logger.resetContext(anyObject(Map.class));
+        expectLastCall();
+        replay(logger);
+
+        TestAuditLoggerBaseTest base = new TestAuditLoggerBaseTest(logger);
+
+        // When
+        base.log(LogLevel.INFO, category, ctx, null, "A discarded message");
+
+        // Then
+
+        verify(logger);
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
     public void testLog() {
         String category = "testCat";
         Context ctx = ContextBuilder.emptyContext();
@@ -32,7 +57,7 @@ public class AbstractAuditLoggerBaseTest {
 
         AbstractBackend logger = mock(AbstractBackend.class);
         logger.log(category.toLowerCase(), LogLevel.INFO, thr.getMessage(), thr);
-        expect(logger.getCopyOfContextMap()).andReturn(new LinkedHashMap<String, String>());
+        expect(logger.getCopyOfContextMap()).andReturn(new LinkedHashMap<>());
         expect(logger.setNewContext(anyObject(Map.class), anyObject(Map.class))).andReturn(ctx);
         logger.resetContext(anyObject(Map.class));
         expectLastCall();
