@@ -25,7 +25,7 @@ public abstract class AbstractBackend {
     /**
      * Log something when you don't have a message.
      *
-     * For instance, when {@link #isOnHoldForFormattedMessages()} return {@code #false}.
+     * For instance, when {@link #enableMessageFormat()} return {@code #false}.
      */
     public void log(String category, LogLevel level, Throwable throwable) {
         log(category, level, "", throwable);
@@ -75,7 +75,7 @@ public abstract class AbstractBackend {
      * message to produce a trace and so
      * that is not necessary to compute one.
      */
-    protected boolean isOnHoldForFormattedMessages() {
+    protected boolean enableMessageFormat() {
         return true;
     }
 

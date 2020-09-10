@@ -10,7 +10,7 @@ public class AbstractBackendTest {
     @Test
     public void testThatDefaultBahaviourIsToHaveMessages() {
         AbstractBackend logger = partialMockBuilder(AbstractBackend.class).createMock();
-        Assert.assertTrue(logger.isOnHoldForFormattedMessages());
+        Assert.assertTrue(logger.enableMessageFormat());
     }
 
 }

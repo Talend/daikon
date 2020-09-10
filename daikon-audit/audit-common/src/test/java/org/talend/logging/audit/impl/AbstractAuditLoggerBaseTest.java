@@ -37,7 +37,7 @@ public class AbstractAuditLoggerBaseTest {
 
         AbstractBackend logger = mock(AbstractBackend.class);
         // Init backend so that it has the messages
-        expect(logger.isOnHoldForFormattedMessages()).andReturn(true);
+        expect(logger.enableMessageFormat()).andReturn(true);
 
         logger.log(category.toLowerCase(), LogLevel.INFO, thr.getMessage(), thr);
         expect(logger.getCopyOfContextMap()).andReturn(new LinkedHashMap<>());
@@ -62,7 +62,7 @@ public class AbstractAuditLoggerBaseTest {
 
         AbstractBackend logger = mock(AbstractBackend.class);
         // Init backend so that it hasn't the messages
-        expect(logger.isOnHoldForFormattedMessages()).andReturn(false);
+        expect(logger.enableMessageFormat()).andReturn(false);
 
         logger.log(category.toLowerCase(), LogLevel.INFO, null);
         expect(logger.getCopyOfContextMap()).andReturn(new LinkedHashMap<>());
