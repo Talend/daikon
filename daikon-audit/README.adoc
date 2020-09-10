@@ -252,4 +252,4 @@ NOTE: If application is running it needs to be restarted for this change to take
 
 It is possible for an `AbstractBackend` to disable log messages if it doesn't need it (e.g. performance consideration).
 
-To do that, the implementation of the `AbstractBackend` have to override the method `isOnHoldForFormattedMessages` in order to retuen `false` (default value is `true` - backward compatibility conciderations).
+To do that, the implementation of the `AbstractBackend` have to override the method `isOnHoldForFormattedMessages` in order to return `false` (default value is `true` - backward compatibility considerations).
