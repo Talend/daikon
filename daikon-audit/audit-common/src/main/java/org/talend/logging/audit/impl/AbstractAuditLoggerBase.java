@@ -1,28 +1,15 @@
 package org.talend.logging.audit.impl;
 
-import java.util.Map;
-
 import org.talend.logging.audit.Context;
 import org.talend.logging.audit.ContextBuilder;
 import org.talend.logging.audit.LogLevel;
+
+import java.util.Map;
 
 /**
  *
  */
 public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
-
-    /**
-     * <p>
-     * A MDC key to use to customize whether audit logger should output message in audit events. This is interesting
-     * in case only when MDC (Context) contains all the interesting information for the audit ingestion and no message
-     * is required.
-     * </p>
-     * <p>
-     * When set to "false", message in audit event will be replaced by an empty string. It defaults to <code>true</code>
-     * for backward compatibility issues (and also because audit system are generally interested in message).
-     * </p>
-     */
-    public static final String MDC_OUTPUT_MESSAGE = "__output-message__";
 
     private static String formatMessage(String message, Map<String, String> mdcContext) {
         if (mdcContext == null) {
@@ -63,11 +50,11 @@ public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
         final Map<String, String> oldContext = logger.getCopyOfContextMap();
         final Map<String, String> completeContext = logger.setNewContext(oldContext, enrichedContext);
         try {
-            if (Boolean.parseBoolean(completeContext.getOrDefault(MDC_OUTPUT_MESSAGE, Boolean.TRUE.toString()))) {
+            if (logger.enableMessageFormat()) {
                 message = formatMessage(message, completeContext);
                 logger.log(category, level, message, throwable);
             } else {
-                logger.log(category, level, "", throwable);
+                logger.log(category, level, throwable);
             }
         } finally {
             logger.resetContext(oldContext);

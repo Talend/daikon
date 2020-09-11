@@ -250,10 +250,6 @@ NOTE: If application is running it needs to be restarted for this change to take
 
 === Disable audit message in audit event
 
-You may use constant `org.talend.logging.audit.impl.AbstractAuditLoggerBase.MDC_OUTPUT_MESSAGE` in the MDC to disable
-message output in case all interesting information is located in MDC.
+It is possible for an `AbstractBackend` to disable log messages if it doesn't need it (e.g. performance consideration).
 
-```
-Context ctx = ContextBuilder.create(MDC_OUTPUT_MESSAGE, "false").build();
-
-```
+To do that, the implementation of the `AbstractBackend` have to override the method `enableMessageFormat` in order to return `false` (default value is `true` - backward compatibility considerations).
