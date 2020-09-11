@@ -67,9 +67,12 @@ public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
         final Map<String, String> oldContext = logger.getCopyOfContextMap();
         final Map<String, String> completeContext = setNewContext(logger, oldContext, enrichedContext);
         try {
-            final String formattedMessage = formatMessage(message, completeContext);
-
-            logger.log(category, level, formattedMessage, throwable);
+            if (logger.enableMessageFormat()) {
+                message = formatMessage(message, completeContext);
+                logger.log(category, level, message, throwable);
+            } else {
+                logger.log(category, level, throwable);
+            }
         } finally {
             resetContext(logger, oldContext);
         }
