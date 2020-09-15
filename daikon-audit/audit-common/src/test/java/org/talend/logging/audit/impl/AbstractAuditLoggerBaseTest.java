@@ -29,7 +29,7 @@ public class AbstractAuditLoggerBaseTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     public void testLog() {
         String category = "testCat";
         Context ctx = ContextBuilder.emptyContext();
@@ -54,7 +54,7 @@ public class AbstractAuditLoggerBaseTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     public void testNoMessageNeededByTheBackend() {
         // Given
         String category = "testCat";

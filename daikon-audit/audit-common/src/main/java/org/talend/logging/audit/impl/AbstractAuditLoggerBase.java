@@ -12,22 +12,6 @@ import org.talend.logging.audit.LogLevel;
  */
 public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
 
-    private static Map<String, String> setNewContext(AbstractBackend logger, Map<String, String> oldContext,
-            Map<String, String> newContext) {
-        ContextBuilder builder = ContextBuilder.create();
-        if (oldContext != null) {
-            builder.with(oldContext);
-        }
-        Context completeContext = builder.with(newContext).build();
-
-        logger.setContextMap(completeContext);
-        return completeContext;
-    }
-
-    private static void resetContext(AbstractBackend logger, Map<String, String> oldContext) {
-        logger.setContextMap(oldContext == null ? new LinkedHashMap<String, String>() : oldContext);
-    }
-
     private static String formatMessage(String message, Map<String, String> mdcContext) {
         if (mdcContext == null) {
             return message;
@@ -65,7 +49,7 @@ public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
 
         final AbstractBackend logger = getLogger();
         final Map<String, String> oldContext = logger.getCopyOfContextMap();
-        final Map<String, String> completeContext = setNewContext(logger, oldContext, enrichedContext);
+        final Map<String, String> completeContext = logger.setNewContext(oldContext, enrichedContext);
         try {
             if (logger.enableMessageFormat()) {
                 message = formatMessage(message, completeContext);
@@ -74,7 +58,7 @@ public abstract class AbstractAuditLoggerBase implements AuditLoggerBase {
                 logger.log(category, level, throwable);
             }
         } finally {
-            resetContext(logger, oldContext);
+            logger.resetContext(oldContext);
         }
     }
 

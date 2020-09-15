@@ -69,7 +69,8 @@ public abstract class AbstractBackend {
      *
      * Remark: default value is {@code true} (backward compatibility)
      *
-     * @return - {@code true} indicate to the {@link org.talend.logging.audit.AuditLogger} that this {@link AbstractBackend} use log
+     * @return - {@code true} indicate to the {@link org.talend.logging.audit.AuditLogger} that this {@link AbstractBackend} use
+     * log
      * message to produce a trace.
      * - {@code false} indicate to the {@link org.talend.logging.audit.AuditLogger} that this {@link AbstractBackend} doesn't use
      * message to produce a trace and so
