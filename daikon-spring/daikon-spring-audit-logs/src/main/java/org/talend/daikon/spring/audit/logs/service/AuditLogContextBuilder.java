@@ -214,13 +214,13 @@ public class AuditLogContextBuilder {
             if (!context.containsKey(CLIENT_IP.getId())) {
                 withClientIp(auditLogIpExtractor.extract(httpServletRequest));
             }
-            if (!context.containsKey(URL.getId())) {
+            if (!request.containsKey(URL.getId())) {
                 withRequestUrl(httpServletRequest.getRequestURL().toString());
             }
-            if (!context.containsKey(METHOD.getId())) {
+            if (!request.containsKey(METHOD.getId())) {
                 withRequestMethod(httpServletRequest.getMethod());
             }
-            if (!context.containsKey(USER_AGENT.getId())) {
+            if (!request.containsKey(USER_AGENT.getId())) {
                 withRequestUserAgent(userAgent);
             }
         }
