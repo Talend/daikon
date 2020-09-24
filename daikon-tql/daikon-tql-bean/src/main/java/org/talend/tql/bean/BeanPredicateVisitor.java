@@ -239,7 +239,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         // Check if accessor type is numeric (if numeric, use parseDouble or use string equals for others)
         Class<?> returnType = value.getClass();
         if (accessors.length > 0) {
-            returnType = accessors[0].getReturnType();
+            returnType = accessors[accessors.length - 1].getReturnType();
             if (returnType.isPrimitive()) {
                 // Handle case where return type is primitive (e.g. "int" not "Integer")
                 returnType = ClassUtils.primitiveToWrapper(returnType);
