@@ -42,8 +42,8 @@
             <dependency>
                 <groupId>io.confluent</groupId>
                 <artifactId>kafka-avro-serializer</artifactId>
-                <!-- For Confluent Platform 3.2.1 -->
-                <version>3.2.1</version>
+                <!-- For Confluent Platform 5.5.1 -->
+                <version>5.5.1</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.avro</groupId>
