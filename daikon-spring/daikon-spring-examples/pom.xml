@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
     <name>Examples using Daikon spring related modules.</name>
     <url>https://github.com/Talend/daikon</url>
-    <version>3.1.4-SNAPSHOT</version>
+    <version>3.1.5-SNAPSHOT</version>
 
     <properties>
         <spring-boot.version>2.1.13.RELEASE</spring-boot.version>
