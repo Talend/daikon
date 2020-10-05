@@ -21,7 +21,7 @@
         <talend_snapshots>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots>
         <talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
         <pushChanges>false</pushChanges>
-	    <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
+        <jackson.1x.version>1.9.15-TALEND</jackson.1x.version>
 	    <jackson.version>2.9.5</jackson.version>
 	    <jackson.version.annotations>2.9.0</jackson.version.annotations>
 	    <commons-io.version>1.3.2</commons-io.version>
@@ -137,6 +137,17 @@
 		        <type>pom</type>
 		        <scope>import</scope>
 	        </dependency>
+            <!-- include the Jackson 1.x dependencies manually with fixes for those know CVEs -->
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>${jackson.1x.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${jackson.1x.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
