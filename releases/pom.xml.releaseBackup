@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-parent</artifactId>
-        <version>3.1.4-SNAPSHOT</version>
+        <version>3.1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>releases</artifactId>
