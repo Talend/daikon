@@ -23,7 +23,7 @@
         <talend_releases>https://artifacts-zl.talend.com/nexus/content/repositories/TalendOpenSourceRelease/
         </talend_releases>
         <pushChanges>false</pushChanges>
-        <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
+        <jackson.1x.version>1.9.15-TALEND</jackson.1x.version>
         <jackson.version>2.10.1</jackson.version>
         <jackson.version.annotations>2.10.1</jackson.version.annotations>
         <slf4j.version>1.7.25</slf4j.version>
@@ -186,6 +186,17 @@
                 <version>${jackson.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!-- include the Jackson 1.x dependencies manually with fixes for those know CVEs -->
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>${jackson.1x.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${jackson.1x.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
