@@ -76,6 +76,7 @@
         <httpclient.version>4.5.7</httpclient.version>
         <feign-core.version>8.18.0</feign-core.version>
         <gson.version>2.8.6</gson.version>
+        <jackson.1x.version>1.9.15-TALEND</jackson.1x.version>
     </properties>
     <modules>
         <module>daikon</module>
@@ -210,6 +211,17 @@
                 <groupId>de.flapdoodle.embed</groupId>
                 <artifactId>de.flapdoodle.embed.mongo</artifactId>
                 <version>${de.flapdoodle.embed.mongo.version}</version>
+            </dependency>
+             <!-- include the Jackson 1.x dependencies manually with fixes for those know CVEs -->
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>${jackson.1x.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${jackson.1x.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
