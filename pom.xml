@@ -25,7 +25,7 @@
         </talend_releases>
         <talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
         <pushChanges>false</pushChanges>
-        <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
+        <jackson.1x.version>1.9.15-TALEND</jackson.1x.version>
         <jackson.version>2.10.1</jackson.version>
         <jackson.version.annotations>2.10.1</jackson.version.annotations>
         <slf4j.version>1.7.26</slf4j.version>
@@ -210,6 +210,17 @@
                 <groupId>de.flapdoodle.embed</groupId>
                 <artifactId>de.flapdoodle.embed.mongo</artifactId>
                 <version>${de.flapdoodle.embed.mongo.version}</version>
+            </dependency>
+            <!-- include the Jackson 1.x dependencies manually with fixes for those know CVEs -->
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>${jackson.1x.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${jackson.1x.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
