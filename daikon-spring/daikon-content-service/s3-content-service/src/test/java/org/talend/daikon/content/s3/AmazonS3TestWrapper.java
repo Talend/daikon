@@ -925,4 +925,71 @@ public class AmazonS3TestWrapper implements AmazonS3 {
         return delegate.waiters();
     }
 
+    @Override
+    public SetPublicAccessBlockResult setPublicAccessBlock(SetPublicAccessBlockRequest setPublicAccessBlockRequest) {
+        return delegate.setPublicAccessBlock(setPublicAccessBlockRequest);
+    }
+
+    @Override
+    public GetPublicAccessBlockResult getPublicAccessBlock(GetPublicAccessBlockRequest getPublicAccessBlockRequest) {
+        return delegate.getPublicAccessBlock(getPublicAccessBlockRequest);
+    }
+
+    @Override
+    public DeletePublicAccessBlockResult deletePublicAccessBlock(DeletePublicAccessBlockRequest deletePublicAccessBlockRequest) {
+        return delegate.deletePublicAccessBlock(deletePublicAccessBlockRequest);
+    }
+
+    @Override
+    public GetBucketPolicyStatusResult getBucketPolicyStatus(GetBucketPolicyStatusRequest getBucketPolicyStatusRequest) {
+        return delegate.getBucketPolicyStatus(getBucketPolicyStatusRequest);
+    }
+
+    @Override
+    public SetObjectLegalHoldResult setObjectLegalHold(SetObjectLegalHoldRequest setObjectLegalHoldRequest) {
+        return delegate.setObjectLegalHold(setObjectLegalHoldRequest);
+    }
+
+    @Override
+    public GetObjectLegalHoldResult getObjectLegalHold(GetObjectLegalHoldRequest getObjectLegalHoldRequest) {
+        return delegate.getObjectLegalHold(getObjectLegalHoldRequest);
+    }
+
+    @Override
+    public SetObjectLockConfigurationResult setObjectLockConfiguration(
+            SetObjectLockConfigurationRequest setObjectLockConfigurationRequest) {
+        return delegate.setObjectLockConfiguration(setObjectLockConfigurationRequest);
+    }
+
+    @Override
+    public GetObjectLockConfigurationResult getObjectLockConfiguration(
+            GetObjectLockConfigurationRequest getObjectLockConfigurationRequest) {
+        return delegate.getObjectLockConfiguration(getObjectLockConfigurationRequest);
+    }
+
+    @Override
+    public SetObjectRetentionResult setObjectRetention(SetObjectRetentionRequest setObjectRetentionRequest) {
+        return delegate.setObjectRetention(setObjectRetentionRequest);
+    }
+
+    @Override
+    public GetObjectRetentionResult getObjectRetention(GetObjectRetentionRequest getObjectRetentionRequest) {
+        return delegate.getObjectRetention(getObjectRetentionRequest);
+    }
+
+    @Override
+    public PresignedUrlDownloadResult download(PresignedUrlDownloadRequest presignedUrlDownloadRequest) {
+        return delegate.download(presignedUrlDownloadRequest);
+    }
+
+    @Override
+    public void download(PresignedUrlDownloadRequest presignedUrlDownloadRequest, File file) {
+        delegate.download(presignedUrlDownloadRequest, file);
+    }
+
+    @Override
+    public PresignedUrlUploadResult upload(PresignedUrlUploadRequest presignedUrlUploadRequest) {
+        return delegate.upload(presignedUrlUploadRequest);
+    }
+
 }

@@ -1,0 +1,51 @@
+= Daikon Release Notes (3.1.3) - 09/25/2020
+
+Thanks to @Francois Huaulme, @Colm O hEigeartaigh, @Jérémy Hervy, @mbutko, @vPiatnytsia, @RyanSkraba, @Aurélien Leboulanger, @wang wei, @Aurélien F, @Michael Tallet, @Fabien Abballe
+
+== Fix
+- link:https://jira.talendforge.org/browse/TPSVC-15818[TPSVC-15818]: IP validation of 'negative' audit-log events fails on int and QA stacks (link:https://github.com/Talend/daikon/pull/651[#651])
+- link:https://jira.talendforge.org/browse/TPSVC-15563[TPSVC-15563]: [AZ-sandbox] Public api is not accessible through Portal (link:https://github.com/Talend/daikon/pull/647[#647])
+- link:https://jira.talendforge.org/browse/TPSVC-15254[TPSVC-15254]: [Audit Logs] Request URL logged is an internal one instead of the public one (link:https://github.com/Talend/daikon/pull/641[#641])
+- link:https://jira.talendforge.org/browse/TPSVC-15266[TPSVC-15266]: Solve "audit log context is incomplete" errors (link:https://github.com/Talend/daikon/pull/640[#640])
+- link:https://jira.talendforge.org/browse/TPSVC-14487[TPSVC-14487]: negative events not capture when manually generating audit logs (link:https://github.com/Talend/daikon/pull/615[#615])
+- link:https://jira.talendforge.org/browse/TPSVC-14487[TPSVC-14487]: negative events not capture when manually generating audit logs (link:https://github.com/Talend/daikon/pull/614[#614])
+- link:https://jira.talendforge.org/browse/TPSVC-14487[TPSVC-14487]: negative events not capture when manually generating audit logs (link:https://github.com/Talend/daikon/pull/612[#612])
+
+== Feature
+- link:https://jira.talendforge.org/browse/TDKN-297[TDKN-297]: Add the ability to disable message output in daikon-audit (link:https://github.com/Talend/daikon/pull/648[#648])
+- link:https://jira.talendforge.org/browse/TDKN-294[TDKN-294]: Add monitoring to content service (link:https://github.com/Talend/daikon/pull/635[#635])
+- link:https://jira.talendforge.org/browse/TDI-44172[TDI-44172]: Observability: Create new "component execution" event and emit it frequently (link:https://github.com/Talend/daikon/pull/620[#620])
+- link:https://jira.talendforge.org/browse/TPSVC-14037[TPSVC-14037]: Have audit logs for negative events (link:https://github.com/Talend/daikon/pull/609[#609])
+- link:https://jira.talendforge.org/browse/TPSVC-14037[TPSVC-14037]: Have audit logs for negative events (link:https://github.com/Talend/daikon/pull/605[#605])
+- link:https://jira.talendforge.org/browse/TPSVC-14118[TPSVC-14118]: Move to camel case the Audit logs body of the response (link:https://github.com/Talend/daikon/pull/600[#600])
+- link:https://jira.talendforge.org/browse/TPSVC-13814[TPSVC-13814]: [AUDIT LOGS] Integrate Dev framework in iam-proxy (audit logs generation) (link:https://github.com/Talend/daikon/pull/599[#599])
+- link:https://jira.talendforge.org/browse/TPSVC-13814[TPSVC-13814]: [AUDIT LOGS] Integrate Dev framework in iam-proxy (audit logs generation) (link:https://github.com/Talend/daikon/pull/597[#597])
+- link:https://jira.talendforge.org/browse/TPSVC-13659[TPSVC-13659]: [AUDIT LOGS] Initialize and integrate Dev framework in Audit Logs API (audit logs generation) (link:https://github.com/Talend/daikon/pull/594[#594])
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDC-4420[TDC-4420]: [Back][Security] Bump daikon library to 3.1.0 (link:https://github.com/Talend/daikon/pull/654[#654])
+- link:https://jira.talendforge.org/browse/TDKN-298[TDKN-298]: Update Commons Validator to 1.7 in daikon-spring-audit-logs (link:https://github.com/Talend/daikon/pull/653[#653])
+- link:https://jira.talendforge.org/browse/TDKN-295[TDKN-295]: DigestSources.sha256 not mixing salt with password... (link:https://github.com/Talend/daikon/pull/644[#644])
+- link:https://jira.talendforge.org/browse/TDKN-292[TDKN-292]: Update to Avro 1.10.0 (link:https://github.com/Talend/daikon/pull/625[#625])
+- link:https://jira.talendforge.org/browse/TPSVC-15007[TPSVC-15007]: [AUDIT LOGS] Extract IPs from x-forwarded-for header & filter WAF IPs (link:https://github.com/Talend/daikon/pull/633[#633])
+- link:https://jira.talendforge.org/browse/TPSVC-15007[TPSVC-15007]: [AUDIT LOGS] Extract IPs from x-forwarded-for header & filter WAF IPs (link:https://github.com/Talend/daikon/pull/631[#631])
+- link:https://jira.talendforge.org/browse/TDKN-293[TDKN-293]: Fix BeanPredicateVisitor "equals" support for numeric values (link:https://github.com/Talend/daikon/pull/628[#628])
+- link:https://jira.talendforge.org/browse/TPSVC-15007[TPSVC-15007]: [AUDIT LOGS] Extract IPs from x-forwarded-for header & filter WAF IPs (link:https://github.com/Talend/daikon/pull/626[#626])
+- link:https://jira.talendforge.org/browse/TDP-8780[TDP-8780]: Zipkin don't have any TDP- related requests (link:https://github.com/Talend/daikon/pull/616[#616])
+- link:https://jira.talendforge.org/browse/TDKN-285[TDKN-285]: Update SLF4J to 1.7.26 (link:https://github.com/Talend/daikon/pull/607[#607])
+- link:https://jira.talendforge.org/browse/TDKN-286[TDKN-286]: Remove dependency on Jackson 1.9.14-TALEND (link:https://github.com/Talend/daikon/pull/608[#608])
+- link:https://jira.talendforge.org/browse/TDKN-281[TDKN-281]: Upgrade Spring Boot to 2.2.5 / Hoxton SR3 (link:https://github.com/Talend/daikon/pull/592[#592])
+- link:https://jira.talendforge.org/browse/TDKN-284[TDKN-284]: Update Log4j 2 to 2.13.2 (link:https://github.com/Talend/daikon/pull/602[#602])
+- link:https://jira.talendforge.org/browse/TDKN-283[TDKN-283]: Update BouncyCastle to 1.65 (link:https://github.com/Talend/daikon/pull/595[#595])
+- link:https://jira.talendforge.org/browse/TDKN-280[TDKN-280]: Upgrade Spring Boot to 2.1.13 / Greenwich SR5 (link:https://github.com/Talend/daikon/pull/591[#591])
+- link:https://jira.talendforge.org/browse/TDKN-279[TDKN-279]: Upgrade commons-configuration2 to 2.7  (link:https://github.com/Talend/daikon/pull/590[#590])
+
+== Other
+- link:https://jira.talendforge.org/browse/TDP-7886[TDP-7886]: Embed new dataset-dispatcher service on the OnPrem build (link:https://github.com/Talend/daikon/pull/580[#580])
+- chore(journal): Performance improvement for content journal  (link:https://github.com/Talend/daikon/pull/638[#638])
+- chore(journal): Performance improvement for content journal  (link:https://github.com/Talend/daikon/pull/636[#636])
+- fix(content-service) Fix getUrl/getUri when using custom authentication mode  (link:https://github.com/Talend/daikon/pull/637[#637])
+- feat(s3) S3 configuration improvement  (link:https://github.com/Talend/daikon/pull/624[#624])
+- fix: set the S3 bucket as a URL path for MINIO configuration  (link:https://github.com/Talend/daikon/pull/622[#622])
+- chore(upgrade) CQRS POC + update Spring Boot  (link:https://github.com/Talend/daikon/pull/587[#587])
+- feat(security) allow anonymous access to the version endpoint  (link:https://github.com/Talend/daikon/pull/584[#584])

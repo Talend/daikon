@@ -27,11 +27,11 @@ _Modules_                                                     |_Description_
 
 ## Library compatibility
 
-|              | *Daikon 2.x*    | *Daikon 2.1.x*  | *Daikon 3.x* | *Daikon 3.1.x* |
-|--------------|-----------------|-----------------|--------------|----------------|
-| Spring Boot  | 2.1.10          | 2.1.13          | 2.2.5        | 2.2.9          |
-| Spring Cloud | Greenwich SR4   | Greenwich SR5   | Hoxton SR3   | Hoxton SR6     |
-| Jackson      | 2.10.1          | 2.10.3          | 2.10.3       | 2.10.4         |
+|              | *Daikon 2.x*    | *Daikon 2.1.x*  | *Daikon 3.x* | *Daikon 3.1.x* | *Daikon 3.2.x* |
+|--------------|-----------------|-----------------|--------------|----------------|----------------|
+| Spring Boot  | 2.1.10          | 2.1.13          | 2.2.5        | 2.2.9          | 2.2.10         |
+| Spring Cloud | Greenwich SR4   | Greenwich SR5   | Hoxton SR3   | Hoxton SR6     | Hoxton SR8     |
+| Jackson      | 2.10.1          | 2.10.3          | 2.10.3       | 2.10.4         | 2.10.4         |
 
 ## Support
 

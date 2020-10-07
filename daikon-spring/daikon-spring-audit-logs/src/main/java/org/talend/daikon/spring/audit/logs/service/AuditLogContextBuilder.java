@@ -215,13 +215,13 @@ public class AuditLogContextBuilder {
             if (!context.containsKey(CLIENT_IP.getId())) {
                 withClientIp(auditLogIpExtractor.extract(httpServletRequest));
             }
-            if (!context.containsKey(URL.getId())) {
+            if (!request.containsKey(URL.getId())) {
                 withRequestUrl(computeRequestUrl(httpServletRequest));
             }
-            if (!context.containsKey(METHOD.getId())) {
+            if (!request.containsKey(METHOD.getId())) {
                 withRequestMethod(httpServletRequest.getMethod());
             }
-            if (!context.containsKey(USER_AGENT.getId())) {
+            if (!request.containsKey(USER_AGENT.getId())) {
                 withRequestUserAgent(userAgent);
             }
         }
@@ -230,12 +230,17 @@ public class AuditLogContextBuilder {
     private String computeRequestUrl(HttpServletRequest httpServletRequest) {
         if (!StringUtils.isEmpty(httpServletRequest.getHeader("X-Forwarded-Host"))) {
             return UriComponentsBuilder.fromPath(httpServletRequest.getRequestURI())
-                    .scheme(Optional.ofNullable(httpServletRequest.getHeader("X-Forwarded-Proto")).orElse("https"))
-                    .host(httpServletRequest.getHeader("X-Forwarded-Host")).query(httpServletRequest.getQueryString()).build()
-                    .toUri().toString();
+                    .scheme(Optional.ofNullable(httpServletRequest.getHeader("X-Forwarded-Proto"))
+                            .filter(it -> it.matches("http|https")).orElse("https"))
+                    .host(retrieveHost(httpServletRequest)).query(httpServletRequest.getQueryString()).build().toUri().toString();
         } else {
             return httpServletRequest.getRequestURL().toString();
         }
+    }
+
+    private String retrieveHost(HttpServletRequest httpServletRequest) {
+        String hostWithPort = httpServletRequest.getHeader("X-Forwarded-Host");
+        return hostWithPort.split(":")[0];
     }
 
     private String convertToString(Object value) {
