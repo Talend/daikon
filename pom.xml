@@ -123,7 +123,7 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-    </repository>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -157,7 +157,7 @@
         <repository>
             <id>talend_nexus_deployment</id>
             <url>${talend_releases}</url>
-    </repository>
+        </repository>
     </distributionManagement>
     <dependencyManagement>
         <dependencies>
