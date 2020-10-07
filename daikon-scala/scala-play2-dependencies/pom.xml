@@ -13,8 +13,6 @@
     <properties>
         <play2-version>2.7.4</play2-version>
         <silhouette-version>6.1.0</silhouette-version>
-        <akka-version>2.5.31-talend</akka-version>
-        <slick-version>3.3.2</slick-version>
     </properties>
 
     <dependencyManagement>

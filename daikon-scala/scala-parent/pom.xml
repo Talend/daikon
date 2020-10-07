@@ -11,9 +11,6 @@
     <packaging>pom</packaging>
 
     <properties>
-        <scala-plugin-version>3.3.2</scala-plugin-version>
-        <scala-version>2.12.11</scala-version>
-        <scala-binary-version>2.12</scala-binary-version>
         <guice-version>4.1.0</guice-version>
     </properties>
 
