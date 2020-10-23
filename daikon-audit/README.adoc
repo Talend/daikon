@@ -247,3 +247,9 @@ log.appender=none
 ----
 
 NOTE: If application is running it needs to be restarted for this change to take effect.
+
+=== Disable audit message in audit event
+
+It is possible for an `AbstractBackend` to disable log messages if it doesn't need it (e.g. performance consideration).
+
+To do that, the implementation of the `AbstractBackend` have to override the method `enableMessageFormat` in order to return `false` (default value is `true` - backward compatibility considerations).

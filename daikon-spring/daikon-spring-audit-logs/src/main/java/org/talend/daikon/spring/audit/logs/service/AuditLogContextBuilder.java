@@ -7,6 +7,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.talend.daikon.exception.ExceptionContext;
 import org.talend.daikon.exception.error.CommonErrorCodes;
 import org.talend.daikon.spring.audit.logs.exception.AuditLogException;
@@ -214,16 +215,32 @@ public class AuditLogContextBuilder {
             if (!context.containsKey(CLIENT_IP.getId())) {
                 withClientIp(auditLogIpExtractor.extract(httpServletRequest));
             }
-            if (!context.containsKey(URL.getId())) {
-                withRequestUrl(httpServletRequest.getRequestURL().toString());
+            if (!request.containsKey(URL.getId())) {
+                withRequestUrl(computeRequestUrl(httpServletRequest));
             }
-            if (!context.containsKey(METHOD.getId())) {
+            if (!request.containsKey(METHOD.getId())) {
                 withRequestMethod(httpServletRequest.getMethod());
             }
-            if (!context.containsKey(USER_AGENT.getId())) {
+            if (!request.containsKey(USER_AGENT.getId())) {
                 withRequestUserAgent(userAgent);
             }
         }
+    }
+
+    private String computeRequestUrl(HttpServletRequest httpServletRequest) {
+        if (!StringUtils.isEmpty(httpServletRequest.getHeader("X-Forwarded-Host"))) {
+            return UriComponentsBuilder.fromPath(httpServletRequest.getRequestURI())
+                    .scheme(Optional.ofNullable(httpServletRequest.getHeader("X-Forwarded-Proto"))
+                            .filter(it -> it.matches("http|https")).orElse("https"))
+                    .host(retrieveHost(httpServletRequest)).query(httpServletRequest.getQueryString()).build().toUri().toString();
+        } else {
+            return httpServletRequest.getRequestURL().toString();
+        }
+    }
+
+    private String retrieveHost(HttpServletRequest httpServletRequest) {
+        String hostWithPort = httpServletRequest.getHeader("X-Forwarded-Host");
+        return hostWithPort.split(":")[0];
     }
 
     private String convertToString(Object value) {

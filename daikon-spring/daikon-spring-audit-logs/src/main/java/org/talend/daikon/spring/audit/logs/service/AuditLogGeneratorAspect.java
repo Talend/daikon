@@ -16,7 +16,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -28,8 +27,11 @@ public class AuditLogGeneratorAspect {
 
     private final AuditLogSender auditLogSender;
 
-    public AuditLogGeneratorAspect(AuditLogSender auditLogSender) {
+    private final ResponseExtractor responseExtractor;
+
+    public AuditLogGeneratorAspect(AuditLogSender auditLogSender, ResponseExtractor responseExtractor) {
         this.auditLogSender = auditLogSender;
+        this.responseExtractor = responseExtractor;
     }
 
     /**
@@ -64,10 +66,11 @@ public class AuditLogGeneratorAspect {
 
             // This result will be used as Response body
             Object auditLogResponseObject = responseObject;
-            if (responseObject instanceof ResponseEntity) {
-                // In case of ResponseEntity, body and status code can be retrieved directly
-                responseCode = ((ResponseEntity) responseObject).getStatusCode().value();
-                auditLogResponseObject = ((ResponseEntity) responseObject).getBody();
+            int code = responseExtractor.getStatusCode(responseObject);
+            if (code != 0) {
+                responseCode = code;
+                // for some responses such 204|302 we should have empty body and retrieve it from response
+                auditLogResponseObject = responseExtractor.getResponseBody(responseObject);
             }
 
             // Send logs only in case of success or if responseCode can't be defined

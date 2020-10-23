@@ -1,5 +1,7 @@
 package org.talend.daikon.crypto.digest;
 
+import java.io.UnsupportedEncodingException;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.talend.daikon.crypto.EncodingUtils;
 import org.talend.daikon.crypto.KeySource;
@@ -21,11 +23,16 @@ public class DigestSources {
             if (salt == null || salt.length == 0) {
                 return EncodingUtils.BASE64_ENCODER.apply(dataDigest);
             } else {
-                final byte[] digestedSalt = DigestUtils.sha256(salt);
-                final byte[] result = new byte[digestedSalt.length + dataDigest.length];
-                System.arraycopy(digestedSalt, 0, result, 0, digestedSalt.length);
-                System.arraycopy(dataDigest, 0, result, digestedSalt.length, dataDigest.length);
-                return EncodingUtils.BASE64_ENCODER.apply(result);
+                try {
+                    final byte[] dataBytes = data.getBytes(EncodingUtils.ENCODING);
+                    final byte[] toDigest = new byte[salt.length + dataBytes.length];
+                    System.arraycopy(salt, 0, toDigest, 0, salt.length);
+                    System.arraycopy(dataBytes, 0, toDigest, salt.length, dataBytes.length);
+                    final byte[] result = DigestUtils.sha256(toDigest);
+                    return EncodingUtils.BASE64_ENCODER.apply(result);
+                } catch (UnsupportedEncodingException e) {
+                    throw new IllegalStateException("Unable to digest value.", e);
+                }
             }
         };
     }

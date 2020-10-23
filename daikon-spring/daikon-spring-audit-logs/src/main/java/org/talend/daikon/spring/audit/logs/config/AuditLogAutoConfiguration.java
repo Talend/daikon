@@ -4,11 +4,13 @@ import java.util.Optional;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -82,8 +84,8 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public AuditLogGeneratorAspect auditLogGeneratorAspect(AuditLogSender auditLogSender) {
-        return new AuditLogGeneratorAspect(auditLogSender);
+    public AuditLogGeneratorAspect auditLogGeneratorAspect(AuditLogSender auditLogSender, ResponseExtractor responseExtractor) {
+        return new AuditLogGeneratorAspect(auditLogSender, responseExtractor);
     }
 
     @Bean
@@ -94,5 +96,23 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
     @Bean
     public AuditLogIpExtractor auditLogIpExtractor(AuditProperties auditProperties) {
         return new AuditLogIpExtractorImpl(auditProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ResponseExtractor responseExtractor() {
+        return new ResponseExtractor() {
+
+            // In case of ResponseEntity, body and status code can be retrieved directly
+            @Override
+            public int getStatusCode(Object responseObject) {
+                return responseObject instanceof ResponseEntity ? ((ResponseEntity) responseObject).getStatusCode().value() : 0;
+            }
+
+            @Override
+            public Object getResponseBody(Object responseObject) {
+                return responseObject instanceof ResponseEntity ? ((ResponseEntity) responseObject).getBody() : null;
+            }
+        };
     }
 }

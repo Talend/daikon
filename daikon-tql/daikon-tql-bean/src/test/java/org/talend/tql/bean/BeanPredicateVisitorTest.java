@@ -508,6 +508,18 @@ public class BeanPredicateVisitorTest {
         assertTrue(predicate.test(bean));
     }
 
+    @Test
+    public void testNestedIntComparison() {
+        // given
+        final Expression query = Tql.parse("nested.nestedDouble = 10.1");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
     // Test class
     public static class Bean {
 
@@ -550,6 +562,10 @@ public class BeanPredicateVisitorTest {
 
         public int getNestedInt() {
             return 10;
+        }
+
+        public double getNestedDouble() {
+            return 10.1;
         }
 
         public String getNestedValue() {

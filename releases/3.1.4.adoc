@@ -1,0 +1,7 @@
+= Daikon Release Notes (3.1.4) - 09/30/2020
+
+Thanks to @Oleksii Zatsepin
+
+== Fix
+- link:https://jira.talendforge.org/browse/TMC-22935[TMC-22935]: Can't set schedule to task,got " Failed to save schedule." 504 error (link:https://github.com/Talend/daikon/pull/656[#656])
+- link:https://jira.talendforge.org/browse/TMC-22830[TMC-22830]: POST task operation: wrong response body is logged in audit logs (link:https://github.com/Talend/daikon/pull/655[#655])

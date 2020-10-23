@@ -1,0 +1,9 @@
+= Daikon Release Notes (3.1.5) - 10/05/2020
+
+Thanks to @Colm O hEigeartaigh, @dependabot[bot]
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-299[TDKN-299]: Update Jackson 1.9.13/14 to 1.9.15-TALEND (link:https://github.com/Talend/daikon/pull/658[#658])
+
+== Other
+- chore(deps): bump lodash.merge in /daikon-tql/daikon-tql-client  (link:https://github.com/Talend/daikon/pull/646[#646])
