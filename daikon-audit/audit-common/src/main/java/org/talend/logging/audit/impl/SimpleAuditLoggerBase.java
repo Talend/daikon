@@ -62,8 +62,11 @@ public class SimpleAuditLoggerBase implements AuditLoggerBase {
     @Override
     public void log(LogLevel level, String category, Context context, Throwable throwable, String message) {
         Context actualContext = context == null ? ContextBuilder.emptyContext() : ContextBuilder.create(context).build();
-        backend.setNewContext(actualContext);
-
-        this.backend.log(category, level, message, throwable);
+        try {
+            backend.setNewContext(actualContext);
+            this.backend.log(category, level, message, throwable);
+        } finally {
+            backend.resetContext(null);
+        }
     }
 }
