@@ -1,5 +1,7 @@
 package org.talend.logging.audit.impl;
 
+import java.util.Map;
+
 import org.talend.logging.audit.Context;
 import org.talend.logging.audit.ContextBuilder;
 import org.talend.logging.audit.LogLevel;
@@ -11,6 +13,11 @@ public class SimpleAuditLoggerBase implements AuditLoggerBase {
     private static final String KAFKA_BACKEND = "org.talend.logging.audit.kafka.KafkaBackend";
 
     private final AbstractBackend backend;
+
+    // For UT only
+    SimpleAuditLoggerBase(AbstractBackend backend) {
+        this.backend = backend;
+    }
 
     public SimpleAuditLoggerBase() {
         this(loadConfig());
@@ -62,11 +69,12 @@ public class SimpleAuditLoggerBase implements AuditLoggerBase {
     @Override
     public void log(LogLevel level, String category, Context context, Throwable throwable, String message) {
         Context actualContext = context == null ? ContextBuilder.emptyContext() : ContextBuilder.create(context).build();
+        Map<String, String> currentContext = backend.getCopyOfContextMap();
         try {
             backend.setNewContext(actualContext);
-            this.backend.log(category, level, message, throwable);
+            backend.log(category, level, message, throwable);
         } finally {
-            backend.resetContext(null);
+            backend.resetContext(currentContext);
         }
     }
 }

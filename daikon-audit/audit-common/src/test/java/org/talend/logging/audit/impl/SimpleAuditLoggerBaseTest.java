@@ -1,5 +1,17 @@
 package org.talend.logging.audit.impl;
 
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.easymock.MockType.STRICT;
+import static org.talend.logging.audit.LogLevel.INFO;
+
+import java.util.Collections;
+import java.util.Map;
+
+import org.easymock.EasyMockRule;
+import org.easymock.Mock;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -10,6 +22,12 @@ public class SimpleAuditLoggerBaseTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+
+    @Rule
+    public EasyMockRule mocks = new EasyMockRule(this);
+
+    @Mock(STRICT)
+    public AbstractBackend backend;
 
     @Test
     public void testInitAutoNoKafkaBackendNotFound() {
@@ -42,5 +60,20 @@ public class SimpleAuditLoggerBaseTest {
         expectedException.expectMessage("Unsupported backend LOGBACK");
 
         simpleAuditLoggerBase = new SimpleAuditLoggerBase(config);
+    }
+
+    @Test
+    public void testContextIsRestored() {
+        simpleAuditLoggerBase = new SimpleAuditLoggerBase(backend);
+        Map<String, String> currentContext = Collections.singletonMap("k", "v");
+
+        expect(backend.getCopyOfContextMap()).andReturn(currentContext);
+        expect(backend.setNewContext(anyObject())).andReturn(null);
+        backend.log(anyObject(), anyObject(), anyObject(), anyObject());
+        backend.resetContext(currentContext);
+
+        replay(backend);
+        simpleAuditLoggerBase.log(INFO, "category", null, null, "msg");
+        verify(backend);
     }
 }
