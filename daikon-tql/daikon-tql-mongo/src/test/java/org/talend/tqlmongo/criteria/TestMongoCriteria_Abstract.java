@@ -68,7 +68,7 @@ public abstract class TestMongoCriteria_Abstract {
         mongodExecutable = starter.prepare(mongodConfig);
         mongodExecutable.start();
 
-        MongoClient mongo = MongoClients.create(new ConnectionString(bindIp + ":" + port));
+        MongoClient mongo = MongoClients.create(new ConnectionString("mongodb://" + bindIp + ":" + port));
         mongoTemplate = new MongoTemplate(mongo, DB_NAME);
     }
 
