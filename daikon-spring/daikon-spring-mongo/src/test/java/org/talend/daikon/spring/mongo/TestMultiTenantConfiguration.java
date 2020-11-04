@@ -41,7 +41,8 @@ public class TestMultiTenantConfiguration {
     @Bean
     public MongoDatabaseFactory defaultMongoDbFactory() {
         MongoServer server = mongoServer();
-        return new SimpleMongoClientDatabaseFactory(new ConnectionString("mongodb:/" + server.getLocalAddress().toString() + "/default"));
+        return new SimpleMongoClientDatabaseFactory(
+                new ConnectionString("mongodb:/" + server.getLocalAddress().toString() + "/default"));
     }
 
     @Bean
