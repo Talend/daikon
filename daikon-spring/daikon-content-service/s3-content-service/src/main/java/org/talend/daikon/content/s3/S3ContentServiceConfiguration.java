@@ -108,6 +108,9 @@ public class S3ContentServiceConfiguration {
         final String endpointUrl = environment.getProperty(S3_ENDPOINT_URL);
         if (StringUtils.isNotBlank(endpointUrl)) {
             builder = builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, region));
+        } else if (builder.getRegion() == null) {
+            // Need a default region if nothing is set
+            builder.setRegion(Regions.US_EAST_1.name());
         }
 
         // All set
