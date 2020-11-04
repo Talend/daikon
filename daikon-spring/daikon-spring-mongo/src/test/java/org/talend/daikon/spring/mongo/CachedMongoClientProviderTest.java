@@ -6,14 +6,13 @@ import static org.junit.Assert.assertSame;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.client.MongoClient;
 import de.bwaldvogel.mongo.MongoServer;
 import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 
 public class CachedMongoClientProviderTest {
 
@@ -36,8 +35,8 @@ public class CachedMongoClientProviderTest {
             }
 
             @Override
-            public MongoClientURI getDatabaseURI() {
-                return new MongoClientURI(
+            public ConnectionString getDatabaseURI() {
+                return new ConnectionString(
                         "mongodb://" + serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant);
             }
         };

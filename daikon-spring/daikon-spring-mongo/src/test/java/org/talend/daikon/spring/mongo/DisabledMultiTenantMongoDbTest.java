@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = "multi-tenancy.mongodb.active=false")
@@ -23,7 +23,7 @@ public class DisabledMultiTenantMongoDbTest extends AbstractMultiTenantMongoDbTe
 
     @Test
     public void shouldHaveMultiTenantFactory() throws Exception {
-        assertEquals(SimpleMongoDbFactory.class, mongoDbFactory.getClass());
+        assertEquals(SimpleMongoClientDatabaseFactory.class, mongoDbFactory.getClass());
     }
 
     @Test

@@ -1,6 +1,6 @@
 package org.talend.daikon.spring.mongo;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 
 import java.io.Closeable;
 

@@ -1,7 +1,7 @@
 package org.talend.daikon.spring.mongo;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+import com.mongodb.ConnectionString;
+import com.mongodb.client.MongoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
 
     private final MongoClientProvider delegate;
 
-    private final Map<MongoClientURI, AtomicInteger> concurrentOpens = Collections.synchronizedMap(new HashMap<>());
+    private final Map<ConnectionString, AtomicInteger> concurrentOpens = Collections.synchronizedMap(new HashMap<>());
 
     public SynchronizedMongoClientProvider(MongoClientProvider delegate) {
         this.delegate = delegate;
@@ -29,7 +29,7 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
 
     @Override
     public MongoClient get(TenantInformationProvider tenantInformationProvider) {
-        final MongoClientURI databaseURI = tenantInformationProvider.getDatabaseURI();
+        final ConnectionString databaseURI = tenantInformationProvider.getDatabaseURI();
         concurrentOpens.putIfAbsent(databaseURI, new AtomicInteger(0));
         concurrentOpens.get(databaseURI).incrementAndGet();
 
@@ -38,7 +38,7 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
 
     @Override
     public synchronized void close(TenantInformationProvider tenantInformationProvider) {
-        MongoClientURI databaseURI = null;
+        ConnectionString databaseURI = null;
         int openCount = 0;
         try {
             databaseURI = tenantInformationProvider.getDatabaseURI();

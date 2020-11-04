@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.bson.Document;
@@ -27,8 +30,6 @@ import org.talend.tql.model.TqlElement;
 import org.talend.tql.parser.TqlExpressionVisitor;
 import org.talend.tqlmongo.ASTVisitor;
 
-import com.mongodb.MongoClient;
-
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
@@ -37,9 +38,6 @@ import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 
-/**
- * Created by gmzoughi on 06/07/16.
- */
 public abstract class TestMongoCriteria_Abstract {
 
     private final static String DB_NAME = "tql-mongo";
@@ -70,7 +68,7 @@ public abstract class TestMongoCriteria_Abstract {
         mongodExecutable = starter.prepare(mongodConfig);
         mongodExecutable.start();
 
-        MongoClient mongo = new MongoClient(bindIp, port);
+        MongoClient mongo = MongoClients.create(new ConnectionString(bindIp + ":" + port));
         mongoTemplate = new MongoTemplate(mongo, DB_NAME);
     }
 

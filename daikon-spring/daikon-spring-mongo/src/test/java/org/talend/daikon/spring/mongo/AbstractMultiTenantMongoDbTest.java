@@ -1,7 +1,9 @@
 package org.talend.daikon.spring.mongo;
 
-import com.mongodb.MongoClient;
+import com.mongodb.ConnectionString;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import de.bwaldvogel.mongo.MongoServer;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -33,9 +35,9 @@ public abstract class AbstractMultiTenantMongoDbTest {
     @Before
     public void tearDown() throws IOException {
         // Drop all created databases during test
-        MongoClient client = new MongoClient(new ServerAddress(mongoServer.getLocalAddress()));
+        MongoClient client = MongoClients.create(new ConnectionString(mongoServer.getLocalAddress().toString()));
         for (String database : client.listDatabaseNames()) {
-            client.dropDatabase(database);
+            client.getDatabase(database).drop();
         }
         // Switch back to default tenant
         changeTenant("default");

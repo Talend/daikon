@@ -6,30 +6,28 @@ import com.mongodb.client.MongoDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
-import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.util.Assert;
 
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-
 /**
- * A {@link MongoDbFactory} that allows external code to choose which MongoDB database should be accessed.
+ * A {@link MongoDatabaseFactory} that allows external code to choose which MongoDB database should be accessed.
  *
  * @see TenantInformationProvider
  */
-class MultiTenancyMongoDbFactory implements MongoDbFactory, DisposableBean {
+class MultiTenancyMongoDbFactory implements MongoDatabaseFactory, DisposableBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiTenancyMongoDbFactory.class);
 
-    private final MongoDbFactory delegate;
+    private final MongoDatabaseFactory delegate;
 
     private final TenantInformationProvider tenantProvider;
 
     private final MongoClientProvider mongoClientProvider;
 
-    MultiTenancyMongoDbFactory(final MongoDbFactory delegate, //
+    MultiTenancyMongoDbFactory(final MongoDatabaseFactory delegate, //
             final TenantInformationProvider tenantProvider, //
             final MongoClientProvider mongoClientProvider) {
         this.delegate = delegate;
@@ -38,7 +36,7 @@ class MultiTenancyMongoDbFactory implements MongoDbFactory, DisposableBean {
     }
 
     @Override
-    public MongoDatabase getDb() {
+    public MongoDatabase getMongoDatabase() throws DataAccessException {
         final String databaseName = getDatabaseName();
         LOGGER.debug("Using '{}' as Mongo database.", databaseName);
         // Get MongoDB database using tenant information
@@ -58,9 +56,9 @@ class MultiTenancyMongoDbFactory implements MongoDbFactory, DisposableBean {
     }
 
     @Override
-    public MongoDatabase getDb(String dbName) {
+    public MongoDatabase getMongoDatabase(String databaseName) throws DataAccessException {
         // There's no reason the database name parameter should be considered here (information belongs to the tenant).
-        return getDb();
+        return getMongoDatabase();
     }
 
     @Override
@@ -69,19 +67,12 @@ class MultiTenancyMongoDbFactory implements MongoDbFactory, DisposableBean {
     }
 
     @Override
-    public DB getLegacyDb() {
-        final String databaseName = getDatabaseName();
-        LOGGER.debug("Using '{}' as Mongo database.", databaseName);
-        return mongoClientProvider.get(tenantProvider).getDB(databaseName);
-    }
-
-    @Override
     public ClientSession getSession(ClientSessionOptions options) {
         return null;
     }
 
     @Override
-    public MongoDbFactory withSession(ClientSession session) {
+    public MongoDatabaseFactory withSession(ClientSession session) {
         return this;
     }
 
