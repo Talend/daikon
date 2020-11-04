@@ -35,7 +35,7 @@ public abstract class AbstractMultiTenantMongoDbTest {
     @Before
     public void tearDown() throws IOException {
         // Drop all created databases during test
-        MongoClient client = MongoClients.create(new ConnectionString(mongoServer.getLocalAddress().toString()));
+        MongoClient client = MongoClients.create(new ConnectionString("mongodb:/" + mongoServer.getLocalAddress().toString()) + "/standard");
         for (String database : client.listDatabaseNames()) {
             client.getDatabase(database).drop();
         }

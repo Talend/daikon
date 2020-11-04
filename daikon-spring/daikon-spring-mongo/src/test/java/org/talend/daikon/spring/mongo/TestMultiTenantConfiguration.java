@@ -41,7 +41,7 @@ public class TestMultiTenantConfiguration {
     @Bean
     public MongoDatabaseFactory defaultMongoDbFactory() {
         MongoServer server = mongoServer();
-        return new SimpleMongoClientDatabaseFactory(new ConnectionString(server.getLocalAddress().toString()));
+        return new SimpleMongoClientDatabaseFactory(new ConnectionString("mongodb:/" + server.getLocalAddress().toString() + "/standard"));
     }
 
     @Bean
@@ -60,7 +60,7 @@ public class TestMultiTenantConfiguration {
     }
 
     @Bean
-    public MongoTemplate mongoTemplate(final MongoDbFactory factory) {
+    public MongoTemplate mongoTemplate(final MongoDatabaseFactory factory) {
         // Used in tests
         return new MongoTemplate(factory);
     }

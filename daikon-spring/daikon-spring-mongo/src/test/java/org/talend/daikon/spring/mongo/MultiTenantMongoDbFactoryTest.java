@@ -11,6 +11,7 @@ import de.bwaldvogel.mongo.MongoServer;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.TestPropertySource;
@@ -22,7 +23,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
     private TestRepository testRepository;
 
     @Autowired
-    private MongoDbFactory mongoDbFactory;
+    private MongoDatabaseFactory mongoDbFactory;
 
     @Autowired
     private MongoTemplate mongoTemplate;
