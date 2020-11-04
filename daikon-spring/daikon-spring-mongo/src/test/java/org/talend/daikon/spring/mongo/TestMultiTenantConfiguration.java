@@ -41,7 +41,7 @@ public class TestMultiTenantConfiguration {
     @Bean
     public MongoDatabaseFactory defaultMongoDbFactory() {
         MongoServer server = mongoServer();
-        return new SimpleMongoClientDatabaseFactory(new ConnectionString("mongodb:/" + server.getLocalAddress().toString() + "/standard"));
+        return new SimpleMongoClientDatabaseFactory(new ConnectionString("mongodb:/" + server.getLocalAddress().toString() + "/default"));
     }
 
     @Bean
@@ -69,7 +69,7 @@ public class TestMultiTenantConfiguration {
      * @return A {@link TenantInformationProvider} that gets the database name from {@link #dataBaseName}.
      */
     @Bean
-    public TenantInformationProvider tenantProvider() {
+    public TenantInformationProvider tenantProvider(MongoServer mongoServer) {
         return new TenantInformationProvider() {
 
             @Override
@@ -82,7 +82,7 @@ public class TestMultiTenantConfiguration {
 
             @Override
             public ConnectionString getDatabaseURI() {
-                String uri = "mongodb://fake_host:27017/" + dataBaseName.get();
+                String uri = "mongodb://127.0.0.1:" + mongoServer.getLocalAddress().getPort() + "/" + dataBaseName.get();
                 return new ConnectionString(uri);
             }
         };
