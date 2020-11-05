@@ -37,11 +37,20 @@ _Modules_                                                     |_Description_
 
 ### Daikon 3.x
 
-|              | *Daikon 3.0.x* | *Daikon 3.1.x* | *Daikon 3.2.x* | *Daikon 3.3.x* |
-|--------------|----------------|----------------|----------------|----------------|
-| Spring Boot  | 2.2.5          | 2.2.9          | 2.2.10         | 2.3.5          |
-| Spring Cloud | Hoxton SR3     | Hoxton SR6     | Hoxton SR8     | Hoxton SR8     |
-| Jackson      | 2.10.3         | 2.10.4         | 2.10.4         | 2.10.4         |
+|              | *Daikon 3.0.x* | *Daikon 3.1.x* | *Daikon 3.2.x* |
+|--------------|----------------|----------------|----------------|
+| Spring Boot  | 2.2.5          | 2.2.9          | 2.2.10         |
+| Spring Cloud | Hoxton SR3     | Hoxton SR6     | Hoxton SR8     |
+| Jackson      | 2.10.3         | 2.10.4         | 2.10.4         |
+
+### Daikon 4.x
+
+|              | *Daikon 4.0.x* |
+|--------------|----------------|
+| Spring Boot  | 2.3.5          |
+| Spring Cloud | Hoxton SR8     |
+| Jackson      | 2.10.4         |
+
 
 ## Support
 
