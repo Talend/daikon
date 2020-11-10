@@ -4,11 +4,11 @@
     <parent>
         <artifactId>daikon-parent</artifactId>
         <groupId>org.talend.daikon</groupId>
-        <version>3.2.2-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>daikon-documentation</artifactId>
-    <version>3.2.2-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>daikon-documentation Maven Plugin</name>
