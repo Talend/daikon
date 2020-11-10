@@ -1,14 +1,14 @@
 package org.talend.daikon.content;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public abstract class DeletableResourceLoaderTest extends DeletableLoaderResourceTests {
 
@@ -59,6 +59,37 @@ public abstract class DeletableResourceLoaderTest extends DeletableLoaderResourc
 
         // Then
         assertFalse(resolver.getResource("test.log").exists());
+    }
+
+    @Test
+    public void getResources() throws Exception {
+        // Given
+        final DeletableResource resource1 = resolver.getResource("test1.log");
+        try (OutputStream outputStream = resource1.getOutputStream()) {
+            outputStream.write("test content".getBytes());
+        }
+
+        final DeletableResource resource2 = resolver.getResource("test2.log");
+        try (OutputStream outputStream = resource2.getOutputStream()) {
+            outputStream.write("test content".getBytes());
+        }
+
+        // When
+        final DeletableResource[] resources = resolver.getResources("test*");
+
+        // Then
+        assertGetResources(resources);
+    }
+
+    protected void assertGetResources(DeletableResource[] resources) {
+        assertEquals(2, resources.length);
+        assertTrue( //
+                Stream.of(resources) //
+                        .filter(r -> r.getFilename() != null) //
+                        .allMatch(r -> r.getFilename().endsWith("test1.log") //
+                                || r.getFilename().endsWith("test2.log") //
+                        ) //
+        );
     }
 
     @Test

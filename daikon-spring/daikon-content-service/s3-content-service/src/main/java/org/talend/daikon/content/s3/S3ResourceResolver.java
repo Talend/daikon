@@ -76,17 +76,19 @@ public class S3ResourceResolver extends AbstractResourceResolver {
         final String bucketName = bucket.getBucketName();
         final String bucketRoot = bucket.getRoot();
 
+        final S3DeletableResource resource = new S3DeletableResource(writableResource, amazonS3, filename, bucketName,
+                bucketRoot);
         switch (authentication) {
-            case S3ContentServiceConfiguration.MINIO_AUTHENTICATION:
-            case S3ContentServiceConfiguration.CUSTOM_AUTHENTICATION:
-                final String host = environment.getProperty(S3ContentServiceConfiguration.S3_ENDPOINT_URL);
-                final String s3Location = builder(bucketName) //
-                        .append(bucketRoot) //
-                        .append(toS3Location(filename)) //
-                        .build();
-                return new FixedURLS3Resource(host, s3Location, super.getResource("s3://" + s3Location));
-            default:
-                return new S3DeletableResource(writableResource, amazonS3, filename, bucketName, bucketRoot);
+        case S3ContentServiceConfiguration.MINIO_AUTHENTICATION:
+        case S3ContentServiceConfiguration.CUSTOM_AUTHENTICATION:
+            final String host = environment.getProperty(S3ContentServiceConfiguration.S3_ENDPOINT_URL);
+            final String s3Location = builder(bucketName) //
+                    .append(bucketRoot) //
+                    .append(toS3Location(filename)) //
+                    .build();
+            return new FixedURLS3Resource(host, s3Location, resource);
+        default:
+            return resource;
         }
     }
 }
