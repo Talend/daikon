@@ -59,6 +59,8 @@ public class S3ContentServiceConfigurationTest {
         when(environment.getProperty(eq("content-service.store.s3.authentication"), anyString())).thenReturn("TOKEN");
         when(environment.getProperty("content-service.store.s3.secretKey")).thenReturn("verySecret");
         when(environment.getProperty("content-service.store.s3.accessKey")).thenReturn("anAccessKey");
+        when(environment.containsProperty(eq(S3ContentServiceConfiguration.S3_ENDPOINT_URL))).thenReturn(true);
+        when(environment.getProperty(eq(S3ContentServiceConfiguration.S3_ENDPOINT_URL))).thenReturn("http://fake.io:9001");
         when(environment.getProperty(eq(S3ContentServiceConfiguration.S3_ENABLE_PATH_STYLE), eq(Boolean.class), any()))
                 .thenReturn(false);
 

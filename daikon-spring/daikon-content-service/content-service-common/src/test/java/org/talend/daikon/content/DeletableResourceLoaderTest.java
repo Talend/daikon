@@ -1,6 +1,7 @@
 package org.talend.daikon.content;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,6 +12,11 @@ import java.util.stream.Stream;
 import static org.junit.Assert.*;
 
 public abstract class DeletableResourceLoaderTest extends DeletableLoaderResourceTests {
+
+    @After
+    public void after() throws IOException {
+        resolver.clear("/**");
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnNull() {
@@ -75,14 +81,13 @@ public abstract class DeletableResourceLoaderTest extends DeletableLoaderResourc
         }
 
         // When
-        final DeletableResource[] resources = resolver.getResources("test*");
+        final DeletableResource[] resources = resolver.getResources("test*.log");
 
         // Then
         assertGetResources(resources);
     }
 
     protected void assertGetResources(DeletableResource[] resources) {
-        assertEquals(2, resources.length);
         assertTrue( //
                 Stream.of(resources) //
                         .filter(r -> r.getFilename() != null) //
