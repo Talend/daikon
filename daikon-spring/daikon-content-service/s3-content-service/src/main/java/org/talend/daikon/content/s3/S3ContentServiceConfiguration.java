@@ -153,16 +153,15 @@ public class S3ContentServiceConfiguration {
     }
 
     @Bean
-    public PathMatchingSimpleStorageResourcePatternResolver getPathMatchingResourcePatternResolver(AmazonS3 amazonS3) {
-        return new PathMatchingSimpleStorageResourcePatternResolver(amazonS3, simpleStorageResourceLoader(amazonS3));
+    public PathMatchingSimpleStorageResourcePatternResolver getPathMatchingResourcePatternResolver(AmazonS3 amazonS3,
+            ApplicationContext context) {
+        return new PathMatchingSimpleStorageResourcePatternResolver(amazonS3, simpleStorageResourceLoader(context));
     }
 
-    /*
-     * TODO this method must be changed when https://github.com/spring-cloud/spring-cloud-aws/issues/348 is fixed.
-     */
-    private PathMatchingResourcePatternResolver simpleStorageResourceLoader(AmazonS3 amazonS3) {
+    private PathMatchingResourcePatternResolver simpleStorageResourceLoader(ApplicationContext context) {
         DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-        SimpleStorageProtocolResolver resolver = new SimpleStorageProtocolResolver(amazonS3);
+        SimpleStorageProtocolResolver resolver = new SimpleStorageProtocolResolver();
+        resolver.setBeanFactory(context);
         resolver.afterPropertiesSet();
         resourceLoader.addProtocolResolver(resolver);
         return new PathMatchingResourcePatternResolver(resourceLoader);

@@ -45,11 +45,11 @@ _Modules_                                                     |_Description_
 
 ### Daikon 4.x
 
-|              | *Daikon 4.0.x* |
-|--------------|----------------|
-| Spring Boot  | 2.3.5          |
-| Spring Cloud | Hoxton SR8     |
-| Jackson      | 2.10.4         |
+|              | *Daikon 4.0.x* | Daikon 4.1.x |
+|--------------|----------------|--------------|
+| Spring Boot  | 2.3.5          | 2.3.6        |
+| Spring Cloud | Hoxton SR8     | Hoxton SR9   |
+| Jackson      | 2.10.4         | 2.11.3       |
 
 
 ## Support

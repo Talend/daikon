@@ -26,8 +26,8 @@
         <talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
         <pushChanges>false</pushChanges>
 
-        <jackson.version>2.10.4</jackson.version>
-        <jackson.version.annotations>2.10.4</jackson.version.annotations>
+        <jackson.version>2.11.3</jackson.version>
+        <jackson.version.annotations>2.11.3</jackson.version.annotations>
         <slf4j.version>1.7.26</slf4j.version>
         <log4j1.version>1.2.17</log4j1.version>
         <logback.version>1.2.3</logback.version>
@@ -41,8 +41,8 @@
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
         <mongo-java-server.version>1.11.1</mongo-java-server.version>
 
-        <spring-boot.version>2.3.5.RELEASE</spring-boot.version>
-        <spring-cloud-dependencies.version>Hoxton.SR8</spring-cloud-dependencies.version>
+        <spring-boot.version>2.3.6.RELEASE</spring-boot.version>
+        <spring-cloud-dependencies.version>Hoxton.SR9</spring-cloud-dependencies.version>
 
         <s3mock.version>0.1.6</s3mock.version>
         <aws-java-sdk-s3.version>1.11.18</aws-java-sdk-s3.version>
@@ -55,7 +55,7 @@
         <enunciate-version>2.8.0</enunciate-version>
         <commons-lang3.version>3.8.1</commons-lang3.version>
         <slf4j-log4j12.version>1.7.21</slf4j-log4j12.version>
-        <guava.version>27.1-jre</guava.version>
+        <guava.version>30.0-jre</guava.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <bnd.version>3.0.0</bnd.version>
         <kafka-clients.version>0.10.0.0</kafka-clients.version>
