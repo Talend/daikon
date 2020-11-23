@@ -1,0 +1,6 @@
+= Daikon Release Notes (3.2.2) - 10/30/2020
+
+Thanks to @Oleksii Zatsepin
+
+== Fix
+- link:https://jira.talendforge.org/browse/TMC-23122[TMC-23122]: [Audit Log] Response body is null for CREATE operation (link:https://github.com/Talend/daikon/pull/669[#669])

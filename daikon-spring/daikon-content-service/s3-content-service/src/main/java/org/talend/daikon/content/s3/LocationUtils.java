@@ -21,6 +21,9 @@ class LocationUtils {
      * @return The location ready to processed in all the S3 related classes.
      */
     public static String toS3Location(String location) {
+        if (location == null) {
+            return null;
+        }
         if (location.startsWith("/") && location.length() > 1) {
             return location.substring(1);
         } else {
