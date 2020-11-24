@@ -1,0 +1,20 @@
+= Daikon Release Notes (4.0.0) - 11/23/2020
+
+Thanks to @Francois Huaulme, @Oleksii Zatsepin, @vgagara-talend, @dependabot[bot], @Rémy DUBOIS, @Colm O hEigeartaigh, @fhuaulme
+
+== Fix
+- link:https://jira.talendforge.org/browse/TMC-23122[TMC-23122]: [Audit Log] Response body is null for CREATE operation (link:https://github.com/Talend/daikon/pull/669[#669])
+- link:https://jira.talendforge.org/browse/TPSVC-15325[TPSVC-15325]: Kibana logs: customInfo (MDC) does not match logMessage (link:https://github.com/Talend/daikon/pull/668[#668])
+- link:https://jira.talendforge.org/browse/TMC-23122[TMC-23122]: [Audit Log] Response body is null for CREATE operation (link:https://github.com/Talend/daikon/pull/667[#667])
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-300[TDKN-300]: Fix high/critical CVE issues in daikon (link:https://github.com/Talend/daikon/pull/663[#663])
+
+== Other
+- feat(update) Upgrade to Spring Boot 2.3.5  (link:https://github.com/Talend/daikon/pull/670[#670])
+- fix(content-service) Fix content service getResource  (link:https://github.com/Talend/daikon/pull/672[#672])
+- chore(deps): bump junit from 4.12 to 4.13.1  (link:https://github.com/Talend/daikon/pull/665[#665])
+- chore(deps-dev): bump junit from 4.12 to 4.13.1 in /daikon-i18n  (link:https://github.com/Talend/daikon/pull/666[#666])
+- chore: change daikon-scala modules versions  (link:https://github.com/Talend/daikon/pull/664[#664])
+- chore(libs) Fix incorrect Spring Boot version in examples
+- chore(update): Update Spring Boot version  (link:https://github.com/Talend/daikon/pull/660[#660])
