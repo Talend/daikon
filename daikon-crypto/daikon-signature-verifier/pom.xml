@@ -38,6 +38,12 @@
 			<version>${commons-io.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<version>${bcprov.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -47,10 +53,6 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-					<compilerArguments>
-						<verbose />
-						<bootclasspath>${java.home}/lib/rt.jar</bootclasspath>
-					</compilerArguments>
 				</configuration>
 			</plugin>
 			<plugin>

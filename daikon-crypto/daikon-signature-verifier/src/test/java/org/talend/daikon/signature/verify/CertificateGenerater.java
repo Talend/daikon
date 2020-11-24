@@ -12,11 +12,13 @@ package org.talend.daikon.signature.verify;
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -24,37 +26,36 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
-import java.security.Signature;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
+import javax.security.auth.x500.X500Principal;
+
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.KeyPurposeId;
+import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import sun.security.tools.keytool.CertAndKeyGen;
-import sun.security.util.ObjectIdentifier;
-import sun.security.x509.AlgorithmId;
-import sun.security.x509.BasicConstraintsExtension;
-import sun.security.x509.CertificateAlgorithmId;
-import sun.security.x509.CertificateExtensions;
-import sun.security.x509.CertificateSerialNumber;
-import sun.security.x509.CertificateValidity;
-import sun.security.x509.CertificateVersion;
-import sun.security.x509.CertificateX509Key;
-import sun.security.x509.ExtendedKeyUsageExtension;
-import sun.security.x509.KeyUsageExtension;
-import sun.security.x509.X500Name;
-import sun.security.x509.X509CertImpl;
-import sun.security.x509.X509CertInfo;
 
 public class CertificateGenerater {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateGenerater.class);
 
-    private SecureRandom secureRandom;;
+    private SecureRandom secureRandom;
 
     private String rootJKSFileName = "root.jks";
 
@@ -97,80 +98,61 @@ public class CertificateGenerater {
 
     public void generateCertificate() throws Exception {
         secureRandom = SecureRandom.getInstance("SHA1PRNG", "SUN");
-        createRootCA();
+        createRootCA(rootAlias, rootJKSFileName);
         LOGGER.debug("Created root ca");
-        createRootCATwo();
+
+        createRootCA(rootAliasTwo, rootJKSFileNameTwo);
         LOGGER.debug("Created root ca2");
-        createValidCodeSignJks();
+
+        Date now = new Date();
+        long validity = 7L * 24 * 3600 * 1000;
+
+        createSignJks(now, new Date(now.getTime() + validity), codeSignJksValidPath, true);
         LOGGER.debug("Created valid code sign JKS");
+
         createNoUsageCodeSignJks();
         LOGGER.debug("created no usage code sign JKS");
-        createExpiredCodeSignJks();
+
+        createSignJks(new Date(now.getTime() - validity), now, codeSignJksExpiredPath, true);
         LOGGER.debug("created expired code sign JKS");
-        createTrustStoreJks();
+
+        createSignJks(now, new Date(now.getTime() + validity), trustStoreName, true);
         LOGGER.debug("created truststore JKS");
-        createTrustStoreJksTwo();
+
+        createSignJks(now, new Date(now.getTime() + validity), trustStoreTwoName, false);
         LOGGER.debug("created invalid truststore JKS us ca2");
     }
 
-    private void createRootCA() throws Exception {
-        CertAndKeyGen certGen = new CertAndKeyGen("RSA", sigAlgName);
-        certGen.setRandom(secureRandom);
-        certGen.generate(1024);
-        X500Name subject = new X500Name(dName);
+    private void createRootCA(String alias, String fileName) throws Exception {
+        List<Extension> exts = new ArrayList<>();
+        KeyUsage keyUsage = new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation | KeyUsage.keyEncipherment
+                | KeyUsage.dataEncipherment | KeyUsage.keyCertSign);
+        Extension extension = new Extension(Extension.keyUsage, true, new DEROctetString(keyUsage));
+        exts.add(extension);
 
-        KeyUsageExtension keyUsage = new KeyUsageExtension();
-        keyUsage.set(KeyUsageExtension.DIGITAL_SIGNATURE, true);
-        keyUsage.set(KeyUsageExtension.NON_REPUDIATION, true);
-        keyUsage.set(KeyUsageExtension.KEY_ENCIPHERMENT, true);
-        keyUsage.set(KeyUsageExtension.DATA_ENCIPHERMENT, true);
-        keyUsage.set(KeyUsageExtension.KEY_CERTSIGN, true);
-        ObjectIdentifier ekeyOid = new ObjectIdentifier(new int[] { 1, 3, 6, 1, 5, 5, 7, 3, 3 });
-        Vector<ObjectIdentifier> vkeyOid = new Vector<ObjectIdentifier>();
-        vkeyOid.add(ekeyOid);
-        ekeyOid = new ObjectIdentifier("2.5.29.19");
-        vkeyOid.add(ekeyOid);
-        ExtendedKeyUsageExtension exKeyUsage = new ExtendedKeyUsageExtension(vkeyOid);
-        CertificateExtensions exts = new CertificateExtensions();
-        exts.set("keyUsage", keyUsage);
-        exts.set("extendedKeyUsage", exKeyUsage);
-        exts.set(BasicConstraintsExtension.NAME, new BasicConstraintsExtension(true, -1));
+        // Missing ekeyOid = new ObjectIdentifier("2.5.29.19"); from the old code here
+        ExtendedKeyUsage extendedKeyUsage = new ExtendedKeyUsage(KeyPurposeId.id_kp_codeSigning);
+        extension = new Extension(Extension.extendedKeyUsage, false, new DEROctetString(extendedKeyUsage));
+        exts.add(extension);
 
-        X509Certificate certificate = certGen.getSelfCertificate(subject, new Date(), 365L * 24 * 3600 * 1000, exts);
-        X509Certificate[] certs = { certificate };
+        KeyPair keyPair = genKey();
+        BigInteger serialNumber = new BigInteger(64, secureRandom);
+        Date from = new Date();
+        Date to = new Date(from.getTime() + 365L * 24 * 3600 * 1000);
+        X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(new X500Principal(dName), serialNumber,
+                from, to, new X500Principal(dName), keyPair.getPublic());
+        for (Extension e : exts) {
+            certificateBuilder.addExtension(e);
+        }
+        certificateBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
 
-        String[] aliasNames = { rootAlias };
-        saveJks(aliasNames, certGen.getPrivateKey(), rootJKSKeyPass, certs, rootJKSFileName);
-    }
+        ContentSigner signer = new JcaContentSignerBuilder(sigAlgName).build(keyPair.getPrivate());
+        X509Certificate cert = new JcaX509CertificateConverter().setProvider(new BouncyCastleProvider())
+                .getCertificate(certificateBuilder.build(signer));
+        X509Certificate[] certs = { cert };
 
-    private void createRootCATwo() throws Exception {
-        CertAndKeyGen certGen = new CertAndKeyGen("RSA", sigAlgName);
-        certGen.setRandom(secureRandom);
-        certGen.generate(1024);
-        X500Name subject = new X500Name(dName);
-
-        KeyUsageExtension keyUsage = new KeyUsageExtension();
-        keyUsage.set(KeyUsageExtension.DIGITAL_SIGNATURE, true);
-        keyUsage.set(KeyUsageExtension.NON_REPUDIATION, true);
-        keyUsage.set(KeyUsageExtension.KEY_ENCIPHERMENT, true);
-        keyUsage.set(KeyUsageExtension.DATA_ENCIPHERMENT, true);
-        keyUsage.set(KeyUsageExtension.KEY_CERTSIGN, true);
-        ObjectIdentifier ekeyOid = new ObjectIdentifier(new int[] { 1, 3, 6, 1, 5, 5, 7, 3, 3 });
-        Vector<ObjectIdentifier> vkeyOid = new Vector<ObjectIdentifier>();
-        vkeyOid.add(ekeyOid);
-        ekeyOid = new ObjectIdentifier("2.5.29.19");
-        vkeyOid.add(ekeyOid);
-        ExtendedKeyUsageExtension exKeyUsage = new ExtendedKeyUsageExtension(vkeyOid);
-        CertificateExtensions exts = new CertificateExtensions();
-        exts.set("keyUsage", keyUsage);
-        exts.set("extendedKeyUsage", exKeyUsage);
-        exts.set(BasicConstraintsExtension.NAME, new BasicConstraintsExtension(true, -1));
-
-        X509Certificate certificate = certGen.getSelfCertificate(subject, new Date(), 365L * 24 * 3600 * 1000, exts);
-        X509Certificate[] certs = { certificate };
-
-        String[] aliasNames = { rootAliasTwo };
-        saveJks(aliasNames, certGen.getPrivateKey(), rootJKSKeyPass, certs, rootJKSFileNameTwo);
+        String[] aliasNames = { alias };
+        saveJks(aliasNames, keyPair.getPrivate(), rootJKSKeyPass, certs, fileName);
     }
 
     private void saveJks(String[] aliasNames, PrivateKey privKey, String pwd, Certificate[] certChain, String filepath)
@@ -186,115 +168,35 @@ public class CertificateGenerater {
         if (certFile.exists()) {
             certFile.delete();
         }
-        FileOutputStream out = new FileOutputStream(certFile);
-        outputKeyStore.store(out, pwd.toCharArray());
-        out.close();
+        try (FileOutputStream out = new FileOutputStream(certFile)) {
+            outputKeyStore.store(out, pwd.toCharArray());
+        }
     }
 
-    private void createValidCodeSignJks() throws Exception {
-        KeyUsageExtension keyUsage = new KeyUsageExtension();
-        keyUsage.set(KeyUsageExtension.DIGITAL_SIGNATURE, true);
-        keyUsage.set(KeyUsageExtension.NON_REPUDIATION, true);
-        keyUsage.set(KeyUsageExtension.KEY_ENCIPHERMENT, true);
-        keyUsage.set(KeyUsageExtension.DATA_ENCIPHERMENT, true);
-        ObjectIdentifier ekeyOid = new ObjectIdentifier(new int[] { 1, 3, 6, 1, 5, 5, 7, 3, 3 });
-        Vector<ObjectIdentifier> vkeyOid = new Vector<ObjectIdentifier>();
-        vkeyOid.add(ekeyOid);
-        ExtendedKeyUsageExtension exKeyUsage = new ExtendedKeyUsageExtension(vkeyOid);
-        CertificateExtensions exts = new CertificateExtensions();
-        exts.set("keyUsage", keyUsage);
-        exts.set("extendedKeyUsage", exKeyUsage);
+    private void createSignJks(Date from, Date to, String storePath, boolean useRootJks) throws Exception {
+        List<Extension> exts = new ArrayList<>();
+        KeyUsage keyUsage = new KeyUsage(
+                KeyUsage.digitalSignature | KeyUsage.nonRepudiation | KeyUsage.keyEncipherment | KeyUsage.dataEncipherment);
+        Extension extension = new Extension(Extension.keyUsage, true, new DEROctetString(keyUsage));
+        exts.add(extension);
 
-        long validity = 7L * 24 * 3600 * 1000;
-        Date firstDate = new Date();
-        Date lastDate = new Date(firstDate.getTime() + validity);
-        CertificateValidity interval = new CertificateValidity(firstDate, lastDate);
+        ExtendedKeyUsage extendedKeyUsage = new ExtendedKeyUsage(KeyPurposeId.id_kp_codeSigning);
+        extension = new Extension(Extension.extendedKeyUsage, false, new DEROctetString(extendedKeyUsage));
+        exts.add(extension);
 
-        signCert(true, subJKSKeyPass, interval, exts, codeSignJksValidPath, true);
+        signCert(useRootJks, subJKSKeyPass, from, to, exts, storePath, true);
     }
 
     private void createNoUsageCodeSignJks() throws Exception {
-        CertificateExtensions exts = new CertificateExtensions();
-
-        long validity = 7L * 24 * 3600 * 1000;
-        Date firstDate = new Date();
-        Date lastDate = new Date(firstDate.getTime() + validity);
-        CertificateValidity interval = new CertificateValidity(firstDate, lastDate);
-
-        signCert(true, subJKSKeyPass, interval, exts, codeSignJksNoUsagePath, false);
-    }
-
-    private void createExpiredCodeSignJks() throws Exception {
-        KeyUsageExtension keyUsage = new KeyUsageExtension();
-        keyUsage.set(KeyUsageExtension.DIGITAL_SIGNATURE, true);
-        keyUsage.set(KeyUsageExtension.NON_REPUDIATION, true);
-        keyUsage.set(KeyUsageExtension.KEY_ENCIPHERMENT, true);
-        keyUsage.set(KeyUsageExtension.DATA_ENCIPHERMENT, true);
-        ObjectIdentifier ekeyOid = new ObjectIdentifier(new int[] { 1, 3, 6, 1, 5, 5, 7, 3, 3 });
-        Vector<ObjectIdentifier> vkeyOid = new Vector<ObjectIdentifier>();
-        vkeyOid.add(ekeyOid);
-        ExtendedKeyUsageExtension exKeyUsage = new ExtendedKeyUsageExtension(vkeyOid);
-        CertificateExtensions exts = new CertificateExtensions();
-        exts.set("keyUsage", keyUsage);
-        exts.set("extendedKeyUsage", exKeyUsage);
-
-        long validity = 7L * 24 * 3600 * 1000;
-        Date lastDate = new Date();
-        Date firstDate = new Date(lastDate.getTime() - validity);
-
-        CertificateValidity interval = new CertificateValidity(firstDate, lastDate);
-
-        signCert(true, subJKSKeyPass, interval, exts, codeSignJksExpiredPath, true);
-    }
-
-    private void createTrustStoreJks() throws Exception {
-        KeyUsageExtension keyUsage = new KeyUsageExtension();
-        keyUsage.set(KeyUsageExtension.DIGITAL_SIGNATURE, true);
-        keyUsage.set(KeyUsageExtension.NON_REPUDIATION, true);
-        keyUsage.set(KeyUsageExtension.KEY_ENCIPHERMENT, true);
-        keyUsage.set(KeyUsageExtension.DATA_ENCIPHERMENT, true);
-        ObjectIdentifier ekeyOid = new ObjectIdentifier(new int[] { 1, 3, 6, 1, 5, 5, 7, 3, 3 });
-        Vector<ObjectIdentifier> vkeyOid = new Vector<ObjectIdentifier>();
-        vkeyOid.add(ekeyOid);
-        ExtendedKeyUsageExtension exKeyUsage = new ExtendedKeyUsageExtension(vkeyOid);
-        CertificateExtensions exts = new CertificateExtensions();
-        exts.set("keyUsage", keyUsage);
-        exts.set("extendedKeyUsage", exKeyUsage);
-
         long validity = 7L * 24 * 3600 * 1000;
         Date firstDate = new Date();
         Date lastDate = new Date(firstDate.getTime() + validity);
 
-        CertificateValidity interval = new CertificateValidity(firstDate, lastDate);
-
-        signCert(true, subJKSKeyPass, interval, exts, trustStoreName, true);
+        signCert(true, subJKSKeyPass, firstDate, lastDate, Collections.emptyList(), codeSignJksNoUsagePath, false);
     }
 
-    private void createTrustStoreJksTwo() throws Exception {
-        KeyUsageExtension keyUsage = new KeyUsageExtension();
-        keyUsage.set(KeyUsageExtension.DIGITAL_SIGNATURE, true);
-        keyUsage.set(KeyUsageExtension.NON_REPUDIATION, true);
-        keyUsage.set(KeyUsageExtension.KEY_ENCIPHERMENT, true);
-        keyUsage.set(KeyUsageExtension.DATA_ENCIPHERMENT, true);
-        ObjectIdentifier ekeyOid = new ObjectIdentifier(new int[] { 1, 3, 6, 1, 5, 5, 7, 3, 3 });
-        Vector<ObjectIdentifier> vkeyOid = new Vector<ObjectIdentifier>();
-        vkeyOid.add(ekeyOid);
-        ExtendedKeyUsageExtension exKeyUsage = new ExtendedKeyUsageExtension(vkeyOid);
-        CertificateExtensions exts = new CertificateExtensions();
-        exts.set("keyUsage", keyUsage);
-        exts.set("extendedKeyUsage", exKeyUsage);
-
-        long validity = 7L * 24 * 3600 * 1000;
-        Date firstDate = new Date();
-        Date lastDate = new Date(firstDate.getTime() + validity);
-
-        CertificateValidity interval = new CertificateValidity(firstDate, lastDate);
-
-        signCert(false, subJKSKeyPass, interval, exts, trustStoreTwoName, true);
-    }
-
-    private void signCert(boolean useRootJks, String subjectPasswd, CertificateValidity interval, CertificateExtensions exts,
-            String storePath, boolean containCACert) throws Exception {
+    private void signCert(boolean useRootJks, String subjectPasswd, Date from, Date to, List<Extension> exts, String storePath,
+            boolean containCACert) throws Exception {
         String innerRootAlias = null;
         String keyStoreFileName = null;
         if (useRootJks) {
@@ -304,33 +206,22 @@ public class CertificateGenerater {
             keyStoreFileName = rootJKSFileNameTwo;
             innerRootAlias = rootAliasTwo;
         }
+
+        KeyPair keyPair = genKey();
+        BigInteger serialNumber = new BigInteger(64, secureRandom);
+        X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(new X500Principal(dName), serialNumber,
+                from, to, new X500Principal(subDName), keyPair.getPublic());
+        for (Extension e : exts) {
+            certificateBuilder.addExtension(e);
+        }
+
         KeyStore keyStore = this.loadKeyStore(new File(folderPath, keyStoreFileName), rootJKSKeyPass);
         X509Certificate caCert = (X509Certificate) keyStore.getCertificate(innerRootAlias);
         PrivateKey caPrivateKey = (PrivateKey) keyStore.getKey(innerRootAlias, rootJKSKeyPass.toCharArray());
 
-        CertAndKeyGen certAndKeyGen = new CertAndKeyGen("RSA", sigAlgName);
-        certAndKeyGen.setRandom(secureRandom);
-        certAndKeyGen.generate(1024);
-        byte certbytes[] = caCert.getEncoded();
-        X509CertImpl x509certimpl = new X509CertImpl(certbytes);
-        X509CertInfo x509certinfo = (X509CertInfo) x509certimpl.get("x509.info");
-        x509certinfo.set(X509CertInfo.VERSION, new CertificateVersion(CertificateVersion.V3));
-        x509certinfo.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber(new java.util.Random().nextInt() & 0x7fffffff));
-        AlgorithmId algID = AlgorithmId.get(sigAlgName);
-        x509certinfo.set(X509CertInfo.ALGORITHM_ID, new CertificateAlgorithmId(algID));
-        X500Name issuer = new X500Name(dName);
-        x509certinfo.set("issuer.dname", issuer);
-        X500Name subject = new X500Name(subDName);
-        x509certinfo.set("subject.dname", subject);
-        x509certinfo.set(X509CertInfo.KEY, new CertificateX509Key(certAndKeyGen.getPublicKey()));
-        x509certinfo.set(X509CertInfo.VALIDITY, interval);
-        x509certinfo.set(X509CertInfo.EXTENSIONS, exts);
-        X509CertImpl cert = new X509CertImpl(x509certinfo);
-        cert.sign(caPrivateKey, sigAlgName);
-
-        KeyPair keyPair = genKey();
-        Signature signature = Signature.getInstance("SHA1WithRSA");
-        signature.initSign(keyPair.getPrivate());
+        ContentSigner signer = new JcaContentSignerBuilder(sigAlgName).build(caPrivateKey);
+        X509Certificate cert = new JcaX509CertificateConverter().setProvider(new BouncyCastleProvider())
+                .getCertificate(certificateBuilder.build(signer));
 
         Certificate[] certs = null;
         String[] aliasNames = null;
@@ -341,33 +232,24 @@ public class CertificateGenerater {
             certs = new Certificate[] { cert };
             aliasNames = new String[] { subJKSAlias };
         }
-        saveJks(aliasNames, certAndKeyGen.getPrivateKey(), subjectPasswd, certs, storePath);
+
+        saveJks(aliasNames, keyPair.getPrivate(), subjectPasswd, certs, storePath);
     }
 
     private KeyStore loadKeyStore(File keyStoreFile, String storePass)
             throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(keyStoreFile);
+        try (InputStream inputStream = new FileInputStream(keyStoreFile)) {
             keyStore.load(inputStream, storePass.toCharArray());
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
         }
         return keyStore;
     }
 
     private KeyPair genKey() throws NoSuchAlgorithmException {
-
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+        kpg.initialize(2048, secureRandom);
 
-        kpg.initialize(1024, secureRandom);
-
-        KeyPair kp = kpg.generateKeyPair();
-
-        return kp;
+        return kpg.generateKeyPair();
     }
 
     public String getTrustStorePath() {
