@@ -37,6 +37,8 @@ import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +65,11 @@ public class ZipVerifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZipVerifier.class);
 
+    private static boolean CHECK_SIGNATURE_TIMESTAMP = false;
+
     private PKIXParameters param;
+
+    private Date defaultSignatureTimeStamp = null;
 
     /**
      * 
@@ -78,6 +84,11 @@ public class ZipVerifier {
             throws InvalidKeyStoreException, KeyStoreException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         assert (keyStoreInputStream != null && keyStorePass != null);
         initPKIXParameter(keyStoreInputStream, keyStorePass);
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2019);
+        cal.set(Calendar.MONTH, 0);
+        cal.set(Calendar.DAY_OF_MONTH, 01);
+        defaultSignatureTimeStamp = cal.getTime();
     }
 
     private void initPKIXParameter(InputStream keyStoreInputStream, String keyStorePass)
@@ -217,7 +228,7 @@ public class ZipVerifier {
             if (cs.getTimestamp() != null) {
                 param.setDate(cs.getTimestamp().getTimestamp());
             } else {
-                param.setDate(null);
+                param.setDate(defaultSignatureTimeStamp);
             }
             PKIXCertPathValidatorResult result = validate(cs.getSignerCertPath());
             if (result == null) {
@@ -240,7 +251,11 @@ public class ZipVerifier {
             if (cert instanceof X509Certificate) {
                 X509Certificate x509Cert = (X509Certificate) cert;
                 try {
-                    x509Cert.checkValidity();
+                    if (CHECK_SIGNATURE_TIMESTAMP) {
+                        x509Cert.checkValidity();
+                    } else {
+                        x509Cert.checkValidity(defaultSignatureTimeStamp);
+                    }
                     validCertList.add(x509Cert);
                 } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
                     LOGGER.debug("Found invalid certificate:" + ex);
