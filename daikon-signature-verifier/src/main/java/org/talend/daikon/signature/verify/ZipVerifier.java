@@ -36,7 +36,10 @@ import java.security.cert.PKIXCertPathValidatorResult;
 import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -63,9 +66,14 @@ public class ZipVerifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZipVerifier.class);
 
+    private boolean isCheckSignatureTimestamp = true;
+
     private PKIXParameters param;
 
+    private Date defaultSignatureTimeStamp = null;
+
     /**
+     * ZipVerifier will close this keyStoreInputStream after load the key store
      * 
      * @param keyStoreInputStream - ZipVerifier will close this keyStoreInputStream after load the key store
      * @param keyStorePass - The keyStore password
@@ -78,6 +86,7 @@ public class ZipVerifier {
             throws InvalidKeyStoreException, KeyStoreException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         assert (keyStoreInputStream != null && keyStorePass != null);
         initPKIXParameter(keyStoreInputStream, keyStorePass);
+        defaultSignatureTimeStamp = Date.from(LocalDate.of(2019, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     private void initPKIXParameter(InputStream keyStoreInputStream, String keyStorePass)
@@ -214,10 +223,14 @@ public class ZipVerifier {
             if (!isContainSignCert && isContainCodeSignCert(cs)) {
                 isContainSignCert = true;
             }
-            if (cs.getTimestamp() != null) {
-                param.setDate(cs.getTimestamp().getTimestamp());
+            if (isCheckSignatureTimestamp) {
+                if (cs.getTimestamp() != null) {
+                    param.setDate(cs.getTimestamp().getTimestamp());
+                } else {
+                    param.setDate(null);
+                }
             } else {
-                param.setDate(null);
+                param.setDate(defaultSignatureTimeStamp);
             }
             PKIXCertPathValidatorResult result = validate(cs.getSignerCertPath());
             if (result == null) {
@@ -240,7 +253,9 @@ public class ZipVerifier {
             if (cert instanceof X509Certificate) {
                 X509Certificate x509Cert = (X509Certificate) cert;
                 try {
-                    x509Cert.checkValidity();
+                    if (isCheckSignatureTimestamp) {
+                        x509Cert.checkValidity();
+                    }
                     validCertList.add(x509Cert);
                 } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
                     LOGGER.debug("Found invalid certificate:" + ex);
@@ -287,5 +302,13 @@ public class ZipVerifier {
         List<String> extendesKeyUsage = cert.getExtendedKeyUsage();
         return isDigitalSignature && extendesKeyUsage != null
                 && (extendesKeyUsage.contains("2.5.29.37.0") || extendesKeyUsage.contains("1.3.6.1.5.5.7.3.3")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public boolean isCheckSignatureTimestamp() {
+        return isCheckSignatureTimestamp;
+    }
+
+    public void setCheckSignatureTimestamp(boolean isCheckSignatureTimestamp) {
+        this.isCheckSignatureTimestamp = isCheckSignatureTimestamp;
     }
 }
