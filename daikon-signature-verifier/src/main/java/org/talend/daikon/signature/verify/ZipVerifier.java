@@ -65,7 +65,7 @@ public class ZipVerifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZipVerifier.class);
 
-    private static boolean CHECK_SIGNATURE_TIMESTAMP = false;
+    private boolean isCheckSignatureTimestamp = true;
 
     private PKIXParameters param;
 
@@ -225,8 +225,12 @@ public class ZipVerifier {
             if (!isContainSignCert && isContainCodeSignCert(cs)) {
                 isContainSignCert = true;
             }
-            if (cs.getTimestamp() != null) {
-                param.setDate(cs.getTimestamp().getTimestamp());
+            if (isCheckSignatureTimestamp) {
+                if (cs.getTimestamp() != null) {
+                    param.setDate(cs.getTimestamp().getTimestamp());
+                } else {
+                    param.setDate(null);
+                }
             } else {
                 param.setDate(defaultSignatureTimeStamp);
             }
@@ -251,10 +255,8 @@ public class ZipVerifier {
             if (cert instanceof X509Certificate) {
                 X509Certificate x509Cert = (X509Certificate) cert;
                 try {
-                    if (CHECK_SIGNATURE_TIMESTAMP) {
+                    if (isCheckSignatureTimestamp) {
                         x509Cert.checkValidity();
-                    } else {
-                        x509Cert.checkValidity(defaultSignatureTimeStamp);
                     }
                     validCertList.add(x509Cert);
                 } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
@@ -302,5 +304,13 @@ public class ZipVerifier {
         List<String> extendesKeyUsage = cert.getExtendedKeyUsage();
         return isDigitalSignature && extendesKeyUsage != null
                 && (extendesKeyUsage.contains("2.5.29.37.0") || extendesKeyUsage.contains("1.3.6.1.5.5.7.3.3")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public boolean isCheckSignatureTimestamp() {
+        return isCheckSignatureTimestamp;
+    }
+
+    public void setCheckSignatureTimestamp(boolean isCheckSignatureTimestamp) {
+        this.isCheckSignatureTimestamp = isCheckSignatureTimestamp;
     }
 }

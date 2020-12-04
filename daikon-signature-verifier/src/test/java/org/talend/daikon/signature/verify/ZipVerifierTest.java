@@ -44,6 +44,7 @@ public class ZipVerifierTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.setCheckSignatureTimestamp(false);
         Exception exception = null;
         try {
             verifer.verify(signedJobPath);
@@ -59,6 +60,7 @@ public class ZipVerifierTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
@@ -73,6 +75,7 @@ public class ZipVerifierTest {
         String keyStorePath = getResourceFilePath("truststore2.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
@@ -87,6 +90,7 @@ public class ZipVerifierTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
@@ -101,6 +105,7 @@ public class ZipVerifierTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
@@ -115,6 +120,7 @@ public class ZipVerifierTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
@@ -129,6 +135,7 @@ public class ZipVerifierTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
