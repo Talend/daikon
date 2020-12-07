@@ -36,8 +36,9 @@ import java.security.cert.PKIXCertPathValidatorResult;
 import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -72,9 +73,10 @@ public class ZipVerifier {
     private Date defaultSignatureTimeStamp = null;
 
     /**
+     * ipVerifier will close this keyStoreInputStream after load the key store
      * 
-     * @param keyStoreInputStream - ZipVerifier will close this keyStoreInputStream after load the key store
-     * @param keyStorePass - The keyStore password
+     * @param keyStoreInputStream
+     * @param keyStorePass
      * @throws InvalidKeyStoreException
      * @throws KeyStoreException
      * @throws InvalidAlgorithmParameterException
@@ -84,11 +86,7 @@ public class ZipVerifier {
             throws InvalidKeyStoreException, KeyStoreException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         assert (keyStoreInputStream != null && keyStorePass != null);
         initPKIXParameter(keyStoreInputStream, keyStorePass);
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 2019);
-        cal.set(Calendar.MONTH, 0);
-        cal.set(Calendar.DAY_OF_MONTH, 01);
-        defaultSignatureTimeStamp = cal.getTime();
+        defaultSignatureTimeStamp = Date.from(LocalDate.of(2019, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     private void initPKIXParameter(InputStream keyStoreInputStream, String keyStorePass)

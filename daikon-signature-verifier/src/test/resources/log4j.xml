@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+<!-- For layout pattern, see doc at http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html -->
+
+	
+	<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+            <param name="Threshold" value="debug" />	    	
+		<layout class="org.apache.log4j.PatternLayout">
+                   <param name="ConversionPattern"
+		          value="%-5p %c{1} - %m%n"/>
+		</layout>		
+	</appender>
+	
+	<root>
+	   <priority value ="info" />
+           <!-- scorreia: put here your appenders -->
+   	   <appender-ref ref="STDOUT" />
+	</root>
+	
+</log4j:configuration>
