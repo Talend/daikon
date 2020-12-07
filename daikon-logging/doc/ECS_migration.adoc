@@ -4,7 +4,7 @@
 
 Several months ago, https://talend365.sharepoint.com/sites/EnterpriseandFrictionlessInitiativeH1/_layouts/15/Doc.aspx?sourcedoc={14c375d9-ec23-4981-99ac-e061c1241d5b}&action=edit&wd=target%28Reliability.one%7C879313bf-126e-4fe9-b469-80600ece894c%2FLogging%7Cea77767c-3448-4a01-b045-f3db1430968b%2F%29[a discussion] has started in order to define the best way to converge to a common logging format.
 
-The format ECS (Elastic Common Schema) have been chosen to be the common format for all Talend Cloud applications. Each of these applications will have to implement it.
+The format ECS (Elastic Common Schema) have been chosen to become the common format for all Talend Cloud applications. Each of these applications will have to integrate it.
 
 In the meanwhile, https://github.com/Talend/policies/pull/42[the Talend logging policy] has been updated in order to take into account the last requirements.
 
@@ -112,24 +112,29 @@ The main idea behind this first proposal is to leverage the https://www.elastic.
 
 ==== Enrich https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] with ECS layouts
 
-In order to keep backward compatibility, the existing layouts providing by https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] lib shouldn't be updated.
+In order to keep *backward compatibility*, the existing layouts providing by https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] lib shouldn't be updated.
 New layouts must be created by extending the layouts proposed by https://github.com/elastic/ecs-logging-java[`ecs-logging-java`] lib.
 
 New MDC utility classes and filters must be created by following https://www.elastic.co/guide/en/ecs/current/ecs-field-reference.html[the ECS specification].
 
-In order to help the teams to adopt these new layouts, for example to let them adapt their dashboard to the new format, they will be able to use multiple log appenders (legacy + ECS). These appenders should be enabled/disabled using an env variable.
+In order to facilitate the *adoption* of these new layouts (for example to let the teams adapt their dashboards to the new format) they will be able to use multiple log appenders (legacy + ECS). These appenders should be enabled/disabled using an env variable. According to the format, the logs will go to the new ECS index or to the old legacy index.
+
+The format will stay *flexible* as it allows a team to add custom fields (by following https://www.elastic.co/guide/en/ecs-logging/java/current/_structured_logging_with_log4j2.html#_tips[elastic tips]) by :
+
+* Or updating the MDC
+* Or https://www.elastic.co/guide/en/ecs-logging/java/current/_structured_logging_with_log4j2.html#_structured_logging_with_log4j2[by leveraging log4j2's `MapMessage`]
 
 ==== Provide an `daikon-spring-access-logs` ECS compatible library
 
-The access logs are really useful for troubleshooting, currently they are implemented using custom code (e.g https://github.com/Talend/platform-services-commons/tree/master/accesslog[`acesslog`] lib for TPSVC team).
+The access logs are really useful for *troubleshooting*, currently they are implemented using custom code (e.g https://github.com/Talend/platform-services-commons/tree/master/accesslog[`acesslog`] lib for TPSVC team).
 
-In order to unify the access logs format following ECS specification, the `daikon-spring-access-logs` must be implemented. This module will help the teams to generate their access logs by following the ECS format.
+In order to *unify* the access logs format following ECS specification, the `daikon-spring-access-logs` must be implemented. This module will help the teams to generate their access logs by following the ECS format (in particular the https://www.elastic.co/guide/en/ecs/current/ecs-http.html[HTTP field set]).
 
-These logs can be categorized with the field `event.type = "access"`.
+These logs can be *categorized* with the field `event.type = "access"`.
 
 ==== Make https://github.com/Talend/daikon/tree/master/daikon-spring/daikon-spring-audit-logs[`daikon-spring-audit-logs`] ECS compatible
 
-The audit logs are very useful for troubleshooting as they can help to understand the activity of a specific account when a problem occurs.
+The audit logs are also very useful for *troubleshooting* as they can help to understand the activity of a specific account when a problem occurs.
 Currently the audit logs are only available for the customers and they contain PII (personally identifiable information).
 
 It could be interesting to make these logs (cleaned from all PII) available internally. For that purpose,  `daikon-spring-audit-logs` can be updated in order to :
