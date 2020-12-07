@@ -1,0 +1,144 @@
+= ECS (Elastic Common Schema) migration
+
+== Description
+
+Several months ago, https://talend365.sharepoint.com/sites/EnterpriseandFrictionlessInitiativeH1/_layouts/15/Doc.aspx?sourcedoc={14c375d9-ec23-4981-99ac-e061c1241d5b}&action=edit&wd=target%28Reliability.one%7C879313bf-126e-4fe9-b469-80600ece894c%2FLogging%7Cea77767c-3448-4a01-b045-f3db1430968b%2F%29[a discussion] has started in order to define the best way to converge to a common logging format.
+
+The format ECS (Elastic Common Schema) have been chosen to be the common format for all Talend Cloud applications. Each of these applications will have to implement it.
+
+In the meanwhile, https://github.com/Talend/policies/pull/42[the Talend logging policy] has been updated in order to take into account the last requirements.
+
+The purpose of this document is to design a solution facilitating the transition to ECS, based on requirements expressed by all the parts (SRE, Arch, Dev).
+
+== Requirements
+
+First of all, it is important to remind the requirements.
+
+=== Homogeneity/unification (normalization)
+
+The main requirement coming from all parts is to converge to an unique format, for many reasons including :
+
+* Simplifying parsing and processing
+* Easing analyse and visualize
+* Reducing storage size
+
+Moreover, this format must be implemented and maintained at one place in order to facilitate the future evolutions.
+
+=== Adoption
+
+One of the main requirements is the ease of adoption. The goal is that each team uses the same format, this goal will be reached only if the effort to move to this format is minimal :
+
+* The migration must not break the current format
+* The expected format must be clear and shouldn't change with time
+* The cost of the migration should be minimal
+* The Backward compatibility must be preserved (in order to adapt dashboards to new format)
+* It must be easy for each team to extend the format by adding custom fields
+
+=== Troubleshooting
+
+One of the main function of a log being to help the troubleshooting, moving to this new format should facilitate it by :
+
+* Categorizing the logs
+* Formalizing, documenting & maintaining the list of available events
+* Adding extra info to regular logs (e.g k8s infos)
+
+== About ECS
+
+According to https://www.elastic.co/guide/en/ecs/current/ecs-reference.html[elastic web site] :
+
+____
+The Elastic Common Schema (ECS) is an open source specification, developed with support from the Elastic user community. ECS defines a common set of fields to be used when storing event data in Elasticsearch, such as logs and metrics.
+____
+
+The ECS specification proposes https://www.elastic.co/guide/en/ecs/current/ecs-base.html[a few common base fields] shared with all logs and some other more specific among which :
+
+* https://www.elastic.co/guide/en/ecs/current/ecs-ecs.html[ecs]: Meta-informations specific to ECS
+* https://www.elastic.co/guide/en/ecs/current/ecs-log.html[log]: Details about the event’s logging mechanism or logging transport
+* https://www.elastic.co/guide/en/ecs/current/ecs-event.html[event]: Context information about the log or metric event itself (including https://www.elastic.co/guide/en/ecs/current/ecs-allowed-values-event-outcome.html[categorization fields])
+* https://www.elastic.co/guide/en/ecs/current/ecs-http.html[http]: HTTP activity
+* https://www.elastic.co/guide/en/ecs/current/ecs-source.html[source]: Details about the sender of a network exchange/packet
+
+=== Example
+
+[source,json]
+----
+{
+    "@timestamp": "2016-05-23T08:05:34.853Z",
+    "labels": {
+        "application": "tpsvc-iam-scim"
+    },
+    "message": "HTTP get /hello_world",
+    "tags": ["eks", "scim", "iam"],
+    "ecs": {
+        "version": "1.5"
+    },
+    "log": {
+        "level": "info",
+        "logger": "org.talend.iam.scim.ScimApp"
+    },
+    "event": {
+        "kind": "alert|event|metric|state|pipeline_error|signal",
+        "category": "authentication|configuration|database|driver|file|host|iam|intrusion_detection|malware|network|package|process|web",
+        "type": "access|admin|allowed|change|connection|creation|deletion|denied|end|error|group|info|installation|protocol|start|user",
+        "outcome": "failure|success|unknown",
+        "action": "hello_world",
+        "created": "2016-05-23T08:05:34.857Z",
+        "original": "10.42.42.42 - 2016-05-23T08:05:34.857Z - HTTP get /hello_world"
+    },
+    "http": {
+        "request": {
+            "method": "get"
+        },
+        "response": {
+            "body": {
+                "bytes": 2571
+            },
+            "status_code": 200
+        }
+    },
+    "source": {
+        "ip": "10.42.42.42"
+    }
+}
+----
+
+== Solutions
+
+This part focuses on the proposals and on how they meet the requirements.
+
+=== Solution 1 : Leverage https://github.com/elastic/ecs-logging-java[`ecs-logging-java`] lib
+
+The main idea behind this first proposal is to leverage the https://www.elastic.co/guide/en/ecs-logging/java/current/intro.html[ecs-logging-java library] powered by elastic. This lib offers the great advantage to be https://www.elastic.co/guide/en/ecs-logging/java/current/setup.html[compatible with most of the logging frameworks] (log4j, log4j2, logback, ...) by providing corresponding encoders/layouts.
+
+==== Enrich https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] with ECS layouts
+
+In order to keep backward compatibility, the existing layouts providing by https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] lib shouldn't be updated.
+New layouts must be created by extending the layouts proposed by https://github.com/elastic/ecs-logging-java[`ecs-logging-java`] lib.
+
+New MDC utility classes and filters must be created by following https://www.elastic.co/guide/en/ecs/current/ecs-field-reference.html[the ECS specification].
+
+In order to help the teams to adopt these new layouts, for example to let them adapt their dashboard to the new format, they will be able to use multiple log appenders (legacy + ECS). These appenders should be enabled/disabled using an env variable.
+
+==== Provide an `daikon-spring-access-logs` ECS compatible library
+
+The access logs are really useful for troubleshooting, currently they are implemented using custom code (e.g https://github.com/Talend/platform-services-commons/tree/master/accesslog[`acesslog`] lib for TPSVC team).
+
+In order to unify the access logs format following ECS specification, the `daikon-spring-access-logs` must be implemented. This module will help the teams to generate their access logs by following the ECS format.
+
+These logs can be categorized with the field `event.type = "access"`.
+
+==== Make https://github.com/Talend/daikon/tree/master/daikon-spring/daikon-spring-audit-logs[`daikon-spring-audit-logs`] ECS compatible
+
+The audit logs are very useful for troubleshooting as they can help to understand the activity of a specific account when a problem occurs.
+Currently the audit logs are only available for the customers and they contain PII (personally identifiable information).
+
+It could be interesting to make these logs (cleaned from all PII) available internally. For that purpose,  `daikon-spring-audit-logs` can be updated in order to :
+
+* Remove PII
+* Log the audit logs following ECS format (using categorization fields if possible)
+
+
+
+
+
+
