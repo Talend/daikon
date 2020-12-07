@@ -73,7 +73,7 @@ public class ZipVerifier {
     private Date defaultSignatureTimeStamp = null;
 
     /**
-     * ipVerifier will close this keyStoreInputStream after load the key store
+     * ZipVerifier will close this keyStoreInputStream after load the key store
      * 
      * @param keyStoreInputStream
      * @param keyStorePass
