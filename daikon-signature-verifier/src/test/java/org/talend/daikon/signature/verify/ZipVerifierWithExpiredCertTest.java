@@ -23,6 +23,7 @@ import java.security.cert.CertPathValidatorException;
 
 import org.junit.Test;
 import org.talend.daikon.signature.exceptions.MissingEntryException;
+import org.talend.daikon.signature.exceptions.NoValidCertificateException;
 import org.talend.daikon.signature.exceptions.UnsignedArchiveException;
 import org.talend.daikon.signature.exceptions.UnsignedEntryException;
 import org.talend.daikon.signature.exceptions.VerifyFailedException;
@@ -44,8 +45,18 @@ public class ZipVerifierWithExpiredCertTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
-        verifer.setCheckSignatureTimestamp(false);
         Exception exception = null;
+        try {
+            verifer.verify(signedJobPath);
+        } catch (Exception ex) {
+            exception = ex;
+        }
+        assertTrue(exception != null);
+
+        keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.setCheckSignatureTimestamp(false);
+        exception = null;
         try {
             verifer.verify(signedJobPath);
         } catch (Exception ex) {
@@ -55,12 +66,26 @@ public class ZipVerifierWithExpiredCertTest {
     }
 
     @Test
+    public void testVerifySignedValidNoTimestampOption() throws Exception {
+        String signedJobPath = getResourceFilePath("signed-valid.zip");
+        String keyStorePath = getResourceFilePath("truststore.jks");
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        Exception exception = null;
+        try {
+            verifer.verify(signedJobPath);
+        } catch (Exception ex) {
+            exception = ex;
+        }
+        assertTrue(exception != null);
+    }
+
+    @Test
     public void testVerifySignedJobByWebTruststore() throws Exception {
         String signedJobPath = getResourceFilePath("signed-by-zip.zip");
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
-        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
@@ -75,6 +100,16 @@ public class ZipVerifierWithExpiredCertTest {
         String keyStorePath = getResourceFilePath("truststore2.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(
+                    ex.getCause() instanceof CertPathValidatorException || ex.getCause() instanceof NoValidCertificateException);
+        }
+
+        keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        verifer = new ZipVerifier(keyStoreInputStream, storePass);
         verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
@@ -90,7 +125,6 @@ public class ZipVerifierWithExpiredCertTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
-        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
@@ -105,6 +139,15 @@ public class ZipVerifierWithExpiredCertTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getCause() instanceof UnsignedEntryException || ex.getCause() instanceof NoValidCertificateException);
+        }
+
+        keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        verifer = new ZipVerifier(keyStoreInputStream, storePass);
         verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
@@ -120,7 +163,6 @@ public class ZipVerifierWithExpiredCertTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
-        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
@@ -135,7 +177,6 @@ public class ZipVerifierWithExpiredCertTest {
         String keyStorePath = getResourceFilePath("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
-        verifer.setCheckSignatureTimestamp(false);
         try {
             verifer.verify(signedJobPath);
             fail("exception should have been thrown in the previous line");
