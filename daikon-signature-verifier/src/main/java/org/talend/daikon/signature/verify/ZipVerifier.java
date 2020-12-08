@@ -36,8 +36,8 @@ import java.security.cert.PKIXCertPathValidatorResult;
 import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -70,8 +70,6 @@ public class ZipVerifier {
 
     private PKIXParameters param;
 
-    private Date defaultSignatureTimeStamp = null;
-
     /**
      * ZipVerifier will close this keyStoreInputStream after load the key store
      * 
@@ -86,7 +84,6 @@ public class ZipVerifier {
             throws InvalidKeyStoreException, KeyStoreException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         assert (keyStoreInputStream != null && keyStorePass != null);
         initPKIXParameter(keyStoreInputStream, keyStorePass);
-        defaultSignatureTimeStamp = Date.from(LocalDate.of(2019, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     private void initPKIXParameter(InputStream keyStoreInputStream, String keyStorePass)
@@ -223,15 +220,12 @@ public class ZipVerifier {
             if (!isContainSignCert && isContainCodeSignCert(cs)) {
                 isContainSignCert = true;
             }
-            if (isCheckSignatureTimestamp) {
-                if (cs.getTimestamp() != null) {
-                    param.setDate(cs.getTimestamp().getTimestamp());
-                } else {
-                    param.setDate(null);
-                }
+            if (cs.getTimestamp() != null) {
+                param.setDate(cs.getTimestamp().getTimestamp());
             } else {
-                param.setDate(defaultSignatureTimeStamp);
+                param.setDate(null);
             }
+
             PKIXCertPathValidatorResult result = validate(cs.getSignerCertPath());
             if (result == null) {
                 throw new VerifyException("No validate result for cert path."); //$NON-NLS-1$
@@ -265,6 +259,15 @@ public class ZipVerifier {
         if (validCertList.size() == 0) {
             throw new NoValidCertificateException("No valid certificate, all certificates are expired."); //$NON-NLS-1$
         }
+
+        // If we are skipping the signature timestamp check, then make sure that an expired signing cert is allowed
+        // for CertPath validation
+        if (!isCheckSignatureTimestamp) {
+            X509Certificate x509Cert = validCertList.get(0);
+            Instant notAfter = x509Cert.getNotAfter().toInstant();
+            param.setDate(Date.from(notAfter.minus(Duration.ofDays(2))));
+        }
+
         CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509"); //$NON-NLS-1$
         CertPath toVerifyCertPath = certificateFactory.generateCertPath(validCertList);
         CertPathValidator validator = CertPathValidator.getInstance("PKIX"); //$NON-NLS-1$
