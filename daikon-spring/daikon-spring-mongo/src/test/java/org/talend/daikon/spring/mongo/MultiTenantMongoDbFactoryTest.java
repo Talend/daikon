@@ -162,7 +162,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
         testRepository.insert(tenant2);
 
         // Then
-        final Map<MongoClientSettings, MongoServer> instances = TestMultiTenantConfiguration.getMongoInstances();
+        final Map<ClientCacheEntry, MongoServer> instances = TestMultiTenantConfiguration.getMongoInstances();
         assertEquals(2, instances.size());
     }
 }

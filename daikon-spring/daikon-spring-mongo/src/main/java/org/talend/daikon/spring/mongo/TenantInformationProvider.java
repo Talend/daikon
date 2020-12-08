@@ -1,7 +1,5 @@
 package org.talend.daikon.spring.mongo;
 
-import com.mongodb.MongoClientSettings;
-
 /**
  * <p>
  * Implementation of this interface returns the current MongoDB database settings that should be used. Interface is very simple on
@@ -23,7 +21,7 @@ public interface TenantInformationProvider {
     String getDatabaseName();
 
     /**
-     * @return A {@link MongoClientSettings} object that describes where the mongo db host is.
+     * @return A {@link ClientCacheEntry} object that describes where the mongo db host is and cache key for client.
      */
-    MongoClientSettings getClientSettings();
+    ClientCacheEntry getCacheEntry();
 }

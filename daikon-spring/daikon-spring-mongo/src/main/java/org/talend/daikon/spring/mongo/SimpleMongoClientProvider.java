@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -19,11 +18,11 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 public class SimpleMongoClientProvider implements MongoClientProvider {
 
     // ensure the map is synchronized
-    private final Map<MongoClientSettings, MongoClient> clients = Collections.synchronizedMap(new HashMap<>(100));
+    private final Map<ClientCacheEntry, MongoClient> clients = Collections.synchronizedMap(new HashMap<>(100));
 
-    protected MongoClient createMongoClient(MongoClientSettings clientSettings) {
+    protected MongoClient createMongoClient(ClientCacheEntry cacheEntry) {
         try {
-            return MongoClients.create(clientSettings);
+            return MongoClients.create(cacheEntry.getClientSettings());
         } catch (Exception e) {
             // 3.x client throws UnknownHostException, keep catch block for compatibility with 3.x version
             throw new InvalidDataAccessResourceUsageException("Unable to retrieve host information.", e);
@@ -32,24 +31,24 @@ public class SimpleMongoClientProvider implements MongoClientProvider {
 
     @Override
     public MongoClient get(TenantInformationProvider provider) {
-        final MongoClientSettings clientSettings = provider.getClientSettings();
-        clients.computeIfAbsent(clientSettings, this::createMongoClient);
-        return clients.get(clientSettings);
+        final ClientCacheEntry cacheEntry = provider.getCacheEntry();
+        clients.computeIfAbsent(cacheEntry, this::createMongoClient);
+        return clients.get(cacheEntry);
     }
 
     @Override
     public void close(TenantInformationProvider provider) {
-        final MongoClientSettings uri = provider.getClientSettings();
-        final MongoClient mongoClient = clients.get(uri);
+        final ClientCacheEntry cacheEntry = provider.getCacheEntry();
+        final MongoClient mongoClient = clients.get(cacheEntry);
         if (mongoClient != null) {
             mongoClient.close();
         }
-        clients.remove(uri);
+        clients.remove(cacheEntry);
     }
 
     @Override
     public void close() {
-        for (Map.Entry<MongoClientSettings, MongoClient> entry : clients.entrySet()) {
+        for (Map.Entry<ClientCacheEntry, MongoClient> entry : clients.entrySet()) {
             entry.getValue().close();
         }
         clients.clear();

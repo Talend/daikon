@@ -36,11 +36,13 @@ public class CachedMongoClientProviderTest {
             }
 
             @Override
-            public MongoClientSettings getClientSettings() {
-                return MongoClientSettings.builder()
+            public ClientCacheEntry getCacheEntry() {
+                MongoClientSettings clientSettings = MongoClientSettings.builder()
                         .applyConnectionString(new ConnectionString(
                                 "mongodb://" + serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant))
                         .build();
+                return ClientCacheEntry.builder().clientSettings(clientSettings)
+                        .cacheKey(serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant).build();
             }
         };
     }

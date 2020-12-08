@@ -22,7 +22,7 @@ public class TestMultiTenantConfiguration {
 
     private static final ThreadLocal<String> hostName = ThreadLocal.withInitial(() -> "local");
 
-    private static final Map<MongoClientSettings, MongoServer> mongoInstances = new HashMap<>();
+    private static final Map<ClientCacheEntry, MongoServer> mongoInstances = new HashMap<>();
 
     public static void changeTenant(String tenant) {
         dataBaseName.set(tenant);
@@ -32,7 +32,7 @@ public class TestMultiTenantConfiguration {
         hostName.set(host);
     }
 
-    public static Map<MongoClientSettings, MongoServer> getMongoInstances() {
+    public static Map<ClientCacheEntry, MongoServer> getMongoInstances() {
         return mongoInstances;
     }
 
@@ -80,9 +80,11 @@ public class TestMultiTenantConfiguration {
             }
 
             @Override
-            public MongoClientSettings getClientSettings() {
+            public ClientCacheEntry getCacheEntry() {
                 String uri = "mongodb://127.0.0.1:" + mongoServer.getLocalAddress().getPort() + "/" + dataBaseName.get();
-                return MongoClientSettings.builder().applyConnectionString(new ConnectionString(uri)).build();
+                return ClientCacheEntry.builder()
+                        .clientSettings(MongoClientSettings.builder().applyConnectionString(new ConnectionString(uri)).build())
+                        .cacheKey("127.0.0.1/" + dataBaseName.get()).build();
             }
         };
     }
@@ -93,7 +95,7 @@ public class TestMultiTenantConfiguration {
 
             @Override
             public void close() {
-                for (Map.Entry<MongoClientSettings, MongoServer> entry : mongoInstances.entrySet()) {
+                for (Map.Entry<ClientCacheEntry, MongoServer> entry : mongoInstances.entrySet()) {
                     entry.getValue().shutdown();
                 }
                 mongoInstances.clear();
@@ -101,21 +103,21 @@ public class TestMultiTenantConfiguration {
 
             @Override
             public MongoClient get(TenantInformationProvider provider) {
-                final MongoClientSettings clientSettings = provider.getClientSettings();
-                if (!mongoInstances.containsKey(clientSettings)) {
-                    mongoInstances.put(clientSettings, initNewServer());
+                final ClientCacheEntry cacheEntry = provider.getCacheEntry();
+                if (!mongoInstances.containsKey(cacheEntry)) {
+                    mongoInstances.put(cacheEntry, initNewServer());
                 }
-                return MongoClients.create(provider.getClientSettings());
+                return MongoClients.create(provider.getCacheEntry().getClientSettings());
             }
 
             @Override
             public void close(TenantInformationProvider provider) {
-                final MongoClientSettings clientSettings = provider.getClientSettings();
-                final MongoServer server = mongoInstances.get(clientSettings);
+                final ClientCacheEntry cacheEntry = provider.getCacheEntry();
+                final MongoServer server = mongoInstances.get(cacheEntry);
                 if (server != null) {
                     server.shutdown();
                 }
-                mongoInstances.remove(clientSettings);
+                mongoInstances.remove(cacheEntry);
             }
         };
     }
