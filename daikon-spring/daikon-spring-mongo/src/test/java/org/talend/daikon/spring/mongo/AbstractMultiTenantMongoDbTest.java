@@ -1,7 +1,6 @@
 package org.talend.daikon.spring.mongo;
 
 import com.mongodb.ConnectionString;
-import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import de.bwaldvogel.mongo.MongoServer;

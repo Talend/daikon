@@ -7,12 +7,12 @@ import static org.talend.daikon.spring.mongo.TestMultiTenantConfiguration.change
 import java.util.List;
 import java.util.Map;
 
+import com.mongodb.MongoClientSettings;
 import de.bwaldvogel.mongo.MongoServer;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
-import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.TestPropertySource;
 
@@ -51,7 +51,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
     }
 
     @Test
-    public void shouldNotWriteInOtherTenant() throws Exception {
+    public void shouldNotWriteInOtherTenant() {
         // Given
         final TestData tenant1 = new TestData();
         tenant1.setId("1");
@@ -67,7 +67,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
     }
 
     @Test
-    public void shouldWriteInEachTenant() throws Exception {
+    public void shouldWriteInEachTenant() {
         // Given
         final TestData tenant1 = new TestData();
         tenant1.setId("1");
@@ -99,7 +99,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
     }
 
     @Test
-    public void shouldDealWithRepositories() throws Exception {
+    public void shouldDealWithRepositories() {
         // Given
         final TestData tenant1 = new TestData();
         tenant1.setId("1");
@@ -131,7 +131,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
     }
 
     @Test(expected = InvalidDataAccessResourceUsageException.class)
-    public void shouldFailOnDatabaseNameProviderFailure() throws Exception {
+    public void shouldFailOnDatabaseNameProviderFailure() {
         // Given
         final TestData tenant1 = new TestData();
         tenant1.setId("1");
@@ -143,7 +143,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
     }
 
     @Test
-    public void shouldUseDifferentHosts() throws Exception {
+    public void shouldUseDifferentHosts() {
         // Given
         final TestData tenant1 = new TestData();
         tenant1.setId("1");
@@ -162,7 +162,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
         testRepository.insert(tenant2);
 
         // Then
-        final Map<String, MongoServer> instances = TestMultiTenantConfiguration.getMongoInstances();
+        final Map<MongoClientSettings, MongoServer> instances = TestMultiTenantConfiguration.getMongoInstances();
         assertEquals(2, instances.size());
     }
 }

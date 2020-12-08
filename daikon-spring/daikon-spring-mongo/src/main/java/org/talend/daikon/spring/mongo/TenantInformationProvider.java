@@ -1,6 +1,6 @@
 package org.talend.daikon.spring.mongo;
 
-import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 
 /**
  * <p>
@@ -23,7 +23,7 @@ public interface TenantInformationProvider {
     String getDatabaseName();
 
     /**
-     * @return A {@link ConnectionString} object that describes where the mongo db host is.
+     * @return A {@link MongoClientSettings} object that describes where the mongo db host is.
      */
-    ConnectionString getDatabaseURI();
+    MongoClientSettings getClientSettings();
 }

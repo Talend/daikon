@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import de.bwaldvogel.mongo.MongoServer;
 import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
@@ -35,9 +36,11 @@ public class CachedMongoClientProviderTest {
             }
 
             @Override
-            public ConnectionString getDatabaseURI() {
-                return new ConnectionString(
-                        "mongodb://" + serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant);
+            public MongoClientSettings getClientSettings() {
+                return MongoClientSettings.builder()
+                        .applyConnectionString(new ConnectionString(
+                                "mongodb://" + serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant))
+                        .build();
             }
         };
     }

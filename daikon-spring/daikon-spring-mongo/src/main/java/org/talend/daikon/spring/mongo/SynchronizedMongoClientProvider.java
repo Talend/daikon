@@ -1,6 +1,6 @@
 package org.talend.daikon.spring.mongo;
 
-import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
 
     private final MongoClientProvider delegate;
 
-    private final Map<ConnectionString, AtomicInteger> concurrentOpens = Collections.synchronizedMap(new HashMap<>());
+    private final Map<MongoClientSettings, AtomicInteger> concurrentOpens = Collections.synchronizedMap(new HashMap<>());
 
     public SynchronizedMongoClientProvider(MongoClientProvider delegate) {
         this.delegate = delegate;
@@ -29,20 +29,20 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
 
     @Override
     public MongoClient get(TenantInformationProvider tenantInformationProvider) {
-        final ConnectionString databaseURI = tenantInformationProvider.getDatabaseURI();
-        concurrentOpens.putIfAbsent(databaseURI, new AtomicInteger(0));
-        concurrentOpens.get(databaseURI).incrementAndGet();
+        final MongoClientSettings clientSettings = tenantInformationProvider.getClientSettings();
+        concurrentOpens.putIfAbsent(clientSettings, new AtomicInteger(0));
+        concurrentOpens.get(clientSettings).incrementAndGet();
 
         return delegate.get(tenantInformationProvider);
     }
 
     @Override
     public synchronized void close(TenantInformationProvider tenantInformationProvider) {
-        ConnectionString databaseURI = null;
+        MongoClientSettings clientSettings = null;
         int openCount = 0;
         try {
-            databaseURI = tenantInformationProvider.getDatabaseURI();
-            openCount = concurrentOpens.getOrDefault(databaseURI, new AtomicInteger(0)).decrementAndGet();
+            clientSettings = tenantInformationProvider.getClientSettings();
+            openCount = concurrentOpens.getOrDefault(clientSettings, new AtomicInteger(0)).decrementAndGet();
         } catch (Exception e) {
             LOGGER.debug("Unable to obtain database URI (configuration might be missing for tenant).", e);
         }
@@ -50,11 +50,11 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
             try {
                 delegate.close(tenantInformationProvider);
             } finally {
-                concurrentOpens.remove(databaseURI);
+                concurrentOpens.remove(clientSettings);
             }
         } else {
             LOGGER.trace("Not closing mongo clients ({} remain in use for database '{}')", openCount,
-                    databaseURI == null ? "N/A" : databaseURI);
+                    clientSettings == null ? "N/A" : clientSettings);
         }
     }
 
