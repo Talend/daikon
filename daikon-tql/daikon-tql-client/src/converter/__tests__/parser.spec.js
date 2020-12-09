@@ -89,7 +89,10 @@ const mock = [
 		},
 		removeFilterFn: null,
 		badgeClass: 'exact',
-		value: [{ value: 'Indonesia', label: 'Indonesia' }, { value: 'Russia', label: 'Russia' }],
+		value: [
+			{ value: 'Indonesia', label: 'Indonesia' },
+			{ value: 'Russia', label: 'Russia' },
+		],
 	},
 	{
 		type: 'word_matches',
@@ -101,15 +104,49 @@ const mock = [
 		badgeClass: 'word_matches',
 		value: [{ value: '[alnum]/[number]/[number]' }],
 	},
+	{
+		type: 'not_equals',
+		colId: '0009',
+		colName: 'departement_birth',
+		editable: false,
+		args: { value: 2 },
+	},
+	{
+		type: 'greater_than',
+		colId: '0009',
+		colName: 'departement_birth',
+		editable: false,
+		args: { value: 3 },
+	},
+	{
+		type: 'greater_than_or_equals',
+		colId: '0009',
+		colName: 'departement_birth',
+		editable: false,
+		args: { value: 4 },
+	},
+	{
+		type: 'less_than',
+		colId: '0009',
+		colName: 'departement_birth',
+		editable: false,
+		args: { value: 5 },
+	},
+	{
+		type: 'less_than_or_equals',
+		colId: '0009',
+		colName: 'departement_birth',
+		editable: false,
+		args: { value: 6 },
+	},
 ];
 
 describe('Parser', () => {
 	it('should parse a tree', () => {
 		const query = Parser.parse(mock);
 
-		expect(query.serialize())
-			.toEqual(
-				'((0001 contains \'euge\') or (0001 contains \'secondtestvalue\')) and ((0000 between [342273, 542874[) or (0000 between [13456, 7891011])) and (* is invalid) and (* is valid) and (* is empty) and ((* is empty) or (* is invalid)) and ((0006 = \'Indonesia\') or (0006 = \'Russia\')) and ((0009 wordComplies \'[alnum]/[number]/[number]\'))',
-			);
+		expect(query.serialize()).toEqual(
+			"((0001 contains 'euge') or (0001 contains 'secondtestvalue')) and ((0000 between [342273, 542874[) or (0000 between [13456, 7891011])) and (* is invalid) and (* is valid) and (* is empty) and ((* is empty) or (* is invalid)) and ((0006 = 'Indonesia') or (0006 = 'Russia')) and ((0009 wordComplies '[alnum]/[number]/[number]')) and ((0009 != 2)) and ((0009 > 3)) and ((0009 >= 4)) and ((0009 < 5)) and ((0009 <= 6))",
+		);
 	});
 });

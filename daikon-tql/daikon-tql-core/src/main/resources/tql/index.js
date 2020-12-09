@@ -14,7 +14,12 @@ var parse = function(
     onEmptyFilter,
     onValidFilter,
     onInvalidFilter,
-    onWordCompliesFilter
+    onWordCompliesFilter,
+    onNotEqualsFilter,
+    onGreaterThanFilter,
+    onGreaterThanOrEqualsFilter,
+    onLessThanFilter,
+    onLessThanOrEqualsFilter
 ) {
     var chars = new antlr4.InputStream(tql);
     var lexer = new TqlLexer(chars);
@@ -22,6 +27,14 @@ var parse = function(
     var listener = new TqlListener();
     var parser = new TqlParser(tokens);
     var noop = function() {};
+    var literalComparisonOperator = {
+    "=": onExactFilter,
+    "!=": onNotEqualsFilter,
+    ">": onGreaterThanFilter,
+    ">=": onGreaterThanOrEqualsFilter,
+    "<": onLessThanFilter,
+    "<=": onLessThanOrEqualsFilter
+    };
 
     parser.buildParseTrees = true;
 
@@ -35,8 +48,9 @@ var parse = function(
     listener.enterFieldWordCompliesPattern = onWordCompliesFilter || noop;
     listener.enterFieldBetween = onBetweenFilter || noop;
     listener.enterLiteralComparison = function(ctx) {
-        if (ctx.children[1].getText() === "=" && onExactFilter) {
-            onExactFilter(ctx);
+        var filter = literalComparisonOperator[ctx.children[1].getText()];
+        if (filter) {
+          filter(ctx);
         }
     };
 
