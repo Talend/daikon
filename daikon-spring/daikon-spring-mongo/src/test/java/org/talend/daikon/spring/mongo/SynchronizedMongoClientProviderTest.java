@@ -20,14 +20,10 @@ public class SynchronizedMongoClientProviderTest {
         final MongoClientProvider mongoClientProvider = mock(MongoClientProvider.class);
         SynchronizedMongoClientProvider provider = new SynchronizedMongoClientProvider(mongoClientProvider);
         final TenantInformationProvider tenantInformationProvider = mock(TenantInformationProvider.class);
-        when(tenantInformationProvider.getCacheEntry()).thenReturn(
-                ClientCacheEntry.builder()
-                        .clientSettings(MongoClientSettings.builder()
-                                                .applyConnectionString(new ConnectionString("mongodb://no_host"))
-                                                .build())
-                        .cacheKey("no_host")
-                        .build()
-        );
+        when(tenantInformationProvider.getTenantInformation()).thenReturn(TenantInformation.builder().databaseName("db")
+                .clientSettings(
+                        MongoClientSettings.builder().applyConnectionString(new ConnectionString("mongodb://no_host")).build())
+                .build());
         final MongoClient mongoClient = mock(MongoClient.class);
         when(mongoClientProvider.get(eq(tenantInformationProvider))).thenReturn(mongoClient);
         doAnswer(invocation -> {
@@ -55,14 +51,10 @@ public class SynchronizedMongoClientProviderTest {
         final MongoClientProvider mongoClientProvider = mock(MongoClientProvider.class);
         SynchronizedMongoClientProvider provider = new SynchronizedMongoClientProvider(mongoClientProvider);
         final TenantInformationProvider tenantInformationProvider = mock(TenantInformationProvider.class);
-        when(tenantInformationProvider.getCacheEntry()).thenReturn(
-                ClientCacheEntry.builder()
-                        .clientSettings(MongoClientSettings.builder()
-                                                .applyConnectionString(new ConnectionString("mongodb://no_host"))
-                                                .build())
-                        .cacheKey("no_host")
-                        .build()
-        );
+        when(tenantInformationProvider.getTenantInformation()).thenReturn(TenantInformation.builder().databaseName("db")
+                .clientSettings(
+                        MongoClientSettings.builder().applyConnectionString(new ConnectionString("mongodb://no_host")).build())
+                .build());
         final MongoClient mongoClient = mock(MongoClient.class);
         when(mongoClientProvider.get(eq(tenantInformationProvider))).thenReturn(mongoClient);
         doAnswer(invocation -> {
@@ -91,22 +83,14 @@ public class SynchronizedMongoClientProviderTest {
         SynchronizedMongoClientProvider provider = new SynchronizedMongoClientProvider(mongoClientProvider);
         final TenantInformationProvider tenantInformationProvider1 = mock(TenantInformationProvider.class);
         final TenantInformationProvider tenantInformationProvider2 = mock(TenantInformationProvider.class);
-        when(tenantInformationProvider1.getCacheEntry()).thenReturn(
-                ClientCacheEntry.builder()
-                        .clientSettings(MongoClientSettings.builder()
-                                                .applyConnectionString(new ConnectionString("mongodb://no_host_1"))
-                                                .build())
-                        .cacheKey("no_host_1")
-                        .build()
-        );
-        when(tenantInformationProvider2.getCacheEntry()).thenReturn(
-                ClientCacheEntry.builder()
-                        .clientSettings(MongoClientSettings.builder()
-                                                .applyConnectionString(new ConnectionString("mongodb://no_host_2"))
-                                                .build())
-                        .cacheKey("no_host_2")
-                        .build()
-        );
+        when(tenantInformationProvider1.getTenantInformation()).thenReturn(TenantInformation.builder().databaseName("db")
+                .clientSettings(
+                        MongoClientSettings.builder().applyConnectionString(new ConnectionString("mongodb://no_host_1")).build())
+                .build());
+        when(tenantInformationProvider2.getTenantInformation()).thenReturn(TenantInformation.builder().databaseName("db")
+                .clientSettings(
+                        MongoClientSettings.builder().applyConnectionString(new ConnectionString("mongodb://no_host_2")).build())
+                .build());
         final MongoClient mongoClient1 = mock(MongoClient.class);
         final MongoClient mongoClient2 = mock(MongoClient.class);
         when(mongoClientProvider.get(eq(tenantInformationProvider1))).thenReturn(mongoClient1);
@@ -145,7 +129,7 @@ public class SynchronizedMongoClientProviderTest {
         final MongoClientProvider mongoClientProvider = mock(MongoClientProvider.class);
         SynchronizedMongoClientProvider provider = new SynchronizedMongoClientProvider(mongoClientProvider);
         final TenantInformationProvider tenantInformationProvider = mock(TenantInformationProvider.class);
-        when(tenantInformationProvider.getCacheEntry()).thenThrow(new RuntimeException("On purpose thrown exception"));
+        when(tenantInformationProvider.getTenantInformation()).thenThrow(new RuntimeException("On purpose thrown exception"));
         final MongoClient mongoClient = mock(MongoClient.class);
         when(mongoClientProvider.get(eq(tenantInformationProvider))).thenReturn(mongoClient);
         doAnswer(invocation -> {

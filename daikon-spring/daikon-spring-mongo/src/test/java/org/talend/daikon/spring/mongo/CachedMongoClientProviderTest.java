@@ -28,22 +28,12 @@ public class CachedMongoClientProviderTest {
     private static InetSocketAddress serverAddress;
 
     private static TenantInformationProvider getTenantInformationProvider(final String tenant) {
-        return new TenantInformationProvider() {
-
-            @Override
-            public String getDatabaseName() {
-                return tenant;
-            }
-
-            @Override
-            public ClientCacheEntry getCacheEntry() {
-                MongoClientSettings clientSettings = MongoClientSettings.builder()
-                        .applyConnectionString(new ConnectionString(
-                                "mongodb://" + serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant))
-                        .build();
-                return ClientCacheEntry.builder().clientSettings(clientSettings)
-                        .cacheKey(serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant).build();
-            }
+        return () -> {
+            ConnectionString connectionString = new ConnectionString(
+                    "mongodb://" + serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant);
+            return TenantInformation.builder()
+                    .clientSettings(MongoClientSettings.builder().applyConnectionString(connectionString).build())
+                    .databaseName(tenant).build();
         };
     }
 

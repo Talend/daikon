@@ -20,7 +20,7 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
 
     private final MongoClientProvider delegate;
 
-    private final Map<ClientCacheEntry, AtomicInteger> concurrentOpens = Collections.synchronizedMap(new HashMap<>());
+    private final Map<TenantInformation, AtomicInteger> concurrentOpens = Collections.synchronizedMap(new HashMap<>());
 
     public SynchronizedMongoClientProvider(MongoClientProvider delegate) {
         this.delegate = delegate;
@@ -28,20 +28,20 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
 
     @Override
     public MongoClient get(TenantInformationProvider tenantInformationProvider) {
-        final ClientCacheEntry cacheEntry = tenantInformationProvider.getCacheEntry();
-        concurrentOpens.putIfAbsent(cacheEntry, new AtomicInteger(0));
-        concurrentOpens.get(cacheEntry).incrementAndGet();
+        final TenantInformation tenantInformation = tenantInformationProvider.getTenantInformation();
+        concurrentOpens.putIfAbsent(tenantInformation, new AtomicInteger(0));
+        concurrentOpens.get(tenantInformation).incrementAndGet();
 
         return delegate.get(tenantInformationProvider);
     }
 
     @Override
     public synchronized void close(TenantInformationProvider tenantInformationProvider) {
-        ClientCacheEntry cacheEntry = null;
+        TenantInformation tenantInformation = null;
         int openCount = 0;
         try {
-            cacheEntry = tenantInformationProvider.getCacheEntry();
-            openCount = concurrentOpens.getOrDefault(cacheEntry, new AtomicInteger(0)).decrementAndGet();
+            tenantInformation = tenantInformationProvider.getTenantInformation();
+            openCount = concurrentOpens.getOrDefault(tenantInformation, new AtomicInteger(0)).decrementAndGet();
         } catch (Exception e) {
             LOGGER.debug("Unable to obtain database URI (configuration might be missing for tenant).", e);
         }
@@ -49,11 +49,11 @@ public class SynchronizedMongoClientProvider implements MongoClientProvider {
             try {
                 delegate.close(tenantInformationProvider);
             } finally {
-                concurrentOpens.remove(cacheEntry);
+                concurrentOpens.remove(tenantInformation);
             }
         } else {
             LOGGER.trace("Not closing mongo clients ({} remain in use for database '{}')", openCount,
-                    cacheEntry == null ? "N/A" : cacheEntry);
+                    tenantInformation == null ? "N/A" : tenantInformation);
         }
     }
 

@@ -16,12 +16,7 @@ package org.talend.daikon.spring.mongo;
 public interface TenantInformationProvider {
 
     /**
-     * @return The database name to use to execute operation (write or read). Database name must <b>NOT</b> be empty.
+     * @return A {@link TenantInformation} object that describes database name and where the mongo db host is.
      */
-    String getDatabaseName();
-
-    /**
-     * @return A {@link ClientCacheEntry} object that describes where the mongo db host is and cache key for client.
-     */
-    ClientCacheEntry getCacheEntry();
+    TenantInformation getTenantInformation();
 }

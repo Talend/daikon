@@ -47,7 +47,7 @@ class MultiTenancyMongoDbFactory implements MongoDatabaseFactory, DisposableBean
         // Multi tenancy database name selection
         final String databaseName;
         try {
-            databaseName = tenantProvider.getDatabaseName();
+            databaseName = tenantProvider.getTenantInformation().getDatabaseName();
         } catch (Exception e) {
             throw new InvalidDataAccessResourceUsageException("Unable to retrieve database name.", e);
         }

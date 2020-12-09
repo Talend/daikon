@@ -7,7 +7,6 @@ import static org.talend.daikon.spring.mongo.TestMultiTenantConfiguration.change
 import java.util.List;
 import java.util.Map;
 
-import com.mongodb.MongoClientSettings;
 import de.bwaldvogel.mongo.MongoServer;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,7 +161,7 @@ public class MultiTenantMongoDbFactoryTest extends AbstractMultiTenantMongoDbTes
         testRepository.insert(tenant2);
 
         // Then
-        final Map<ClientCacheEntry, MongoServer> instances = TestMultiTenantConfiguration.getMongoInstances();
+        final Map<TenantInformation, MongoServer> instances = TestMultiTenantConfiguration.getMongoInstances();
         assertEquals(2, instances.size());
     }
 }
