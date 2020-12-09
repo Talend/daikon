@@ -51,6 +51,31 @@ const mapping = {
 		getValues: () => [],
 		getOptions: value => value,
 	},
+	not_equals: {
+		operator: 'unequal',
+		getValues: node => [node.args],
+		getOptions: () => {},
+	},
+	greater_than: {
+		operator: 'greaterThan',
+		getValues: node => [node.args],
+		getOptions: () => {},
+	},
+	greater_than_or_equals: {
+		operator: 'greaterThanOrEqual',
+		getValues: node => [node.args],
+		getOptions: () => {},
+	},
+	less_than: {
+		operator: 'lessThan',
+		getValues: node => [node.args],
+		getOptions: () => {},
+	},
+	less_than_or_equals: {
+		operator: 'lessThanOrEqual',
+		getValues: node => [node.args],
+		getOptions: () => {},
+	},
 };
 
 function buildSubQuery(current, filter) {

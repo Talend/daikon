@@ -27,6 +27,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.daikon.signature.exceptions.MissingEntryException;
+import org.talend.daikon.signature.exceptions.NoValidCertificateException;
 import org.talend.daikon.signature.exceptions.UnsignedArchiveException;
 import org.talend.daikon.signature.exceptions.UnsignedEntryException;
 import org.talend.daikon.signature.exceptions.VerifyFailedException;
@@ -82,6 +83,24 @@ public class ZipVerifierTest {
         String keyStorePath = getPathFromWorkingFolder("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.verify(signedJobPath);
+    }
+    
+    @Test
+    public void testVerifySignedByApkSignWithExpiredCert() throws Exception {
+        String signedJobPath = getApkSignerResourceFilePath("signed-by-apksigner-expired.zip");
+        String keyStorePath = getApkSignerResourceFilePath("truststore.jks");
+        String storePassForApkSigner = "c1b966f70a2529d8adc13e13d293"; //$NON-NLS-1$
+        
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePassForApkSigner);
+        try {
+            verifer.verify(signedJobPath);
+            fail("exception should have been thrown in the previous line");
+        } catch (VerifyFailedException ex) {
+            assertTrue(ex.getCause() instanceof NoValidCertificateException);
+        }
+        verifer.setCheckSignatureTimestamp(false);
         verifer.verify(signedJobPath);
     }
 
@@ -176,6 +195,12 @@ public class ZipVerifierTest {
 
     private static String getResourceFilePath(String fileName) {
         String resourcePath = ZipVerifierTest.class.getResource(fileName).getFile();
+        return resourcePath;
+    }
+    
+    private static String getApkSignerResourceFilePath(String fileName) {
+        String resourcesFolder = ZipVerifierTest.class.getClassLoader().getResource("apkSigner").getFile();
+        String resourcePath = resourcesFolder + File.separator + fileName;
         return resourcePath;
     }
 
