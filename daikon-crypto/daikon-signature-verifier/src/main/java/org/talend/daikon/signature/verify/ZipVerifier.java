@@ -36,7 +36,10 @@ import java.security.cert.PKIXCertPathValidatorResult;
 import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -62,6 +65,8 @@ import org.talend.daikon.signature.keystore.KeyStoreManager;
 public class ZipVerifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZipVerifier.class);
+
+    private boolean isCheckSignatureTimestamp = true;
 
     private PKIXParameters param;
 
@@ -240,7 +245,9 @@ public class ZipVerifier {
             if (cert instanceof X509Certificate) {
                 X509Certificate x509Cert = (X509Certificate) cert;
                 try {
-                    x509Cert.checkValidity();
+                    if (isCheckSignatureTimestamp) {
+                        x509Cert.checkValidity();
+                    }
                     validCertList.add(x509Cert);
                 } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
                     LOGGER.debug("Found invalid certificate:" + ex);
@@ -249,6 +256,14 @@ public class ZipVerifier {
         }
         if (validCertList.size() == 0) {
             throw new NoValidCertificateException("No valid certificate, all certificates are expired."); //$NON-NLS-1$
+        }
+        
+        // If we are skipping the signature timestamp check, then make sure that an expired signing cert is allowed
+        // for CertPath validation
+        if (!isCheckSignatureTimestamp) {
+            X509Certificate x509Cert = validCertList.get(0);
+            Instant notAfter = x509Cert.getNotAfter().toInstant();
+            param.setDate(Date.from(notAfter.minus(Duration.ofDays(2))));
         }
         CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509"); //$NON-NLS-1$
         CertPath toVerifyCertPath = certificateFactory.generateCertPath(validCertList);
@@ -287,5 +302,13 @@ public class ZipVerifier {
         List<String> extendesKeyUsage = cert.getExtendedKeyUsage();
         return isDigitalSignature && extendesKeyUsage != null
                 && (extendesKeyUsage.contains("2.5.29.37.0") || extendesKeyUsage.contains("1.3.6.1.5.5.7.3.3")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    public boolean isCheckSignatureTimestamp() {
+        return isCheckSignatureTimestamp;
+    }
+
+    public void setCheckSignatureTimestamp(boolean isCheckSignatureTimestamp) {
+        this.isCheckSignatureTimestamp = isCheckSignatureTimestamp;
     }
 }
