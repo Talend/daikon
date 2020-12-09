@@ -41,6 +41,7 @@ One of the main function of a log being to help the troubleshooting, moving to t
 * Categorizing the logs
 * Formalizing, documenting & maintaining the list of available events
 * Adding extra info to regular logs (e.g k8s infos)
+* homogenize the field types and formats
 
 == About ECS
 
@@ -141,7 +142,6 @@ It could be interesting to make these logs (cleaned from all PII) available inte
 
 * Remove PII
 * Log the audit logs following ECS format (using categorization fields if possible)
-
 
 
 
