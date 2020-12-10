@@ -1,12 +1,14 @@
 package org.talend.daikon.spring.mongo;
 
 import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoCredential;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -39,7 +41,7 @@ public final class TenantInformation {
         String hosts = clientSettings.getClusterSettings().getHosts().stream().map(h -> h.getHost() + ":" + h.getPort())
                 .collect(Collectors.joining(","));
         String replicaSet = clientSettings.getClusterSettings().getRequiredReplicaSetName();
-        String userName = clientSettings.getCredential() == null ? "" : clientSettings.getCredential().getUserName();
+        String userName = Optional.ofNullable(clientSettings.getCredential()).map(MongoCredential::getUserName).orElse("");
 
         return String.join(";", Arrays.asList(hosts, replicaSet, userName, databaseName));
     }
