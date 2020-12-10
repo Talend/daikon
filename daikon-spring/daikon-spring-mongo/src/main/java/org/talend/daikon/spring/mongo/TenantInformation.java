@@ -2,6 +2,7 @@ package org.talend.daikon.spring.mongo;
 
 import com.mongodb.MongoClientSettings;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -9,6 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class TenantInformation {
 
     /**
@@ -21,6 +23,7 @@ public final class TenantInformation {
      */
     private final String databaseName;
 
+    @EqualsAndHashCode.Include
     private final String cacheKey;
 
     @Builder
@@ -39,21 +42,6 @@ public final class TenantInformation {
         String userName = clientSettings.getCredential() == null ? "" : clientSettings.getCredential().getUserName();
 
         return String.join(";", Arrays.asList(hosts, replicaSet, userName, databaseName));
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        TenantInformation that = (TenantInformation) o;
-        return cacheKey.equals(that.cacheKey);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(cacheKey);
     }
 
 }
