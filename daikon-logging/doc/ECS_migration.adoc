@@ -64,6 +64,17 @@ The ECS specification proposes https://www.elastic.co/guide/en/ecs/current/ecs-b
 * https://www.elastic.co/guide/en/ecs/current/ecs-http.html[http]: HTTP activity
 * https://www.elastic.co/guide/en/ecs/current/ecs-source.html[source]: Details about the sender of a network exchange/packet
 
+=== Guidelines
+
+Elastic gives a https://www.elastic.co/guide/en/ecs/current/ecs-guidelines.html#_general_guidelines[set of guidelines] in order to deal with a migration whose main ones are :
+
+* The document MUST have the `@timestamp` field.
+* Use the https://www.elastic.co/guide/en/elasticsearch/reference/7.10/mapping-types.html[data types] defined for an ECS field.
+* Use the `ecs.version` field to define which version of ECS is used.
+* Map as many fields as possible to ECS.
+
+In order to deal with not recognized or custom fields, Elastic gives also some https://www.elastic.co/guide/en/ecs/current/ecs-custom-fields-in-ecs.html#ecs-custom-fields-in-ecs[recommendations]. The main advice being to use the `labels` core field.
+
 === Examples
 
 In order to illustrate the usage of ECS format, here are some Talend use cases with, for each, the current log format and what could be the log with following ECS specification.
