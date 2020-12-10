@@ -2,7 +2,6 @@ package org.talend.daikon.spring.mongo;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import de.bwaldvogel.mongo.MongoServer;
@@ -10,7 +9,6 @@ import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
-import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 
@@ -24,7 +22,7 @@ public class TestMultiTenantConfiguration {
 
     private static final ThreadLocal<String> hostName = ThreadLocal.withInitial(() -> "local");
 
-    private static final Map<String, MongoServer> mongoInstances = new HashMap<>();
+    private static final Map<TenantInformation, MongoServer> mongoInstances = new HashMap<>();
 
     public static void changeTenant(String tenant) {
         dataBaseName.set(tenant);
@@ -34,7 +32,7 @@ public class TestMultiTenantConfiguration {
         hostName.set(host);
     }
 
-    public static Map<String, MongoServer> getMongoInstances() {
+    public static Map<TenantInformation, MongoServer> getMongoInstances() {
         return mongoInstances;
     }
 
@@ -71,21 +69,15 @@ public class TestMultiTenantConfiguration {
      */
     @Bean
     public TenantInformationProvider tenantProvider(MongoServer mongoServer) {
-        return new TenantInformationProvider() {
-
-            @Override
-            public String getDatabaseName() {
-                if ("failure".equals(dataBaseName.get())) {
-                    throw new RuntimeException("On purpose thrown exception.");
-                }
-                return dataBaseName.get();
+        return () -> {
+            if ("failure".equals(dataBaseName.get())) {
+                throw new RuntimeException("On purpose thrown exception.");
             }
 
-            @Override
-            public ConnectionString getDatabaseURI() {
-                String uri = "mongodb://127.0.0.1:" + mongoServer.getLocalAddress().getPort() + "/" + dataBaseName.get();
-                return new ConnectionString(uri);
-            }
+            String uri = "mongodb://127.0.0.1:" + mongoServer.getLocalAddress().getPort() + "/" + dataBaseName.get();
+            return TenantInformation.builder()
+                    .clientSettings(MongoClientSettings.builder().applyConnectionString(new ConnectionString(uri)).build())
+                    .databaseName(dataBaseName.get()).build();
         };
     }
 
@@ -95,7 +87,7 @@ public class TestMultiTenantConfiguration {
 
             @Override
             public void close() {
-                for (Map.Entry<String, MongoServer> entry : mongoInstances.entrySet()) {
+                for (Map.Entry<TenantInformation, MongoServer> entry : mongoInstances.entrySet()) {
                     entry.getValue().shutdown();
                 }
                 mongoInstances.clear();
@@ -103,21 +95,21 @@ public class TestMultiTenantConfiguration {
 
             @Override
             public MongoClient get(TenantInformationProvider provider) {
-                final String name = provider.getDatabaseURI().getConnectionString();
-                if (!mongoInstances.containsKey(name)) {
-                    mongoInstances.put(name, initNewServer());
+                final TenantInformation tenantInformation = provider.getTenantInformation();
+                if (!mongoInstances.containsKey(tenantInformation)) {
+                    mongoInstances.put(tenantInformation, initNewServer());
                 }
-                return MongoClients.create(provider.getDatabaseURI());
+                return MongoClients.create(provider.getTenantInformation().getClientSettings());
             }
 
             @Override
             public void close(TenantInformationProvider provider) {
-                final String uri = provider.getDatabaseURI().getConnectionString();
-                final MongoServer server = mongoInstances.get(uri);
+                final TenantInformation tenantInformation = provider.getTenantInformation();
+                final MongoServer server = mongoInstances.get(tenantInformation);
                 if (server != null) {
                     server.shutdown();
                 }
-                mongoInstances.remove(uri);
+                mongoInstances.remove(tenantInformation);
             }
         };
     }
