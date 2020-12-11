@@ -427,33 +427,40 @@ New layouts must be created by extending the layouts proposed by https://github.
 
 New MDC utility classes and filters must be created by following https://www.elastic.co/guide/en/ecs/current/ecs-field-reference.html[the ECS specification].
 
-In order to facilitate the *adoption* of these new layouts (for example to let the teams adapt their dashboards to the new format) they will be able to use multiple log appenders (legacy + ECS). These appenders should be enabled/disabled using an env variable.
+A main requirement being to facilitate the *adoption* of these new layouts (for example to let the teams adapt their dashboards to the new format), both log appenders (legacy + ECS) could be used in parallel by the services. The switch between the appenders will be possible by using an environment variable.
 
-During this first phase, the MDC fields will be mapped with corresponding ECS fields if possible (https://github.com/elastic/ecs-logging-java[`ecs-logging-java`] lib will help us to do this mapping). If a field can't be mapped with any ECS based or extended field (case of custom field), it will be added as `label` as recommended by https://www.elastic.co/guide/en/ecs/master/ecs-custom-fields-in-ecs.html#_the_labels_field[the official documentation].
+During this first phase, the MDC fields will be mapped with corresponding ECS fields if possible (https://github.com/elastic/ecs-logging-java[`ecs-logging-java`] lib will help us to do this mapping). If a field can't be mapped with any ECS core or extended field (case of custom field), it will be added as `label` as recommended by https://www.elastic.co/guide/en/ecs/master/ecs-custom-fields-in-ecs.html#_the_labels_field[the official documentation].
 
-During this phase, we can migrate some services to this new format.
+The goal of this phase is to migrate to ECS the services which don't use complex custom fields in their logs (e.g. TPSVC services).
 
-==== Phase 2 : Make https://github.com/Talend/daikon/tree/master/daikon-spring/daikon-spring-audit-logs[`daikon-spring-audit-logs`] ECS compatible
+==== Phase 2 : Deal with https://www.elastic.co/guide/en/ecs/master/ecs-custom-fields-in-ecs.html[custom fields]
 
-The audit logs are also very useful for *troubleshooting* as they can help to understand the activity of a specific account when a problem occurs.
-Currently the audit logs are only available for the customers and they contain PII (personally identifiable information), but it could be interesting to make them accessible internally for debugging purpose.
+Some services are generating logs with custom fields which don't map with ECS core or extended fields.
 
-It could be quite easy to make audit logs ECS compatible as the mechanism is already centralized in a daikon library.
+In this second phase, the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] library will be updated in order to take into account these custom fields. It will the other services to move to ECS.
 
-In this second phase, `daikon-spring-audit-logs` could be updated in order to :
+IMPORTANT: The mapping custom fields / ECS field must stay well documented in https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] at any moment.
 
-* Remove PII
-* Log the audit logs following ECS format (using categorization fields if possible)
-
-The https://www.elastic.co/guide/en/ecs/master/ecs-event.html[event] ECS extended field and its https://www.elastic.co/guide/en/ecs/master/ecs-category-field-values-reference.html[categorization fields] could be leveraged.
-
-==== Phase 3 : Leverage https://www.elastic.co/guide/en/ecs/master/ecs-guidelines.html#_ecs_field_levels[ECS extended fields]
+==== Phase 3 : Leverage https://www.elastic.co/guide/en/ecs/master/ecs-category-field-values-reference.html[ECS categorization fields]
 
 Some specific Talend concepts like the jobs, pipelines, engines, ... have a lifecycle which deserve to be finely analyzed. That's why the logs relative to these concepts deserve to be detailed.
-Leveraging some ECS extended fields like the `event` field is a good way to record status changes (see <<pipeline execution>> example).
+
+Leveraging some ECS extended fields, like the `event` field, is a good way to record status changes (see <<pipeline execution>> example).
 
 In this phase 3, the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] lib can be enriched in order to provide an API allowing the client services to categorize their logs.
 
 IMPORTANT: In order to maintain and keep a well documented a finite set of events, they must be defined and documented into the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] library. If a new type/category/kind of event is needed, it must be added into this library and documented there accordingly.
 
+==== Phase 4 : Make https://github.com/Talend/daikon/tree/master/daikon-spring/daikon-spring-audit-logs[`daikon-spring-audit-logs`] ECS compatible
 
+The audit logs could be useful for *troubleshooting* as they can help to understand the activity of a specific account when a problem occurs.
+Currently the audit logs are only available for the customers and they contain PII (personally identifiable information), but it could be interesting to make them accessible internally for debugging purpose.
+
+It could be quite easy to make audit logs ECS compatible as the mechanism is already centralized in a daikon library.
+
+In this fourth phase, `daikon-spring-audit-logs` could be updated in order to :
+
+* Remove PII
+* Log the audit logs following ECS format (using categorization fields if possible)
+
+The https://www.elastic.co/guide/en/ecs/master/ecs-event.html[event] ECS extended field and its https://www.elastic.co/guide/en/ecs/master/ecs-category-field-values-reference.html[categorization fields] could be leveraged.
