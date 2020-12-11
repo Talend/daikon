@@ -435,11 +435,13 @@ The goal of this phase is to migrate to ECS the services which don't use complex
 
 ==== Phase 2 : Deal with https://www.elastic.co/guide/en/ecs/master/ecs-custom-fields-in-ecs.html[custom fields]
 
-Some services are generating logs with custom fields which don't map with ECS core or extended fields.
+Some services are generating logs with custom fields which don't map naturally with ECS core or extended fields.
 
-In this second phase, the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] library will be updated in order to take into account these custom fields. It will the other services to move to ECS.
+In this second phase, the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] library will be updated in order to take into account these custom fields, by making the mapping with ECS fields.
 
-IMPORTANT: The mapping custom fields / ECS field must stay well documented in https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] at any moment.
+The goal of this phase if to migrate to ECS the rest of the services (those using custom fields).
+
+IMPORTANT: The mapping custom fields / ECS fields must stay well documented in https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] at any moment.
 
 ==== Phase 3 : Leverage https://www.elastic.co/guide/en/ecs/master/ecs-category-field-values-reference.html[ECS categorization fields]
 
