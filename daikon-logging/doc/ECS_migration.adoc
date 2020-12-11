@@ -431,7 +431,7 @@ A main requirement being to facilitate the *adoption* of these new layouts (for 
 
 During this first phase, the MDC fields will be mapped with corresponding ECS fields if possible (https://github.com/elastic/ecs-logging-java[`ecs-logging-java`] lib will help us to do this mapping). If a field can't be mapped with any ECS core or extended field (case of custom field), it will be added as `label` as recommended by https://www.elastic.co/guide/en/ecs/master/ecs-custom-fields-in-ecs.html#_the_labels_field[the official documentation].
 
-The goal of this phase is to migrate to ECS the services which don't use complex custom fields in their logs (e.g. TPSVC services).
+The goal of this phase is to migrate to ECS the services which don't expose complex custom fields in their logs (e.g. TPSVC services).
 
 ==== Phase 2 : Deal with https://www.elastic.co/guide/en/ecs/master/ecs-custom-fields-in-ecs.html[custom fields]
 
@@ -449,7 +449,7 @@ Some specific Talend concepts like the jobs, pipelines, engines, ... have a life
 
 Leveraging some ECS extended fields, like the `event` field, is a good way to record status changes (see <<pipeline execution>> example).
 
-In this phase 3, the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] lib can be enriched in order to provide an API allowing the client services to categorize their logs.
+In this phase 3, the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] lib can be enriched by providing an API allowing the client services to categorize their logs.
 
 IMPORTANT: In order to maintain and keep a well documented a finite set of events, they must be defined and documented into the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] library. If a new type/category/kind of event is needed, it must be added into this library and documented there accordingly.
 
