@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -19,11 +18,11 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 public class SimpleMongoClientProvider implements MongoClientProvider {
 
     // ensure the map is synchronized
-    private final Map<ConnectionString, MongoClient> clients = Collections.synchronizedMap(new HashMap<>(100));
+    private final Map<TenantInformation, MongoClient> clients = Collections.synchronizedMap(new HashMap<>(100));
 
-    protected MongoClient createMongoClient(ConnectionString uri) {
+    protected MongoClient createMongoClient(TenantInformation tenantInformation) {
         try {
-            return MongoClients.create(uri);
+            return MongoClients.create(tenantInformation.getClientSettings());
         } catch (Exception e) {
             // 3.x client throws UnknownHostException, keep catch block for compatibility with 3.x version
             throw new InvalidDataAccessResourceUsageException("Unable to retrieve host information.", e);
@@ -32,24 +31,24 @@ public class SimpleMongoClientProvider implements MongoClientProvider {
 
     @Override
     public MongoClient get(TenantInformationProvider provider) {
-        final ConnectionString databaseURI = provider.getDatabaseURI();
-        clients.computeIfAbsent(databaseURI, this::createMongoClient);
-        return clients.get(databaseURI);
+        final TenantInformation tenantInformation = provider.getTenantInformation();
+        clients.computeIfAbsent(tenantInformation, this::createMongoClient);
+        return clients.get(tenantInformation);
     }
 
     @Override
     public void close(TenantInformationProvider provider) {
-        final ConnectionString uri = provider.getDatabaseURI();
-        final MongoClient mongoClient = clients.get(uri);
+        final TenantInformation tenantInformation = provider.getTenantInformation();
+        final MongoClient mongoClient = clients.get(tenantInformation);
         if (mongoClient != null) {
             mongoClient.close();
         }
-        clients.remove(uri);
+        clients.remove(tenantInformation);
     }
 
     @Override
     public void close() {
-        for (Map.Entry<ConnectionString, MongoClient> entry : clients.entrySet()) {
+        for (Map.Entry<TenantInformation, MongoClient> entry : clients.entrySet()) {
             entry.getValue().close();
         }
         clients.clear();

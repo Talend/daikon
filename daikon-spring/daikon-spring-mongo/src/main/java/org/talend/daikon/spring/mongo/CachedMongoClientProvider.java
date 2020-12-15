@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.slf4j.Logger;
@@ -20,7 +19,7 @@ public class CachedMongoClientProvider implements MongoClientProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CachedMongoClientProvider.class);
 
-    private final LoadingCache<ConnectionString, MongoClient> cache;
+    private final LoadingCache<TenantInformation, MongoClient> cache;
 
     /**
      * Creates an instance with <code>concurrencyLevel = 100</code> and <code>maximumSize = 100</code>.
@@ -43,7 +42,7 @@ public class CachedMongoClientProvider implements MongoClientProvider {
      * @param maximumSize Max size for the cache (see {@link CacheBuilder#maximumSize}).
      */
     public CachedMongoClientProvider(int duration, TimeUnit unit, int concurrencyLevel, int maximumSize) {
-        final RemovalListener<ConnectionString, MongoClient> removalListener = notification -> {
+        final RemovalListener<TenantInformation, MongoClient> removalListener = notification -> {
             final MongoClient client = notification.getValue();
             try {
                 LOGGER.debug("Closing '{}' due to '{}'.", client, notification.getCause());
@@ -52,12 +51,12 @@ public class CachedMongoClientProvider implements MongoClientProvider {
                 LOGGER.error("Unable to properly close '{}'.", client, e);
             }
         };
-        final CacheLoader<ConnectionString, MongoClient> factory = new CacheLoader<ConnectionString, MongoClient>() {
+        final CacheLoader<TenantInformation, MongoClient> factory = new CacheLoader<TenantInformation, MongoClient>() {
 
-            public MongoClient load(ConnectionString uri) throws Exception {
+            public MongoClient load(TenantInformation tenantInformation) throws Exception {
                 try {
-                    LOGGER.debug("Adding new mongo client for '{}'.", uri);
-                    return MongoClients.create(uri);
+                    LOGGER.debug("Adding new mongo client for '{}'.", tenantInformation);
+                    return MongoClients.create(tenantInformation.getClientSettings());
                 } catch (Exception e) {
                     // 3.x client throws UnknownHostException, keep catch block for compatibility with 3.x version
                     throw new InvalidDataAccessResourceUsageException("Unable to retrieve host information.", e);
@@ -75,7 +74,7 @@ public class CachedMongoClientProvider implements MongoClientProvider {
     @Override
     public MongoClient get(TenantInformationProvider provider) {
         try {
-            return cache.get(provider.getDatabaseURI());
+            return cache.get(provider.getTenantInformation());
         } catch (Exception e) {
             throw new InvalidDataAccessResourceUsageException("Unable to retrieve client.", e);
         }
@@ -84,12 +83,12 @@ public class CachedMongoClientProvider implements MongoClientProvider {
     @Override
     public void close(TenantInformationProvider provider) {
         try {
-            final ConnectionString uri = provider.getDatabaseURI();
-            final MongoClient mongoClient = cache.get(uri);
+            final TenantInformation tenantInformation = provider.getTenantInformation();
+            final MongoClient mongoClient = cache.get(tenantInformation);
             try {
                 mongoClient.close();
             } finally {
-                cache.asMap().remove(uri);
+                cache.asMap().remove(tenantInformation);
             }
         } catch (Exception e) {
             throw new InvalidDataAccessResourceUsageException("Unable to close client.", e);

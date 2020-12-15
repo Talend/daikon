@@ -1,7 +1,5 @@
 package org.talend.daikon.spring.mongo;
 
-import com.mongodb.ConnectionString;
-
 /**
  * <p>
  * Implementation of this interface returns the current MongoDB database settings that should be used. Interface is very simple on
@@ -18,12 +16,7 @@ import com.mongodb.ConnectionString;
 public interface TenantInformationProvider {
 
     /**
-     * @return The database name to use to execute operation (write or read). Database name must <b>NOT</b> be empty.
+     * @return A {@link TenantInformation} object that describes database name and where the mongo db host is.
      */
-    String getDatabaseName();
-
-    /**
-     * @return A {@link ConnectionString} object that describes where the mongo db host is.
-     */
-    ConnectionString getDatabaseURI();
+    TenantInformation getTenantInformation();
 }

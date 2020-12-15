@@ -257,7 +257,7 @@ public class ZipVerifier {
         if (validCertList.size() == 0) {
             throw new NoValidCertificateException("No valid certificate, all certificates are expired."); //$NON-NLS-1$
         }
-        
+
         // If we are skipping the signature timestamp check, then make sure that an expired signing cert is allowed
         // for CertPath validation
         if (!isCheckSignatureTimestamp) {
@@ -303,7 +303,7 @@ public class ZipVerifier {
         return isDigitalSignature && extendesKeyUsage != null
                 && (extendesKeyUsage.contains("2.5.29.37.0") || extendesKeyUsage.contains("1.3.6.1.5.5.7.3.3")); //$NON-NLS-1$ //$NON-NLS-2$
     }
-    
+
     public boolean isCheckSignatureTimestamp() {
         return isCheckSignatureTimestamp;
     }

@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import de.bwaldvogel.mongo.MongoServer;
 import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
@@ -27,18 +28,12 @@ public class CachedMongoClientProviderTest {
     private static InetSocketAddress serverAddress;
 
     private static TenantInformationProvider getTenantInformationProvider(final String tenant) {
-        return new TenantInformationProvider() {
-
-            @Override
-            public String getDatabaseName() {
-                return tenant;
-            }
-
-            @Override
-            public ConnectionString getDatabaseURI() {
-                return new ConnectionString(
-                        "mongodb://" + serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant);
-            }
+        return () -> {
+            ConnectionString connectionString = new ConnectionString(
+                    "mongodb://" + serverAddress.getHostName() + ":" + serverAddress.getPort() + "/" + tenant);
+            return TenantInformation.builder()
+                    .clientSettings(MongoClientSettings.builder().applyConnectionString(connectionString).build())
+                    .databaseName(tenant).build();
         };
     }
 

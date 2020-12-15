@@ -85,13 +85,13 @@ public class ZipVerifierTest {
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         verifer.verify(signedJobPath);
     }
-    
+
     @Test
     public void testVerifySignedByApkSignWithExpiredCert() throws Exception {
         String signedJobPath = getApkSignerResourceFilePath("signed-by-apksigner-expired.zip");
         String keyStorePath = getApkSignerResourceFilePath("truststore.jks");
         String storePassForApkSigner = "c1b966f70a2529d8adc13e13d293"; //$NON-NLS-1$
-        
+
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePassForApkSigner);
         try {
@@ -197,7 +197,7 @@ public class ZipVerifierTest {
         String resourcePath = ZipVerifierTest.class.getResource(fileName).getFile();
         return resourcePath;
     }
-    
+
     private static String getApkSignerResourceFilePath(String fileName) {
         String resourcesFolder = ZipVerifierTest.class.getClassLoader().getResource("apkSigner").getFile();
         String resourcePath = resourcesFolder + File.separator + fileName;
