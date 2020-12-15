@@ -9,7 +9,7 @@ toc::[]
 
 Several months ago, https://talend365.sharepoint.com/sites/EnterpriseandFrictionlessInitiativeH1/_layouts/15/Doc.aspx?sourcedoc={14c375d9-ec23-4981-99ac-e061c1241d5b}&action=edit&wd=target%28Reliability.one%7C879313bf-126e-4fe9-b469-80600ece894c%2FLogging%7Cea77767c-3448-4a01-b045-f3db1430968b%2F%29[a discussion] has started in order to define the best way to converge to a common logging format.
 
-The format ECS (Elastic Common Schema) have been chosen to become the common format for all Talend Cloud applications. Each of these applications will have to integrate it.
+The format ECS (Elastic Common Schema) has been chosen to become the common format for all Talend Cloud applications. Each of these applications will have to integrate it.
 
 In the meanwhile, https://github.com/Talend/policies/pull/42[the Talend logging policy] has been updated in order to take into account the last requirements.
 
