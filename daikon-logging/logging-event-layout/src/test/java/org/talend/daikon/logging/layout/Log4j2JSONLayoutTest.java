@@ -15,6 +15,7 @@ import org.talend.daikon.logging.event.layout.Log4j2JSONLayout;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Log4j2JSONLayoutTest extends AbstractLayoutTest {
@@ -29,22 +30,26 @@ public class Log4j2JSONLayoutTest extends AbstractLayoutTest {
 
     @Override
     protected String log(Object event, LogDetails logDetails) {
-        KeyValuePair[] scimAdditionalProps = new KeyValuePair[1];
-        scimAdditionalProps[0] = new KeyValuePair("application_user", "SCIM");
-        KeyValuePair[] idpAdditionalProps = new KeyValuePair[1];
-        idpAdditionalProps[0] = new KeyValuePair("application_user", "IDP");
+        KeyValuePair[] scimAdditionalProps = new KeyValuePair[4];
+        scimAdditionalProps[0] = new KeyValuePair("mdc_field_1", "my value 1");
+        scimAdditionalProps[1] = new KeyValuePair("ecs.field.second", "my value 2");
+        scimAdditionalProps[2] = new KeyValuePair("labels.my_awesome_label", "my value 3");
+        scimAdditionalProps[3] = new KeyValuePair("unknown_field", "my value 4");
 
-        AbstractStringLayout scimLayout = Log4j2JSONLayout.createLayout(logDetails.isLocationInfo(), // location
-                true, true, true, true, false, Charset.defaultCharset(), scimAdditionalProps);
-        AbstractStringLayout idpLayout = Log4j2JSONLayout.createLayout(logDetails.isLocationInfo(), // location
-                true, true, true, true, false, Charset.defaultCharset(), idpAdditionalProps);
+        AbstractStringLayout myLayout = Log4j2JSONLayout.newBuilder().setLocationInfo(logDetails.isLocationInfo())
+                .setHostInfo(true).setAdditionalFields(scimAdditionalProps).setServiceName("my_service").build();
 
-        return scimLayout.toSerializable((LogEvent) event);
+        return myLayout.toSerializable((LogEvent) event);
     }
 
     @Override
     protected Map<String, String> additionalUserFields() {
-        return Collections.singletonMap("application_user", "SCIM");
+        Map<String, String> additionalFields = new HashMap<>();
+        additionalFields.put("mdc_field_1", "my value 1");
+        additionalFields.put("ecs.field.second", "my value 2");
+        additionalFields.put("labels.my_awesome_label", "my value 3");
+        additionalFields.put("unknown_field", "my value 4");
+        return additionalFields;
     }
 
     @Override

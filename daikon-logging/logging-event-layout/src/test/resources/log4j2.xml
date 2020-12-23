@@ -6,9 +6,10 @@
     </Console>
 
     <File name="File"  fileName="application_log4j2.log" append="false" >
-      <Log4j2JSONLayout charset="UTF-8" skipJsonEscapeSubLayout="true" locationInfo="true" subLayoutAsElement="true">
-            <KeyValuePair key="application_user" value="SCIM"/>
-      </Log4j2JSONLayout>
+      <Log4j2ECSLayout serviceName="logging-event-layout-test" locationInfo="true" hostInfo="true">
+        <KeyValuePair key="labels.my_custom_label" value="Custom value"/>
+        <KeyValuePair key="unknown_field" value="random value"/>
+      </Log4j2ECSLayout>
     </File>
   </appenders>
 

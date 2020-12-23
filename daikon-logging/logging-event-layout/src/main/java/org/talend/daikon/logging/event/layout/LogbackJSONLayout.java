@@ -1,47 +1,39 @@
 package org.talend.daikon.logging.event.layout;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.net.SyslogOutputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Marker;
+import org.talend.daikon.logging.ecs.EcsSerializer;
 import org.talend.daikon.logging.event.field.HostData;
-import org.talend.daikon.logging.event.field.LayoutFields;
 
-import ch.qos.logback.classic.pattern.RootCauseFirstThrowableProxyConverter;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import net.minidev.json.JSONObject;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.ThrowableProxy;
+import ch.qos.logback.core.LayoutBase;
 
-/**
- * Logback JSON Layout
- * 
- * @author sdiallo
- *
- */
-public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
+import co.elastic.logging.EcsJsonSerializer;
+import co.elastic.logging.AdditionalField;
+
+public class LogbackJSONLayout extends LayoutBase<ILoggingEvent> {
 
     private boolean locationInfo;
 
     private boolean hostInfo;
 
-    private String customUserFields;
+    private boolean addEventUuid;
 
-    private Map<String, String> metaFields = new HashMap<>();
+    private ThrowableProxyConverter throwableProxyConverter;
 
-    private boolean addEventUuid = true;
+    private String serviceName;
+
+    private final List<AdditionalField> additionalFields = new ArrayList<AdditionalField>();
 
     /**
      * Print no location info by default, but print host information (for backward compatibility).
      */
     public LogbackJSONLayout() {
-        this(false, true);
+        this(false, true, true);
     }
 
     /**
@@ -49,69 +41,21 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
      *
      * @param locationInfo whether or not to include location information in the log messages.
      */
-    public LogbackJSONLayout(boolean locationInfo, boolean hostInfo) {
+    public LogbackJSONLayout(boolean locationInfo, boolean hostInfo, boolean addEventUuid) {
         this.locationInfo = locationInfo;
         this.hostInfo = hostInfo;
+        this.addEventUuid = addEventUuid;
     }
 
-    @Override
-    public String doLayout(ILoggingEvent loggingEvent) {
-        JSONObject logstashEvent = new JSONObject();
-        JSONObject userFieldsEvent = new JSONObject();
-        HostData host = new HostData();
-
-        // Extract and add fields from log4j config, if defined
-        String userFldsFromParam = getUserFields();
-        // Extract and add fields from markers, if defined
-        String userFldsFromMarker = getUserFieldsFromMarker(loggingEvent);
-        LayoutUtils.addUserFields(mergeUserFields(userFldsFromParam, userFldsFromMarker), userFieldsEvent);
-
-        Map<String, String> mdc = LayoutUtils.processMDCMetaFields(loggingEvent.getMDCPropertyMap(), logstashEvent, metaFields);
-
-        // Now we start injecting our own stuff.
-        if (addEventUuid) {
-            logstashEvent.put(LayoutFields.EVENT_UUID, UUID.randomUUID().toString());
-        }
-        logstashEvent.put(LayoutFields.VERSION, LayoutFields.VERSION_VALUE);
-        logstashEvent.put(LayoutFields.TIME_STAMP, dateFormat(loggingEvent.getTimeStamp()));
-        logstashEvent.put(LayoutFields.SEVERITY, loggingEvent.getLevel().toString());
-        logstashEvent.put(LayoutFields.THREAD_NAME, loggingEvent.getThreadName());
-        logstashEvent.put(LayoutFields.AGENT_TIME_STAMP, dateFormat(new Date().getTime()));
-        if (loggingEvent.getFormattedMessage() != null) {
-            logstashEvent.put(LayoutFields.LOG_MESSAGE, loggingEvent.getFormattedMessage());
-        }
-        handleThrown(logstashEvent, loggingEvent);
-        JSONObject logSourceEvent = createLogSourceEvent(loggingEvent, host);
-        logstashEvent.put(LayoutFields.LOG_SOURCE, logSourceEvent);
-        LayoutUtils.addMDC(mdc, userFieldsEvent, logstashEvent);
-
-        if (!userFieldsEvent.isEmpty()) {
-            logstashEvent.put(LayoutFields.CUSTOM_INFO, userFieldsEvent);
-        }
-
-        return logstashEvent.toString() + "\n";
-
-    }
-
-    /**
-     * Query whether log messages include location information.
-     *
-     * @return true if location information is included in log messages, false otherwise.
-     */
-    public boolean getLocationInfo() {
+    public boolean isLocationInfo() {
         return locationInfo;
     }
 
-    /**
-     * Set whether log messages should include location information.
-     *
-     * @param locationInfo true if location information should be included, false otherwise.
-     */
     public void setLocationInfo(boolean locationInfo) {
         this.locationInfo = locationInfo;
     }
 
-    public boolean setHostInfo() {
+    public boolean isHostInfo() {
         return hostInfo;
     }
 
@@ -119,113 +63,110 @@ public class LogbackJSONLayout extends JsonLayout<ILoggingEvent> {
         this.hostInfo = hostInfo;
     }
 
-    public String getUserFields() {
-        return customUserFields;
-    }
-
-    public void setUserFields(String userFields) {
-        this.customUserFields = userFields;
-    }
-
-    public void setMetaFields(Map<String, String> metaFields) {
-        this.metaFields = new HashMap<>(metaFields);
+    public boolean isAddEventUuid() {
+        return addEventUuid;
     }
 
     public void setAddEventUuid(boolean addEventUuid) {
         this.addEventUuid = addEventUuid;
     }
 
-    private void handleThrown(JSONObject logstashEvent, ILoggingEvent loggingEvent) {
-        if (loggingEvent.getThrowableProxy() != null) {
+    public String getServiceName() {
+        return serviceName;
+    }
 
-            if (loggingEvent.getThrowableProxy().getClassName() != null) {
-                logstashEvent.put(LayoutFields.EXCEPTION_CLASS, loggingEvent.getThrowableProxy().getClassName());
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public void addAdditionalField(AdditionalField pair) {
+        this.additionalFields.add(pair);
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        throwableProxyConverter = new ThrowableProxyConverter();
+        throwableProxyConverter.start();
+    }
+
+    @Override
+    public String doLayout(ILoggingEvent event) {
+        StringBuilder builder = new StringBuilder();
+        EcsJsonSerializer.serializeObjectStart(builder, event.getTimeStamp());
+        EcsJsonSerializer.serializeLogLevel(builder, event.getLevel().toString());
+        EcsJsonSerializer.serializeFormattedMessage(builder, event.getFormattedMessage());
+        EcsJsonSerializer.serializeEcsVersion(builder);
+        // serializeMarkers(builder, event);
+        EcsJsonSerializer.serializeServiceName(builder, serviceName);
+        EcsJsonSerializer.serializeThreadName(builder, event.getThreadName());
+        EcsJsonSerializer.serializeLoggerName(builder, event.getLoggerName());
+
+        // Serialize custom markers with format key:value
+        serializeCustomMarkers(builder, event);
+
+        // Call custom serializer for additional fields & MDC (for mapping and filtering)
+        EcsSerializer.serializeAdditionalFields(builder, additionalFields);
+        EcsSerializer.serializeMDC(builder, event.getMDCPropertyMap());
+
+        if (this.hostInfo) {
+            EcsSerializer.serializeHostInfo(builder, new HostData());
+        }
+
+        if (this.addEventUuid) {
+            EcsSerializer.serializeEventId(builder, UUID.randomUUID());
+        }
+
+        if (this.locationInfo) {
+            StackTraceElement[] callerData = event.getCallerData();
+            if (callerData != null && callerData.length > 0) {
+                EcsJsonSerializer.serializeOrigin(builder, callerData[0]);
             }
+        }
+        IThrowableProxy throwableProxy = event.getThrowableProxy();
+        if (throwableProxy instanceof ThrowableProxy) {
+            EcsJsonSerializer.serializeException(builder, ((ThrowableProxy) throwableProxy).getThrowable(), false);
+        } else if (throwableProxy != null) {
+            EcsJsonSerializer.serializeException(builder, throwableProxy.getClassName(), throwableProxy.getMessage(),
+                    throwableProxyConverter.convert(event), false);
+        }
+        EcsJsonSerializer.serializeObjectEnd(builder);
+        return builder.toString();
+    }
 
-            if (loggingEvent.getThrowableProxy().getMessage() != null) {
-                logstashEvent.put(LayoutFields.EXCEPTION_MESSAGE, loggingEvent.getThrowableProxy().getMessage());
+    private void serializeMarkers(StringBuilder builder, ILoggingEvent event) {
+        Marker marker = event.getMarker();
+        if (marker != null) {
+            EcsJsonSerializer.serializeTagStart(builder);
+            serializeMarker(marker, builder);
+            EcsJsonSerializer.serializeTagEnd(builder);
+        }
+    }
+
+    private void serializeMarker(Marker marker, StringBuilder builder) {
+        if (marker != null) {
+            EcsJsonSerializer.serializeSingleTag(builder, marker.getName());
+            Iterator<Marker> it = marker.iterator();
+            while (it.hasNext()) {
+                serializeMarker(it.next(), builder);
             }
-
-            ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
-            converter.setOptionList(Collections.singletonList("full"));
-            converter.start();
-            String stackTrace = converter.convert(loggingEvent);
-            logstashEvent.put(LayoutFields.STACK_TRACE, stackTrace);
         }
     }
 
-    private JSONObject createLogSourceEvent(ILoggingEvent loggingEvent, HostData host) {
-        JSONObject logSourceEvent = new JSONObject();
-        if (locationInfo) {
-            StackTraceElement callerData = extractCallerData(loggingEvent);
-            if (callerData != null) {
-                logSourceEvent.put(LayoutFields.FILE_NAME, callerData.getFileName());
-                logSourceEvent.put(LayoutFields.LINE_NUMBER, callerData.getLineNumber());
-                logSourceEvent.put(LayoutFields.CLASS_NAME, callerData.getClassName());
-                logSourceEvent.put(LayoutFields.METHOD_NAME, callerData.getMethodName());
+    private void serializeCustomMarkers(StringBuilder builder, ILoggingEvent event) {
+        Marker marker = event.getMarker();
+        if (marker != null) {
+            serializeCustomMarker(marker, builder);
+        }
+    }
+
+    private void serializeCustomMarker(Marker marker, StringBuilder builder) {
+        if (marker != null) {
+            EcsSerializer.serializeCustomMarker(builder, marker.getName());
+            Iterator<Marker> it = marker.iterator();
+            while (it.hasNext()) {
+                serializeCustomMarker(it.next(), builder);
             }
-            RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
-            String jvmName = runtimeBean.getName();
-            logSourceEvent.put(LayoutFields.PROCESS_ID, Long.valueOf(jvmName.split("@")[0]));
-        }
-        logSourceEvent.put(LayoutFields.LOGGER_NAME, loggingEvent.getLoggerName());
-        if (hostInfo) {
-            logSourceEvent.put(LayoutFields.HOST_NAME, host.getHostName());
-            logSourceEvent.put(LayoutFields.HOST_IP, host.getHostAddress());
-        }
-        return logSourceEvent;
-    }
-
-    private StackTraceElement extractCallerData(final ILoggingEvent event) {
-        final StackTraceElement[] ste = event.getCallerData();
-        if (ste == null || ste.length == 0) {
-            return null;
-        }
-        return ste[0];
-    }
-
-    /**
-     * Iterate over the logging event marker children, and concatenate them in a single string.
-     *
-     * @param event the logging event
-     * @return a string that contains the marker children, separated by 'commas'
-     */
-    private String getUserFieldsFromMarker(final ILoggingEvent event) {
-        Marker customFieldsMarker = LayoutUtils.findCustomFieldsMarker(event.getMarker(), new HashSet<>());
-        if (customFieldsMarker != null) {
-            Spliterator<Marker> markers = Spliterators.spliteratorUnknownSize(customFieldsMarker.iterator(), Spliterator.NONNULL);
-            return StreamSupport.stream(markers, false).map(Marker::getName).collect(Collectors.joining(","));
-        } else {
-            return null;
         }
     }
-
-    /**
-     * Merges a list of user fields into a single one.
-     *
-     * {{{
-     * field1: prop11:value11,prop12:value12
-     * field2: prop21:value21,prop22:value22
-     * }}}
-     *
-     * will result in:
-     *
-     * {{{
-     * prop11:value11,prop12:value12,prop21:value21,prop22:value22
-     * }}}
-     *
-     *
-     * @param fields the list of user fields
-     * @return a single user fields property, in which fields are separated by a comma.
-     */
-    private String mergeUserFields(String... fields) {
-        String merged = Stream.of(fields).filter(Objects::nonNull).filter(StringUtils::isNotEmpty)
-                .collect(Collectors.joining(","));
-        return (merged != null && merged.isEmpty()) ? null : merged;
-    }
-
-    private String dateFormat(long timestamp) {
-        return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
-    }
-
 }

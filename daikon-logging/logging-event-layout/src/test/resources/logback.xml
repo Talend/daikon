@@ -12,12 +12,21 @@
       <fileNamePattern>application.log.%d{yyyy-MM-dd}</fileNamePattern>
       <maxHistory>30</maxHistory>
     </rollingPolicy>
-    <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
-        <param name="UserFields" value="foo:bar,baz:quz" />
-        <param name="LocationInfo" value="true"/>
-    </layout>
+     <layout class="org.talend.daikon.logging.event.layout.LogbackJSONLayout">
+         <serviceName>logging-sample</serviceName>
+         <locationInfo>true</locationInfo>
+         <hostInfo>true</hostInfo>
+         <additionalField>
+             <key>labels.my_custom_label</key>
+             <value>Custom value</value>
+         </additionalField>
+         <additionalField>
+             <key>unknown_field</key>
+             <value>Random value</value>
+         </additionalField>
+     </layout>
  </appender>
-      
+
   <root level="INFO">
      <appender-ref ref="STDOUT" />
      <appender-ref ref="FILE" />

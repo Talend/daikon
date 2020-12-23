@@ -8,6 +8,9 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +18,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Marker;
-import org.talend.daikon.logging.event.field.LayoutFields;
-import org.talend.daikon.logging.event.layout.LayoutUtils;
+import org.talend.daikon.logging.ecs.EcsFieldsChecker;
+import org.talend.daikon.logging.ecs.MdcEcsMapper;
 
 /**
  * @author agonzalez
@@ -52,22 +55,11 @@ public abstract class AbstractLayoutTest {
      * Test LogEvent logging with a non-null source attribute
      */
     @Test
-    public void testLogSleuthField() {
-        logDetails.getMdc().put("service", "log4j2");
-        logDetails.getMdc().put("X-B3-SpanId", "testSpan");
-        logDetails.getMdc().put("X-B3-TraceId", "testTrace");
-        logDetails.getMdc().put("X-Span-Export", "testExport");
-        final Object event = newEvent(logDetails);
-        String payload = log(event, logDetails);
-        assertPayload(payload);
-    }
-
-    /**
-     * Test LogEvent logging with a non-null source attribute
-     */
-    @Test
     public void testMdc() {
-        logDetails.getMdc().put("customMDC", "someMDC");
+        logDetails.getMdc().put("mdc_field_1", "my value 1");
+        logDetails.getMdc().put("ecs.field.second", "my value 2");
+        logDetails.getMdc().put("labels.my_awesome_label", "my value 3");
+        logDetails.getMdc().put("unknown_field", "my value 4");
         final Object event = newEvent(logDetails);
         String payload = log(event, logDetails);
         assertPayload(payload);
@@ -98,55 +90,45 @@ public abstract class AbstractLayoutTest {
     }
 
     protected void assertPayload(String payload) {
-        assertThat(payload, hasJsonPath("$.@version", equalTo(1)));
-        assertThat(payload, hasJsonPath("$.logTimestamp", equalTo(dateFormat(getLogDetails().getTimeMillis()))));
-        assertThat(payload, hasJsonPath("$.agentTimestamp", not(empty())));
-        assertThat(payload, hasJsonPath("$.threadName", equalTo(getLogDetails().getThreadName())));
-        assertThat(payload, hasJsonPath("$.severity", equalTo(getLogDetails().getSeverity())));
-        assertThat(payload, hasJsonPath("$.logMessage", equalTo(getLogDetails().getLogMessage())));
-        assertThat(payload, hasJsonPath("$.logSource['logger.name']", equalTo(getLogDetails().getClassName())));
-        assertThat(payload, hasJsonPath("$.logSource['host.address']", not(empty())));
-        assertThat(payload, hasJsonPath("$.logSource['host.name']", not(empty())));
+
+        assertThat(payload, hasJsonPath("$.['@timestamp']", equalTo(
+                OffsetDateTime.ofInstant(Instant.ofEpochMilli(getLogDetails().getTimeMillis()), ZoneOffset.UTC).toString())));
+        assertThat(payload, hasJsonPath("$.['ecs.version']", equalTo("1.2.0")));
+        assertThat(payload, hasJsonPath("$.['log.level']", equalTo(getLogDetails().getSeverity())));
+        assertThat(payload, hasJsonPath("$.['message']", equalTo(getLogDetails().getLogMessage())));
+        assertThat(payload, hasJsonPath("$.['process.thread.name']", equalTo(getLogDetails().getThreadName())));
+        assertThat(payload, hasJsonPath("$.['log.logger']", equalTo(getLogDetails().getClassName())));
+        assertThat(payload, hasJsonPath("$.['host.ip']", not(empty())));
+        assertThat(payload, hasJsonPath("$.['host.hostname']", not(empty())));
+
         if (logDetails.isLocationInfo()) {
-            assertThat(payload, hasJsonPath("$.logSource['file.name']", equalTo(getLogDetails().getFileName())));
-            assertThat(payload, hasJsonPath("$.logSource['method.name']", equalTo(getLogDetails().getMethodName())));
-            assertThat(payload, hasJsonPath("$.logSource['line.number']", not(empty())));
-            assertThat(payload, hasJsonPath("$.logSource['process.id']", not(empty())));
-            assertThat(payload, hasJsonPath("$.logSource['class.name']", equalTo(getLogDetails().getClassName())));
+            assertThat(payload, hasJsonPath("$.['log.origin'].['file.name']", equalTo(getLogDetails().getFileName())));
+            assertThat(payload, hasJsonPath("$.['log.origin'].['function']", equalTo(getLogDetails().getMethodName())));
+            assertThat(payload, hasJsonPath("$.['log.origin'].['file.line']", not(empty())));
         } else {
-            assertThat(payload, hasNoJsonPath("$.logSource['file.name']"));
-            assertThat(payload, hasNoJsonPath("$.logSource['method.name']"));
-            assertThat(payload, hasNoJsonPath("$.logSource['line.number']"));
-            assertThat(payload, hasNoJsonPath("$.logSource['process.id']"));
-            assertThat(payload, hasNoJsonPath("$.logSource['class.name']"));
+            assertThat(payload, hasNoJsonPath("$.['log.origin'].['file.name']"));
+            assertThat(payload, hasNoJsonPath("$.['log.origin'].['function']"));
+            assertThat(payload, hasNoJsonPath("$.['log.origin'].['file.line']"));
         }
         if (!logDetails.getMdc().isEmpty() || !additionalUserFields().isEmpty()) {
-            logDetails.getMdc().entrySet().forEach(it -> {
-                if (LayoutUtils.isSleuthField(it.getKey())) {
-                    assertThat(payload, hasJsonPath(String.format("$['%s']", it.getKey()), equalTo(it.getValue())));
-                } else {
-                    assertThat(payload, hasJsonPath(String.format("$.customInfo['%s']", it.getKey()), equalTo(it.getValue())));
-                }
-            });
-            additionalUserFields().entrySet().forEach(it -> {
-                assertThat(payload, hasJsonPath(String.format("$.customInfo['%s']", it.getKey()), equalTo(it.getValue())));
-            });
-        } else {
-            assertThat(payload, hasNoJsonPath("$.customInfo"));
+            logDetails.getMdc().entrySet().forEach(it -> assertThat(payload,
+                    EcsFieldsChecker.isECSField(MdcEcsMapper.map(it.getKey()))
+                            ? hasJsonPath(String.format("$.['%s']", MdcEcsMapper.map(it.getKey())), equalTo(it.getValue()))
+                            : hasNoJsonPath(String.format("$.['%s']", MdcEcsMapper.map(it.getKey())))));
+            additionalUserFields().entrySet().forEach(it -> assertThat(payload,
+                    EcsFieldsChecker.isECSField(MdcEcsMapper.map(it.getKey()))
+                            ? hasJsonPath(String.format("$.['%s']", MdcEcsMapper.map(it.getKey())), equalTo(it.getValue()))
+                            : hasNoJsonPath(String.format("$.['%s']", MdcEcsMapper.map(it.getKey())))));
         }
         if (logDetails.getException() != null) {
-            assertThat(payload, hasJsonPath("$.exceptionClass", equalTo(logDetails.getException().getClass().getName())));
-            assertThat(payload, hasJsonPath("$.stackTrace", containsString(logDetails.getException().toString())));
-            assertThat(payload, hasJsonPath("$.exceptionMessage", containsString(logDetails.getException().getMessage())));
+            assertThat(payload, hasJsonPath("$.['error.type']", equalTo(logDetails.getException().getClass().getName())));
+            assertThat(payload, hasJsonPath("$.['error.stack_trace']", containsString(logDetails.getException().toString())));
+            assertThat(payload, hasJsonPath("$.['error.message']", containsString(logDetails.getException().getMessage())));
         } else {
-            assertThat(payload, hasNoJsonPath("$.exceptionClass"));
-            assertThat(payload, hasNoJsonPath("$.stackTrace"));
-            assertThat(payload, hasNoJsonPath("$.exceptionMessage"));
+            assertThat(payload, hasNoJsonPath("$.['error.type']"));
+            assertThat(payload, hasNoJsonPath("$.['error.stack_trace']"));
+            assertThat(payload, hasNoJsonPath("$.['error.message']"));
         }
-    }
-
-    private String dateFormat(long timestamp) {
-        return LayoutFields.DATETIME_TIME_FORMAT.format(timestamp);
     }
 
     private LogDetails getLogDetails() {

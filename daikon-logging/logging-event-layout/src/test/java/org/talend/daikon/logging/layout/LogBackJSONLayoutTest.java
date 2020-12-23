@@ -6,13 +6,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-import org.talend.daikon.logging.event.field.LayoutFields;
 import org.talend.daikon.logging.event.layout.LogbackJSONLayout;
 
 import ch.qos.logback.classic.Level;
@@ -25,7 +23,7 @@ public class LogBackJSONLayoutTest extends AbstractLayoutTest {
     @Test
     public void testDefaultLocationInfo() {
         LogbackJSONLayout layout = new LogbackJSONLayout();
-        assertFalse(layout.getLocationInfo());
+        assertFalse(layout.isLocationInfo());
     }
 
     @Test
@@ -33,9 +31,9 @@ public class LogBackJSONLayoutTest extends AbstractLayoutTest {
         LogDetails logDetails = new LogDetails(this.getClass());
         String result = log(newEvent(logDetails), logDetails);
         // No marker results in not having any additional fields in the customInfo
-        assertThat(result, hasNoJsonPath("$.customInfo['accountId']"));
+        assertThat(result, hasNoJsonPath("$.['labels.accountId']"));
 
-        Marker parent1Marker = MarkerFactory.getDetachedMarker(LayoutFields.CUSTOM_INFO);
+        Marker parent1Marker = MarkerFactory.getDetachedMarker("custom_infos");
         logDetails.setMarker(parent1Marker);
         result = log(newEvent(logDetails), logDetails);
         // A parent marker, without any children, results in not having any additional fields in the customInfo
@@ -47,20 +45,10 @@ public class LogBackJSONLayoutTest extends AbstractLayoutTest {
         parent1Marker.add(child12Marker);
         logDetails.setMarker(parent1Marker);
         result = log(newEvent(logDetails), logDetails);
-        // Children of the parent marker are used to populate the customInfo node of the logging event
-        assertThat(result, hasJsonPath("$.customInfo['accountId']", equalTo("foo")));
-        assertThat(result, hasJsonPath("$.customInfo['userId']", equalTo("bar")));
 
-        Marker parent2Marker = MarkerFactory.getDetachedMarker("myMarker");
-        Marker child21Marker = MarkerFactory.getDetachedMarker("accountId:foo");
-        Marker child22Marker = MarkerFactory.getDetachedMarker("userId:bar");
-        parent2Marker.add(child21Marker);
-        parent2Marker.add(child22Marker);
-        logDetails.setMarker(parent2Marker);
-        result = log(newEvent(logDetails), logDetails);
-        // Nothing is populated in the customInfo if the parent marker is not named 'customFields'
-        assertThat(result, hasNoJsonPath("$.customInfo['accountId']"));
-        assertThat(result, hasNoJsonPath("$.customInfo['userId']"));
+        // Children of the parent marker are used to populate the customInfo node of the logging event
+        assertThat(result, hasJsonPath("$.['labels.accountId']", equalTo("foo")));
+        assertThat(result, hasJsonPath("$.['labels.userId']", equalTo("bar")));
     }
 
     @Override

@@ -1,0 +1,8 @@
+ecs.field.first:
+  dashed_name: ecs-field-first
+  short: First ECS field.
+  type: keyword
+ecs.field.second:
+  dashed_name: ecs-field-second
+  short: Second ECS field.
+  type: keyword

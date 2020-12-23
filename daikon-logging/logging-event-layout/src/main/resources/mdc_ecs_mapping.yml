@@ -1,0 +1,9 @@
+accountId: cloud.account.id
+executionId: labels.execution_id
+stackName: labels.stack_name
+userId: user.id
+user-activity-id: labels.user_activity_id
+X-talend-user-activity-id: labels.x_talend_user_activity_id
+category: service.type
+eventType: event.action
+audit: labels.audit

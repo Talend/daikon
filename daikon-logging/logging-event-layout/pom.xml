@@ -49,6 +49,16 @@
 			<version>${javax.servlet-api.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>co.elastic.logging</groupId>
+			<artifactId>ecs-logging-core</artifactId>
+			<version>1.0.0.RC1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
 		<!-- Tests -->
 	    <dependency>
 	        <groupId>junit</groupId>
@@ -80,4 +90,51 @@
 			<scope>test</scope>
 		</dependency>
     </dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.github.vboxnick</groupId>
+				<artifactId>yaml-codegen-maven</artifactId>
+				<version>0.0.6</version>
+				<configuration>
+					<models>
+						<model>
+							<file>${project.basedir}/src/main/resources/ecs_flat.yml</file>
+							<outputs>
+								<output>
+									<tmpl>${project.basedir}/src/main/resources/ecs_flat.ftl</tmpl>
+									<dst>${project.build.directory}/generated-sources/java/org/talend/daikon/logging/ecs/EcsFields.java</dst>
+								</output>
+							</outputs>
+						</model>
+					</models>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>generate-sources</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
