@@ -11,8 +11,17 @@ import org.talend.daikon.logging.event.field.HostData;
 import co.elastic.logging.AdditionalField;
 import co.elastic.logging.EcsJsonSerializer;
 
+/**
+ * Utility ECS serializer class
+ */
 public class EcsSerializer {
 
+    /**
+     * Serialize the additional fields (mapped and filtered)
+     * 
+     * @param builder the builder to serialize in
+     * @param additionalFields the additional fields to serialize
+     */
     public static void serializeAdditionalFields(StringBuilder builder, List<AdditionalField> additionalFields) {
         EcsJsonSerializer.serializeAdditionalFields(builder, additionalFields.stream()
                 // Map additional field keys with corresponding ECS field
@@ -21,6 +30,12 @@ public class EcsSerializer {
                 .filter(f -> EcsFieldsChecker.isECSField(f.getKey())).collect(Collectors.toList()));
     }
 
+    /**
+     * Serialize the MDC (mapped and filtered)
+     * 
+     * @param builder the builder to serialize in
+     * @param mdcPropertyMap the MDC to serialize
+     */
     public static void serializeMDC(StringBuilder builder, Map<String, String> mdcPropertyMap) {
         EcsJsonSerializer.serializeMDC(builder, mdcPropertyMap.entrySet().stream()
                 // Map additional field keys with corresponding ECS field
@@ -30,15 +45,33 @@ public class EcsSerializer {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
+    /**
+     * Serialize the host data
+     * 
+     * @param builder the builder to serialize in
+     * @param hostData the host data to serialize
+     */
     public static void serializeHostInfo(StringBuilder builder, HostData hostData) {
         builder.append(String.format("\"%s\":[\"%s\"],", EcsFields.HOST_IP, hostData.getHostAddress()));
         builder.append(String.format("\"%s\":\"%s\",", EcsFields.HOST_HOSTNAME, hostData.getHostName()));
     }
 
+    /**
+     * Serialize the event id
+     * 
+     * @param builder the builder to serialize in
+     * @param eventId the event id to serialize
+     */
     public static void serializeEventId(StringBuilder builder, UUID eventId) {
         builder.append(String.format("\"%s\":\"%s\",", EcsFields.EVENT_ID, eventId));
     }
 
+    /**
+     * serialize the custom markers (following key:value pattern)
+     * 
+     * @param builder the builder to serialize in
+     * @param marker the marker to serialize
+     */
     public static void serializeCustomMarker(StringBuilder builder, String marker) {
         if (marker != null) {
             String[] customMarker = marker.split(":");

@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+/**
+ * Lazy loaded singleton which checks :
+ * - whether a given field is an ECS label or not, based on pattern "labels.*"
+ * - whether a given field is an ECS field or not, based on ecs_flat.yml file
+ */
 public class EcsFieldsChecker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EcsFieldsChecker.class);
@@ -42,14 +47,31 @@ public class EcsFieldsChecker {
         return INSTANCE;
     }
 
+    /**
+     * Return the set of all ECS fields
+     * 
+     * @return the set of all ECS fields
+     */
     public static Set<String> getECSFields() {
         return getInstance().fields;
     }
 
+    /**
+     * Check if a given field is an ECS label
+     * 
+     * @param field Field to check
+     * @return true if the field is an ECS label or false otherwise
+     */
     public static boolean isECSLabel(String field) {
         return field != null && field.split("\\.").length == 2 && LABELS_FIELD.equals(field.split("\\.")[0]);
     }
 
+    /**
+     * Check if a given field is an ECS field (ECS label included)
+     * 
+     * @param field Field to check
+     * @return true if the field is an ECS field or false otherwise
+     */
     public static boolean isECSField(String field) {
         return getECSFields().contains(field) || isECSLabel(field);
     }

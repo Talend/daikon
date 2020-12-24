@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+/**
+ * Lazy loaded singleton which maps MDC keys with ECS fields based on mdc_ecs_mapping.yml file
+ */
 public class MdcEcsMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MdcEcsMapper.class);
@@ -40,11 +43,23 @@ public class MdcEcsMapper {
         return INSTANCE;
     }
 
+    /**
+     * Return the MDC to ECS map
+     * 
+     * @return the MDC to ECS map
+     */
     public static Map<String, String> getMapping() {
         return getInstance().mapping;
     }
 
-    public static String map(String mdcField) {
-        return Optional.ofNullable(getMapping().get(mdcField)).orElse(mdcField);
+    /**
+     * Map a MDC key with its corresponding ECS field
+     * In case where not mapping exists, the MDC key is returned
+     * 
+     * @param mdcKey MDC key to map
+     * @return the corresponding ECS field or the MDC key if no mapping exists
+     */
+    public static String map(String mdcKey) {
+        return Optional.ofNullable(getMapping().get(mdcKey)).orElse(mdcKey);
     }
 }

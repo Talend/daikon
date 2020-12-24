@@ -15,6 +15,9 @@ import ch.qos.logback.core.LayoutBase;
 import co.elastic.logging.EcsJsonSerializer;
 import co.elastic.logging.AdditionalField;
 
+/**
+ * Logback ECS JSON layout
+ */
 public class LogbackJSONLayout extends LayoutBase<ILoggingEvent> {
 
     private boolean locationInfo;

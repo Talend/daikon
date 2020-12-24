@@ -23,6 +23,9 @@ import org.talend.daikon.logging.event.field.HostData;
 import co.elastic.logging.EcsJsonSerializer;
 import co.elastic.logging.JsonUtils;
 
+/**
+ * Log4j2 ECS JSON layout
+ */
 @Plugin(name = "Log4j2ECSLayout", category = Node.CATEGORY, elementType = Layout.ELEMENT_TYPE, printObject = true)
 public class Log4j2JSONLayout extends AbstractStringLayout {
 
