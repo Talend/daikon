@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>co.elastic.logging</groupId>
 			<artifactId>ecs-logging-core</artifactId>
-			<version>1.0.0.RC1</version>
+			<version>${elastic.ecs.logging.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -95,7 +95,7 @@
 			<plugin>
 				<groupId>com.github.vboxnick</groupId>
 				<artifactId>yaml-codegen-maven</artifactId>
-				<version>0.0.6</version>
+				<version>${yaml.codegen.maven.version}</version>
 				<configuration>
 					<models>
 						<model>
