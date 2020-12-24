@@ -7,3 +7,6 @@ X-talend-user-activity-id: labels.x_talend_user_activity_id
 category: service.type
 eventType: event.action
 audit: labels.audit
+X-B3-SpanId: span.id
+X-B3-TraceId: trace.id
+X-Span-Export: labels.span_export
