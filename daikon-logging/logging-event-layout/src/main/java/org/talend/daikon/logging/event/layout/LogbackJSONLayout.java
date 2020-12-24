@@ -1,6 +1,7 @@
 package org.talend.daikon.logging.event.layout;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.slf4j.Marker;
 import org.talend.daikon.logging.ecs.EcsSerializer;
@@ -86,6 +87,10 @@ public class LogbackJSONLayout extends LayoutBase<ILoggingEvent> {
         this.additionalFields.add(pair);
     }
 
+    public void setMetaFields(Map<String, String> metaFields) {
+        metaFields.forEach((k, v) -> this.addAdditionalField(new AdditionalField(k, v)));
+    }
+
     @Override
     public void start() {
         super.start();
@@ -100,7 +105,7 @@ public class LogbackJSONLayout extends LayoutBase<ILoggingEvent> {
         EcsJsonSerializer.serializeLogLevel(builder, event.getLevel().toString());
         EcsJsonSerializer.serializeFormattedMessage(builder, event.getFormattedMessage());
         EcsJsonSerializer.serializeEcsVersion(builder);
-        // serializeMarkers(builder, event);
+        serializeMarkers(builder, event);
         EcsJsonSerializer.serializeServiceName(builder, serviceName);
         EcsJsonSerializer.serializeThreadName(builder, event.getThreadName());
         EcsJsonSerializer.serializeLoggerName(builder, event.getLoggerName());

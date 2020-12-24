@@ -162,6 +162,11 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         }
     }
 
+    public void setMetaFields(Map<String, String> metaFields) {
+        additionalFields.addAll(metaFields.entrySet().stream().map(e -> new AdditionalField(e.getKey(), e.getValue()))
+                .collect(Collectors.toList()));
+    }
+
     public static class Builder implements org.apache.logging.log4j.core.util.Builder<Log4j2JSONLayout> {
 
         @PluginConfiguration

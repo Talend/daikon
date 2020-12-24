@@ -1,6 +1,5 @@
 package org.talend.logging.audit.log4j2;
 
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -190,12 +189,9 @@ public final class Log4j2Configurer {
         metaFields.put(EventFields.MDC_SERVICE, EventFields.SERVICE);
         metaFields.put(EventFields.MDC_INSTANCE, EventFields.INSTANCE);
 
-        Charset charset = Charset.forName(AuditConfiguration.ENCODING.getString(config));
+        Log4j2JSONLayout layout = Log4j2JSONLayout.newBuilder().setLocationInfo(AuditConfiguration.LOCATION.getBoolean(config))
+                .setHostInfo(AuditConfiguration.HOST.getBoolean(config)).build();
 
-        Log4j2JSONLayout layout = new Log4j2JSONLayout(AuditConfiguration.LOCATION.getBoolean(config),
-                AuditConfiguration.HOST.getBoolean(config), charset, new HashMap<>()) {
-
-        };
         layout.setMetaFields(metaFields);
 
         return layout;
