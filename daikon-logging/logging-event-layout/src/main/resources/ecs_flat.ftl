@@ -4,16 +4,29 @@ package org.talend.daikon.logging.ecs;
 <#assign fields = model.content>
 
 /**
-* Constants for all ECS fields based on ecs_flat.yaml file
+* Enumeration of all ECS fields based on ecs_flat.yaml file
 */
-public final class ${className} {
-
+public enum ${className} {
 <#list fields?keys as key>
     /**
     * ${fields[key].short}
     * Type: ${fields[key].type}
+    <#if fields[key].example??>
+        <#if fields[key].example?is_date>
+    * Example: ${fields[key].example?datetime_if_unknown?iso_utc}
+        <#elseif fields[key].example?is_number>
+    * Example: ${fields[key].example?c}
+        <#else>
+    * Example: ${fields[key].example}
+        </#if>
+    </#if>
     */
-    public static final String ${fields[key].dashed_name?replace('-', '_')?upper_case} = "${key}";
+    ${fields[key].dashed_name?replace('-', '_')?upper_case}("${key}")<#if key?is_last>;<#else>,</#if>
 </#list>
 
+    public final String fieldName;
+
+    private ${className}(String fieldName) {
+        this.fieldName = fieldName;
+    }
 }
