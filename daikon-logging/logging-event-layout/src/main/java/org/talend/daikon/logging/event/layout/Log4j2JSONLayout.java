@@ -59,13 +59,13 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
 
     @Override
     public String toSerializable(LogEvent event) {
-        final StringBuilder text = toText(event, getStringBuilder(), false);
+        final StringBuilder text = toText(event, getStringBuilder());
         return text.toString();
     }
 
     @Override
     public void encode(LogEvent event, ByteBufferDestination destination) {
-        final StringBuilder text = toText(event, getStringBuilder(), true);
+        final StringBuilder text = toText(event, getStringBuilder());
         final Encoder<StringBuilder> helper = getStringBuilderEncoder();
         helper.encode(text, destination);
     }
@@ -75,7 +75,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         return "application/json";
     }
 
-    private StringBuilder toText(LogEvent event, StringBuilder builder, boolean gcFree) {
+    private StringBuilder toText(LogEvent event, StringBuilder builder) {
         EcsJsonSerializer.serializeObjectStart(builder, event.getTimeMillis());
         EcsJsonSerializer.serializeLogLevel(builder, event.getLevel().toString());
         EcsJsonSerializer.serializeFormattedMessage(builder, event.getMessage().getFormattedMessage());
