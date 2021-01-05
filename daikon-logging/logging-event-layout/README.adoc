@@ -215,7 +215,7 @@ CAUTION: Once mapping step completed. All the MDC or additional field keys not p
 
 ECS fields reference are well described in the https://www.elastic.co/guide/en/ecs/current/ecs-field-reference.html[Elastic documentation].
 
-In order to help the developer to look for an ECS field, the file `EcsFields.java`, referencing each ECS field as constant, is generating during maven `generation-sources` phase, leveraging the file link:src/main/resources/ecs_flat.yml[`ecs_flat.yml`] and the freemarker template link:src/main/resources/ecs_flat.ftl[`ecs_flat.ftl`].
+In order to help the developer to look for an ECS field, the file `EcsFields.java`, referencing each ECS field as an enumeration, is generating during maven `generation-sources` phase, leveraging the file link:src/main/resources/ecs_flat.yml[`ecs_flat.yml`] and the freemarker template link:src/main/resources/ecs_flat.ftl[`ecs_flat.ftl`].
 
 The generated file is then compiled and packaged.
 
@@ -230,21 +230,23 @@ include::src/main/resources/ecs_flat.ftl[]
 ----
 package org.talend.daikon.logging.ecs;
 
-/**
-* Constants for all ECS fields based on ecs_flat.yaml file
-*/
-public final class EcsFields {
 
+/**
+* Enumeration of all ECS fields based on ecs_flat.yaml file
+*/
+public enum EcsFields {
     /**
     * Date/time when the event originated.
     * Type: date
+    * Example: 2016-05-23T08:05:34.853Z
     */
-    public static final String TIMESTAMP = "@timestamp";
+    TIMESTAMP("@timestamp"),
     /**
     * Extended build information for the agent.
     * Type: wildcard
+    * Example: metricbeat version 7.6.0 (amd64), libbeat 7.6.0 [6a23e8f8f30f5001ba344e4e54d8d9cb82cb107c built 2020-02-05 23:10:10 +0000 UTC]
     */
-    public static final String AGENT_BUILD_ORIGINAL = "agent.build.original";
+    AGENT_BUILD_ORIGINAL("agent.build.original"),
     // [...]
 }
 ----
