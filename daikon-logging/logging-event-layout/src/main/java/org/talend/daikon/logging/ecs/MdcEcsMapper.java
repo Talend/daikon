@@ -1,39 +1,34 @@
 package org.talend.daikon.logging.ecs;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
 /**
- * Singleton which maps MDC keys with ECS fields based on mdc_ecs_mapping.yml file
+ * Singleton which maps MDC keys with ECS fields based on mdc_ecs_mapping.properties file
  */
 public class MdcEcsMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MdcEcsMapper.class);
 
-    private static final String MDC_ECS_MAPPING_FILE = "mdc_ecs_mapping.yml";
+    private static final String MDC_ECS_MAPPING_FILE = "mdc_ecs_mapping.properties";
 
     private static final MdcEcsMapper INSTANCE = new MdcEcsMapper();
 
-    private Map<String, String> mapping = new HashMap<>();
+    private final Map<String, String> mapping;
 
     private MdcEcsMapper() {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        File mdcEcsMappingFile = new File(classLoader.getResource(MDC_ECS_MAPPING_FILE).getFile());
-        ObjectMapper om = new ObjectMapper(new YAMLFactory());
+        Properties properties = new Properties();
         try {
-            mapping = (Map<String, String>) om.readValue(mdcEcsMappingFile, Map.class);
+            properties.load(getClass().getClassLoader().getResourceAsStream(MDC_ECS_MAPPING_FILE));
         } catch (IOException e) {
             LOGGER.error("MDC ECS mapping file can't be read", e);
         }
+        mapping = (Map) properties;
     }
 
     private static MdcEcsMapper getInstance() {

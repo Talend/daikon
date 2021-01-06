@@ -100,7 +100,7 @@ public class Log4jJSONLayout extends Layout {
         EcsJsonSerializer.serializeObjectStart(builder, event.getTimeStamp());
         EcsJsonSerializer.serializeLogLevel(builder, event.getLevel().toString());
         EcsJsonSerializer.serializeFormattedMessage(builder, event.getRenderedMessage());
-        EcsJsonSerializer.serializeEcsVersion(builder);
+        EcsSerializer.serializeEcsVersion(builder);
         EcsJsonSerializer.serializeServiceName(builder, serviceName);
         EcsJsonSerializer.serializeThreadName(builder, event.getThreadName());
         EcsJsonSerializer.serializeLoggerName(builder, event.getLoggerName());

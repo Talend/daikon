@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.talend.daikon.logging.config.LoggingProperties;
 import org.talend.daikon.logging.event.field.HostData;
 
 import co.elastic.logging.AdditionalField;
@@ -15,6 +16,8 @@ import co.elastic.logging.EcsJsonSerializer;
  * Utility ECS serializer class
  */
 public class EcsSerializer {
+
+    private static String ECS_VERSION = LoggingProperties.get("ecs.version");
 
     /**
      * Serialize the additional fields (mapped and filtered)
@@ -82,5 +85,16 @@ public class EcsSerializer {
                 builder.append(String.format("\"%s\":\"%s\",", markerKey, customMarker[1]));
             }
         }
+    }
+
+    /**
+     * Serialize the ECS version based on the value defined as property
+     *
+     * @param builder the builder to serialize in
+     */
+    public static void serializeEcsVersion(StringBuilder builder) {
+        builder.append("\"ecs.version\":\"");
+        builder.append(ECS_VERSION);
+        builder.append("\",");
     }
 }

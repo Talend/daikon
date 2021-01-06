@@ -54,11 +54,6 @@
 			<artifactId>ecs-logging-core</artifactId>
 			<version>${elastic.ecs.logging.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-yaml</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
 		<!-- Tests -->
 	    <dependency>
 	        <groupId>junit</groupId>
@@ -92,18 +87,66 @@
     </dependencies>
 	<build>
 		<plugins>
+			<!-- Read and load properties from logging.properties file during INITIALIZE phase -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>${properties.maven.plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${project.basedir}/src/main/resources/logging.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Download ecs_flat.yml file during GENERATES-SOURCE phase -->
+			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<version>${download.maven.plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://raw.githubusercontent.com/elastic/ecs/v${ecs.version}/generated/ecs/ecs_flat.yml</url>
+							<outputFileName>ecs_flat.yml</outputFileName>
+							<outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Convert ecs_flat.yml to EcsFields.java enum during GENERATES-SOURCES phase -->
 			<plugin>
 				<groupId>com.github.vboxnick</groupId>
 				<artifactId>yaml-codegen-maven</artifactId>
-				<version>${yaml.codegen.maven.version}</version>
+				<version>${yaml.codegen.maven.plugin.version}</version>
 				<configuration>
 					<models>
 						<model>
-							<file>${project.basedir}/src/main/resources/ecs_flat.yml</file>
+							<file>${project.build.directory}/generated-resources/ecs_flat.yml</file>
 							<outputs>
 								<output>
 									<tmpl>${project.basedir}/src/main/resources/ecs_flat.ftl</tmpl>
 									<dst>${project.build.directory}/generated-sources/java/org/talend/daikon/logging/ecs/EcsFields.java</dst>
+								</output>
+							</outputs>
+						</model>
+						<model>
+							<file>${project.basedir}/src/test/resources/ecs_flat.yml</file>
+							<outputs>
+								<output>
+									<tmpl>${project.basedir}/src/main/resources/ecs_flat.ftl</tmpl>
+									<dst>${project.build.directory}/generated-test-sources/java/org/talend/daikon/logging/ecs/EcsFields.java</dst>
 								</output>
 							</outputs>
 						</model>
@@ -118,11 +161,13 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Include generated sources and test sources -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>add-sources</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>add-source</goal>
@@ -130,6 +175,18 @@
 						<configuration>
 							<sources>
 								<source>${project.build.directory}/generated-sources</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-sources</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-test-sources</source>
 							</sources>
 						</configuration>
 					</execution>

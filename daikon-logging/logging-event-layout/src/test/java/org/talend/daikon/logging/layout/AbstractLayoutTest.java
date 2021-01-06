@@ -93,7 +93,7 @@ public abstract class AbstractLayoutTest {
 
         assertThat(payload, hasJsonPath("$.['@timestamp']", equalTo(
                 OffsetDateTime.ofInstant(Instant.ofEpochMilli(getLogDetails().getTimeMillis()), ZoneOffset.UTC).toString())));
-        assertThat(payload, hasJsonPath("$.['ecs.version']", equalTo("1.2.0")));
+        assertThat(payload, hasJsonPath("$.['ecs.version']", equalTo("4.2.0")));
         assertThat(payload, hasJsonPath("$.['log.level']", equalTo(getLogDetails().getSeverity())));
         assertThat(payload, hasJsonPath("$.['message']", equalTo(getLogDetails().getLogMessage())));
         assertThat(payload, hasJsonPath("$.['process.thread.name']", equalTo(getLogDetails().getThreadName())));

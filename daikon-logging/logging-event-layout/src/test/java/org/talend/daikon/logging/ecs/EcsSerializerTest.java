@@ -74,6 +74,12 @@ public class EcsSerializerTest {
         assertThat(builder.toString(), containsString("\"labels.custom_marker_2\":\"my_value_2\""));
         assertThat(builder.toString(), containsString("\"ecs.field.first\":\"my_value_3\""));
         assertThat(builder.toString(), not(containsString("custom_marker_without_value")));
+    }
 
+    @Test
+    public void testSerializeEcsVersion() {
+        StringBuilder builder = new StringBuilder();
+        EcsSerializer.serializeEcsVersion(builder);
+        assertThat(builder.toString(), containsString("\"ecs.version\":\"4.2.0\""));
     }
 }

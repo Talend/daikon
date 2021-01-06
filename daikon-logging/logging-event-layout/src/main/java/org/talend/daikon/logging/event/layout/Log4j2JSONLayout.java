@@ -79,7 +79,7 @@ public class Log4j2JSONLayout extends AbstractStringLayout {
         EcsJsonSerializer.serializeObjectStart(builder, event.getTimeMillis());
         EcsJsonSerializer.serializeLogLevel(builder, event.getLevel().toString());
         EcsJsonSerializer.serializeFormattedMessage(builder, event.getMessage().getFormattedMessage());
-        EcsJsonSerializer.serializeEcsVersion(builder);
+        EcsSerializer.serializeEcsVersion(builder);
         EcsJsonSerializer.serializeServiceName(builder, serviceName);
         EcsJsonSerializer.serializeThreadName(builder, event.getThreadName());
         EcsJsonSerializer.serializeLoggerName(builder, event.getLoggerName());

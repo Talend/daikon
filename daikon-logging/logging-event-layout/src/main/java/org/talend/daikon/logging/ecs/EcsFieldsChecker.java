@@ -1,14 +1,6 @@
 package org.talend.daikon.logging.ecs;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Singleton which checks :
@@ -16,10 +8,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
  * - whether a given field is an ECS field or not, based on ecs_flat.yml file
  */
 public class EcsFieldsChecker {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EcsFieldsChecker.class);
-
-    private static final String ECS_FLAT_FILE = "ecs_flat.yml";
 
     private static final EcsFieldsChecker INSTANCE = new EcsFieldsChecker();
 
@@ -32,14 +20,7 @@ public class EcsFieldsChecker {
     private Set<String> fields = new HashSet<>();
 
     private EcsFieldsChecker() {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        File ecsFlatFile = new File(classLoader.getResource(ECS_FLAT_FILE).getFile());
-        ObjectMapper om = new ObjectMapper(new YAMLFactory());
-        try {
-            fields = om.readValue(ecsFlatFile, Map.class).keySet();
-        } catch (IOException e) {
-            LOGGER.error("ECS fields file can't be read", e);
-        }
+        EnumSet.allOf(EcsFields.class).stream().forEach(ecsField -> fields.add(ecsField.fieldName));
     }
 
     private static EcsFieldsChecker getInstance() {

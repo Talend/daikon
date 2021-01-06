@@ -17,7 +17,8 @@ public enum ${className} {
         <#elseif fields[key].example?is_number>
     * Example: ${fields[key].example?c}
         <#else>
-    * Example: ${fields[key].example}
+    <#-- Remove all non ASCII characters -->
+    * Example: ${fields[key].example?replace("[^\\p{ASCII}]", "", "r")}
         </#if>
     </#if>
     */

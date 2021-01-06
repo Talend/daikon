@@ -1,3 +1,23 @@
+labels:
+  dashed_name: labels
+  short: ECS labels.
+  type: object
+container.labels:
+  dashed_name: container-labels
+  short: ECS container labels.
+  type: object
+event.id:
+  dashed_name: event-id
+  short: ECS event id.
+  type: keyword
+host.ip:
+  dashed_name: host-ip
+  short: ECS host ip.
+  type: ip
+host.hostname:
+  dashed_name: host-hostname
+  short: ECS host hostname.
+  type: keyword
 ecs.field.first:
   dashed_name: ecs-field-first
   short: First ECS field.
