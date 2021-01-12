@@ -33,7 +33,7 @@
         <logback.version>1.2.3</logback.version>
         <easymock.version>3.5.1</easymock.version>
         <avro.version>1.10.0</avro.version>
-        <bcprov.version>1.65</bcprov.version>
+        <bcprov.version>1.68</bcprov.version>
         <commons-compress.version>1.20</commons-compress.version>
         <commons-io.version>2.6</commons-io.version>
         <reactor-core.version>3.1.6.RELEASE</reactor-core.version>
@@ -41,7 +41,7 @@
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
         <mongo-java-server.version>1.11.1</mongo-java-server.version>
 
-        <spring-boot.version>2.3.6.RELEASE</spring-boot.version>
+        <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
         <spring-cloud-dependencies.version>Hoxton.SR9</spring-cloud-dependencies.version>
 
         <s3mock.version>0.1.6</s3mock.version>
