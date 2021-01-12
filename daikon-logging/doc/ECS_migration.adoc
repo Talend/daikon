@@ -1,0 +1,455 @@
+= ECS (Elastic Common Schema) migration
+:toc:
+:toclevels: 3
+:toc-placement!:
+
+toc::[]
+
+== Description
+
+Several months ago, https://talend365.sharepoint.com/sites/EnterpriseandFrictionlessInitiativeH1/_layouts/15/Doc.aspx?sourcedoc={14c375d9-ec23-4981-99ac-e061c1241d5b}&action=edit&wd=target%28Reliability.one%7C879313bf-126e-4fe9-b469-80600ece894c%2FLogging%7Cea77767c-3448-4a01-b045-f3db1430968b%2F%29[a discussion] has started in order to define the best way to converge to a common logging format.
+
+The format ECS (Elastic Common Schema) has been chosen to become the common format for all Talend Cloud applications. Each of these applications will have to integrate it.
+
+In the meanwhile, https://github.com/Talend/policies/pull/42[the Talend logging policy] has been updated in order to take into account the last requirements.
+
+The purpose of this document is to design a solution facilitating the transition to ECS, based on requirements expressed by all the parts (SRE, Arch, Dev).
+
+== Requirements
+
+First of all, it is important to remind the requirements.
+
+=== Homogeneity/unification (normalization)
+
+The main requirement coming from all parts is to converge to an unique format, for many reasons including :
+
+* Simplifying parsing and processing
+* Easing analyse and visualize
+* Reducing storage size
+
+Moreover, this format must be implemented and maintained at one place in order to facilitate the future evolutions.
+
+=== Adoption
+
+One of the main requirements is the ease of adoption. The goal is that each team uses the same format, this goal will be reached only if the effort to move to this format is minimal :
+
+* The migration must not break the current logging format as dashboards can be based on them
+* The expected format must be clear and shouldn't change with time
+* The cost of the migration should be minimal
+* The API backward compatibility must be preserved
+* It must be easy for each team to extend the format by adding custom fields
+
+=== Troubleshooting
+
+One of the main function of a log being to help the troubleshooting, moving to this new format should facilitate it by :
+
+* Categorizing the logs
+* Formalizing, documenting & maintaining the list of available events
+* Adding extra info to regular logs (e.g k8s infos)
+* Homogenizing the field types and formats
+
+== About ECS
+
+According to https://www.elastic.co/guide/en/ecs/current/ecs-reference.html[elastic web site] :
+
+____
+The Elastic Common Schema (ECS) is an open source specification, developed with support from the Elastic user community. ECS defines a common set of fields to be used when storing event data in Elasticsearch, such as logs and metrics.
+____
+
+The ECS specification proposes https://www.elastic.co/guide/en/ecs/current/ecs-base.html[a few common base fields] shared with all logs and some other more specific among which :
+
+* https://www.elastic.co/guide/en/ecs/current/ecs-ecs.html[ecs]: Meta-informations specific to ECS
+* https://www.elastic.co/guide/en/ecs/current/ecs-log.html[log]: Details about the event’s logging mechanism or logging transport
+* https://www.elastic.co/guide/en/ecs/current/ecs-event.html[event]: Context information about the log or metric event itself (including https://www.elastic.co/guide/en/ecs/current/ecs-allowed-values-event-outcome.html[categorization fields])
+* https://www.elastic.co/guide/en/ecs/current/ecs-http.html[http]: HTTP activity
+* https://www.elastic.co/guide/en/ecs/current/ecs-source.html[source]: Details about the sender of a network exchange/packet
+
+=== Guidelines
+
+Elastic gives a https://www.elastic.co/guide/en/ecs/current/ecs-guidelines.html#_general_guidelines[set of guidelines] in order to deal with a migration whose main ones are :
+
+* The document MUST have the `@timestamp` field.
+* Use the https://www.elastic.co/guide/en/elasticsearch/reference/7.10/mapping-types.html[data types] defined for an ECS field.
+* Use the `ecs.version` field to define which version of ECS is used.
+* Map as many fields as possible to ECS.
+
+In order to deal with not recognized or custom fields, Elastic gives also some https://www.elastic.co/guide/en/ecs/current/ecs-custom-fields-in-ecs.html#ecs-custom-fields-in-ecs[recommendations]. The main advice being to use the `labels` core field.
+
+=== Examples
+
+In order to illustrate the usage of ECS format, here are some Talend use cases with, for each, the current log format and what could be the log with following ECS specification.
+
+==== Dataset creation
+
+In case of dataset creation , the following log is generated :
+
+.Current log
+[source,json]
+----
+{
+    "severity":"INFO",
+    "logTimestamp":"2020-12-08T16:28:03.478Z",
+    "X-Span-Export":"true",
+    "X-B3-SpanId":"9b4fec95dfc2bd1e",
+    "logMessage":"Success create dataSet with id #0079f65d-f386-487b-9e82-406cc04118a8",
+    "logSource":{
+       "logger.name":"org.talend.dataprep.dataset.controller.DataSetController",
+       "host.name":"int-eks-tdp-dataset-744b7766f5-h4dk5",
+       "host.address":"10.80.24.242"
+    },
+    "@version":1,
+    "eventUUID":"92df9e44-900e-4dae-8e15-83f06848c249",
+    "X-B3-TraceId":"9b4fec95dfc2bd1e",
+    "customInfo":{
+       "traceId":"9b4fec95dfc2bd1e",
+       "spanId":"9b4fec95dfc2bd1e",
+       "spanExportable":"true",
+       "accountId":"15bb8d2c-320d-43ce-b959-5707a76382ef",
+       "application":"tdp",
+       "service":"dataset-dispatcher"
+    },
+    "threadName":"reactor-http-epoll-3",
+    "agentTimestamp":"2020-12-08T16:28:03.478Z"
+ }
+----
+
+The log is quite simple, so almost all fields can be mapped with ECS fields.
+Some of them like `accountId`, `application` or `service` are not specified by ECS, they must be moved under `labels` field.
+
+.ECS log
+[source,json]
+----
+{
+    "@timestamp": "2020-12-08T16:28:03.478Z",
+    "ecs": {
+        "version": "1.7"
+    },
+    "labels": {
+        "account_id": "15bb8d2c-320d-43ce-b959-5707a76382ef",
+        "application": "tdp",
+        "service": "dataset-dispatcher"
+    },
+    "tags": ["dataset"],
+    "message": "Success create dataSet with id #0079f65d-f386-487b-9e82-406cc04118a8",
+    "log": {
+        "level": "info",
+        "logger": "org.talend.dataprep.dataset.controller.DataSetController"
+    },
+    "process": {
+        "thread": {
+            "name": "reactor-http-epoll-3"
+        }
+    },
+    "host": {
+        "name": "int-eks-tdp-dataset-744b7766f5-h4dk5",
+        "ip": ["10.80.24.242"]
+    }
+}
+----
+
+==== Pipeline execution end
+
+In case of pipeline execution end, the following log is generated :
+
+.Current log
+[source,json]
+----
+{
+   "severity":"INFO",
+   "logTimestamp":"2020-12-09T15:00:49.620Z",
+   "logMessage":"Job 'fcb0ac8a-9a84-4139-a805-7d0ba4279a55' ended with job status 'FINISHED' (user='TMC', tenantId='6822a226-94a8-40d8-806c-7a55e9677637', executionOrigin='TMC', userFlowId='ebd54cef-2c60-4b75-ae4b-018362f8d462', cloudAgentId='b0beb7a7-5b50-4a9d-ae5f-e7c411c05ad5', executionId='fcb0ac8a-9a84-4139-a805-7d0ba4279a55', jobId='fcb0ac8a-9a84-4139-a805-7d0ba4279a55', jobId='fcb0ac8a-9a84-4139-a805-7d0ba4279a55', status='FINISHED', startTime='1607526003691', duration='45545', message='None')",
+   "logSource":{
+      "logger.name":"actors.FullRunShard",
+      "host.name":"int-eks-tpd-streamsrunner-786d47b567-7skc8",
+      "host.address":"10.80.40.185"
+   },
+   "@version":1,
+   "eventUUID":"d57a1edc-c01b-4352-b2f3-3d9184e274a3",
+   "customInfo":{
+      "accountId":"6822a226-94a8-40d8-806c-7a55e9677637",
+      "application":"dss",
+      "sourceThread":"ForkJoinPool-1-worker-3",
+      "service":"streamsrunner",
+      "akkaSource":"akka:\/\/StreamsRunClusterSystem\/system\/sharding\/StreamsRunFullRun\/70\/fullrun_tmc_fcb0ac8a-9a84-4139-a805-7d0ba4279a55-tenant_6822a226-94a8-40d8-806c-7a55e9677637",
+      "sourceActorSystem":"StreamsRunClusterSystem",
+      "userId":"TMC",
+      "akkaTimestamp":"15:00:49.620UTC"
+   },
+   "threadName":"StreamsRunClusterSystem-akka.actor.default-dispatcher-4",
+   "agentTimestamp":"2020-12-09T15:00:49.620Z"
+}
+----
+
+[pipeline execution]
+Most of the fields can be mapped with ECS fields. As for the previous example, some must be moved in the `labels` group.
+Because we can see a pipeline as a process, with a lifecycle, it could be interesting to use the `event` ECS field in order to details each status change.
+
+.ECS log
+[source,json]
+----
+{
+    "@timestamp": "2020-12-09T15:00:49.620Z",
+    "ecs": {
+        "version": "1.7"
+    },
+    "labels": {
+        "account_id": "6822a226-94a8-40d8-806c-7a55e9677637",
+        "job_id": "fcb0ac8a-9a84-4139-a805-7d0ba4279a55",
+        "execution_id": "fcb0ac8a-9a84-4139-a805-7d0ba4279a55",
+        "application": "dss",
+        "service": "streamsrunner"
+    },
+    "tags": ["pipeline", "job"],
+    "message": "Job 'fcb0ac8a-9a84-4139-a805-7d0ba4279a55' ended with job status 'FINISHED' (user='TMC', tenantId='6822a226-94a8-40d8-806c-7a55e9677637', executionOrigin='TMC', userFlowId='ebd54cef-2c60-4b75-ae4b-018362f8d462', cloudAgentId='b0beb7a7-5b50-4a9d-ae5f-e7c411c05ad5', executionId='fcb0ac8a-9a84-4139-a805-7d0ba4279a55', jobId='fcb0ac8a-9a84-4139-a805-7d0ba4279a55', jobId='fcb0ac8a-9a84-4139-a805-7d0ba4279a55', status='FINISHED', startTime='1607526003691', duration='45545', message='None')",
+    "log": {
+        "level": "info",
+        "logger": "actors.FullRunShard"
+    },
+    "process": {
+        "thread": {
+            "name": "StreamsRunClusterSystem-akka.actor.default-dispatcher-4"
+        }
+    },
+    "host": {
+        "name": "int-eks-tpd-streamsrunner-786d47b567-7skc8",
+        "ip": ["10.80.40.185"]
+    },
+    "event" : {
+        "id": "d57a1edc-c01b-4352-b2f3-3d9184e274a3",
+        "action": "job-ended",
+        "kind": "state",
+        "category": "process",
+        "type": "end",
+        "reason": "FINISHED",
+        "module": "TMC",
+        "start": "2020-12-09T15:00:03.691Z",
+        "duration": 45545000000
+    }
+}
+----
+
+==== Audit logs
+
+When an audit log is generated, the following log is created :
+
+.Current log
+[source,json]
+----
+{
+   "@timestamp":"2020-12-09T08:05:25.250+00:00",
+   "@version":"1",
+   "logMessage":"audit log generated with metadata @org.talend.daikon.spring.audit.logs.api.GenerateAuditLog(filter=org.talend.daikon.spring.audit.logs.api.NoOpAuditContextFilter.class, includeBodyResponse=false, scope=ALL, application=\"TMC\", eventType=\"access management\", eventCategory=\"audit logs\", eventOperation=\"read\")",
+   "logger_name":"org.talend.daikon.spring.audit.logs.service.AuditLogSenderImpl",
+   "thread_name":"http-nio-7750-exec-4",
+   "level":"INFO",
+   "level_value":20000,
+   "HOSTNAME":"int-eks-tpsvc-audit-logs-api-6577767bb-jptln",
+   "request":"{\"url\":\"https://api.int.cloud.talend.com/v1/audit/logs\",\"method\":\"GET\",\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36\"}",
+   "eventCategory":"audit logs",
+   "eventType":"access management",
+   "userId":"a8a77501-ed70-40b3-819d-982201804a27",
+   "accountId":"9fbf380c-5505-45f2-9a93-d0d01fdefc1c",
+   "requestId":"dbe295bd-cc19-4030-948b-7035610cf060",
+   "response":"{\"code\":\"200\"}",
+   "clientIp":"62.23.50.122",
+   "eventOperation":"read",
+   "logId":"099e39d5-2e31-4d99-99b4-798279961b7f",
+   "applicationId":"TMC",
+   "email":"jhervy_07122020@yopmail.com",
+   "timestamp":"2020-12-09T08:05:25.247962Z",
+   "username":"jhervy_07122020@trial08558.us.talend.com",
+   "application":"audit-logs",
+   "type":"log",
+   "service":"audit-logs-api",
+   "release":"unknown",
+   "hostname":"int-eks-tpsvc-audit-logs-api-6577767bb-jptln"
+}
+----
+
+As for the previous examples, most of the fields can be mapped with ECS fields.
+Some fields like `accountId`, `application` or `service` are not specified by ECS, they must be moved under `labels` field.
+It is possible to leverage some ECS fields like : `user`, `http`, `url` or `user-agent`.
+`Event` ECS field can also be used to categorize the audit log.
+
+.ECS log
+[source,json]
+----
+{
+    "@timestamp": "2020-12-09T08:05:25.250Z",
+    "ecs": {
+        "version": "1.7"
+    },
+    "labels": {
+        "account_id": "130c4d25-0849-493e-935e-13313c4bb17a",
+        "application": "audit-logs",
+        "service": "audit-logs-api"
+    },
+    "tags": ["audit"],
+    "message": "audit log generated with metadata @org.talend.daikon.spring.audit.logs.api.GenerateAuditLog(filter=org.talend.daikon.spring.audit.logs.api.NoOpAuditContextFilter.class, includeBodyResponse=false, scope=ALL, application=\"TMC\", eventType=\"access management\", eventCategory=\"audit logs\", eventOperation=\"read\")",
+    "log": {
+        "level": "info",
+        "logger": "org.talend.daikon.spring.audit.logs.service.AuditLogSenderImpl"
+    },
+    "process": {
+        "thread": {
+            "name": "http-nio-7750-exec-4"
+        }
+    },
+    "host": {
+        "name": "int-eks-tpsvc-audit-logs-api-6577767bb-jptln"
+    },
+    "user": {
+        "id": "a8a77501-ed70-40b3-819d-982201804a27",
+        "name": "jhervy_07122020@trial08558.us.talend.com",
+        "email": "jhervy_07122020@yopmail.com"
+    },
+    "event" : {
+        "id": "099e39d5-2e31-4d99-99b4-798279961b7f",
+        "action": "access management",
+        "kind": "event",
+        "category": "database",
+        "type": "access",
+        "reason": "Access to audit logs"
+    },
+    "client": {
+        "address": "62.23.50.122",
+        "ip": "62.23.50.122"
+    },
+    "user_agent": {
+        "original": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36"
+    },
+    "url": {
+        "full": "https://api.int.cloud.talend.com/v1/audit/logs"
+    },
+    "http": {
+        "request": {
+            "method": "GET"
+        },
+        "response": {
+            "status_code": 200
+        }
+    }
+}
+----
+
+==== Login success
+
+In case of login success, the following log is generated :
+
+.Current log
+[source,json]
+----
+{
+   "@timestamp":"2020-12-09T08:31:29.601+00:00",
+   "@version":"1",
+   "logMessage":"User 5fdf7941-4ad7-4d4a-aba7-62fda39f072c in tenant 130c4d25-0849-493e-935e-13313c4bb17a login success",
+   "logger_name":"org.talend.iam.im.scim.providers.db.provi.DbUserProvisioning",
+   "thread_name":"http-nio-7777-exec-8",
+   "level":"INFO",
+   "level_value":20000,
+   "springAppName":"iam",
+   "stackName":"iam",
+   "springSvcName":"scim",
+   "HOSTNAME":"int-eks-tpsvc-iam-scim-975dc7949-ctwpx",
+   "customInfo":{
+      "traceId":"e9b30851d00dad53",
+      "spanExportable":"false",
+      "X-Span-Export":"false",
+      "X-B3-ParentSpanId":"e9b30851d00dad53",
+      "parentId":"e9b30851d00dad53",
+      "spanId":"72f4689db993f6e0",
+      "X-B3-SpanId":"72f4689db993f6e0",
+      "X-B3-TraceId":"e9b30851d00dad53"
+   },
+   "application":"iam",
+   "type":"log",
+   "service":"scim",
+   "release":"unknown",
+   "hostname":"int-eks-tpsvc-iam-scim-975dc7949-ctwpx"
+}
+----
+
+Once again, the `event` ECS field can be leveraged in order to categorize the log.
+
+.ECS log
+[source,json]
+----
+{
+    "@timestamp": "2020-12-09T08:31:29.601Z",
+    "ecs": {
+        "version": "1.7"
+    },
+    "labels": {
+        "account_id": "130c4d25-0849-493e-935e-13313c4bb17a",
+        "application": "iam",
+        "service": "scim"
+    },
+    "tags": ["iam", "login"],
+    "message": "User 5fdf7941-4ad7-4d4a-aba7-62fda39f072c in tenant 130c4d25-0849-493e-935e-13313c4bb17a login success",
+    "log": {
+        "level": "info",
+        "logger": "org.talend.iam.im.scim.providers.db.provi.DbUserProvisioning"
+    },
+    "process": {
+        "thread": {
+            "name": "http-nio-7777-exec-8"
+        }
+    },
+    "host": {
+        "name": "int-eks-tpsvc-iam-scim-975dc7949-ctwpx"
+    },
+    "user": {
+        "id": "5fdf7941-4ad7-4d4a-aba7-62fda39f072c"
+    },
+    "event" : {
+        "action": "Login",
+        "kind": "event",
+        "category": "authentication",
+        "type": "end",
+        "outcome": "success",
+        "reason": "Login success"
+    }
+}
+----
+
+== Solutions
+
+This part focuses on the proposals and on how they meet the requirements.
+
+=== Solution 1 : Leverage https://github.com/elastic/ecs-logging-java[`ecs-logging-java`] lib
+
+The main idea behind this first proposal is to leverage the https://www.elastic.co/guide/en/ecs-logging/java/current/intro.html[ecs-logging-java library] powered by elastic. This lib offers the great advantage to be https://www.elastic.co/guide/en/ecs-logging/java/current/setup.html[compatible with most of the logging frameworks] (log4j, log4j2, logback, ...) by providing corresponding encoders/layouts.
+
+==== Phase 1 : Enrich https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] with ECS layouts
+
+The https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] library provides a set of layouts for Logback, Log4j and Log4j2. Log4j's end of life having been announced for 2015, we'll only update Logback and Log4j2 layouts to make them compatible with ECS, by extending the layouts powered by Elastic (see https://github.com/elastic/ecs-logging-java[`ecs-logging-java`] lib). ECS support will be provided by https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] in a new major version.
+
+During this first phase, the https://github.com/Talend/daikon/blob/master/daikon-logging/logging-event-layout/src/main/java/org/talend/daikon/logging/event/field/MdcKeys.java[MDC keys] defined by https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] will be mapped with corresponding ECS fields if possible. If a field can't be mapped with any ECS core or extended field (case of custom field), it will be added as `label` as recommended by https://www.elastic.co/guide/en/ecs/master/ecs-custom-fields-in-ecs.html#_the_labels_field[the official documentation].
+
+The goal of this phase is to start migrating to ECS most of the services.
+
+IMPORTANT: The mapping custom fields / ECS fields must stay well documented in https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] at any moment.
+
+==== Phase 2 : Leverage https://www.elastic.co/guide/en/ecs/master/ecs-category-field-values-reference.html[ECS categorization fields]
+
+Some specific Talend concepts like the jobs, pipelines, engines, ... have a lifecycle which deserve to be finely analyzed. That's why the logs relative to these concepts deserve to be detailed.
+
+Leveraging some ECS extended fields, like the `event` field, is a good way to record status changes (see <<pipeline execution>> example).
+
+In this phase 3, the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] lib can be enriched by providing an API allowing the client services to categorize their logs.
+
+IMPORTANT: In order to maintain and keep a well documented a finite set of events, they must be defined and documented into the https://github.com/Talend/daikon/tree/master/daikon-logging[`daikon-logging`] library. If a new type/category/kind of event is needed, it must be added into this library and documented there accordingly.
+
+==== Phase 3 : Make https://github.com/Talend/daikon/tree/master/daikon-spring/daikon-spring-audit-logs[`daikon-spring-audit-logs`] ECS compatible
+
+The audit logs could be useful for *troubleshooting* as they can help to understand the activity of a specific account when a problem occurs.
+Currently the audit logs are only available for the customers and they contain PII (personally identifiable information), but it could be interesting to make them accessible internally for debugging purpose.
+
+It could be quite easy to make audit logs ECS compatible as the mechanism is already centralized in a daikon library.
+
+In this fourth phase, `daikon-spring-audit-logs` could be updated in order to :
+
+* Remove PII
+* Log the audit logs following ECS format (using categorization fields if possible)
+
+The https://www.elastic.co/guide/en/ecs/master/ecs-event.html[event] ECS extended field and its https://www.elastic.co/guide/en/ecs/master/ecs-category-field-values-reference.html[categorization fields] could be leveraged.
