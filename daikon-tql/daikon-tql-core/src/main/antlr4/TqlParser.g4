@@ -56,6 +56,7 @@ atom : booleanComparison
  | literalComparison
  | fieldComparison
  | fieldIsEmpty
+ | fieldIsNull
  | fieldIsValid
  | fieldIsInvalid
  | fieldContains

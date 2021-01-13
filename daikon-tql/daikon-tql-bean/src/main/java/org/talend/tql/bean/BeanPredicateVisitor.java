@@ -264,7 +264,7 @@ public class BeanPredicateVisitor<T> implements IASTVisitor<Predicate<T>> {
         elt.getField().accept(this);
         final MethodAccessor[] methods = currentMethods.pop();
 
-        return anyMatch(methods, Objects::nonNull);
+        return anyMatch(methods, Objects::isNull);
     }
 
     @Override
