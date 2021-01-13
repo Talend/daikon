@@ -24,6 +24,8 @@ literalComparison : (FIELD | allFields | ~INT | ~DECIMAL) comparisonOperator lit
 
 fieldComparison : (FIELD | allFields | ~INT | ~DECIMAL) comparisonOperator fieldReference;
 
+fieldIsNull : (FIELD | allFields | ~INT | ~DECIMAL) IS NULL;
+
 fieldIsEmpty : (FIELD | allFields | ~INT | ~DECIMAL) IS EMPTY;
 
 fieldIsValid : (FIELD | allFields | ~INT | ~DECIMAL) IS VALID;

@@ -10,25 +10,7 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.talend.daikon.pattern.character.CharPatternToRegex;
 import org.talend.daikon.pattern.word.WordPatternToRegex;
-import org.talend.tql.model.AllFields;
-import org.talend.tql.model.AndExpression;
-import org.talend.tql.model.ComparisonExpression;
-import org.talend.tql.model.ComparisonOperator;
-import org.talend.tql.model.Expression;
-import org.talend.tql.model.FieldBetweenExpression;
-import org.talend.tql.model.FieldCompliesPattern;
-import org.talend.tql.model.FieldContainsExpression;
-import org.talend.tql.model.FieldInExpression;
-import org.talend.tql.model.FieldIsEmptyExpression;
-import org.talend.tql.model.FieldIsInvalidExpression;
-import org.talend.tql.model.FieldIsValidExpression;
-import org.talend.tql.model.FieldMatchesRegex;
-import org.talend.tql.model.FieldReference;
-import org.talend.tql.model.FieldWordCompliesPattern;
-import org.talend.tql.model.LiteralValue;
-import org.talend.tql.model.NotExpression;
-import org.talend.tql.model.OrExpression;
-import org.talend.tql.model.TqlElement;
+import org.talend.tql.model.*;
 import org.talend.tql.visitor.IASTVisitor;
 import org.talend.tqlmongo.excp.TqlMongoException;
 
@@ -188,6 +170,15 @@ public class ASTVisitor implements IASTVisitor<Object> {
     @Override
     public Object visit(FieldIsInvalidExpression elt) {
         throw new TqlMongoException("Unsupported expression");
+    }
+
+    @Override
+    public Object visit(FieldIsNullExpression elt) {
+        String fieldName = (String) elt.getField().accept(this);
+        if (!isNegation) {
+            return Criteria.where(fieldName).is(null);
+        }
+        return Criteria.where(fieldName).not().is(null);
     }
 
     @Override

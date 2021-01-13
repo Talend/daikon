@@ -13,26 +13,7 @@ import org.talend.tql.TqlLexer;
 import org.talend.tql.TqlParser;
 import org.talend.tql.TqlParserVisitor;
 import org.talend.tql.excp.TqlException;
-import org.talend.tql.model.AllFields;
-import org.talend.tql.model.AndExpression;
-import org.talend.tql.model.BooleanValue;
-import org.talend.tql.model.ComparisonExpression;
-import org.talend.tql.model.ComparisonOperator;
-import org.talend.tql.model.Expression;
-import org.talend.tql.model.FieldBetweenExpression;
-import org.talend.tql.model.FieldCompliesPattern;
-import org.talend.tql.model.FieldContainsExpression;
-import org.talend.tql.model.FieldInExpression;
-import org.talend.tql.model.FieldIsEmptyExpression;
-import org.talend.tql.model.FieldIsInvalidExpression;
-import org.talend.tql.model.FieldIsValidExpression;
-import org.talend.tql.model.FieldMatchesRegex;
-import org.talend.tql.model.FieldReference;
-import org.talend.tql.model.FieldWordCompliesPattern;
-import org.talend.tql.model.LiteralValue;
-import org.talend.tql.model.NotExpression;
-import org.talend.tql.model.OrExpression;
-import org.talend.tql.model.TqlElement;
+import org.talend.tql.model.*;
 
 /**
  * Visitor for building the AST Tql tree.
@@ -145,6 +126,15 @@ public class TqlExpressionVisitor implements TqlParserVisitor<TqlElement> {
                 field2TqlElement);
         LOG.debug("End visit field comparison: " + ctx.getText());
         return comparisonExpression;
+    }
+
+    @Override
+    public TqlElement visitFieldIsNull(TqlParser.FieldIsNullContext ctx) {
+        LOG.debug("Visit is field null expression: " + ctx.getText());
+        TqlElement fieldName = ctx.getChild(0).accept(this);
+        FieldIsNullExpression isNullExpression = new FieldIsNullExpression(fieldName);
+        LOG.debug("End visit is field null expression: " + ctx.getText());
+        return isNullExpression;
     }
 
     @Override

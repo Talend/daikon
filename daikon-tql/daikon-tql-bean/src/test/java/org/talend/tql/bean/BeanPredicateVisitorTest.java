@@ -520,6 +520,30 @@ public class BeanPredicateVisitorTest {
         assertTrue(predicate.test(bean));
     }
 
+    @Test
+    public void testNullComparison() {
+        // given
+        final Expression query = Tql.parse("nullValue is null");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
+    @Test
+    public void testNestedNullComparison() {
+        // given
+        final Expression query = Tql.parse("nested.nestedNullValue is null");
+
+        // when
+        final Predicate<Bean> predicate = query.accept(new BeanPredicateVisitor<>(Bean.class));
+
+        // then
+        assertTrue(predicate.test(bean));
+    }
+
     // Test class
     public static class Bean {
 
@@ -555,6 +579,10 @@ public class BeanPredicateVisitorTest {
             attributes.put("tags", Arrays.asList("Complete", "Released"));
             return attributes;
         }
+
+        public Object nullValue() {
+            return null;
+        }
     }
 
     // Test class
@@ -570,6 +598,10 @@ public class BeanPredicateVisitorTest {
 
         public String getNestedValue() {
             return "nested";
+        }
+
+        public Object getNestedNullValue() {
+            return null;
         }
     }
 }

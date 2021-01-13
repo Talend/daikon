@@ -45,6 +45,7 @@ VALID : 'valid';
 INVALID : 'invalid';
 TRUE : 'true';
 FALSE : 'false';
+NULL : 'null';
 
 // data types
 INT: ('-')?('0' .. '9')+;
