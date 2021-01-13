@@ -37,6 +37,13 @@ public class TestMongoCriteria_Complex extends TestMongoCriteria_Abstract {
     }
 
     @Test
+    public void testParseFieldIsNull() {
+        Criteria criteria = doTest("field1 is null");
+        Criteria expectedCriteria = Criteria.where("field1").is(null);
+        assertCriteriaEquals(expectedCriteria, criteria);
+    }
+
+    @Test
     public void testParseFieldIsValid() {
         expectedException.expect(TqlMongoException.class);
         doTest("field1 is valid");
