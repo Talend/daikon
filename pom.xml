@@ -207,6 +207,11 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>de.flapdoodle.embed</groupId>
                 <artifactId>de.flapdoodle.embed.mongo</artifactId>
                 <version>${de.flapdoodle.embed.mongo.version}</version>
