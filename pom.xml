@@ -219,7 +219,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson.version.annotations}</version>
             </dependency>
             <dependency>
                 <groupId>de.flapdoodle.embed</groupId>
