@@ -8,7 +8,7 @@ function isString(value) {
 }
 
 export function wrap(value) {
-	return isString(value) ? `'${value}'` : value;
+	return isString(value) ? `'${value.replace(/'/g, "\\'")}'` : value;
 }
 
 export function isDefined(value) {

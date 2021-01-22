@@ -138,4 +138,11 @@ describe('Query', () => {
 			'(f2 > 42) or not((q2f1 = 76) or (q2f2 > 666)) and (f2 < 666)',
 		);
 	});
+	it('should be able to perform AND statements', () => {
+		const q = new Query();
+
+		q.equal('f1', "should ' esca ' pe");
+
+		expect(q.serialize()).toBe("(f1 = 'should \\' esca \\' pe')");
+	});
 });
