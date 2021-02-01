@@ -18,9 +18,13 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.CertPathValidatorException;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.daikon.signature.exceptions.MissingEntryException;
 import org.talend.daikon.signature.exceptions.UnsignedArchiveException;
@@ -29,19 +33,38 @@ import org.talend.daikon.signature.exceptions.VerifyFailedException;
 
 public class ZipVerifierTest {
 
-    private String storePass = "c1b966f70a2529d8adc13e13d293"; //$NON-NLS-1$
+    private static String storePass = "012345"; //$NON-NLS-1$
+
+    private static String unSignArchiveName = "unsigned.zip"; //$NON-NLS-1$
+
+    private static File workingFolder = null;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        String folderPath = getResourceFilePath("");
+        workingFolder = new File(folderPath, "working_folder");//$NON-NLS-1$
+        if (workingFolder.exists()) {
+            FileUtils.deleteDirectory(workingFolder);
+        }
+        workingFolder.mkdirs();
+        SignedFileGenerater generater = new SignedFileGenerater(workingFolder.getAbsolutePath(),
+                new File(workingFolder, unSignArchiveName), storePass);
+        generater.generateSignedFiles();
+    }
+
+    @AfterClass
+    public static void afterClass() throws IOException {
+        FileUtils.deleteDirectory(workingFolder);
+    }
 
     /**
-     * signed-valid.zip contain two certificates 1. code sign certificate validity: [From: Mon Aug 20 16:13:06 CST 2018,
-     * To: Sat Feb 16 16:13:06 CST 2019] 2. validity: [From: Mon Aug 20 16:13:05 CST 2018, To: Thu Aug 15 16:13:05 CST
-     * 2019]
      * 
      * @throws Exception
      */
     @Test
     public void testVerifySignedValid() throws Exception {
-        String signedJobPath = getResourceFilePath("signed-valid.zip");
-        String keyStorePath = getResourceFilePath("truststore.jks");
+        String signedJobPath = getPathFromWorkingFolder("signed-valid.zip");
+        String keyStorePath = getPathFromWorkingFolder("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         Exception exception = null;
@@ -54,9 +77,18 @@ public class ZipVerifierTest {
     }
 
     @Test
+    public void testVerifySignedByExpired() throws Exception {
+        String signedJobPath = getPathFromWorkingFolder("signed-expired.zip");
+        String keyStorePath = getPathFromWorkingFolder("truststore.jks");
+        InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
+        ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
+        verifer.verify(signedJobPath);
+    }
+
+    @Test
     public void testVerifySignedJobByWebTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("signed-by-zip.zip");
-        String keyStorePath = getResourceFilePath("truststore.jks");
+        String signedJobPath = getPathFromWorkingFolder("signed-by-zip.zip");
+        String keyStorePath = getPathFromWorkingFolder("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         try {
@@ -69,8 +101,8 @@ public class ZipVerifierTest {
 
     @Test
     public void testVerifySignedJobByTruststore2() throws Exception {
-        String signedJobPath = getResourceFilePath("signed-valid.zip");
-        String keyStorePath = getResourceFilePath("truststore2.jks");
+        String signedJobPath = getPathFromWorkingFolder("signed-valid.zip");
+        String keyStorePath = getPathFromWorkingFolder("truststore2.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         try {
@@ -83,8 +115,8 @@ public class ZipVerifierTest {
 
     @Test
     public void testVerifyUnsignedJobByTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("unsigned.zip");
-        String keyStorePath = getResourceFilePath("truststore.jks");
+        String signedJobPath = getPathFromWorkingFolder("unsigned.zip");
+        String keyStorePath = getPathFromWorkingFolder("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         try {
@@ -97,8 +129,8 @@ public class ZipVerifierTest {
 
     @Test
     public void testVerifyAddedSignedJobByTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("added-unsigned-file.zip");
-        String keyStorePath = getResourceFilePath("truststore.jks");
+        String signedJobPath = getPathFromWorkingFolder("added-unsigned-file.zip");
+        String keyStorePath = getPathFromWorkingFolder("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         try {
@@ -111,8 +143,8 @@ public class ZipVerifierTest {
 
     @Test
     public void testVerifyModifiedSignedJobByTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("modified-signed-valid.zip");
-        String keyStorePath = getResourceFilePath("truststore.jks");
+        String signedJobPath = getPathFromWorkingFolder("modified-signed-valid.zip");
+        String keyStorePath = getPathFromWorkingFolder("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         try {
@@ -125,8 +157,8 @@ public class ZipVerifierTest {
 
     @Test
     public void testVerifyDeletedSignedJobByTruststore() throws Exception {
-        String signedJobPath = getResourceFilePath("deleted-signed-valid.zip");
-        String keyStorePath = getResourceFilePath("truststore.jks");
+        String signedJobPath = getPathFromWorkingFolder("deleted-signed-valid.zip");
+        String keyStorePath = getPathFromWorkingFolder("truststore.jks");
         InputStream keyStoreInputStream = getKeyStoreInputStream(keyStorePath);
         ZipVerifier verifer = new ZipVerifier(keyStoreInputStream, storePass);
         try {
@@ -137,7 +169,12 @@ public class ZipVerifierTest {
         }
     }
 
-    private String getResourceFilePath(String fileName) {
+    private static String getPathFromWorkingFolder(String fileName) {
+        File file = new File(workingFolder, fileName);
+        return file.getAbsolutePath();
+    }
+
+    private static String getResourceFilePath(String fileName) {
         String resourcePath = ZipVerifierTest.class.getResource(fileName).getFile();
         return resourcePath;
     }

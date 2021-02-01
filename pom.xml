@@ -24,6 +24,7 @@
 	    <jackson.1x.version>1.9.14-TALEND</jackson.1x.version>
 	    <jackson.version>2.9.5</jackson.version>
 	    <jackson.version.annotations>2.9.0</jackson.version.annotations>
+	    <commons-io.version>1.3.2</commons-io.version>
     </properties>
     <modules>
         <module>daikon</module>
