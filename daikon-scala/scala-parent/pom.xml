@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <guice-version>4.1.0</guice-version>
+        <guice-version>4.2.11</guice-version>
     </properties>
 
     <build>
@@ -76,7 +76,7 @@
             <dependency>
                 <groupId>org.scalatest</groupId>
                 <artifactId>scalatest_${scala-binary-version}</artifactId>
-                <version>3.0.5</version>
+                <version>3.2.3</version>
             </dependency>
         </dependencies>
 
