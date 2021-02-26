@@ -41,8 +41,8 @@
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
         <mongo-java-server.version>1.11.1</mongo-java-server.version>
 
-        <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
-        <spring-cloud-dependencies.version>Hoxton.SR9</spring-cloud-dependencies.version>
+        <spring-boot.version>2.3.8.RELEASE</spring-boot.version>
+        <spring-cloud-dependencies.version>Hoxton.SR10</spring-cloud-dependencies.version>
 
         <s3mock.version>0.1.6</s3mock.version>
         <aws-java-sdk-s3.version>1.11.18</aws-java-sdk-s3.version>
@@ -60,7 +60,7 @@
         <bnd.version>3.0.0</bnd.version>
         <kafka-clients.version>0.10.0.0</kafka-clients.version>
         <jsonassert.version>1.2.3</jsonassert.version>
-        <commons-codec.version>1.13</commons-codec.version>
+        <commons-codec.version>1.14</commons-codec.version>
         <javax.inject.version>1</javax.inject.version>
         <pax-url-aether.version>2.6.2</pax-url-aether.version>
         <mockito-core.version>2.2.15</mockito-core.version>
