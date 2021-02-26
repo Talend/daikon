@@ -57,7 +57,7 @@ _Modules_                                                     |_Description_
 |--------------|----------------|--------------|--------------|
 | Spring Boot  | 2.3.7          | 2.3.7        | 2.3.8        |
 | Spring Cloud | Hoxton SR9     | Hoxton SR9   | Hoxton SR10  |
-| Jackson      | 2.11.3         | 2.11.3       | 2.11.3       |
+| Jackson      | 2.11.3         | 2.11.3       | 2.11.4       |
 
 ## Support
 
