@@ -1,7 +1,6 @@
 package org.talend.daikon.logging.event.layout;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.slf4j.Marker;
 import org.talend.daikon.logging.ecs.EcsSerializer;
@@ -31,7 +30,7 @@ public class LogbackJSONLayout extends LayoutBase<ILoggingEvent> {
 
     private String serviceName;
 
-    private final List<AdditionalField> additionalFields = new ArrayList<AdditionalField>();
+    private final List<AdditionalField> additionalFields = new ArrayList<>();
 
     /**
      * Print no location info by default, but print host information (for backward compatibility).

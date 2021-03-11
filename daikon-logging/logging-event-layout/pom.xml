@@ -9,11 +9,6 @@
 	<artifactId>logging-event-layout</artifactId>
 	<name>logging-event-layout</name>
 	<dependencies>
-		<dependency>
-	    	<groupId>net.minidev</groupId>
-	      	<artifactId>json-smart</artifactId>
-	      	<version>${json-smart.version}</version>
-	    </dependency>
 	    <dependency>
 	      	<groupId>log4j</groupId>
 	      	<artifactId>log4j</artifactId>
@@ -142,11 +137,29 @@
 							</outputs>
 						</model>
 						<model>
+							<file>${project.basedir}/src/main/resources/custom_flat.yml</file>
+							<outputs>
+								<output>
+									<tmpl>${project.basedir}/src/main/resources/ecs_flat.ftl</tmpl>
+									<dst>${project.build.directory}/generated-sources/java/org/talend/daikon/logging/ecs/CustomFields.java</dst>
+								</output>
+							</outputs>
+						</model>
+						<model>
 							<file>${project.basedir}/src/test/resources/ecs_flat.yml</file>
 							<outputs>
 								<output>
 									<tmpl>${project.basedir}/src/main/resources/ecs_flat.ftl</tmpl>
 									<dst>${project.build.directory}/generated-test-sources/java/org/talend/daikon/logging/ecs/EcsFields.java</dst>
+								</output>
+							</outputs>
+						</model>
+						<model>
+							<file>${project.build.directory}/generated-resources/ecs_flat.yml</file>
+							<outputs>
+								<output>
+									<tmpl>${project.basedir}/src/main/resources/ecs_flat.ftl</tmpl>
+									<dst>${project.build.directory}/generated-test-sources/java/org/talend/daikon/logging/ecs/RealEcsFields.java</dst>
 								</output>
 							</outputs>
 						</model>

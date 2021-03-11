@@ -77,7 +77,7 @@
         <gson.version>2.8.6</gson.version>
         <jackson.1x.version>1.9.15-TALEND</jackson.1x.version>
         <snakeyaml.version>1.26</snakeyaml.version>
-        <elastic.ecs.logging.version>1.0.0.RC1</elastic.ecs.logging.version>
+        <elastic.ecs.logging.version>1.0.1</elastic.ecs.logging.version>
         <yaml.codegen.maven.plugin.version>0.0.6</yaml.codegen.maven.plugin.version>
         <properties.maven.plugin.version>1.0.0</properties.maven.plugin.version>
         <download.maven.plugin.version>1.6.0</download.maven.plugin.version>
