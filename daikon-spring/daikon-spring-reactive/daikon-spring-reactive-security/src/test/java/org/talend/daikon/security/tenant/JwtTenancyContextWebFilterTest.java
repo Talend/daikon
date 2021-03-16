@@ -7,7 +7,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.talend.daikon.multitenant.context.TenancyContext;
 
-class JwtTenancyContextWebFilterTest {
+public class JwtTenancyContextWebFilterTest {
 
     @Test
     void testTenancyContextIsLoaded() {
