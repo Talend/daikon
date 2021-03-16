@@ -40,3 +40,44 @@ So, this is an example to authenticate a call (`SharingWebClient`) :
     addSecurityContext(sharingClient.getSharings(EntityType.DATASET)
         .flatMap(sharings -> sharingClient.getSharingSetEntity(EntityType.DATASET, sharings.getEntityId())));
 ```
+
+## ReactiveTenancyContextHolder
+
+If you need to access tenancy context inside a reactive chain of call you need to define a filter bean like:
+
+```java
+    @Bean
+    public TenancyContextWebFilter tenancyContextWebFilter() {
+        return new JwtTenancyContextWebFilter();
+    }
+```
+
+And add it on your `SecurityWebFilterChain`
+
+```java
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
+            TenancyContextWebFilter tenancyContextWebFilter) {
+        http
+                // Tenancy Context Filter need to be add after Security Context Server because it will used Authentication to get the tenantId
+                .addFilterAfter(tenancyContextWebFilter, SecurityWebFiltersOrder.AUTHORIZATION)
+                .authorizeExchange() //
+                .pathMatchers(AUTH_WHITELIST)
+                .permitAll()
+                .anyExchange()
+                .authenticated()
+                .and()
+                .oauth2ResourceServer()
+                .jwt()
+                .jwtAuthenticationConverter(grantedAuthoritiesExtractor());
+        return http.build();
+    }
+```
+You can now access to tenant context inside a reactive chain with:
+
+```java
+ return ReactiveTenancyContextHolder
+    .getContext() //
+    .map(TenancyContext::getTenant) //
+    .map(tenant -> // do what you want with tenant data);
+```
