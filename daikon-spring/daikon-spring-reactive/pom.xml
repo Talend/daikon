@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>daikon-spring-reactive-security</module>
+        <module>daikon-spring-reactive-multitenant-mongo</module>
     </modules>
 
 </project>
