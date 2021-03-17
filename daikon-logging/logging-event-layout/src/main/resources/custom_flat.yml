@@ -1,3 +1,5 @@
+#List of authorized custom fields for Talend applications.
+# make sure they are all in lower case and of course not already part of the official ECS fields.
 span.parent.id:
   dashed_name: span-parent-id
   short: Zipkin Span Parent Id.
