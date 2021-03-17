@@ -18,7 +18,7 @@ public class JwtTenancyContextWebFilter extends TenancyContextWebFilter {
         final TenancyContext tenantContext = new DefaultTenancyContext();
         if (authentication.getPrincipal() instanceof Jwt) {
             Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
-            LOGGER.debug("Populate TenancyContext for {} based on jwt data",
+            LOGGER.debug("Populate TenancyContext for '{}' based on jwt data",
                     jwtPrincipal.getClaims().getOrDefault("tenant_id", null));
             tenantContext.setTenant(new DefaultTenant(jwtPrincipal.getClaims().getOrDefault("tenant_id", null), null));
         }

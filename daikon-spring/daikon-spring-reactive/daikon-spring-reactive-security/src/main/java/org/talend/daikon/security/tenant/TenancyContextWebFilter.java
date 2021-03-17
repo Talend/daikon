@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
 /**
- * Inspired by org.springframework.security.web.server.context.ReactorContextWebFilter
+ * Inspired by {@link org.springframework.security.web.server.context.ReactorContextWebFilter}
  */
 public abstract class TenancyContextWebFilter implements WebFilter {
 

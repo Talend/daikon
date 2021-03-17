@@ -9,7 +9,7 @@ import reactor.util.context.Context;
 import java.util.function.Function;
 
 /**
- * Inspired by org.springframework.security.core.context.ReactiveSecurityContextHolder
+ * Inspired by @{link {@link org.springframework.security.core.context.ReactiveSecurityContextHolder}}
  */
 public class ReactiveTenancyContextHolder {
 
