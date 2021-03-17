@@ -10,7 +10,7 @@ import org.talend.daikon.multitenant.context.TenancyContext;
 public class JwtTenancyContextWebFilterTest {
 
     @Test
-    void testTenancyContextIsLoaded() {
+    public void testTenancyContextIsLoaded() {
         TenancyContextWebFilter tenancyContextWebFilter = new JwtTenancyContextWebFilter();
 
         Jwt jwt = Jwt.withTokenValue("token").header("alg", "none").claim("entitlements", "FAKE")
