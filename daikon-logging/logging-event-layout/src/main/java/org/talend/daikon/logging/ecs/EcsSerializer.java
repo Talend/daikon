@@ -17,7 +17,7 @@ import co.elastic.logging.EcsJsonSerializer;
  */
 public class EcsSerializer {
 
-    private static String ECS_VERSION = LoggingProperties.get("ecs.version");
+    private static final String ECS_VERSION = LoggingProperties.get("ecs.version");
 
     /**
      * Serialize the additional fields (mapped and filtered)
