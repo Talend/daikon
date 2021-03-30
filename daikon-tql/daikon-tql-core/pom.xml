@@ -11,7 +11,7 @@
     <name>Daikon TQL core libraries.</name>
 
     <properties>
-        <antlr.version>4.7</antlr.version>
+        <antlr.version>4.9.2</antlr.version>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyyMMddHHmmssSSS</maven.build.timestamp.format>
     </properties>
