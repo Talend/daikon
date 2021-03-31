@@ -33,6 +33,12 @@
     		<version>${logback.version}</version>
     		<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-access</artifactId>
+			<version>${logback.version}</version>
+			<optional>true</optional>
+		</dependency>
 	    <dependency>
 	      	<groupId>org.apache.commons</groupId>
 	      	<artifactId>commons-lang3</artifactId>
