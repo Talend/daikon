@@ -73,12 +73,14 @@ public class LogbackJSONAccessEventLayout extends LayoutBase<IAccessEvent> {
         StringBuilder builder = new StringBuilder();
         EcsJsonSerializer.serializeObjectStart(builder, event.getTimeStamp());
         EcsSerializer.serializeEcsVersion(builder);
-        EcsSerializer.serializeHttpEventCategorizationFields(builder);
+        EcsJsonSerializer.serializeThreadName(builder, event.getThreadName());
         EcsJsonSerializer.serializeServiceName(builder, serviceName);
 
+        EcsSerializer.serializeHttpEventCategorizationFields(builder);
+
         EcsJsonSerializer.serializeFormattedMessage(builder,
-                String.format("%s - %s %s \"%s\" %s %s", event.getRemoteHost(),
-                        event.getRemoteUser() == null ? "-" : event.getRemoteUser(), event.getMethod(), event.getRequestURI(),
+                String.format("%s - %s \"%s\" %s %s", event.getRemoteHost(),
+                        event.getRemoteUser() == null ? "-" : event.getRemoteUser(), event.getRequestURL(),
                         event.getStatusCode(), event.getContentLength()));
 
         // network and url
@@ -105,6 +107,14 @@ public class LogbackJSONAccessEventLayout extends LayoutBase<IAccessEvent> {
         EcsSerializer.serializeEventStart(builder, event.getTimeStamp());
         EcsSerializer.serializeClientIp(builder, event.getRemoteAddr());
         EcsSerializer.serializeClientPort(builder, event.getRequest().getRemotePort());
+
+        // additional fields
+        EcsSerializer.serializeAdditionalFields(builder, additionalFields);
+
+        // span, trace id etc
+        EcsSerializer.serializeTraceId(builder, event.getRequestHeader("x-b3-traceId"));
+        EcsSerializer.serializeSpanId(builder, event.getRequestHeader("x-b3-spanId"));
+
 
         if (this.hostInfo) {
             EcsSerializer.serializeHostInfo(builder, new HostData());

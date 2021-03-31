@@ -2,6 +2,11 @@ package org.talend.daikon.logging.spring;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,25 +28,48 @@ import static org.junit.Assert.assertNotNull;
 public class AccessLogbackJsonLayoutTest {
 
     @Value("${local.server.port}")
-    public int port;
+    private int port;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setup() {
         RestAssured.port = port;
     }
 
+
+    File getAccessLogFile() throws IOException {
+        return ResourceUtils.getFile("classpath:logback-access.log");
+    }
+
+    Path getPathToAccessLogFile() throws IOException {
+        return Paths.get(getAccessLogFile().toURI());
+    }
+
     @Test
     public void testGetSimple() throws IOException {
         given().auth().preemptive().basic("test", "foobar").header("user-agent", "Chrome").when().get("/hello").then()
                 .statusCode(200);
-        File accessLogFile = ResourceUtils.getFile("classpath:logback-access.log");
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(accessLogFile);
+        Optional<String> firstMessage  = Files.lines(getPathToAccessLogFile()).findFirst();
+
+        JsonNode jsonNode = objectMapper.readTree(firstMessage.get());
         assertNotNull(jsonNode.get("ecs.version"));
         assertNotNull(jsonNode.get(EcsFields.EVENT_KIND.fieldName));
         assertNotNull(jsonNode.get(EcsFields.EVENT_CATEGORY.fieldName));
         assertNotNull(jsonNode.get(EcsFields.EVENT_TYPE.fieldName));
         assertNotNull(jsonNode.get(EcsFields.MESSAGE.fieldName));
 
+    }
+
+    @Test
+    public void testGetSimpleAddSpanAndTraceId() throws IOException {
+        given().auth().preemptive().basic("test", "foobar").header("user-agent", "Chrome")
+                .header("x-b3-spanId", UUID.randomUUID()).header("x-b3-traceId", UUID.randomUUID()).when().get("/hello").then()
+                .statusCode(200);
+
+        Optional<String> secondMessage = Files.lines(getPathToAccessLogFile()).skip(1).findFirst();
+        JsonNode jsonNode = objectMapper.readTree(secondMessage.get());
+        assertNotNull(jsonNode.get(EcsFields.TRACE_ID.fieldName));
+        assertNotNull(jsonNode.get(EcsFields.SPAN_ID.fieldName));
     }
 }

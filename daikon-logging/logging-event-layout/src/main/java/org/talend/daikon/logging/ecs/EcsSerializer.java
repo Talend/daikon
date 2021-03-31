@@ -234,4 +234,16 @@ public class EcsSerializer {
             builder.append("\"").append(EcsFields.URL_USERNAME.fieldName).append("\":\"").append(username).append("\",");
         }
     }
+
+    public static void serializeTraceId(StringBuilder builder, String traceId) {
+        if (traceId != null) {
+            builder.append("\"").append(EcsFields.TRACE_ID.fieldName).append("\":\"").append(traceId).append("\",");
+        }
+    }
+
+    public static void serializeSpanId(StringBuilder builder, String spanId) {
+        if (spanId != null) {
+            builder.append("\"").append(EcsFields.SPAN_ID.fieldName).append("\":\"").append(spanId).append("\",");
+        }
+    }
 }
