@@ -2,12 +2,11 @@ package org.talend.daikon.logging.ecs;
 
 import co.elastic.logging.AdditionalField;
 import co.elastic.logging.EcsJsonSerializer;
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.logging.config.LoggingProperties;
 import org.talend.daikon.logging.event.field.HostData;
 
@@ -245,5 +244,24 @@ public class EcsSerializer {
         if (spanId != null) {
             builder.append("\"").append(EcsFields.SPAN_ID.fieldName).append("\":\"").append(spanId).append("\",");
         }
+    }
+
+    public static void serialiseHttpRequestHeaders(final StringBuilder builder, Map<String, String> requestHeaderMap) {
+        builder.append("\"http.request.headers\":{");
+        EcsJsonSerializer.serializeMDC(builder, requestHeaderMap.entrySet().stream().filter(
+                e -> !ArrayUtils.contains(new String[] { "authorization", "host", "user-agent" }, e.getKey().toLowerCase()))
+                .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), Map.Entry::getValue)));
+        EcsJsonSerializer.removeIfEndsWith(builder, ",");
+        builder.append("}, ");
+    }
+
+    public static void serializeHttpResponseHeaders(StringBuilder builder, Map<String, String> responseHeaderMap) {
+        builder.append("\"http.response.headers\":{");
+        EcsJsonSerializer.serializeMDC(builder,
+                responseHeaderMap.entrySet().stream()
+                        .filter(e -> !ArrayUtils.contains(new String[] { "set-cookie", "date" }, e.getKey().toLowerCase()))
+                        .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), Map.Entry::getValue)));
+        EcsJsonSerializer.removeIfEndsWith(builder, ",");
+        builder.append("}, ");
     }
 }

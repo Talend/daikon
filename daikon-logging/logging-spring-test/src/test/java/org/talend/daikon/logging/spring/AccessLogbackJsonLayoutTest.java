@@ -37,7 +37,6 @@ public class AccessLogbackJsonLayoutTest {
         RestAssured.port = port;
     }
 
-
     File getAccessLogFile() throws IOException {
         return ResourceUtils.getFile("classpath:logback-access.log");
     }
@@ -48,9 +47,9 @@ public class AccessLogbackJsonLayoutTest {
 
     @Test
     public void testGetSimple() throws IOException {
-        given().auth().preemptive().basic("test", "foobar").header("user-agent", "Chrome").when().get("/hello").then()
-                .statusCode(200);
-        Optional<String> firstMessage  = Files.lines(getPathToAccessLogFile()).findFirst();
+        given().auth().preemptive().basic("test", "foobar").header("Accept", "application/json").header("user-agent", "Chrome")
+                .when().get("/hello").then().statusCode(200);
+        Optional<String> firstMessage = Files.lines(getPathToAccessLogFile()).reduce((first, second) -> second);
 
         JsonNode jsonNode = objectMapper.readTree(firstMessage.get());
         assertNotNull(jsonNode.get("ecs.version"));
@@ -67,7 +66,7 @@ public class AccessLogbackJsonLayoutTest {
                 .header("x-b3-spanId", UUID.randomUUID()).header("x-b3-traceId", UUID.randomUUID()).when().get("/hello").then()
                 .statusCode(200);
 
-        Optional<String> secondMessage = Files.lines(getPathToAccessLogFile()).skip(1).findFirst();
+        Optional<String> secondMessage = Files.lines(getPathToAccessLogFile()).reduce((first, second) -> second);
         JsonNode jsonNode = objectMapper.readTree(secondMessage.get());
         assertNotNull(jsonNode.get(EcsFields.TRACE_ID.fieldName));
         assertNotNull(jsonNode.get(EcsFields.SPAN_ID.fieldName));

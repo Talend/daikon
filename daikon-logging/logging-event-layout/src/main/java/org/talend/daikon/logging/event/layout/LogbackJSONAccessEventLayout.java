@@ -23,6 +23,10 @@ public class LogbackJSONAccessEventLayout extends LayoutBase<IAccessEvent> {
 
     private final List<AdditionalField> additionalFields = new ArrayList<>();
 
+    private boolean requestHeaders;
+
+    private boolean responseHeaders;
+
     public LogbackJSONAccessEventLayout() {
         this(true, true);
     }
@@ -68,6 +72,14 @@ public class LogbackJSONAccessEventLayout extends LayoutBase<IAccessEvent> {
         metaFields.forEach((k, v) -> this.addAdditionalField(new AdditionalField(k, v)));
     }
 
+    public void setRequestHeaders(boolean requestHeaders) {
+        this.requestHeaders = requestHeaders;
+    }
+
+    public void setResponseHeaders(boolean responseHeaders) {
+        this.responseHeaders = responseHeaders;
+    }
+
     @Override
     public String doLayout(IAccessEvent event) {
         StringBuilder builder = new StringBuilder();
@@ -80,8 +92,8 @@ public class LogbackJSONAccessEventLayout extends LayoutBase<IAccessEvent> {
 
         EcsJsonSerializer.serializeFormattedMessage(builder,
                 String.format("%s - %s \"%s\" %s %s", event.getRemoteHost(),
-                        event.getRemoteUser() == null ? "-" : event.getRemoteUser(), event.getRequestURL(),
-                        event.getStatusCode(), event.getContentLength()));
+                        event.getRemoteUser() == null ? "-" : event.getRemoteUser(), event.getRequestURL(), event.getStatusCode(),
+                        event.getContentLength()));
 
         // network and url
         EcsSerializer.serializeNetworkProtocol(builder, "http");
@@ -115,6 +127,13 @@ public class LogbackJSONAccessEventLayout extends LayoutBase<IAccessEvent> {
         EcsSerializer.serializeTraceId(builder, event.getRequestHeader("x-b3-traceId"));
         EcsSerializer.serializeSpanId(builder, event.getRequestHeader("x-b3-spanId"));
 
+        // request headers, response headers
+        if (this.requestHeaders) {
+            EcsSerializer.serialiseHttpRequestHeaders(builder, event.getRequestHeaderMap());
+        }
+        if (this.responseHeaders) {
+            EcsSerializer.serializeHttpResponseHeaders(builder, event.getResponseHeaderMap());
+        }
 
         if (this.hostInfo) {
             EcsSerializer.serializeHostInfo(builder, new HostData());
