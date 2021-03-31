@@ -107,15 +107,15 @@ public class EcsSerializer {
      * @param builder
      */
     public static void serializeHttpEventCategorizationFields(StringBuilder builder) {
-        builder.append("\"").append(EcsFields.EVENT_KIND.fieldName).append("\":\"event\", ")
-                .append("\"").append(EcsFields.EVENT_CATEGORY.fieldName).append("\":\"web\", ")
-                .append("\"").append(EcsFields.EVENT_TYPE.fieldName).append("\":\"access\", ");
+        builder.append("\"").append(EcsFields.EVENT_KIND.fieldName).append("\":\"event\", ").append("\"")
+                .append(EcsFields.EVENT_CATEGORY.fieldName).append("\":\"web\", ").append("\"")
+                .append(EcsFields.EVENT_TYPE.fieldName).append("\":\"access\", ");
     }
 
     /**
      * Serialize the http status code.
      *
-     * @param builder    the builder to serialize in
+     * @param builder the builder to serialize in
      * @param statusCode
      */
     public static void serializeHttpStatusCode(StringBuilder builder, int statusCode) {
@@ -137,7 +137,7 @@ public class EcsSerializer {
     /**
      * Serialize the User agent request header.
      *
-     * @param builder   the builder to serialize in
+     * @param builder the builder to serialize in
      * @param userAgent optional user agent header
      */
     public static void serializeUserAgent(StringBuilder builder, String userAgent) {
@@ -173,7 +173,8 @@ public class EcsSerializer {
     }
 
     public static void serializeHttpRequestBodyBytes(StringBuilder builder, long requestBodyLength) {
-        builder.append("\"").append(EcsFields.HTTP_REQUEST_BODY_BYTES.fieldName).append("\":").append(requestBodyLength).append(",");
+        builder.append("\"").append(EcsFields.HTTP_REQUEST_BODY_BYTES.fieldName).append("\":").append(requestBodyLength)
+                .append(",");
     }
 
     public static void serializeHttpResponseBodyBytes(StringBuilder builder, long contentLength) {
@@ -182,6 +183,7 @@ public class EcsSerializer {
 
     /**
      * Serialize the event duration in nanoseconds.
+     * 
      * @param builder
      * @param duration
      */
@@ -191,6 +193,7 @@ public class EcsSerializer {
 
     /**
      * Serialize the event start time.
+     * 
      * @param builder
      * @param timeStamp
      */
@@ -200,6 +203,7 @@ public class EcsSerializer {
 
     /**
      * Serialize the request query string if any.
+     * 
      * @param builder
      * @param queryString
      */
@@ -211,6 +215,7 @@ public class EcsSerializer {
 
     /**
      * Serialize the request uri path.
+     * 
      * @param builder
      * @param path
      */
@@ -220,6 +225,7 @@ public class EcsSerializer {
 
     /**
      * Serialize the request username if any.
+     * 
      * @param builder
      * @param username
      */

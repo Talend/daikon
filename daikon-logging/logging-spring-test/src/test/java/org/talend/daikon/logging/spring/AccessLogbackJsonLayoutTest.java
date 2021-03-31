@@ -32,11 +32,7 @@ public class AccessLogbackJsonLayoutTest {
 
     @Test
     public void testGetSimple() throws IOException {
-        given().auth().preemptive().basic("test", "foobar")
-                .header("user-agent", "Chrome")
-                .when()
-                .get("/hello")
-                .then()
+        given().auth().preemptive().basic("test", "foobar").header("user-agent", "Chrome").when().get("/hello").then()
                 .statusCode(200);
         File accessLogFile = ResourceUtils.getFile("classpath:logback-access.log");
         ObjectMapper objectMapper = new ObjectMapper();
