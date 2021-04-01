@@ -1,4 +1,4 @@
-<configuration>f
+<configuration>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>target/test-classes/logback-access.log</file>
