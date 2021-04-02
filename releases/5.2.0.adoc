@@ -1,0 +1,14 @@
+= Daikon Release Notes (5.2.0) - 03/01/2021
+
+Thanks to @Francois Huaulme, @Jérémy Hervy, @Colm O hEigeartaigh, @gjou-tlnd
+
+== Fix
+- link:https://jira.talendforge.org/browse/TPSVC-17135[TPSVC-17135]: [LOGGING] Don't use ECS cloud.account.id field (link:https://github.com/Talend/daikon/pull/712[#712])
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-305[TDKN-305]: Update Commons IO + Commons Codec (link:https://github.com/Talend/daikon/pull/703[#703])
+
+== Other
+- chore(upgrades) Libraries upgrades  (link:https://github.com/Talend/daikon/pull/713[#713])
+- chore(readme) Update Daikon 5.x version table
+- fix(tql-client): Escape ' char  (link:https://github.com/Talend/daikon/pull/702[#702])

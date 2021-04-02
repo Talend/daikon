@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>daikon-parent</artifactId>
-        <version>5.2.0-SNAPSHOT</version>
+        <version>5.4.0-SNAPSHOT</version>
     </parent>
     <artifactId>daikon-logging</artifactId>
     <packaging>pom</packaging>
@@ -40,5 +40,6 @@
 		<module>logging-request-interceptor</module>
 		<module>logging-kafka-interceptor</module>
         <module>logging-spring-security</module>
+        <module>logging-spring-test</module>
     </modules>
 </project>

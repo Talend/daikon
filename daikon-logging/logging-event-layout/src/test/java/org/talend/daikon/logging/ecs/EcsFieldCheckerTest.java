@@ -21,7 +21,7 @@ public class EcsFieldCheckerTest {
 
     @Test
     public void test() {
-        assertThat(EcsFieldsChecker.getECSFields().size(), is(7));
+        assertThat(EcsFields.values().length, is(7));
         // Check ECS fields are well recognized
         ECS_FIELDS.forEach(f -> assertThat(EcsFieldsChecker.isECSField(f), is(true)));
         ECS_FIELDS.forEach(f -> assertThat(EcsFieldsChecker.isECSLabel(f), is(false)));

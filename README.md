@@ -55,9 +55,9 @@ _Modules_                                                     |_Description_
 
 |              | *Daikon 5.0.x* | Daikon 5.1.x | Daikon 5.2.x |
 |--------------|----------------|--------------|--------------|
-| Spring Boot  | 2.3.7          | 2.3.7        | 2.3.6        |
-| Spring Cloud | Hoxton SR9     | Hoxton SR9   | Hoxton SR9   |
-| Jackson      | 2.11.3         | 2.11.3       | 2.11.3       |
+| Spring Boot  | 2.3.7          | 2.3.7        | 2.3.8        |
+| Spring Cloud | Hoxton SR9     | Hoxton SR9   | Hoxton SR10  |
+| Jackson      | 2.11.3         | 2.11.3       | 2.11.4       |
 
 ## Support
 

@@ -1,0 +1,13 @@
+= Daikon Release Notes (5.3.0) - 03/22/2021
+
+Thanks to @Rémy DUBOIS, @RyanSkraba, @Fabien Abballe, @Ievgen Tarasov
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TPSVC-17155[TPSVC-17155]: Update daikon logging lib to allow logging of the custom fields (link:https://github.com/Talend/daikon/pull/714[#714])
+
+== Other
+- chore: add akka additional fields as labels  (link:https://github.com/Talend/daikon/pull/719[#719])
+- chore: Bump Avro to 1.10.2  (link:https://github.com/Talend/daikon/pull/718[#718])
+- chore(): add TenancyReactiveMongoTemplate mecanism  (link:https://github.com/Talend/daikon/pull/717[#717])
+- chore(): add ReactiveTenancyContextHolder inside reactive chain of call  (link:https://github.com/Talend/daikon/pull/716[#716])
+- chore(): create JWT exchange filter to use non blocking authenticated reactive call  (link:https://github.com/Talend/daikon/pull/715[#715])

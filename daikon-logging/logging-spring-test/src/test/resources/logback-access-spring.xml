@@ -1,0 +1,23 @@
+<configuration>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>target/test-classes/logback-access.log</file>
+        <append>false</append>
+        <layout class="org.talend.daikon.logging.event.layout.LogbackJSONAccessEventLayout">
+            <hostInfo>true</hostInfo>
+            <requestHeaders>true</requestHeaders>
+            <responseHeaders>true</responseHeaders>
+        </layout>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="org.talend.daikon.logging.event.layout.LogbackJSONAccessEventLayout">
+            <hostInfo>true</hostInfo>
+            <requestHeaders>true</requestHeaders>
+            <responseHeaders>true</responseHeaders>
+        </layout>
+    </appender>
+
+    <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FILE"/>
+</configuration>

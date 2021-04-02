@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.talend.daikon</groupId>
     <artifactId>daikon-parent</artifactId>
-    <version>5.2.0-SNAPSHOT</version>
+    <version>5.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Daikon - parent pom</name>
     <url>https://github.com/Talend/daikon</url>
@@ -26,13 +26,13 @@
         <talend_snapshots_deployment>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</talend_snapshots_deployment>
         <pushChanges>false</pushChanges>
 
-        <jackson.version>2.11.3</jackson.version>
-        <jackson.version.annotations>2.11.3</jackson.version.annotations>
+        <jackson.version>2.11.4</jackson.version>
+        <jackson.version.annotations>2.11.4</jackson.version.annotations>
         <slf4j.version>1.7.26</slf4j.version>
         <log4j1.version>1.2.17</log4j1.version>
         <logback.version>1.2.3</logback.version>
         <easymock.version>3.5.1</easymock.version>
-        <avro.version>1.10.0</avro.version>
+        <avro.version>1.10.2</avro.version>
         <bcprov.version>1.68</bcprov.version>
         <commons-compress.version>1.20</commons-compress.version>
         <commons-io.version>2.8.0</commons-io.version>
@@ -41,8 +41,8 @@
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
         <mongo-java-server.version>1.11.1</mongo-java-server.version>
 
-        <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
-        <spring-cloud-dependencies.version>Hoxton.SR9</spring-cloud-dependencies.version>
+        <spring-boot.version>2.3.8.RELEASE</spring-boot.version>
+        <spring-cloud-dependencies.version>Hoxton.SR10</spring-cloud-dependencies.version>
 
         <s3mock.version>0.1.6</s3mock.version>
         <aws-java-sdk-s3.version>1.11.18</aws-java-sdk-s3.version>
@@ -60,7 +60,7 @@
         <bnd.version>3.0.0</bnd.version>
         <kafka-clients.version>0.10.0.0</kafka-clients.version>
         <jsonassert.version>1.2.3</jsonassert.version>
-        <commons-codec.version>1.13</commons-codec.version>
+        <commons-codec.version>1.14</commons-codec.version>
         <javax.inject.version>1</javax.inject.version>
         <pax-url-aether.version>2.6.2</pax-url-aether.version>
         <mockito-core.version>2.2.15</mockito-core.version>
@@ -77,7 +77,7 @@
         <gson.version>2.8.6</gson.version>
         <jackson.1x.version>1.9.15-TALEND</jackson.1x.version>
         <snakeyaml.version>1.26</snakeyaml.version>
-        <elastic.ecs.logging.version>1.0.0.RC1</elastic.ecs.logging.version>
+        <elastic.ecs.logging.version>1.0.1</elastic.ecs.logging.version>
         <yaml.codegen.maven.plugin.version>0.0.6</yaml.codegen.maven.plugin.version>
         <properties.maven.plugin.version>1.0.0</properties.maven.plugin.version>
         <download.maven.plugin.version>1.6.0</download.maven.plugin.version>
