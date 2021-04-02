@@ -1,0 +1,16 @@
+#List of authorized custom fields for Talend applications.
+# make sure they are all in lower case and of course not already part of the official ECS fields.
+span.parent.id:
+  dashed_name: span-parent-id
+  short: Zipkin Span Parent Id.
+  type: keyword
+
+trace.sampled:
+  dashed_name: trace-sampled
+  short: If true, this Trace is being recorded to be presented in Zipkin.
+  type: boolean
+
+auth.client.id:
+  dashed_name: auth-client-id
+  short: Id of OAuth2 client that is making the request.
+  type: keyword

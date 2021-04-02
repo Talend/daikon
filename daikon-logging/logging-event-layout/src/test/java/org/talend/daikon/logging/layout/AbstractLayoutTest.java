@@ -102,13 +102,13 @@ public abstract class AbstractLayoutTest {
         assertThat(payload, hasJsonPath("$.['host.hostname']", not(empty())));
 
         if (logDetails.isLocationInfo()) {
-            assertThat(payload, hasJsonPath("$.['log.origin'].['file.name']", equalTo(getLogDetails().getFileName())));
-            assertThat(payload, hasJsonPath("$.['log.origin'].['function']", equalTo(getLogDetails().getMethodName())));
-            assertThat(payload, hasJsonPath("$.['log.origin'].['file.line']", not(empty())));
+            assertThat(payload, hasJsonPath("$.['log'].['origin'].['file'].['name']", equalTo(getLogDetails().getFileName())));
+            assertThat(payload, hasJsonPath("$.['log'].['origin'].['function']", equalTo(getLogDetails().getMethodName())));
+            assertThat(payload, hasJsonPath("$.['log'].['origin'].['file'].['line']", not(empty())));
         } else {
-            assertThat(payload, hasNoJsonPath("$.['log.origin'].['file.name']"));
-            assertThat(payload, hasNoJsonPath("$.['log.origin'].['function']"));
-            assertThat(payload, hasNoJsonPath("$.['log.origin'].['file.line']"));
+            assertThat(payload, hasNoJsonPath("$.['log'].['origin'].['file'].['name']"));
+            assertThat(payload, hasNoJsonPath("$.['log'].['origin'].['function']"));
+            assertThat(payload, hasNoJsonPath("$.['log'].['origin'].['file'].['line']"));
         }
         if (!logDetails.getMdc().isEmpty() || !additionalUserFields().isEmpty()) {
             logDetails.getMdc().entrySet().forEach(it -> assertThat(payload,

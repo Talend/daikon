@@ -256,10 +256,16 @@ include::src/main/resources/mdc_ecs_mapping.properties[]
 CAUTION: The file link:src/main/resources/mdc_ecs_mapping.properties[`mdc_ecs_mapping.properties`] references all the available non ECS fields.
 All other non ECS fields will be filtered out during next step.
 
+=== Custom ECS fields
+
+ECS spec explicitly allows for customization, since it cannot cover all possible use cases.
+
+To achieve this, while also ensuring standartization of logging across all apps and services, Daikon maintains a link:src/main/resources/custom_flat.yml[list of custom fields]. The format of the file is the same as ecs_flat.yml.
+
 === ECS fields filtering
 
-During this step, all non ECS fields are removed.
-For that purpose, enum `EcsFields.java` generated during maven `GENERATE-SOURCES` phase is leveraged.
+During this step, all non standard or custom ECS fields are removed.
+For that purpose, enums `EcsFields.java` and `CustomFields.java` generated during maven `GENERATE-SOURCES` phase is leveraged.
 
 NOTE: Fields started by `labels.` or `container.labels.` are considered as being ECS fields (see https://www.elastic.co/guide/en/ecs/master/ecs-custom-fields-in-ecs.html#_the_labels_field[Elastic doc]).
 
