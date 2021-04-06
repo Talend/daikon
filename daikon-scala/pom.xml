@@ -15,7 +15,7 @@
         <scala-plugin-version>3.3.2</scala-plugin-version>
         <scala-version>2.12.11</scala-version>
         <scala-binary-version>2.12</scala-binary-version>
-        <play2-version>2.7.4</play2-version>
+        <play2-version>2.7.6</play2-version>
         <akka-version>2.5.31-talend</akka-version>
         <slick-version>3.3.2</slick-version>
     </properties>
