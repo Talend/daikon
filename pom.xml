@@ -69,7 +69,7 @@
         <hamcrest-json.version>0.2</hamcrest-json.version>
         <json-path-assert.version>2.2.0</json-path-assert.version>
         <log4j.version>1.2.17</log4j.version>
-        <json-smart.version>2.2.1</json-smart.version>
+        <json-smart.version>2.4.2</json-smart.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-configuration2.version>2.7</commons-configuration2.version>
         <httpclient.version>4.5.13</httpclient.version>
@@ -246,6 +246,11 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>${json-smart.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
