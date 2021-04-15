@@ -1,16 +1,13 @@
 package org.talend.daikon.logging.ecs;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
+import co.elastic.logging.AdditionalField;
 import java.util.*;
 
 import org.junit.Test;
 import org.talend.daikon.logging.event.field.HostData;
 
-import co.elastic.logging.AdditionalField;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class EcsSerializerTest {
 
@@ -82,4 +79,5 @@ public class EcsSerializerTest {
         EcsSerializer.serializeEcsVersion(builder);
         assertThat(builder.toString(), containsString("\"ecs.version\":\"4.2.0\""));
     }
+
 }

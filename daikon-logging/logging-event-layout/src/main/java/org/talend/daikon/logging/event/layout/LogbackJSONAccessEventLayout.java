@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.logging.ecs.EcsSerializer;
@@ -115,8 +116,12 @@ public class LogbackJSONAccessEventLayout extends LayoutBase<IAccessEvent> {
         EcsSerializer.serializeHttpResponseBodyBytes(builder, event.getContentLength());
 
         // event start and duration
-        EcsSerializer.serializeEventDuration(builder, event.getElapsedTime() * 1000); // nano seconds
-        EcsSerializer.serializeEventStart(builder, event.getTimeStamp());
+        EcsSerializer.serializeEventDuration(builder,
+                TimeUnit.NANOSECONDS.convert(event.getElapsedTime(), TimeUnit.MILLISECONDS));
+        if (event.getServerAdapter() != null) {
+            EcsSerializer.serializeEventStart(builder, event.getServerAdapter().getRequestTimestamp());
+        }
+        EcsSerializer.serializeEventEnd(builder, event.getTimeStamp());
         EcsSerializer.serializeClientIp(builder, event.getRemoteAddr());
         EcsSerializer.serializeClientPort(builder, event.getRequest().getRemotePort());
 

@@ -2,16 +2,17 @@ package org.talend.daikon.logging.ecs;
 
 import co.elastic.logging.AdditionalField;
 import co.elastic.logging.EcsJsonSerializer;
-import java.util.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.talend.daikon.logging.config.LoggingProperties;
 import org.talend.daikon.logging.event.field.HostData;
-
-import co.elastic.logging.AdditionalField;
-import co.elastic.logging.EcsJsonSerializer;
 
 /**
  * Utility ECS serializer class
@@ -191,18 +192,34 @@ public class EcsSerializer {
     }
 
     /**
-     * Serialize the event start time.
-     * 
+     * Serialize the event start date.
+     *
      * @param builder
-     * @param timeStamp
+     * @param eventStart
      */
-    public static void serializeEventStart(StringBuilder builder, long timeStamp) {
-        builder.append("\"").append(EcsFields.EVENT_START.fieldName).append("\":").append(timeStamp).append(",");
+    public static void serializeEventStart(StringBuilder builder, long eventStart) {
+        if (eventStart > 0) {
+            builder.append("\"").append(EcsFields.EVENT_START.fieldName).append("\":\"")
+                    .append(Instant.ofEpochMilli(eventStart).atZone(ZoneId.of("Z"))).append("\",");
+        }
+    }
+
+    /**
+     * Serialize the event end date.
+     *
+     * @param builder
+     * @param eventEnd
+     */
+    public static void serializeEventEnd(StringBuilder builder, long eventEnd) {
+        if (eventEnd > 0) {
+            builder.append("\"").append(EcsFields.EVENT_END.fieldName).append("\":\"")
+                    .append(Instant.ofEpochMilli(eventEnd).atZone(ZoneId.of("Z"))).append("\",");
+        }
     }
 
     /**
      * Serialize the request query string if any.
-     * 
+     *
      * @param builder
      * @param queryString
      */
