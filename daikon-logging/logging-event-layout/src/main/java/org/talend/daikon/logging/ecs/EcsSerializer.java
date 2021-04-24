@@ -199,8 +199,8 @@ public class EcsSerializer {
      */
     public static void serializeEventStart(StringBuilder builder, long eventStart) {
         if (eventStart > 0) {
-            builder.append("\"").append(EcsFields.EVENT_START.fieldName).append("\":\"")
-                    .append(Instant.ofEpochMilli(eventStart)).append("\",");
+            builder.append("\"").append(EcsFields.EVENT_START.fieldName).append("\":\"").append(Instant.ofEpochMilli(eventStart))
+                    .append("\",");
         }
     }
 
@@ -212,8 +212,8 @@ public class EcsSerializer {
      */
     public static void serializeEventEnd(StringBuilder builder, long eventEnd) {
         if (eventEnd > 0) {
-            builder.append("\"").append(EcsFields.EVENT_END.fieldName).append("\":\"")
-                    .append(Instant.ofEpochMilli(eventEnd)).append("\",");
+            builder.append("\"").append(EcsFields.EVENT_END.fieldName).append("\":\"").append(Instant.ofEpochMilli(eventEnd))
+                    .append("\",");
         }
     }
 
