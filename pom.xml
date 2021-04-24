@@ -41,8 +41,8 @@
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
         <mongo-java-server.version>1.11.1</mongo-java-server.version>
 
-        <spring-boot.version>2.3.9.RELEASE</spring-boot.version>
-        <spring-cloud-dependencies.version>Hoxton.SR10</spring-cloud-dependencies.version>
+        <spring-boot.version>2.3.10.RELEASE</spring-boot.version>
+        <spring-cloud-dependencies.version>Hoxton.SR11</spring-cloud-dependencies.version>
 
         <s3mock.version>0.1.6</s3mock.version>
         <aws-java-sdk-s3.version>1.11.18</aws-java-sdk-s3.version>
