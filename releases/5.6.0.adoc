@@ -1,0 +1,6 @@
+= Daikon Release Notes (5.6.0) - 04/24/2021
+
+Thanks to @Francois Huaulme
+
+== Other
+- chore(upgrades) Upgrade to Spring Boot 2.3.10  (link:https://github.com/Talend/daikon/pull/732[#732])

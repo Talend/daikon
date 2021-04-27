@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.talend.daikon</groupId>
     <artifactId>daikon-parent</artifactId>
-    <version>5.4.0-SNAPSHOT</version>
+    <version>5.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Daikon - parent pom</name>
     <url>https://github.com/Talend/daikon</url>
@@ -41,8 +41,8 @@
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
         <mongo-java-server.version>1.11.1</mongo-java-server.version>
 
-        <spring-boot.version>2.3.8.RELEASE</spring-boot.version>
-        <spring-cloud-dependencies.version>Hoxton.SR10</spring-cloud-dependencies.version>
+        <spring-boot.version>2.3.10.RELEASE</spring-boot.version>
+        <spring-cloud-dependencies.version>Hoxton.SR11</spring-cloud-dependencies.version>
 
         <s3mock.version>0.1.6</s3mock.version>
         <aws-java-sdk-s3.version>1.11.18</aws-java-sdk-s3.version>
@@ -69,7 +69,7 @@
         <hamcrest-json.version>0.2</hamcrest-json.version>
         <json-path-assert.version>2.2.0</json-path-assert.version>
         <log4j.version>1.2.17</log4j.version>
-        <json-smart.version>2.2.1</json-smart.version>
+        <json-smart.version>2.4.2</json-smart.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-configuration2.version>2.7</commons-configuration2.version>
         <httpclient.version>4.5.13</httpclient.version>
@@ -246,6 +246,11 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>${json-smart.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

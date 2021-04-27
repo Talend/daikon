@@ -1,0 +1,11 @@
+= Daikon Release Notes (5.4.0) - 04/06/2021
+
+Thanks to @Jean-Michel FRANCOIS, @Colm O hEigeartaigh, @dependabot[bot], @Michael Tallet
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TDKN-307[TDKN-307]: Update play version to 2.7.6 (link:https://github.com/Talend/daikon/pull/720[#720])
+- link:https://jira.talendforge.org/browse/TPRUN-304[TPRUN-304]: Study migration of access logs to ECS format (link:https://github.com/Talend/daikon/pull/724[#724])
+
+== Other
+- chore: upgrade antlr version  (link:https://github.com/Talend/daikon/pull/721[#721])
+- chore(deps): bump y18n from 3.2.1 to 3.2.2 in /daikon-tql  (link:https://github.com/Talend/daikon/pull/723[#723])

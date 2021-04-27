@@ -2,7 +2,7 @@ var TqlLexer = require("./TqlLexer").TqlLexer;
 var TqlParser = require("./TqlParser").TqlParser;
 var TqlListener = require("./TqlParserListener").TqlParserListener;
 
-var antlr4 = require("antlr4/index");
+var antlr4 = require("antlr4");
 
 var parse = function(
     tql,

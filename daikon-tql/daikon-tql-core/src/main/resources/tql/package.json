@@ -12,7 +12,7 @@
     "url": "https://github.com/Talend/daikon/issues"
   },
   "dependencies": {
-    "antlr4": "^4.7.0"
+    "antlr4": "^4.9.0"
   },
   "publishConfig": {
     "access": "public"

@@ -35,7 +35,7 @@ public abstract class AuthorizationExchangeFilterFunction implements ExchangeFil
     private Mono<SecurityContext> getAttribute(Context ctx) {
         // NOTE: SecurityReactorContextConfiguration.SecurityReactorContextSubscriber adds this key
         if (!ctx.hasKey(SECURITY_CONTEXT_KEY)) {
-            return null;
+            return Mono.empty();
         }
         return ctx.<Mono<SecurityContext>> get(SECURITY_CONTEXT_KEY);
     }

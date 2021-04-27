@@ -70,5 +70,8 @@ public class AccessLogbackJsonLayoutTest {
         JsonNode jsonNode = objectMapper.readTree(secondMessage.get());
         assertNotNull(jsonNode.get(EcsFields.TRACE_ID.fieldName));
         assertNotNull(jsonNode.get(EcsFields.SPAN_ID.fieldName));
+        assertNotNull(jsonNode.get(EcsFields.EVENT_DURATION.fieldName));
+        assertNotNull(jsonNode.get(EcsFields.EVENT_START.fieldName));
+        assertNotNull(jsonNode.get(EcsFields.EVENT_END.fieldName));
     }
 }

@@ -1,0 +1,9 @@
+= Daikon Release Notes (5.5.0) - 04/24/2021
+
+Thanks to @Francois Huaulme, @Michael Tallet, @Fabien Abballe, @Colm O hEigeartaigh
+
+== Other
+- chore(upgrades) Upgrade to Spring Boot 2.3.9  (link:https://github.com/Talend/daikon/pull/731[#731])
+- fix(web event) set correct type and unit for duration and event dates  (link:https://github.com/Talend/daikon/pull/729[#729])
+- chore(): fix potentiel NPE on AuthorizationExchangeFilterFunction  (link:https://github.com/Talend/daikon/pull/728[#728])
+- Updating JSON Smart to 2.4.2  (link:https://github.com/Talend/daikon/pull/727[#727])
