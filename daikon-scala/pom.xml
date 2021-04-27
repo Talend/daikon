@@ -9,7 +9,7 @@
     </parent>
     <artifactId>daikon-scala</artifactId>
     <name>daikon-scala</name>
-    <version>5.4.0-RDU-SNAPSHOT</version>
+    <version>5.7.0-RDU-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>

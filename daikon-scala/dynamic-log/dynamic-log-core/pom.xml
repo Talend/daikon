@@ -4,13 +4,13 @@
     <parent>
         <groupId>org.talend.daikon</groupId>
         <artifactId>dynamic-log</artifactId>
-        <version>5.4.0-RDU-SNAPSHOT</version>
+        <version>5.7.0-RDU-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>dynamic-log-core</artifactId>
     <name>dynamic-log-core</name>
     <packaging>jar</packaging>
-    <version>5.4.0-RDU-SNAPSHOT</version>
+    <version>5.7.0-RDU-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>
