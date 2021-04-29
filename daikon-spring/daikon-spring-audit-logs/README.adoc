@@ -258,3 +258,10 @@ x-forwarded-header: "62.23.50.122, 42.42.42.42, 10.12.15.26, 172.169.12.54"
    "...": "..."
 }
 ```
+
+== Logger problem
+In order not to block the client application if a problem occurs on logger side (e.g. if Kafka is down), preventing the audit log generation, no exception is thrown, but a simple `WARNING` log is creating with the following format :
+```
+Error sending audit logs to Kafka : {timestamp=2021-04-29T18:28:09.723741+02:00, applicationId=Daikon, eventType=test type, eventCategory=test category, accountId=9bfdd9a0-7852-4cd5-94a0-6212ebe281b6}
+```
+

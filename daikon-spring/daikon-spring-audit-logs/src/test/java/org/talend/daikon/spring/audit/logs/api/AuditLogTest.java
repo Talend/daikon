@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -94,6 +95,32 @@ public class AuditLogTest {
         logListAppender.start();
         logger.setLevel(Level.DEBUG);
         logger.addAppender(logListAppender);
+    }
+
+    @Test
+    @WithUserDetails
+    public void testLoggerProblem() throws Exception {
+        // Given Kafka is down
+        Mockito //
+                .doThrow(new RuntimeException("Failure when sending the audit log to Kafka")) //
+                .when(auditLoggerBase) //
+                .log(any(), any(), any(), any(), any());
+
+        // When a request generating an audit logs is performed
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP))
+                // Then it must be a success anyway
+                .andExpect(status().isOk());
+
+        // And a simple log must be generated
+        ILoggingEvent lastLog = logListAppender.list.iterator().next();
+        assertThat(lastLog.getLevel(), is(Level.WARN));
+        assertThat(lastLog.getFormattedMessage(), containsString(AuditLogFieldEnum.TIMESTAMP.getId()));
+        assertThat(lastLog.getFormattedMessage(), containsString(AuditLogTestApp.ACCOUNT_ID));
+        assertThat(lastLog.getFormattedMessage(), containsString(AuditLogTestApp.APPLICATION));
+        assertThat(lastLog.getFormattedMessage(), containsString(AuditLogTestApp.EVENT_CATEGORY));
+        assertThat(lastLog.getFormattedMessage(), containsString(AuditLogTestApp.EVENT_OPERATION));
+        assertThat(lastLog.getFormattedMessage(), containsString(AuditLogTestApp.EVENT_TYPE));
+        assertThat(lastLog.getThrowableProxy().getMessage(), containsString("Failure when sending the audit log to Kafka"));
     }
 
     @Test

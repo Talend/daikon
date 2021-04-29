@@ -57,7 +57,7 @@ public class KafkaBackend extends AbstractBackend {
     @Override
     public void log(String category, LogLevel level, String message, Throwable throwable) {
         try {
-            this.kafkaProducer.send(createRecordFromContext(getCopyOfContextMap())).get(60, TimeUnit.SECONDS);
+            this.kafkaProducer.send(createRecordFromContext(getCopyOfContextMap())).get(this.kafkaSendTimeoutSeconds, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException("Failure when sending the audit log to Kafka", e);
         }
