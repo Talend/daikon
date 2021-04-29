@@ -49,6 +49,7 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
         properties.put("kafka.bootstrap.servers", auditKafkaProperties.getBootstrapServers());
         properties.put("kafka.topic", auditKafkaProperties.getTopic());
         properties.put("kafka.partition.key.name", auditKafkaProperties.getPartitionKeyName());
+        properties.put("kafka.send.timeout.seconds", auditKafkaProperties.getSendTimeoutSeconds());
         return properties;
     }
 
