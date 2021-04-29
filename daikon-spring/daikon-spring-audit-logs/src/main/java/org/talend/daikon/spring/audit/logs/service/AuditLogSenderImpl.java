@@ -97,7 +97,7 @@ public class AuditLogSenderImpl implements AuditLogSender {
                     EVENT_CATEGORY.getId(), //
                     EVENT_OPERATION //
             ).collect(Collectors.toSet()));
-            LOGGER.warn("Error sending audit logs to Kafka : {}", context);
+            LOGGER.warn("Error sending audit logs to Kafka : {}", context, e);
 
         }
     }

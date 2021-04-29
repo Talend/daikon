@@ -120,6 +120,7 @@ public class AuditLogTest {
         assertThat(lastLog.getFormattedMessage(), containsString(AuditLogTestApp.EVENT_CATEGORY));
         assertThat(lastLog.getFormattedMessage(), containsString(AuditLogTestApp.EVENT_OPERATION));
         assertThat(lastLog.getFormattedMessage(), containsString(AuditLogTestApp.EVENT_TYPE));
+        assertThat(lastLog.getThrowableProxy().getMessage(), containsString("Failure when sending the audit log to Kafka"));
     }
 
     @Test
