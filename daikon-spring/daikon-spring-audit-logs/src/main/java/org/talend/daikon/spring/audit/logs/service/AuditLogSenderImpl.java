@@ -1,8 +1,12 @@
 package org.talend.daikon.spring.audit.logs.service;
 
+import static org.talend.daikon.spring.audit.logs.model.AuditLogFieldEnum.*;
+
 import java.lang.reflect.InvocationTargetException;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -73,7 +77,7 @@ public class AuditLogSenderImpl implements AuditLogSender {
      * Build a context from a context builder and send the generated context
      */
     public void sendAuditLog(AuditLogContextBuilder builder) {
-        auditLogger.sendAuditLog(builder.withIpExtractor(this.auditLogIpExtractor).build());
+        this.sendAuditLog(builder.withIpExtractor(this.auditLogIpExtractor).build());
     }
 
     /**
@@ -81,7 +85,21 @@ public class AuditLogSenderImpl implements AuditLogSender {
      */
     @Override
     public void sendAuditLog(Context context) {
-        auditLogger.sendAuditLog(context);
+        try {
+            auditLogger.sendAuditLog(context);
+        } catch (Exception e) {
+            // Clean audit log context from PIIs
+            context.keySet().retainAll(Stream.of( //
+                    TIMESTAMP.getId(), //
+                    APPLICATION_ID.getId(), //
+                    ACCOUNT_ID.getId(), //
+                    EVENT_TYPE.getId(), //
+                    EVENT_CATEGORY.getId(), //
+                    EVENT_OPERATION //
+            ).collect(Collectors.toSet()));
+            LOGGER.warn("Error sending audit logs to Kafka : {}", context, e);
+
+        }
     }
 
     @Override

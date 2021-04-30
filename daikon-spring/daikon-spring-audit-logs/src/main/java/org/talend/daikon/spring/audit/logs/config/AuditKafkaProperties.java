@@ -11,6 +11,8 @@ public class AuditKafkaProperties {
 
     private String partitionKeyName = "accountId";
 
+    private int sendTimeoutSeconds = 30;
+
     public String getBootstrapServers() {
         return bootstrapServers;
     }
@@ -33,5 +35,13 @@ public class AuditKafkaProperties {
 
     public void setPartitionKeyName(String partitionKeyName) {
         this.partitionKeyName = partitionKeyName;
+    }
+
+    public int getSendTimeoutSeconds() {
+        return sendTimeoutSeconds;
+    }
+
+    public void setSendTimeoutSeconds(int sendTimeoutSeconds) {
+        this.sendTimeoutSeconds = sendTimeoutSeconds;
     }
 }
