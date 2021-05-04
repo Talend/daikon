@@ -42,6 +42,7 @@ public class AuditLogSenderImpl implements AuditLogSender {
     public void sendAuditLog(HttpServletRequest request, Object requestBody, int responseCode, Object responseObject,
             GenerateAuditLog auditLogAnnotation) {
         try {
+            LOGGER.info("generating audit log with metadata {}", auditLogAnnotation);
             // Build context from request, response & annotation info
             AuditLogContextBuilder auditLogContextBuilder = AuditLogContextBuilder.create() //
                     .withTimestamp(OffsetDateTime.now().toString()) //
@@ -65,7 +66,6 @@ public class AuditLogSenderImpl implements AuditLogSender {
 
             // Finally send the log
             this.sendAuditLog(auditLogContextBuilder.build());
-            LOGGER.info("audit log generated with metadata {}", auditLogAnnotation);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOGGER.error("audit log with metadata {} has not been generated", auditLogAnnotation, e);
         } catch (AuditLogException e) {
