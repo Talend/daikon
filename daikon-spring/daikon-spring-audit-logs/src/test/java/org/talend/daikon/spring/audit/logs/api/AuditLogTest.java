@@ -51,7 +51,8 @@ import ch.qos.logback.core.read.ListAppender;
         "audit.enabled=true", //
         "spring.application.name=daikon", //
         "audit.kafka.bootstrapServers=localhost:9092", //
-        "audit.trusted-proxies=" + TRUSTED_PROXIES //
+        "audit.trusted-proxies=" + TRUSTED_PROXIES, //
+        "audit.kafka.block-timeout-ms=10000"
 })
 @Import(AuditLogTestConfig.class)
 public class AuditLogTest {

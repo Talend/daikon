@@ -40,4 +40,8 @@ public class AuditKafkaProperties {
     public String getBlockTimeoutMs() {
         return blockTimeoutMs;
     }
+
+    public void setBlockTimeoutMs(String blockTimeoutMs) {
+        this.blockTimeoutMs = blockTimeoutMs;
+    }
 }
