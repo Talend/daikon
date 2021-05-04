@@ -53,7 +53,7 @@
         <dependency>
             <groupId>io.findify</groupId>
             <artifactId>s3mock_2.12</artifactId>
-            <version>0.1.6</version>
+            <version>0.1.8</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
@@ -70,10 +70,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>findify</id>
-            <url>https://dl.bintray.com/findify/maven/</url>
-        </repository>
-    </repositories>
 </project>
