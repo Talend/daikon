@@ -41,6 +41,7 @@ audit:
         bootstrapServers: localhost:9092 # Kafka bootstrap server urls for audit logs sending
         topic: audit-logs # Kafka topic for audit logs sending
         partitionKeyName: accountId # Kafka partitionKey for audit logs sending
+        blockTimeoutMs: 10000 # Block timeout before considering audit log has not been sent to Kafka
 ```
 
 == @GenerateAuditLog
