@@ -14,6 +14,9 @@ import org.talend.logging.audit.impl.AuditConfigurationMap;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class KafkaBackend extends AbstractBackend {
 
@@ -56,8 +59,9 @@ public class KafkaBackend extends AbstractBackend {
     @Override
     public void log(String category, LogLevel level, String message, Throwable throwable) {
         try {
-            this.kafkaProducer.send(createRecordFromContext(getCopyOfContextMap()));
-        } catch (Exception e) {
+            this.kafkaProducer.send(createRecordFromContext(getCopyOfContextMap())).get(this.blockTimeoutMs,
+                    TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException("Failure when sending the audit log to Kafka", e);
         }
     }
