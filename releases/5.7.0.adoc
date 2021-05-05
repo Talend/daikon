@@ -1,0 +1,7 @@
+= Daikon Release Notes (5.7.0) - 05/04/2021
+
+Thanks to @Jérémy Hervy
+
+== Work Item
+- link:https://jira.talendforge.org/browse/TPSVC-15956[TPSVC-15956]: [Audit-log] Mitigate audit log failure impact on login (link:https://github.com/Talend/daikon/pull/736[#736])
+- link:https://jira.talendforge.org/browse/TPSVC-15956[TPSVC-15956]: [Audit-log] Mitigate audit log failure impact on login (link:https://github.com/Talend/daikon/pull/735[#735])

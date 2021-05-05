@@ -28,7 +28,7 @@ public class KafkaBackend extends AbstractBackend {
 
     private final String bootstrapServers;
 
-    private final Integer kafkaSendTimeoutSeconds;
+    private final Long blockTimeoutMs;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -36,28 +36,31 @@ public class KafkaBackend extends AbstractBackend {
         super(null);
         StringSerializer keyValueSerializer = new StringSerializer();
         this.bootstrapServers = config.getString(AuditConfiguration.KAFKA_BOOTSTRAP_SERVERS);
-        Map<String, Object> producerConfig = new HashMap<>();
-        producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        this.kafkaProducer = new KafkaProducer<>(producerConfig, keyValueSerializer, keyValueSerializer);
         this.kafkaTopic = config.getString(AuditConfiguration.KAFKA_TOPIC);
         this.partitionKeyName = config.getString(AuditConfiguration.KAFKA_PARTITION_KEY_NAME);
-        this.kafkaSendTimeoutSeconds = config.getInteger(AuditConfiguration.KAFKA_SEND_TIMEOUT_SECONDS);
+        this.blockTimeoutMs = config.getLong(AuditConfiguration.KAFKA_BLOCK_TIMEOUT_MS);
+        Map<String, Object> producerConfig = new HashMap<>();
+        producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        producerConfig.put(ProducerConfig.ACKS_CONFIG, "1");
+        producerConfig.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, blockTimeoutMs);
+        this.kafkaProducer = new KafkaProducer<>(producerConfig, keyValueSerializer, keyValueSerializer);
     }
 
     public KafkaBackend(KafkaProducer<String, String> kafkaProducer, String kafkaTopic, String partitionKeyName,
-            String bootstrapServers, Integer kafkaSendTimeoutSeconds) {
+            String bootstrapServers, Long blockTimeoutMs) {
         super(null);
         this.kafkaProducer = kafkaProducer;
         this.kafkaTopic = kafkaTopic;
         this.partitionKeyName = partitionKeyName;
         this.bootstrapServers = bootstrapServers;
-        this.kafkaSendTimeoutSeconds = kafkaSendTimeoutSeconds;
+        this.blockTimeoutMs = blockTimeoutMs;
     }
 
     @Override
     public void log(String category, LogLevel level, String message, Throwable throwable) {
         try {
-            this.kafkaProducer.send(createRecordFromContext(getCopyOfContextMap())).get(this.kafkaSendTimeoutSeconds, TimeUnit.SECONDS);
+            this.kafkaProducer.send(createRecordFromContext(getCopyOfContextMap())).get(this.blockTimeoutMs,
+                    TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException("Failure when sending the audit log to Kafka", e);
         }
@@ -96,7 +99,7 @@ public class KafkaBackend extends AbstractBackend {
         return bootstrapServers;
     }
 
-    Integer getKafkaSendTimeoutSeconds() {
-        return kafkaSendTimeoutSeconds;
+    Long getBlockTimeoutMs() {
+        return blockTimeoutMs;
     }
 }
