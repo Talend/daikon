@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,8 +51,8 @@ import ch.qos.logback.core.read.ListAppender;
         "audit.enabled=true", //
         "spring.application.name=daikon", //
         "audit.kafka.bootstrapServers=localhost:9092", //
-        "audit.trusted-proxies=" + TRUSTED_PROXIES //
-})
+        "audit.trusted-proxies=" + TRUSTED_PROXIES, //
+        "audit.kafka.block-timeout-ms=10000" })
 @Import(AuditLogTestConfig.class)
 public class AuditLogTest {
 
@@ -94,6 +95,31 @@ public class AuditLogTest {
         logListAppender.start();
         logger.setLevel(Level.DEBUG);
         logger.addAppender(logListAppender);
+    }
+
+    @Test
+    @WithUserDetails
+    public void testLoggerProblem() throws Exception {
+        // Given Kafka is down
+        Mockito //
+                .doThrow(new RuntimeException("Failure when sending the audit log to Kafka")) //
+                .when(auditLoggerBase) //
+                .log(any(), any(), any(), any(), any());
+
+        // When a request generating an audit logs is performed
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP))
+                // Then it must be a success anyway
+                .andExpect(status().isOk());
+
+        // And a simple log must be generated
+        assertThat(lastLog().getLevel(), is(Level.WARN));
+        assertThat(lastLog().getFormattedMessage(), containsString(AuditLogFieldEnum.TIMESTAMP.getId()));
+        assertThat(lastLog().getFormattedMessage(), containsString(AuditLogTestApp.ACCOUNT_ID));
+        assertThat(lastLog().getFormattedMessage(), containsString(AuditLogTestApp.APPLICATION));
+        assertThat(lastLog().getFormattedMessage(), containsString(AuditLogTestApp.EVENT_CATEGORY));
+        assertThat(lastLog().getFormattedMessage(), containsString(AuditLogTestApp.EVENT_OPERATION));
+        assertThat(lastLog().getFormattedMessage(), containsString(AuditLogTestApp.EVENT_TYPE));
+        assertThat(lastLog().getThrowableProxy().getMessage(), containsString("Failure when sending the audit log to Kafka"));
     }
 
     @Test
@@ -156,7 +182,7 @@ public class AuditLogTest {
                 .andExpect(status().isUnauthorized());
 
         verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
-        assertThat(logListAppender.list.iterator().next().getLevel(), is(Level.DEBUG));
+        assertThat(lastLog().getLevel(), is(Level.DEBUG));
     }
 
     @Test
@@ -188,7 +214,7 @@ public class AuditLogTest {
                 .andExpect(status().isOk());
 
         verify(auditLoggerBase, times(0)).log(any(), any(), any(), any(), any());
-        assertThat(logListAppender.list.iterator().next().getLevel(), is(Level.DEBUG));
+        assertThat(lastLog().getLevel(), is(Level.DEBUG));
     }
 
     @Test
@@ -431,6 +457,10 @@ public class AuditLogTest {
                         : containsString(String.format("\"%s\":\"%s\"", AuditLogFieldEnum.RESPONSE_BODY.getId(),
                                 StringEscapeUtils.escapeJson(body))), //
         };
+    }
+
+    private ILoggingEvent lastLog() {
+        return logListAppender.list.get(logListAppender.list.size() - 1);
     }
 
     /**

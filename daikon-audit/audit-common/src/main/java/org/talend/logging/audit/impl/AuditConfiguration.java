@@ -41,7 +41,7 @@ public enum AuditConfiguration {
     PROPAGATE_APPENDER_EXCEPTIONS(PropagateExceptions.class, PropagateExceptions.NONE),
     BACKEND(Backends.class, Backends.AUTO),
     KAFKA_BOOTSTRAP_SERVERS(String.class, null, true),
-    KAFKA_SEND_TIMEOUT_SECONDS(Integer.class, 60),
+    KAFKA_BLOCK_TIMEOUT_MS(Long.class, 60000L),
     KAFKA_TOPIC(String.class, null, true),
     KAFKA_PARTITION_KEY_NAME(String.class, null, true);
 

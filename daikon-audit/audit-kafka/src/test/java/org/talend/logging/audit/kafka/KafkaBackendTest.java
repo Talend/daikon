@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +29,7 @@ public class KafkaBackendTest {
         assertEquals("testTopic", kafkaBackend.getKafkaTopic());
         assertEquals("tenantId", kafkaBackend.getPartitionKeyName());
         assertEquals("localhost:9092", kafkaBackend.getBootstrapServers());
-        assertEquals((Integer) 30, kafkaBackend.getKafkaSendTimeoutSeconds());
+        assertEquals((Long) 30000L, kafkaBackend.getBlockTimeoutMs());
     }
 
     @Test
@@ -40,14 +39,14 @@ public class KafkaBackendTest {
         assertEquals("testTopic", kafkaBackend.getKafkaTopic());
         assertNull(kafkaBackend.getPartitionKeyName());
         assertEquals("localhost:9092", kafkaBackend.getBootstrapServers());
-        assertEquals((Integer) 60, kafkaBackend.getKafkaSendTimeoutSeconds());
+        assertEquals((Long) 60000L, kafkaBackend.getBlockTimeoutMs());
     }
 
     @Test
     public void testLogEmptyMap() {
         KafkaProducer<String, String> kafkaProducerMock = mock(KafkaProducer.class);
         Future futureMock = mock(Future.class);
-        kafkaBackend = new KafkaBackend(kafkaProducerMock, "testTopic", "partitionKey", "localhost", 30);
+        kafkaBackend = new KafkaBackend(kafkaProducerMock, "testTopic", "partitionKey", "localhost", 30000L);
 
         ArgumentCaptor<ProducerRecord<String, String>> captor = ArgumentCaptor.forClass(ProducerRecord.class);
         when(kafkaProducerMock.send(captor.capture())).thenReturn(futureMock);
@@ -63,7 +62,7 @@ public class KafkaBackendTest {
     public void testLogEventMap() {
         KafkaProducer<String, String> kafkaProducerMock = mock(KafkaProducer.class);
         Future futureMock = mock(Future.class);
-        kafkaBackend = new KafkaBackend(kafkaProducerMock, "testTopic", "partitionKey", "localhost", 30);
+        kafkaBackend = new KafkaBackend(kafkaProducerMock, "testTopic", "partitionKey", "localhost", 30000L);
 
         Map<String, String> eventMap = new HashMap<>();
         eventMap.put("partitionKey", "ID1234");

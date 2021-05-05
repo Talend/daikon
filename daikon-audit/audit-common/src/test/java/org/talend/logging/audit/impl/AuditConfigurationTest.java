@@ -60,6 +60,6 @@ public class AuditConfigurationTest {
         assertEquals("testTopic", AuditConfiguration.KAFKA_TOPIC.getString(config));
         assertEquals("key", AuditConfiguration.KAFKA_PARTITION_KEY_NAME.getString(config));
         assertEquals("localhost:9092", AuditConfiguration.KAFKA_BOOTSTRAP_SERVERS.getString(config));
-        assertEquals((Integer) 30, AuditConfiguration.KAFKA_SEND_TIMEOUT_SECONDS.getInteger(config));
+        assertEquals((Long) 30000L, AuditConfiguration.KAFKA_BLOCK_TIMEOUT_MS.getLong(config));
     }
 }
