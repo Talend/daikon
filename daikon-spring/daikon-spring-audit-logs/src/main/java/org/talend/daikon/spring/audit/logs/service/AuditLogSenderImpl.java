@@ -18,6 +18,8 @@ import org.talend.daikon.spring.audit.logs.api.GenerateAuditLog;
 import org.talend.daikon.spring.audit.logs.exception.AuditLogException;
 import org.talend.logging.audit.Context;
 
+import io.micrometer.core.instrument.Counter;
+
 public class AuditLogSenderImpl implements AuditLogSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogSenderImpl.class);
@@ -28,11 +30,14 @@ public class AuditLogSenderImpl implements AuditLogSender {
 
     private final AuditLogIpExtractor auditLogIpExtractor;
 
+    private final Counter audiLogGeneratedCounter;
+
     public AuditLogSenderImpl(AuditUserProvider auditUserProvider, AuditLogger auditLogger,
-            AuditLogIpExtractor auditLogIpExtractor) {
+                              AuditLogIpExtractor auditLogIpExtractor, Counter audiLogGeneratedCounter) {
         this.auditUserProvider = auditUserProvider;
         this.auditLogger = auditLogger;
         this.auditLogIpExtractor = auditLogIpExtractor;
+        this.audiLogGeneratedCounter= audiLogGeneratedCounter;
     }
 
     /**
@@ -87,6 +92,7 @@ public class AuditLogSenderImpl implements AuditLogSender {
     public void sendAuditLog(Context context) {
         try {
             auditLogger.sendAuditLog(context);
+            audiLogGeneratedCounter.increment();
         } catch (Exception e) {
             // Clean audit log context from PIIs
             context.keySet().retainAll(Stream.of( //

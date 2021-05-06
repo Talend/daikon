@@ -30,6 +30,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableConfigurationProperties({ AuditProperties.class, AuditKafkaProperties.class })
@@ -79,9 +82,9 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
 
     @Bean
     public AuditLogSender auditLogSender(Optional<AuditUserProvider> auditUserProvider, AuditLoggerBase auditLoggerBase,
-            AuditLogIpExtractor AuditLogIpExtractor) {
+            AuditLogIpExtractor AuditLogIpExtractor, Counter audiLogGeneratedCounter) {
         AuditLogger auditLogger = AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, auditLoggerBase);
-        return new AuditLogSenderImpl(auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger, AuditLogIpExtractor);
+        return new AuditLogSenderImpl(auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger, AuditLogIpExtractor, audiLogGeneratedCounter);
     }
 
     @Bean
@@ -115,5 +118,12 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
                 return responseObject instanceof ResponseEntity ? ((ResponseEntity) responseObject).getBody() : null;
             }
         };
+    }
+
+    @Bean(name = "AudiLogGeneratedCounter")
+    public Counter auditLogsGeneratedCounter(final MeterRegistry meterRegistry) {
+        return Counter.builder("generated_count")
+                .description("The number of audit logs stored")
+                .register(meterRegistry);
     }
 }
