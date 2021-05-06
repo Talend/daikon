@@ -33,11 +33,11 @@ public class AuditLogSenderImpl implements AuditLogSender {
     private final Counter audiLogGeneratedCounter;
 
     public AuditLogSenderImpl(AuditUserProvider auditUserProvider, AuditLogger auditLogger,
-                              AuditLogIpExtractor auditLogIpExtractor, Counter audiLogGeneratedCounter) {
+            AuditLogIpExtractor auditLogIpExtractor, Counter audiLogGeneratedCounter) {
         this.auditUserProvider = auditUserProvider;
         this.auditLogger = auditLogger;
         this.auditLogIpExtractor = auditLogIpExtractor;
-        this.audiLogGeneratedCounter= audiLogGeneratedCounter;
+        this.audiLogGeneratedCounter = audiLogGeneratedCounter;
     }
 
     /**
@@ -92,7 +92,6 @@ public class AuditLogSenderImpl implements AuditLogSender {
     public void sendAuditLog(Context context) {
         try {
             auditLogger.sendAuditLog(context);
-            audiLogGeneratedCounter.increment();
         } catch (Exception e) {
             // Clean audit log context from PIIs
             context.keySet().retainAll(Stream.of( //
@@ -104,8 +103,8 @@ public class AuditLogSenderImpl implements AuditLogSender {
                     EVENT_OPERATION //
             ).collect(Collectors.toSet()));
             LOGGER.warn("Error sending audit logs to Kafka : {}", context, e);
-
         }
+        audiLogGeneratedCounter.increment();
     }
 
     @Override
