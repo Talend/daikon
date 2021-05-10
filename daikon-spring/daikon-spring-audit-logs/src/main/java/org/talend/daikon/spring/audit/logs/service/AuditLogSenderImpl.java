@@ -103,8 +103,9 @@ public class AuditLogSenderImpl implements AuditLogSender {
                     EVENT_OPERATION //
             ).collect(Collectors.toSet()));
             LOGGER.warn("Error sending audit logs to Kafka : {}", context, e);
+        } finally {
+            auditLogsGeneratedCounter.increment();
         }
-        auditLogsGeneratedCounter.increment();
     }
 
     @Override
