@@ -43,6 +43,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import io.micrometer.core.instrument.Counter;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AuditLogTestApp.class)
@@ -79,6 +80,9 @@ public class AuditLogTest {
 
     @MockBean
     private AuditLoggerBase auditLoggerBase;
+
+    @MockBean
+    private Counter auditLogsGeneratedCounter;
 
     @Autowired
     private MockMvc mockMvc;
@@ -120,6 +124,15 @@ public class AuditLogTest {
         assertThat(lastLog().getFormattedMessage(), containsString(AuditLogTestApp.EVENT_OPERATION));
         assertThat(lastLog().getFormattedMessage(), containsString(AuditLogTestApp.EVENT_TYPE));
         assertThat(lastLog().getThrowableProxy().getMessage(), containsString("Failure when sending the audit log to Kafka"));
+    }
+
+    @Test
+    @WithUserDetails
+    public void testAuditLogCounter() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP))
+                .andExpect(status().isOk());
+        verify(auditLogsGeneratedCounter, times(1)).increment();
+
     }
 
     @Test

@@ -266,3 +266,6 @@ In order not to block the client application if a problem occurs on logger side 
 Error sending audit logs to Kafka : {timestamp=2021-04-29T18:28:09.723741+02:00, applicationId=Daikon, eventType=test type, eventCategory=test category, accountId=9bfdd9a0-7852-4cd5-94a0-6212ebe281b6}
 ```
 
+== Prometheus Counter
+In order to have the number of audit logs covered, we need to know the number of audit logs generated. So, we need a way to count every single which is why we leveraged a prometheus counter to achieve this goal. *So each project integrating the audit logs daikon library must expose a prometheus endpoint.*
+

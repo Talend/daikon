@@ -18,6 +18,8 @@ import org.talend.daikon.spring.audit.logs.api.GenerateAuditLog;
 import org.talend.daikon.spring.audit.logs.exception.AuditLogException;
 import org.talend.logging.audit.Context;
 
+import io.micrometer.core.instrument.Counter;
+
 public class AuditLogSenderImpl implements AuditLogSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogSenderImpl.class);
@@ -28,11 +30,14 @@ public class AuditLogSenderImpl implements AuditLogSender {
 
     private final AuditLogIpExtractor auditLogIpExtractor;
 
+    private final Counter auditLogsGeneratedCounter;
+
     public AuditLogSenderImpl(AuditUserProvider auditUserProvider, AuditLogger auditLogger,
-            AuditLogIpExtractor auditLogIpExtractor) {
+            AuditLogIpExtractor auditLogIpExtractor, Counter auditLogsGeneratedCounter) {
         this.auditUserProvider = auditUserProvider;
         this.auditLogger = auditLogger;
         this.auditLogIpExtractor = auditLogIpExtractor;
+        this.auditLogsGeneratedCounter = auditLogsGeneratedCounter;
     }
 
     /**
@@ -98,7 +103,8 @@ public class AuditLogSenderImpl implements AuditLogSender {
                     EVENT_OPERATION //
             ).collect(Collectors.toSet()));
             LOGGER.warn("Error sending audit logs to Kafka : {}", context, e);
-
+        } finally {
+            auditLogsGeneratedCounter.increment();
         }
     }
 
