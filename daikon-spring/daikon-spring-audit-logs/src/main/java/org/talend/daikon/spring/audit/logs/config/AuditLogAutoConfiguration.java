@@ -82,10 +82,10 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
 
     @Bean
     public AuditLogSender auditLogSender(Optional<AuditUserProvider> auditUserProvider, AuditLoggerBase auditLoggerBase,
-            AuditLogIpExtractor AuditLogIpExtractor, Counter audiLogGeneratedCounter) {
+            AuditLogIpExtractor AuditLogIpExtractor, Counter auditLogsGeneratedCounter) {
         AuditLogger auditLogger = AuditLoggerFactory.getEventAuditLogger(AuditLogger.class, auditLoggerBase);
         return new AuditLogSenderImpl(auditUserProvider.orElse(new NoOpAuditUserProvider()), auditLogger, AuditLogIpExtractor,
-                audiLogGeneratedCounter);
+                auditLogsGeneratedCounter);
     }
 
     @Bean
@@ -121,7 +121,7 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
         };
     }
 
-    @Bean(name = "AuditLogGeneratedCounter")
+    @Bean
     public Counter auditLogsGeneratedCounter(final MeterRegistry meterRegistry) {
         return Counter.builder("generated_count").description("The number of audit logs stored").register(meterRegistry);
     }

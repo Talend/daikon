@@ -82,7 +82,7 @@ public class AuditLogTest {
     private AuditLoggerBase auditLoggerBase;
 
     @MockBean
-    private Counter auditLogGeneratedCounter;
+    private Counter auditLogsGeneratedCounter;
 
     @Autowired
     private MockMvc mockMvc;
@@ -131,7 +131,7 @@ public class AuditLogTest {
     public void testAuditLogCounter() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(AuditLogTestApp.GET_200_WITH_BODY).header(REMOTE_IP_HEADER, MY_IP))
                 .andExpect(status().isOk());
-        verify(auditLogGeneratedCounter, times(1)).increment();
+        verify(auditLogsGeneratedCounter, times(1)).increment();
 
     }
 
