@@ -33,6 +33,9 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
             return StatisticClassBinding.valueOf(type.toUpperCase()).getClazz();
         } catch (IllegalArgumentException iae) {
             LOGGER.warn("Cannot determine statistic class from {}. Fallback was done to SimpleStatistic.class", type);
+            if(LOGGER.isDebugEnabled()){
+                LOGGER.debug("Cannot determine statistic class from {}. Fallback was done to String.class", iae);
+            }
             return StatisticClassBinding.SIMPLE.getClazz();
         }
     }
@@ -42,15 +45,21 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
             return StatisticTypeClassBinding.valueOf(valueType.toUpperCase()).getClazz();
         } catch (IllegalArgumentException iae) {
             LOGGER.warn("Cannot determine statistic value class from {}. Fallback was done to String.class", valueType);
+            if(LOGGER.isDebugEnabled()){
+                LOGGER.debug("Cannot determine statistic value class from {}. Fallback was done to String.class", iae);
+            }
             return StatisticTypeClassBinding.STRING.getClazz();
         }
     }
 
     @Override
-    public Statistic deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public Statistic deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode jsonNode = ctxt.readTree(p);
 
         // determine which stats type and stat value type we try to deserialize
+        if(jsonNode == null || jsonNode.get("valueType") == null || jsonNode.get("type") == null){
+            throw new IllegalArgumentException("Cannot deserialize json because valueType or type is not defined");
+        }
         Class valueTypeClass = defineClassBasedOnValueType(jsonNode.get("valueType").asText());
         Class typeClass = defineClassBasedOnType(jsonNode.get("type").asText());
 
