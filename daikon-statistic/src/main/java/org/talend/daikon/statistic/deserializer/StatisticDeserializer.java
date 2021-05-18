@@ -89,7 +89,7 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
 
         Class clazz;
 
-        StatisticTypeClassBinding(Class keyValueStatisticClass) {
+        StatisticTypeClassBinding(Class statisticTypeClass) {
             this.clazz = keyValueStatisticClass;
         }
 
