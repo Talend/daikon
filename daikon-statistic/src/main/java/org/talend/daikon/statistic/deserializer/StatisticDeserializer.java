@@ -68,7 +68,7 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
 
         Class<? extends Statistic> clazz;
 
-        StatisticClassBinding(Class<? extends Statistic> keyValueStatisticClass) {
+        StatisticClassBinding(Class<? extends Statistic> statisticClass) {
             this.clazz = keyValueStatisticClass;
         }
 
@@ -89,7 +89,7 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
 
         Class clazz;
 
-        StatisticTypeClassBinding(Class keyValueStatisticClass) {
+        StatisticTypeClassBinding(Class statisticTypeClass) {
             this.clazz = keyValueStatisticClass;
         }
 
