@@ -22,4 +22,8 @@ public class StatisticDeserializerUtil {
     public static Statistic read(String json) throws JsonProcessingException {
         return objectMapper.readValue(json, Statistic.class);
     }
+
+    public static Statistic[] readValues(String json) throws JsonProcessingException {
+        return objectMapper.readValue(json, Statistic[].class);
+    }
 }

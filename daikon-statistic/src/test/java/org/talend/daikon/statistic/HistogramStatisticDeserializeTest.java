@@ -28,11 +28,11 @@ public class HistogramStatisticDeserializeTest {
         expectedHistogram.add(new HistogramUnit<>(22, new Date(1414800000000L), new Date(1417392000000L)));
         expectedHistogram.add(new HistogramUnit<>(23, new Date(1417392000000L), new Date(1417392999999L)));
 
-        HistogramStatistic<Date> stats = (HistogramStatistic<Date>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(HistogramStatistic.class, stats.getClass());
-        assertEquals("myFirstHistogram", stats.getKey());
-        assertEquals("MONTH", stats.getScaleUnit());
-        assertEquals(expectedHistogram, stats.getValue());
+        HistogramStatistic<Date> stat = (HistogramStatistic<Date>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(HistogramStatistic.class, stat.getClass());
+        assertEquals("myFirstHistogram", stat.getKey());
+        assertEquals("MONTH", stat.getScaleUnit());
+        assertEquals(expectedHistogram, stat.getValue());
     }
 
     @ParameterizedTest
@@ -45,11 +45,11 @@ public class HistogramStatisticDeserializeTest {
         expectedHistogram.add(new HistogramUnit<>(24, (double) -83885, 31540.0));
         expectedHistogram.add(new HistogramUnit<>(25, 31540.0, 99999.0));
 
-        HistogramStatistic<Double> stats = (HistogramStatistic<Double>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(HistogramStatistic.class, stats.getClass());
-        assertEquals("mySecondHistogram", stats.getKey());
-        assertNull(stats.getScaleUnit());
-        assertEquals(expectedHistogram, stats.getValue());
+        HistogramStatistic<Double> stat = (HistogramStatistic<Double>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(HistogramStatistic.class, stat.getClass());
+        assertEquals("mySecondHistogram", stat.getKey());
+        assertNull(stat.getScaleUnit());
+        assertEquals(expectedHistogram, stat.getValue());
     }
 
 }

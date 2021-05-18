@@ -24,10 +24,10 @@ public class SimpleStatisticDeserializeTest {
         final InputStream json = StatisticDeserializerUtil.class.getResourceAsStream(filename);
         String jsonString = IOUtils.toString(json, StandardCharsets.UTF_8.name());
 
-        SimpleStatistic<Double> stats = (SimpleStatistic<Double>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(SimpleStatistic.class, stats.getClass());
-        assertEquals("median", stats.getKey());
-        assertEquals(100.53, stats.getValue());
+        SimpleStatistic<Double> stat = (SimpleStatistic<Double>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(SimpleStatistic.class, stat.getClass());
+        assertEquals("median", stat.getKey());
+        assertEquals(100.53, stat.getValue());
     }
 
     @ParameterizedTest
@@ -38,10 +38,10 @@ public class SimpleStatisticDeserializeTest {
 
         Date expectedDate = new Date(489110400000L);
 
-        SimpleStatistic<Date> stats = (SimpleStatistic<Date>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(SimpleStatistic.class, stats.getClass());
-        assertEquals("upperQuantile", stats.getKey());
-        assertEquals(expectedDate, stats.getValue());
+        SimpleStatistic<Date> stat = (SimpleStatistic<Date>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(SimpleStatistic.class, stat.getClass());
+        assertEquals("upperQuantile", stat.getKey());
+        assertEquals(expectedDate, stat.getValue());
     }
 
     @ParameterizedTest
@@ -50,10 +50,10 @@ public class SimpleStatisticDeserializeTest {
         final InputStream json = StatisticDeserializerUtil.class.getResourceAsStream(filename);
         String jsonString = IOUtils.toString(json, StandardCharsets.UTF_8.name());
 
-        SimpleStatistic<Integer> stats = (SimpleStatistic<Integer>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(SimpleStatistic.class, stats.getClass());
-        assertEquals("upperQuantile", stats.getKey());
-        assertEquals(1664, stats.getValue());
+        SimpleStatistic<Integer> stat = (SimpleStatistic<Integer>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(SimpleStatistic.class, stat.getClass());
+        assertEquals("upperQuantile", stat.getKey());
+        assertEquals(1664, stat.getValue());
     }
 
     @ParameterizedTest
@@ -62,10 +62,10 @@ public class SimpleStatisticDeserializeTest {
         final InputStream json = StatisticDeserializerUtil.class.getResourceAsStream(filename);
         String jsonString = IOUtils.toString(json, StandardCharsets.UTF_8.name());
 
-        SimpleStatistic<String> stats = (SimpleStatistic<String>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(SimpleStatistic.class, stats.getClass());
-        assertEquals("upperQuantile", stats.getKey());
-        assertEquals("myString", stats.getValue());
+        SimpleStatistic<String> stat = (SimpleStatistic<String>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(SimpleStatistic.class, stat.getClass());
+        assertEquals("upperQuantile", stat.getKey());
+        assertEquals("myString", stat.getValue());
     }
 
     @ParameterizedTest
@@ -74,10 +74,10 @@ public class SimpleStatisticDeserializeTest {
         final InputStream json = StatisticDeserializerUtil.class.getResourceAsStream(filename);
         String jsonString = IOUtils.toString(json, StandardCharsets.UTF_8.name());
 
-        SimpleStatistic<Float> stats = (SimpleStatistic<Float>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(SimpleStatistic.class, stats.getClass());
-        assertEquals("upperQuantile", stats.getKey());
-        assertEquals(16.64f, stats.getValue());
+        SimpleStatistic<Float> stat = (SimpleStatistic<Float>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(SimpleStatistic.class, stat.getClass());
+        assertEquals("upperQuantile", stat.getKey());
+        assertEquals(16.64f, stat.getValue());
     }
 
     @ParameterizedTest
@@ -86,10 +86,10 @@ public class SimpleStatisticDeserializeTest {
         final InputStream json = StatisticDeserializerUtil.class.getResourceAsStream(filename);
         String jsonString = IOUtils.toString(json, StandardCharsets.UTF_8.name());
 
-        SimpleStatistic<BigDecimal> stats = (SimpleStatistic<BigDecimal>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(SimpleStatistic.class, stats.getClass());
-        assertEquals("upperQuantile", stats.getKey());
-        assertEquals(BigDecimal.valueOf(16.64123456789), stats.getValue());
+        SimpleStatistic<BigDecimal> stat = (SimpleStatistic<BigDecimal>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(SimpleStatistic.class, stat.getClass());
+        assertEquals("upperQuantile", stat.getKey());
+        assertEquals(BigDecimal.valueOf(16.64123456789), stat.getValue());
     }
 
     @ParameterizedTest
@@ -98,10 +98,10 @@ public class SimpleStatisticDeserializeTest {
         final InputStream json = StatisticDeserializerUtil.class.getResourceAsStream(filename);
         String jsonString = IOUtils.toString(json, StandardCharsets.UTF_8.name());
 
-        SimpleStatistic<LocalDate> stats = (SimpleStatistic<LocalDate>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(SimpleStatistic.class, stats.getClass());
-        assertEquals("upperQuantile", stats.getKey());
-        assertEquals(LocalDate.ofEpochDay(100l), stats.getValue());
+        SimpleStatistic<LocalDate> stat = (SimpleStatistic<LocalDate>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(SimpleStatistic.class, stat.getClass());
+        assertEquals("upperQuantile", stat.getKey());
+        assertEquals(LocalDate.ofEpochDay(100l), stat.getValue());
     }
 
     @ParameterizedTest
@@ -110,9 +110,9 @@ public class SimpleStatisticDeserializeTest {
         final InputStream json = StatisticDeserializerUtil.class.getResourceAsStream(filename);
         String jsonString = IOUtils.toString(json, StandardCharsets.UTF_8.name());
 
-        SimpleStatistic<LocalTime> stats = (SimpleStatistic<LocalTime>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(SimpleStatistic.class, stats.getClass());
-        assertEquals("upperQuantile", stats.getKey());
-        assertEquals(LocalTime.ofNanoOfDay(TimeUnit.MILLISECONDS.convert(101664, TimeUnit.NANOSECONDS)), stats.getValue());
+        SimpleStatistic<LocalTime> stat = (SimpleStatistic<LocalTime>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(SimpleStatistic.class, stat.getClass());
+        assertEquals("upperQuantile", stat.getKey());
+        assertEquals(LocalTime.ofNanoOfDay(TimeUnit.MILLISECONDS.convert(101664, TimeUnit.NANOSECONDS)), stat.getValue());
     }
 }

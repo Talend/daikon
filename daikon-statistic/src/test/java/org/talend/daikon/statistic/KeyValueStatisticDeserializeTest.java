@@ -25,10 +25,10 @@ public class KeyValueStatisticDeserializeTest {
         expectedMap.put("AAAaaAA", 200);
         expectedMap.put("AAA", 56);
 
-        KeyValueStatistic<Integer> stats = (KeyValueStatistic<Integer>) StatisticDeserializerUtil.read(jsonString);
-        assertEquals(KeyValueStatistic.class, stats.getClass());
-        assertEquals("patternFrequency", stats.getKey());
-        assertEquals(expectedMap, stats.getValue());
+        KeyValueStatistic<Integer> stat = (KeyValueStatistic<Integer>) StatisticDeserializerUtil.read(jsonString);
+        assertEquals(KeyValueStatistic.class, stat.getClass());
+        assertEquals("patternFrequency", stat.getKey());
+        assertEquals(expectedMap, stat.getValue());
     }
 
 }
