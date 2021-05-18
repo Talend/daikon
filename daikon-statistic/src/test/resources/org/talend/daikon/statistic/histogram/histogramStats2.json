@@ -1,0 +1,17 @@
+{
+  "key": "mySecondHistogram",
+  "type": "histogram",
+  "valueType": "double",
+  "value": [
+    {
+      "occurrences": 24,
+      "lowerBound": -83885,
+      "upperBound": 31540
+    },
+    {
+      "occurrences": 25,
+      "lowerBound": 31540,
+      "upperBound": 99999
+    }
+  ]
+}

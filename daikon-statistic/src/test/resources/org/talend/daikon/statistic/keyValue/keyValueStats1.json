@@ -1,0 +1,9 @@
+{
+  "key": "patternFrequency",
+  "type": "keyValue",
+  "valueType": "integer",
+  "value": {
+    "AAAaaAA": 200,
+    "AAA": 56
+  }
+}

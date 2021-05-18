@@ -1,0 +1,18 @@
+{
+  "key": "myFirstHistogram",
+  "type": "histogram",
+  "valueType": "dateTime",
+  "scaleUnit": "MONTH",
+  "value": [
+    {
+      "occurrences": 22,
+      "lowerBound": 1414800000000,
+      "upperBound": 1417392000000
+    },
+    {
+      "occurrences": 23,
+      "lowerBound": 1417392000000,
+      "upperBound": 1417392999999
+    }
+  ]
+}

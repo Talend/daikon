@@ -98,6 +98,7 @@
         <module>daikon-documentation</module>
         <module>releases</module>
         <module>daikon-bom</module>
+        <module>daikon-statistic</module>
     </modules>
     <scm>
         <connection>scm:git:https://github.com/Talend/daikon.git</connection>
