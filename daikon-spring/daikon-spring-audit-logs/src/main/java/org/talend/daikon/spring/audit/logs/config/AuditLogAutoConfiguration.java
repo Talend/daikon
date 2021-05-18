@@ -123,7 +123,9 @@ public class AuditLogAutoConfiguration implements WebMvcConfigurer {
 
     @Bean
     public Counter auditLogsGeneratedCounter(final MeterRegistry meterRegistry) {
-        return Counter.builder("audit_logs_generated_count").description("The number of audit logs stored")
+        return Counter.builder("audit_logs_generated_count")
+                .description("The number of audit logs generated")
+                .tag("source", "daikon-spring-audit-logs")
                 .register(meterRegistry);
     }
 }
