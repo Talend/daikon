@@ -9,7 +9,7 @@ import org.talend.daikon.statistic.pojo.Statistic;
 
 public class StatisticDeserializerUtil {
 
-    private static ObjectMapper objectMapper;
+    private static final ObjectMapper objectMapper;
 
     static {
         objectMapper = JsonMapper.builder()

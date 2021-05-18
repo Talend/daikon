@@ -18,6 +18,13 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <!-- statistics -->
+            <dependency>
+                <groupId>org.talend.daikon</groupId>
+                <artifactId>daikon-statistic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- audit -->
             <dependency>
                 <groupId>org.talend.daikon</groupId>

@@ -16,8 +16,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class StatisticDeserializer extends StdDeserializer<Statistic> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticDeserializer.class);
 
     public StatisticDeserializer() {
         super(Statistic.class);
@@ -27,6 +32,7 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
         try {
             return StatisticClassBinding.valueOf(type.toUpperCase()).getClazz();
         } catch (IllegalArgumentException iae) {
+            LOGGER.warn("Cannot determine statistic class from {}. Fallback was done to SimpleStatistic.class", type);
             return StatisticClassBinding.SIMPLE.getClazz();
         }
     }
@@ -35,6 +41,7 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
         try {
             return StatisticTypeClassBinding.valueOf(valueType.toUpperCase()).getClazz();
         } catch (IllegalArgumentException iae) {
+            LOGGER.warn("Cannot determine statistic value class from {}. Fallback was done to String.class", valueType);
             return StatisticTypeClassBinding.STRING.getClazz();
         }
     }
