@@ -18,7 +18,8 @@ public class StatisticsModule extends SimpleModule {
 
     public StatisticsModule() {
         // add deserializer for LocalTime with data representing number of millis since day start
-        this.addDeserializer(LocalTime.class , new JsonDeserializer<LocalTime>() {
+        this.addDeserializer(LocalTime.class, new JsonDeserializer<LocalTime>() {
+
             @Override
             public LocalTime deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
                 JsonNode jsonNode = ctxt.readTree(jp);
@@ -28,9 +29,10 @@ public class StatisticsModule extends SimpleModule {
 
         // deserializer modifier to handle generic type on statistic
         this.setDeserializerModifier(new BeanDeserializerModifier() {
+
             @Override
             public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc,
-                                                          JsonDeserializer<?> deserializer) {
+                    JsonDeserializer<?> deserializer) {
                 if (Statistic.class.equals(beanDesc.getBeanClass())) {
                     return new StatisticDeserializer();
                 }

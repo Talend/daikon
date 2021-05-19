@@ -18,7 +18,6 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class StatisticDeserializer extends StdDeserializer<Statistic> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatisticDeserializer.class);
@@ -31,11 +30,8 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
         try {
             return StatisticClassBinding.valueOf(type.toUpperCase()).getClazz();
         } catch (IllegalArgumentException iae) {
-            LOGGER.warn("Cannot determine statistic class from {}. Fallback was done to SimpleStatistic.class", type);
-            if(LOGGER.isDebugEnabled()){
-                LOGGER.debug("Cannot determine statistic class from {}. Fallback was done to String.class", iae);
-            }
-            return StatisticClassBinding.SIMPLE.getClazz();
+            LOGGER.warn("Cannot determine statistic class from {}", type);
+            throw iae;
         }
     }
 
@@ -43,11 +39,8 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
         try {
             return StatisticTypeClassBinding.valueOf(valueType.toUpperCase()).getClazz();
         } catch (IllegalArgumentException iae) {
-            LOGGER.warn("Cannot determine statistic value class from {}. Fallback was done to String.class", valueType);
-            if(LOGGER.isDebugEnabled()){
-                LOGGER.debug("Cannot determine statistic value class from {}. Fallback was done to String.class", iae);
-            }
-            return StatisticTypeClassBinding.STRING.getClazz();
+            LOGGER.warn("Cannot determine statistic value class from {}", valueType);
+            throw iae;
         }
     }
 
@@ -56,7 +49,7 @@ public class StatisticDeserializer extends StdDeserializer<Statistic> {
         JsonNode jsonNode = ctxt.readTree(p);
 
         // determine which stats type and stat value type we try to deserialize
-        if(jsonNode == null || jsonNode.get("valueType") == null || jsonNode.get("type") == null){
+        if (jsonNode == null || jsonNode.get("valueType") == null || jsonNode.get("type") == null) {
             throw new IllegalArgumentException("Cannot deserialize json because valueType or type is not defined");
         }
         Class valueTypeClass = defineClassBasedOnValueType(jsonNode.get("valueType").asText());

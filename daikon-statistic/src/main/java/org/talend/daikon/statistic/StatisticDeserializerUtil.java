@@ -9,15 +9,8 @@ import org.talend.daikon.statistic.pojo.Statistic;
 
 public class StatisticDeserializerUtil {
 
-    private static final ObjectMapper objectMapper;
-
-    static {
-        objectMapper = JsonMapper.builder()
-                .findAndAddModules()
-                .addModule(new JavaTimeModule())
-                .addModule(new StatisticsModule())
-                .build();
-    }
+    private static final ObjectMapper objectMapper = JsonMapper.builder().findAndAddModules().addModule(new JavaTimeModule())
+            .addModule(new StatisticsModule()).build();
 
     public static Statistic read(String json) throws JsonProcessingException {
         return objectMapper.readValue(json, Statistic.class);
