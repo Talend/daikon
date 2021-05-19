@@ -3,6 +3,8 @@ package org.talend.daikon.statistic.pojo;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.Objects;
+
 public class HistogramUnit<T> {
 
     private int occurrences;
@@ -47,20 +49,14 @@ public class HistogramUnit<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-
-        if (o == null || getClass() != o.getClass())
-            return false;
-
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         HistogramUnit<?> that = (HistogramUnit<?>) o;
-
-        return new EqualsBuilder().append(occurrences, that.occurrences).append(lowerBound, that.lowerBound)
-                .append(upperBound, that.upperBound).isEquals();
+        return occurrences == that.occurrences && Objects.equals(lowerBound, that.lowerBound) && Objects.equals(upperBound, that.upperBound);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(occurrences).append(lowerBound).append(upperBound).toHashCode();
+        return Objects.hash(occurrences, lowerBound, upperBound);
     }
 }
