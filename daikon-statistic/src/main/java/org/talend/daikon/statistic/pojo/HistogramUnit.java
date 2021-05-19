@@ -1,8 +1,5 @@
 package org.talend.daikon.statistic.pojo;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.util.Objects;
 
 public class HistogramUnit<T> {
