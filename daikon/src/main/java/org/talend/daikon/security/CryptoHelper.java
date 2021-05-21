@@ -124,7 +124,7 @@ public class CryptoHelper implements Function<String, String> {
      * @param str Binary data to encode.
      * @return The string encoded in Base64, or "" if an encoding error occurred.
      */
-    public static String encode64(byte[] str) {
+    private static String encode64(byte[] str) {
         try {
             return new String(Base64.encodeBase64(str), UTF8);
         } catch (UnsupportedEncodingException e) {
@@ -136,7 +136,7 @@ public class CryptoHelper implements Function<String, String> {
      * @param str A Base64 string to decode.
      * @return The decoded binary data, or an empty array if a decoding error occurred.
      */
-    public static byte[] decode64(String str) {
+    private static byte[] decode64(String str) {
         try {
             return Base64.decodeBase64(str.getBytes(UTF8));
         } catch (UnsupportedEncodingException e) {
