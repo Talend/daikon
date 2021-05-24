@@ -102,12 +102,13 @@ public class StringProperty extends Property<String> {
     public void encryptStoredValue(boolean encrypt) {
         if (isFlag(Property.Flags.ENCRYPT)) {
             String value = (String) getStoredValue();
-            CryptoHelper ch = new CryptoHelper(CryptoHelper.PASSPHRASE);
             if (encrypt) {
-                setStoredValue(ch.encrypt(value));
-            } else {
-                setStoredValue(ch.decrypt(value));
+                // Encryption using CryptoHelper is no longer supported
+                throw new TalendRuntimeException(CommonErrorCodes.UNEXPECTED_EXCEPTION);
             }
+            // This is deprecated functionality for migration purposes.
+            CryptoHelper ch = new CryptoHelper(CryptoHelper.PASSPHRASE);
+            setStoredValue(ch.decrypt(value));
         }
     }
 

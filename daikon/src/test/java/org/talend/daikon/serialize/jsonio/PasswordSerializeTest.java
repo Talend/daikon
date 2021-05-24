@@ -20,6 +20,7 @@ import java.util.EnumSet;
 import org.junit.Test;
 import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.security.CryptoHelper;
 import org.talend.daikon.serialize.SerializerDeserializer;
 
 public class PasswordSerializeTest {
@@ -53,6 +54,23 @@ public class PasswordSerializeTest {
             super.setupProperties();
             nested = new NestedProperties("nested");
             nested.userPassword = userPassword;
+        }
+
+        protected void encryptData(Property property, boolean encrypt) {
+
+            if (property.getStoredValue() == null) {
+                return;
+            }
+
+            if (property.isFlag(Property.Flags.ENCRYPT)) {
+                String value = (String) property.getStoredValue();
+                CryptoHelper ch = new CryptoHelper(CryptoHelper.PASSPHRASE);
+                if (encrypt) {
+                    property.setStoredValue(ch.encrypt(value));
+                } else {
+                    super.encryptData(property, encrypt);
+                }
+            }
         }
     }
 
