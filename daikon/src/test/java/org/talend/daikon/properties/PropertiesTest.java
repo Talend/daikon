@@ -53,6 +53,7 @@ import org.talend.daikon.properties.testproperties.nestedprop.NestedNestedProper
 import org.talend.daikon.properties.testproperties.nestedprop.NestedProperties;
 import org.talend.daikon.properties.testproperties.nestedprop.inherited.InheritedProperties;
 import org.talend.daikon.properties.testproperties.references.MultipleRefProperties;
+import org.talend.daikon.security.CryptoHelper;
 import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.daikon.serialize.SerializerDeserializer;
 
@@ -136,7 +137,7 @@ public class PropertiesTest {
 
     @Test
     public void testSerializeValues() {
-        TestProperties props = (TestProperties) new TestProperties("test").init();
+        TestProperties props = (DeprecatedEncProperties) new DeprecatedEncProperties("test").init();
         props.userId.setValue("testUser");
         props.password.setValue("testPassword");
         props.suppressDate.setValue(true);
@@ -685,6 +686,35 @@ public class PropertiesTest {
 
         public final NestedCryptedProperty nestedPassword = new NestedCryptedProperty("nestedPassword");
 
+        protected void encryptData(Property property, boolean encrypt) {
+            // Delegate to
+            DeprecatedEncProperties encProperties = new DeprecatedEncProperties("encPassword");
+            encProperties.encryptData(property, encrypt);
+        }
+    }
+
+    private static class DeprecatedEncProperties extends TestProperties {
+
+        public DeprecatedEncProperties(String name) {
+            super(name);
+        }
+
+        protected void encryptData(Property property, boolean encrypt) {
+
+            if (property.getStoredValue() == null) {
+                return;
+            }
+
+            if (property.isFlag(Property.Flags.ENCRYPT)) {
+                String value = (String) property.getStoredValue();
+                CryptoHelper ch = new CryptoHelper(CryptoHelper.PASSPHRASE);
+                if (encrypt) {
+                    property.setStoredValue(ch.encrypt(value));
+                } else {
+                    super.encryptData(property, encrypt);
+                }
+            }
+        }
     }
 
     @Test

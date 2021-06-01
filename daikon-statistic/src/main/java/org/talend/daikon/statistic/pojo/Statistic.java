@@ -1,6 +1,8 @@
 package org.talend.daikon.statistic.pojo;
 
-public abstract class Statistic<T> {
+import java.io.Serializable;
+
+public abstract class Statistic<T extends Serializable> implements Serializable {
 
     private String key;
 

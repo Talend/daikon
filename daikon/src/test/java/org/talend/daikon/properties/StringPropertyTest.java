@@ -24,8 +24,10 @@ import org.talend.daikon.NamedThing;
 import org.talend.daikon.SimpleNamedThing;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.exception.error.CommonErrorCodes;
+import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.Property.Flags;
 import org.talend.daikon.properties.property.StringProperty;
+import org.talend.daikon.security.CryptoHelper;
 
 public class StringPropertyTest {
 
@@ -85,6 +87,20 @@ public class StringPropertyTest {
     @Test
     public void testEncryptStringProp() {
         StringProperty stringProperty = new StringProperty("foo") {// in order to have i18n related to this class
+
+            @Override
+            public void encryptStoredValue(boolean encrypt) {
+
+                if (isFlag(Property.Flags.ENCRYPT)) {
+                    String value = (String) getStoredValue();
+                    CryptoHelper ch = new CryptoHelper(CryptoHelper.PASSPHRASE);
+                    if (encrypt) {
+                        setStoredValue(ch.encrypt(value));
+                    } else {
+                        super.encryptStoredValue(encrypt);
+                    }
+                }
+            }
         };
         stringProperty.setValue("foo");
         assertEquals("foo", stringProperty.getValue());
@@ -102,5 +118,24 @@ public class StringPropertyTest {
         assertNotEquals("foo", stringProperty.getValue());
         stringProperty.encryptStoredValue(false);
         assertEquals("foo", stringProperty.getValue());
+    }
+
+    @Test(expected = TalendRuntimeException.class)
+    public void testEncryptionFailure() {
+        StringProperty stringProperty = new StringProperty("foo") {// in order to have i18n related to this class
+        };
+        stringProperty.setValue("foo");
+        assertEquals("foo", stringProperty.getValue());
+        stringProperty.encryptStoredValue(true);
+        // value should be the same cause we did not set the Encrypt flag
+        assertEquals("foo", stringProperty.getValue());
+        stringProperty.encryptStoredValue(false);
+        // value should be the same cause we did not set the Encrypt flag
+        assertEquals("foo", stringProperty.getValue());
+
+        // make the property to be encrypted
+        stringProperty.setFlags(EnumSet.of(Flags.ENCRYPT));
+        assertEquals("foo", stringProperty.getValue());
+        stringProperty.encryptStoredValue(true);
     }
 }

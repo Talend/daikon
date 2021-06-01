@@ -1,8 +1,9 @@
 package org.talend.daikon.statistic.pojo;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class HistogramUnit<T> {
+public class HistogramUnit<T extends Serializable> implements Serializable {
 
     private int occurrences;
 
