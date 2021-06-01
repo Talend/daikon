@@ -1,8 +1,9 @@
 package org.talend.daikon.statistic.pojo;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class KeyValueStatistic<T> extends Statistic<T> {
+public class KeyValueStatistic<T extends Serializable> extends Statistic<T> {
 
     private Map<String, T> value;
 
