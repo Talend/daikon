@@ -1,6 +1,8 @@
 package org.talend.daikon.statistic.pojo;
 
-public class SimpleStatistic<T> extends Statistic<T> {
+import java.io.Serializable;
+
+public class SimpleStatistic<T extends Serializable> extends Statistic<T> {
 
     private T value;
 

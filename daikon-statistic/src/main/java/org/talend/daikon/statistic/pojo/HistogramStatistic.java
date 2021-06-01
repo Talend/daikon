@@ -1,8 +1,9 @@
 package org.talend.daikon.statistic.pojo;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class HistogramStatistic<T> extends Statistic<T> {
+public class HistogramStatistic<T extends Serializable> extends Statistic<T> {
 
     private String scaleUnit;
 
