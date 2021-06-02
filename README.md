@@ -53,11 +53,11 @@ _Modules_                                                     |_Description_
 
 ### Daikon 5.x
 
-|              | *Daikon 5.0.x* | Daikon 5.1.x | Daikon 5.[2-4].x | Daikon 5.5.x | Daikon >5.6.x |
-|--------------|----------------|--------------|------------------|--------------|---------------|
-| Spring Boot  | 2.3.7          | 2.3.7        | 2.3.8            | 2.3.9        | 2.3.10        |
-| Spring Cloud | Hoxton SR9     | Hoxton SR9   | Hoxton SR10      | Hoxton SR10  | Hoxton SR11   |
-| Jackson      | 2.11.3         | 2.11.3       | 2.11.4           | 2.11.4       | 2.11.4        |
+|              | *Daikon 5.0.x* | Daikon 5.1.x | Daikon 5.[2-4].x | Daikon 5.5.x | Daikon >5.6.x | Daikon 5.7.x |
+|--------------|----------------|--------------|------------------|--------------|---------------|--------------|
+| Spring Boot  | 2.3.7          | 2.3.7        | 2.3.8            | 2.3.9        | 2.3.10        | 2.3.11       |
+| Spring Cloud | Hoxton SR9     | Hoxton SR9   | Hoxton SR10      | Hoxton SR10  | Hoxton SR11   | Hoxton SR11  |
+| Jackson      | 2.11.3         | 2.11.3       | 2.11.4           | 2.11.4       | 2.11.4        | 2.11.4       |
 
 ## Support
 
