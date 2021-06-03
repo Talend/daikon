@@ -1,6 +1,7 @@
 package org.talend.daikon.crypto;
 
 import org.apache.commons.lang3.StringUtils;
+import org.talend.daikon.crypto.digest.PasswordDigester;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +34,7 @@ public class KeySources {
 
     /**
      * @return A {@link KeySource} implementation that returns a empty key. This can be helpful to disable salt in
-     * {@link org.talend.daikon.crypto.digest.Digester}.
+     * {@link PasswordDigester}.
      */
     public static KeySource empty() {
         return () -> new byte[0];
@@ -127,21 +128,46 @@ public class KeySources {
     /**
      * <p>
      * Returns a {@link KeySource} using the provided password, salt and keyLength values to generate a SecretKey using
-     * PBKDF2 (with Hmac SHA256) digester.
+     * PBKDF2 (with Hmac SHA256) digester. It uses an iteration count of "65536".
      * </p>
      * <p>
      * As recommendation, you may initialize a salt using {@link org.talend.daikon.crypto.KeySources#random(int)}.
      * </p>
-     *
+     * 
+     * @deprecated Use {@link #pbkDf2(String, byte[], int, int)} instead with a stronger iteration count.
      * @return A {@link KeySource} implementation using PBKDF2 and provided <code>salt</code>
      */
+    @Deprecated
     public static KeySource pbkDf2(String password, byte[] salt, int keyLength) {
+        return pbkDf2(password, salt, keyLength, 65536);
+    }
+
+    /**
+     * <p>
+     * Returns a {@link KeySource} using the provided password, salt and keyLength values to generate a SecretKey using
+     * PBKDF2 (with Hmac SHA256) digester.
+     * </p>
+     * <p>
+     * As recommendation, you may initialize a salt using {@link org.talend.daikon.crypto.KeySources#random(int)}.
+     * The OWASP Password Storage Cheat Sheet recommends an iteration count of 310000 (with HMAC-SHA256)
+     * </p>
+     *
+     * @param password The password to use to generate the KeySource
+     * @param salt The salt to use
+     * @param keyLength The key length of the generated key in bits
+     * @param iterations The iteration count to use
+     * @return A {@link KeySource} implementation using PBKDF2 and provided <code>salt</code>
+     */
+    public static KeySource pbkDf2(String password, byte[] salt, int keyLength, int iterations) {
         return () -> {
             if (salt == null || salt.length == 0) {
                 throw new IllegalArgumentException("Cannot use pbkDf2 with empty or null salt.");
             }
+            if (iterations < 60000) {
+                throw new IllegalArgumentException("Forbidden to use pbkDf2 with iterations < 60000 for security reasons.");
+            }
             try {
-                KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, keyLength);
+                KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, keyLength);
                 SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
                 return factory.generateSecret(spec).getEncoded();
             } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {

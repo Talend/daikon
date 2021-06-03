@@ -14,13 +14,13 @@ $> mvn install
 
 ## Usage
 
-This library offers utilities for both digest and encryption.
+This library offers utilities for both password digest and encryption.
 
-## Digest
+## Password Digest
 
 ```java
 public static void main(String[] args) throws Exception {
-    Digester digester = new Digester(KeySources.random(16), '-', DigestSources.pbkDf2());
+    PasswordDigester digester = new PBKDF2PasswordDigester();
     
     final String digest = digester.digest("tiger");
     System.out.println("digest = " + digest);
@@ -30,13 +30,19 @@ public static void main(String[] args) throws Exception {
 }
 ```
 
-The code above produces this example (the randomized KeySource at the beginning make digest change at each execution).
-
+The code above produces this example:
 ```text
-digest = n/c7e9vGq2v10jlSyHT6Fw==-JVe5Q3cCfDcme16IeRlSwXR6NjbEfXPH4TNP/2Xlid0=
+digest = rGl+Xu8NbNqqJdmbTk6uHg==-YUdLMtZL+3renFPkDt6SSoDKobFhmijkOmpXuvhjapo=
 Validate 'tiger': true
 Validate 'password': false
 ```
+It is not permitted to use a SHA digest to digest passwords, they must be digested instead using
+PBKDF2PasswordDigester. An iteration count of 310,000 should be used with PBKDF2 according to the 
+[OWASP password storage cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html):
+
+> If FIPS-140 compliance is required, use PBKDF2 with a work factor of 310,000 or more and set with an internal hash function of HMAC-SHA-256.
+
+The PBKDF2PasswordDigester uses a random 16 byte salt by default, with a 256 bit key length and 310,000 iteration count.
 
 ### Encryption
 
