@@ -18,6 +18,80 @@ This library offers utilities for both password digest and encryption.
 
 ## Password Digest
 
+It is not permitted to use a SHA digest to digest passwords, instead they must be digested using
+one of the approved implementations detailed in this section. Argon2Id should be the preferred solution for password digests.
+
+### Argon2Id
+
+```java
+public static void main(String[] args) throws Exception {
+    PasswordDigester digester = new Argon2PasswordDigester();
+    
+    final String digest = digester.digest("tiger");
+    System.out.println("digest = " + digest);
+    
+    System.out.println("Validate 'tiger': " + digester.validate("tiger", digest));
+    System.out.println("Validate 'password': " + digester.validate("password", digest));
+}
+```
+
+The code above produces this example:
+```text
+digest = $argon2id$v=19$m=4096,t=3,p=1$LqFyRbm7jnNpUEjlpapM6A$yqkHrp8eEJkCvM2lkAxraJtFN2vt2LhSynpKJosPgE8
+Validate 'tiger': true
+Validate 'password': false
+```
+The Argon2PasswordDigester uses spring-security-crypto as the underlying implementation, which is an optional jar
+in crypto-utils, so to use this algorithm this jar will need to be added to dependency control. In addition, the BouncyCastle
+bcprov-jdk15on jar is also required to be added.
+
+According to the
+[OWASP password storage cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html):
+
+> Use Argon2id with a minimum configuration of 15 MiB of memory, an iteration count of 2, and 1 degree of parallelism.
+
+By default, the Argon2PasswordDigester uses the following values, which should be considered to be secure:
+
+ * Salt Length: 16
+ * Hash Length: 32
+ * Iterations: 3
+ * Parallelism: 1
+ * Memory: 4096 (Kb)
+
+### BCrypt
+
+```java
+public static void main(String[] args) throws Exception {
+    PasswordDigester digester = new BCryptPasswordDigester();
+    
+    final String digest = digester.digest("tiger");
+    System.out.println("digest = " + digest);
+    
+    System.out.println("Validate 'tiger': " + digester.validate("tiger", digest));
+    System.out.println("Validate 'password': " + digester.validate("password", digest));
+}
+```
+
+The code above produces this example:
+```text
+digest = $2a$10$f0vioWEm1hFi6gUnxTUK.u4GssfYd6KsdUsBTDVZ8RdXw6gU85Hvi
+Validate 'tiger': true
+Validate 'password': false
+```
+
+The BCryptPasswordDigester uses spring-security-crypto as the underlying implementation, which is an optional jar
+in crypto-utils, so to use this algorithm this jar will need to be added to dependency control.
+
+According to the
+[OWASP password storage cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html),
+a minimum strength of 10 should be used with BCrypt (this is the default). You should not need to configure the
+BCrypt algorithm, but instead just use the default version.
+
+Please note that BCrypt does not work with passwords greater than 72 bytes, one of the other implementations
+should be chosen instead for this requirement.
+
+### PBKDF2
+
 ```java
 public static void main(String[] args) throws Exception {
     PasswordDigester digester = new PBKDF2PasswordDigester();
@@ -36,15 +110,14 @@ digest = rGl+Xu8NbNqqJdmbTk6uHg==-YUdLMtZL+3renFPkDt6SSoDKobFhmijkOmpXuvhjapo=
 Validate 'tiger': true
 Validate 'password': false
 ```
-It is not permitted to use a SHA digest to digest passwords, they must be digested instead using
-PBKDF2PasswordDigester. An iteration count of 310,000 should be used with PBKDF2 according to the 
+According to the
 [OWASP password storage cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html):
 
 > If FIPS-140 compliance is required, use PBKDF2 with a work factor of 310,000 or more and set with an internal hash function of HMAC-SHA-256.
 
 The PBKDF2PasswordDigester uses a random 16 byte salt by default, with a 256 bit key length and 310,000 iteration count.
 
-### Encryption
+## Encryption
 
 The main entry point for this module is the class `Encryption`. It needs as input:
 
