@@ -58,7 +58,7 @@
         <guava.version>30.0-jre</guava.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <bnd.version>3.0.0</bnd.version>
-        <kafka-clients.version>0.10.0.0</kafka-clients.version>
+        <kafka-clients.version>2.5.1</kafka-clients.version>
         <jsonassert.version>1.2.3</jsonassert.version>
         <commons-codec.version>1.14</commons-codec.version>
         <javax.inject.version>1</javax.inject.version>
