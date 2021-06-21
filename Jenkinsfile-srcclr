@@ -1,0 +1,106 @@
+/**
+ * Pod configuration
+ */
+
+def slackChannel = 'eng-daikon'
+def projectName = 'daikon'
+def podLabel = "${projectName}-${UUID.randomUUID().toString()}".take(53)
+
+def podConfiguration = """
+apiVersion: v1
+kind: Pod
+spec:
+  imagePullSecrets:
+    - talend-registry
+  containers:
+    - name: veracode
+      image: artifactory.datapwn.com/tlnd-docker-prod/talend/common/tsbi/jdk8-svc-springboot-builder:2.7.2-20210616074048
+      command:
+      - cat
+      tty: true
+      resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"
+          limits:
+            memory: "4Gi"
+            cpu: "1"
+      volumeMounts:
+      - name: docker
+        mountPath: /var/run/docker.sock
+      - name: m2
+        mountPath: /root/daikon/.m2/repository
+  volumes:
+  - name: docker
+    hostPath:
+      path: /var/run/docker.sock
+  - name: m2
+    persistentVolumeClaim:
+      claimName: efs-jenkins-common-m2
+"""
+
+
+pipeline {
+
+      agent {
+            kubernetes {
+                  label podLabel
+                  yaml podConfiguration
+            }
+      }
+
+      stages {
+            stage('Clone repo') {
+                      	steps {
+                      		container('veracode') {
+                      			withCredentials([sshUserPrivateKey(credentialsId: "github-ssh", keyFileVariable: 'ID_RSA')]) {
+                      				sh '''
+                      				#!/bin/bash
+                      				set +x
+                      				# Configure SSH Agent to install daikon repo
+                      				ssh-agent
+                      				eval \$(ssh-agent) && ssh-add ${ID_RSA} && ssh-add -l
+                      				mkdir -p ~/.ssh && echo "Host *" > ~/.ssh/config && echo " StrictHostKeyChecking no" >> ~/.ssh/config
+                      				# Step up to clone daikon
+                      				cd ../
+                      				git clone git@github.com:Talend/daikon.git
+                      				'''
+                      			}
+                      		}
+                      	}
+                      }
+            stage("Scan 3rd parties vulnerabilities") {
+                 steps {
+                        container('veracode') {
+                              configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
+                                    withCredentials([string(credentialsId: 'veracode-token', variable: 'SRCCLR_API_TOKEN')]) {
+                                         sh """#!/bin/bash
+                                         cp ${MAVEN_SETTINGS} ~/.m2/settings.xml
+                                         curl -sSL https://download.sourceclear.com/ci.sh | DEBUG=1 sh -s -- scan;
+                                         """
+                                    }
+                              }
+                        }
+                 }
+            }
+      }
+
+      post {
+           success {
+                    slackSend color: 'good', message: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", channel: "${slackChannel}"
+           }
+
+           unstable {
+                    slackSend color: 'warning', message: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", channel: "${slackChannel}"
+           }
+
+           failure {
+                    slackSend color: '#e81f3f', message: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", channel: "${slackChannel}"
+           }
+
+           aborted {
+                    slackSend color: 'warning', message: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", channel: "${slackChannel}"
+           }
+      }
+
+}
