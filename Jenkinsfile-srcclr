@@ -73,7 +73,7 @@ pipeline {
                  steps {
                         container('veracode') {
                               configFileProvider([configFile(fileId: 'maven-settings-nexus-zl', variable: 'MAVEN_SETTINGS')]) {
-                                    withCredentials([string(credentialsId: 'veracode-token', variable: 'SRCCLR_API_TOKEN')]) {
+                                    withCredentials([string(credentialsId: 'veracode-daikon-token', variable: 'SRCCLR_API_TOKEN')]) {
                                          sh """#!/bin/bash
                                          cp ${MAVEN_SETTINGS} ~/.m2/settings.xml
                                          curl -sSL https://download.sourceclear.com/ci.sh | DEBUG=1 sh -s -- scan;
