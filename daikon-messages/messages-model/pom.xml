@@ -9,10 +9,6 @@
     <artifactId>messages-model</artifactId>
     <name>messages-model</name>
 
-    <properties>
-        <kafka-client.version>1.1.1</kafka-client.version>
-    </properties>
-
     <build>
         <resources>
             <resource>
@@ -60,7 +56,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>${kafka-client.version}</version>
+            <version>${kafka-clients.version}</version>
             <scope>provided</scope>
         </dependency>
         <!-- Tests -->
