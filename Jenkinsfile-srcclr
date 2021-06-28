@@ -50,25 +50,6 @@ pipeline {
       }
 
       stages {
-            stage('Clone repo') {
-                      	steps {
-                      		container('veracode') {
-                      			withCredentials([sshUserPrivateKey(credentialsId: "github-ssh", keyFileVariable: 'ID_RSA')]) {
-                      				sh '''
-                      				#!/bin/bash
-                      				set +x
-                      				# Configure SSH Agent to install daikon repo
-                      				ssh-agent
-                      				eval \$(ssh-agent) && ssh-add ${ID_RSA} && ssh-add -l
-                      				mkdir -p ~/.ssh && echo "Host *" > ~/.ssh/config && echo " StrictHostKeyChecking no" >> ~/.ssh/config
-                      				# Step up to clone daikon
-                      				cd ../
-                      				git clone git@github.com:Talend/daikon.git
-                      				'''
-                      			}
-                      		}
-                      	}
-                      }
             stage("Scan 3rd parties vulnerabilities") {
                  steps {
                         container('veracode') {
