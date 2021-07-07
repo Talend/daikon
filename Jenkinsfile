@@ -1,4 +1,3 @@
-def slackChannel = 'daikon'
 def gitCredentials = usernamePassword(
     credentialsId: 'github-credentials',
     passwordVariable: 'GIT_PASSWORD',
@@ -38,7 +37,7 @@ kind: Pod
 spec:
   containers:
     - name: maven
-      image: artifactory.datapwn.com/tlnd-docker-prod/talend/common/tsbi/jdk8-builder-base:2.0.0-20200414174049
+      image: artifactory.datapwn.com/tlnd-docker-prod/talend/common/tsbi/jdk8-builder-base:2.8.0-20210622090337
       command:
       - cat
       tty: true
